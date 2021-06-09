@@ -1,0 +1,40 @@
+BasedOnStyle: Google
+AccessModifierOffset: -4
+AllowShortIfStatementsOnASingleLine: true
+BinPackArguments: false
+BinPackParameters: false
+BreakBeforeBraces: Allman
+BreakConstructorInitializersBeforeComma: true
+ColumnLimit: 100
+ConstructorInitializerAllOnOneLineOrOnePerLine: false
+ConstructorInitializerIndentWidth: 2
+Cpp11BracedListStyle: true
+IndentCaseLabels: false
+IndentWidth: 4
+FixNamespaceComments: true
+NamespaceIndentation: None
+Standard: Latest
+UseTab: Never
+DerivePointerAlignment: false
+PointerAlignment: Left
+IncludeBlocks: Regroup
+IncludeCategories:
+  # Main Module Header automatically gets a priority of 0
+    # Local/Private Headers
+  - Regex:           '^"[^\/"]*"$'
+    Priority:        200
+    # Project/subproject headers
+  - Regex:           '^"[^"]*"$'
+    Priority:        300
+    # standard library headers
+  - Regex:           '^<[^>\.\/]+>$'
+    Priority:        500
+    # standard library headers - experimental
+  - Regex:           '^<experimental[^>\.]+>$'
+    Priority:        600
+    # third party libraries
+  - Regex:           '^<[^>]+>$'
+    Priority:        400
+    # Everything that didn't match
+  - Regex:           '.*'
+    Priority:        1000
