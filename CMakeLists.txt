@@ -48,3 +48,7 @@ macro(add_test_dependencies TEST_TARGET)
     add_test(NAME ${TEST_TARGET} COMMAND ${TEST_TARGET})
 endmacro()
 
+add_executable(fixed_vector_test test/fixed_vector_test.cpp)
+add_test_dependencies(fixed_vector_test)
+add_executable(string_literal_test test/string_literal_test.cpp)
+add_test_dependencies(string_literal_test)

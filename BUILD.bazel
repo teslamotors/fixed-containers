@@ -1,0 +1,103 @@
+licenses(["notice"])
+
+exports_files(["LICENSE"])
+
+package(default_visibility = ["//visibility:public"])
+
+cc_library(
+    name = "concepts",
+    hdrs = ["fixed_containers/concepts.hpp"],
+    copts = ["-std=c++20"],
+)
+
+cc_library(
+    name = "fixed_vector",
+    hdrs = ["fixed_containers/fixed_vector.hpp"],
+    deps = [
+        ":concepts",
+        ":optional_storage",
+        ":preconditions",
+        ":random_access_iterator_transformer",
+        ":string_literal",
+        ":type_name",
+    ],
+    copts = ["-std=c++20"],
+)
+
+cc_library(
+    name = "optional_storage",
+    hdrs = ["fixed_containers/optional_storage.hpp"],
+    deps = [":concepts"],
+    copts = ["-std=c++20"],
+)
+
+cc_library(
+    name = "preconditions",
+    hdrs = ["fixed_containers/preconditions.hpp"],
+    copts = ["-std=c++20"],
+)
+
+cc_library(
+    name = "random_access_iterator_transformer",
+    hdrs = ["fixed_containers/random_access_iterator_transformer.hpp"],
+    copts = ["-std=c++20"],
+)
+
+cc_library(
+    name = "string_literal",
+    hdrs = ["fixed_containers/string_literal.hpp"],
+    copts = ["-std=c++20"],
+)
+
+cc_library(
+    name = "type_name",
+    hdrs = ["fixed_containers/type_name.hpp"],
+    copts = ["-std=c++20"],
+)
+
+cc_library(
+    name = "mock_testing_types",
+    hdrs = ["test/mock_testing_types.hpp"],
+    deps = [":concepts"],
+    strip_include_prefix = "/test",
+    copts = ["-std=c++20"],
+    visibility = ["//visibility:private"],
+)
+
+cc_library(
+    name = "test_utilities_common",
+    hdrs = ["test/test_utilities_common.hpp"],
+    deps = [
+        ":concepts",
+        "@gtest//:gtest",
+    ],
+    copts = ["-std=c++20"],
+    strip_include_prefix = "/test",
+    visibility = ["//visibility:private"],
+)
+
+cc_test(
+    name = "fixed_vector_test",
+    srcs = ["test/fixed_vector_test.cpp"],
+    deps = [
+        ":fixed_vector",
+        ":mock_testing_types",
+        ":test_utilities_common",
+        "@gsl",
+        "@gtest//:gtest",
+        "@gtest//:gtest_main",
+        "@range-v3",
+    ],
+    copts = ["-std=c++20"],
+)
+
+cc_test(
+    name = "string_literal_test",
+    srcs = ["test/string_literal_test.cpp"],
+    deps = [
+        ":string_literal",
+        "@gtest//:gtest",
+        "@gtest//:gtest_main",
+    ],
+    copts = ["-std=c++20"],
+)
