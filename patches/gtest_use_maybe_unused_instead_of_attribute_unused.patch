@@ -1,0 +1,279 @@
+diff --git googlemock/include/gmock/gmock-actions.h googlemock/include/gmock/gmock-actions.h
+index f2393bd3..f02696de 100644
+--- googlemock/include/gmock/gmock-actions.h
++++ googlemock/include/gmock/gmock-actions.h
+@@ -1544,9 +1544,9 @@ template <typename F, typename Impl>
+ }
+ 
+ #define GMOCK_INTERNAL_ARG_UNUSED(i, data, el) \
+-  , const arg##i##_type& arg##i GTEST_ATTRIBUTE_UNUSED_
++  , [[maybe_unused]] const arg##i##_type& arg##i
+ #define GMOCK_ACTION_ARG_TYPES_AND_NAMES_UNUSED_           \
+-  const args_type& args GTEST_ATTRIBUTE_UNUSED_ GMOCK_PP_REPEAT( \
++  [[maybe_unused]] const args_type& args GMOCK_PP_REPEAT( \
+       GMOCK_INTERNAL_ARG_UNUSED, , 10)
+ 
+ #define GMOCK_INTERNAL_ARG(i, data, el) , const arg##i##_type& arg##i
+diff --git googlemock/include/gmock/gmock-matchers.h googlemock/include/gmock/gmock-matchers.h
+index 86be9c17..d973a902 100644
+--- googlemock/include/gmock/gmock-matchers.h
++++ googlemock/include/gmock/gmock-matchers.h
+@@ -5257,11 +5257,11 @@ PolymorphicMatcher<internal::ExceptionMatcherImpl<Err>> ThrowsMessage(
+       }                                                                        \
+     };                                                                         \
+   };                                                                           \
+-  GTEST_ATTRIBUTE_UNUSED_ inline name##Matcher name() { return {}; }           \
++  [[maybe_unused]] inline name##Matcher name() { return {}; }           \
+   template <typename arg_type>                                                 \
+   bool name##Matcher::gmock_Impl<arg_type>::MatchAndExplain(                   \
+       const arg_type& arg,                                                     \
+-      ::testing::MatchResultListener* result_listener GTEST_ATTRIBUTE_UNUSED_) \
++      [[maybe_unused]] ::testing::MatchResultListener* result_listener) \
+       const
+ 
+ #define MATCHER_P(name, p0, description) \
+@@ -5337,8 +5337,8 @@ PolymorphicMatcher<internal::ExceptionMatcherImpl<Err>> ThrowsMessage(
+   template <typename arg_type>                                                 \
+   bool full_name<GMOCK_INTERNAL_MATCHER_TYPE_PARAMS(args)>::gmock_Impl<        \
+       arg_type>::MatchAndExplain(const arg_type& arg,                          \
+-                                 ::testing::MatchResultListener*               \
+-                                     result_listener GTEST_ATTRIBUTE_UNUSED_)  \
++                                 [[maybe_unused]] ::testing::MatchResultListener*               \
++                                     result_listener)  \
+       const
+ 
+ #define GMOCK_INTERNAL_MATCHER_TEMPLATE_PARAMS(args) \
+diff --git googlemock/include/gmock/gmock-spec-builders.h googlemock/include/gmock/gmock-spec-builders.h
+index 41323c1c..dd8c056b 100644
+--- googlemock/include/gmock/gmock-spec-builders.h
++++ googlemock/include/gmock/gmock-spec-builders.h
+@@ -674,7 +674,7 @@ class GTEST_API_ Sequence {
+ // thread.  However, for clarity of your tests we recommend you to set
+ // up mocks in the main thread unless you have a good reason not to do
+ // so.
+-class GTEST_API_ InSequence {
++class GTEST_API_ [[maybe_unused]] InSequence {
+  public:
+   InSequence();
+   ~InSequence();
+@@ -682,7 +682,7 @@ class GTEST_API_ InSequence {
+   bool sequence_created_;
+ 
+   GTEST_DISALLOW_COPY_AND_ASSIGN_(InSequence);  // NOLINT
+-} GTEST_ATTRIBUTE_UNUSED_;
++};
+ 
+ namespace internal {
+ 
+diff --git googletest/include/gtest/gtest-param-test.h googletest/include/gtest/gtest-param-test.h
+index 804e7028..638c5791 100644
+--- googletest/include/gtest/gtest-param-test.h
++++ googletest/include/gtest/gtest-param-test.h
+@@ -427,7 +427,7 @@ internal::CartesianProductHolder<Generator...> Combine(const Generator&... g) {
+               ::testing::internal::CodeLocation(__FILE__, __LINE__));          \
+       return 0;                                                                \
+     }                                                                          \
+-    static int gtest_registering_dummy_ GTEST_ATTRIBUTE_UNUSED_;               \
++    [[maybe_unused]] static int gtest_registering_dummy_;               \
+     GTEST_DISALLOW_COPY_AND_ASSIGN_(GTEST_TEST_CLASS_NAME_(test_suite_name,    \
+                                                            test_name));        \
+   };                                                                           \
+@@ -474,8 +474,8 @@ internal::CartesianProductHolder<Generator...> Combine(const Generator&... g) {
+         ::testing::internal::DefaultParamName<test_suite_name::ParamType>,    \
+         DUMMY_PARAM_))))(info);                                               \
+   }                                                                           \
+-  static int gtest_##prefix##test_suite_name##_dummy_                         \
+-      GTEST_ATTRIBUTE_UNUSED_ =                                               \
++  [[maybe_unused]] static int gtest_##prefix##test_suite_name##_dummy_                         \
++     =                                               \
+           ::testing::UnitTest::GetInstance()                                  \
+               ->parameterized_test_registry()                                 \
+               .GetTestSuitePatternHolder<test_suite_name>(                    \
+diff --git googletest/include/gtest/gtest-typed-test.h googletest/include/gtest/gtest-typed-test.h
+index 9fdc6be1..40d7c6ed 100644
+--- googletest/include/gtest/gtest-typed-test.h
++++ googletest/include/gtest/gtest-typed-test.h
+@@ -203,8 +203,8 @@ INSTANTIATE_TYPED_TEST_SUITE_P(My, FooTest, MyTypes);
+     typedef gtest_TypeParam_ TypeParam;                                       \
+     void TestBody() override;                                                 \
+   };                                                                          \
+-  static bool gtest_##CaseName##_##TestName##_registered_                     \
+-      GTEST_ATTRIBUTE_UNUSED_ = ::testing::internal::TypeParameterizedTest<   \
++  [[maybe_unused]] static bool gtest_##CaseName##_##TestName##_registered_                     \
++      = ::testing::internal::TypeParameterizedTest<   \
+           CaseName,                                                           \
+           ::testing::internal::TemplateSel<GTEST_TEST_CLASS_NAME_(CaseName,   \
+                                                                   TestName)>, \
+@@ -274,7 +274,7 @@ INSTANTIATE_TYPED_TEST_SUITE_P(My, FooTest, MyTypes);
+       typedef gtest_TypeParam_ TypeParam;                             \
+       void TestBody() override;                                       \
+     };                                                                \
+-    static bool gtest_##TestName##_defined_ GTEST_ATTRIBUTE_UNUSED_ = \
++    [[maybe_unused]] static bool gtest_##TestName##_defined_ = \
+         GTEST_TYPED_TEST_SUITE_P_STATE_(SuiteName).AddTestName(       \
+             __FILE__, __LINE__, GTEST_STRINGIFY_(SuiteName),          \
+             GTEST_STRINGIFY_(TestName));                              \
+@@ -288,8 +288,8 @@ INSTANTIATE_TYPED_TEST_SUITE_P(My, FooTest, MyTypes);
+   namespace GTEST_SUITE_NAMESPACE_(SuiteName) {                             \
+     typedef ::testing::internal::Templates<__VA_ARGS__> gtest_AllTests_;    \
+   }                                                                         \
+-  static const char* const GTEST_REGISTERED_TEST_NAMES_(                    \
+-      SuiteName) GTEST_ATTRIBUTE_UNUSED_ =                                  \
++   [[maybe_unused]] static const char* const GTEST_REGISTERED_TEST_NAMES_(                    \
++      SuiteName) =                                  \
+       GTEST_TYPED_TEST_SUITE_P_STATE_(SuiteName).VerifyRegisteredTestNames( \
+           GTEST_STRINGIFY_(SuiteName), __FILE__, __LINE__, #__VA_ARGS__)
+ 
+@@ -304,7 +304,7 @@ INSTANTIATE_TYPED_TEST_SUITE_P(My, FooTest, MyTypes);
+ #define INSTANTIATE_TYPED_TEST_SUITE_P(Prefix, SuiteName, Types, ...)       \
+   static_assert(sizeof(GTEST_STRINGIFY_(Prefix)) > 1,                       \
+                 "test-suit-prefix must not be empty");                      \
+-  static bool gtest_##Prefix##_##SuiteName GTEST_ATTRIBUTE_UNUSED_ =        \
++  [[maybe_unused]] static bool gtest_##Prefix##_##SuiteName =        \
+       ::testing::internal::TypeParameterizedTestSuite<                      \
+           SuiteName, GTEST_SUITE_NAMESPACE_(SuiteName)::gtest_AllTests_,    \
+           ::testing::internal::GenerateTypeList<Types>::type>::             \
+diff --git googletest/include/gtest/gtest.h googletest/include/gtest/gtest.h
+index 5eaf9a1a..d2fbe9af 100644
+--- googletest/include/gtest/gtest.h
++++ googletest/include/gtest/gtest.h
+@@ -2231,7 +2231,7 @@ GTEST_API_ AssertionResult DoubleLE(const char* expr1, const char* expr2,
+ // Example:
+ //   testing::ScopedTrace trace("file.cc", 123, "message");
+ //
+-class GTEST_API_ ScopedTrace {
++class GTEST_API_ [[maybe_unused]] ScopedTrace {
+  public:
+   // The c'tor pushes the given source file location and message onto
+   // a trace stack maintained by Google Test.
+@@ -2262,7 +2262,7 @@ class GTEST_API_ ScopedTrace {
+   void PushTrace(const char* file, int line, std::string message);
+ 
+   GTEST_DISALLOW_COPY_AND_ASSIGN_(ScopedTrace);
+-} GTEST_ATTRIBUTE_UNUSED_;  // A ScopedTrace object does its job in its
++};  // A ScopedTrace object does its job in its
+                             // c'tor and d'tor.  Therefore it doesn't
+                             // need to be used otherwise.
+ 
+diff --git googletest/include/gtest/internal/gtest-death-test-internal.h googletest/include/gtest/internal/gtest-death-test-internal.h
+index 867a840d..f879f066 100644
+--- googletest/include/gtest/internal/gtest-death-test-internal.h
++++ googletest/include/gtest/internal/gtest-death-test-internal.h
+@@ -86,14 +86,14 @@ class GTEST_API_ DeathTest {
+   virtual ~DeathTest() { }
+ 
+   // A helper class that aborts a death test when it's deleted.
+-  class ReturnSentinel {
++  class [[maybe_unused]] ReturnSentinel {
+    public:
+     explicit ReturnSentinel(DeathTest* test) : test_(test) { }
+     ~ReturnSentinel() { test_->Abort(TEST_ENCOUNTERED_RETURN_STATEMENT); }
+    private:
+     DeathTest* const test_;
+     GTEST_DISALLOW_COPY_AND_ASSIGN_(ReturnSentinel);
+-  } GTEST_ATTRIBUTE_UNUSED_;
++  };
+ 
+   // An enumeration of possible roles that may be taken when a death
+   // test is encountered.  EXECUTE means that the death test logic should
+diff --git googletest/include/gtest/internal/gtest-internal.h googletest/include/gtest/internal/gtest-internal.h
+index f8cbdbd8..9966d76c 100644
+--- googletest/include/gtest/internal/gtest-internal.h
++++ googletest/include/gtest/internal/gtest-internal.h
+@@ -1541,7 +1541,7 @@ class NeverThrown {
+                                                                               \
+    private:                                                                   \
+     void TestBody() override;                                                 \
+-    static ::testing::TestInfo* const test_info_ GTEST_ATTRIBUTE_UNUSED_;     \
++    [[maybe_unused]] static ::testing::TestInfo* const test_info_;     \
+   };                                                                          \
+                                                                               \
+   ::testing::TestInfo* const GTEST_TEST_CLASS_NAME_(test_suite_name,          \
+diff --git googletest/include/gtest/internal/gtest-port.h googletest/include/gtest/internal/gtest-port.h
+index 4595f634..bca7e4fd 100644
+--- googletest/include/gtest/internal/gtest-port.h
++++ googletest/include/gtest/internal/gtest-port.h
+@@ -188,8 +188,6 @@
+ //
+ // Macros for basic C++ coding:
+ //   GTEST_AMBIGUOUS_ELSE_BLOCKER_ - for disabling a gcc warning.
+-//   GTEST_ATTRIBUTE_UNUSED_  - declares that a class' instances or a
+-//                              variable don't have to be used.
+ //   GTEST_DISALLOW_ASSIGN_   - disables copy operator=.
+ //   GTEST_DISALLOW_COPY_AND_ASSIGN_ - disables copy ctor and operator=.
+ //   GTEST_DISALLOW_MOVE_ASSIGN_   - disables move operator=.
+@@ -647,28 +645,6 @@ typedef struct _RTL_CRITICAL_SECTION GTEST_CRITICAL_SECTION;
+ # define GTEST_AMBIGUOUS_ELSE_BLOCKER_ switch (0) case 0: default:  // NOLINT
+ #endif
+ 
+-// Use this annotation at the end of a struct/class definition to
+-// prevent the compiler from optimizing away instances that are never
+-// used.  This is useful when all interesting logic happens inside the
+-// c'tor and / or d'tor.  Example:
+-//
+-//   struct Foo {
+-//     Foo() { ... }
+-//   } GTEST_ATTRIBUTE_UNUSED_;
+-//
+-// Also use it after a variable or parameter declaration to tell the
+-// compiler the variable/parameter does not have to be used.
+-#if defined(__GNUC__) && !defined(COMPILER_ICC)
+-# define GTEST_ATTRIBUTE_UNUSED_ __attribute__ ((unused))
+-#elif defined(__clang__)
+-# if __has_attribute(unused)
+-#  define GTEST_ATTRIBUTE_UNUSED_ __attribute__ ((unused))
+-# endif
+-#endif
+-#ifndef GTEST_ATTRIBUTE_UNUSED_
+-# define GTEST_ATTRIBUTE_UNUSED_
+-#endif
+-
+ // Use this annotation before a function that takes a printf format string.
+ #if (defined(__GNUC__) || defined(__clang__)) && !defined(COMPILER_ICC)
+ # if defined(__MINGW_PRINTF_FORMAT)
+diff --git googletest/src/gtest-internal-inl.h googletest/src/gtest-internal-inl.h
+index 6d8cecbb..aa167c18 100644
+--- googletest/src/gtest-internal-inl.h
++++ googletest/src/gtest-internal-inl.h
+@@ -156,7 +156,7 @@ inline int GetNextRandomSeed(int seed) {
+ 
+ // This class saves the values of all Google Test flags in its c'tor, and
+ // restores them in its d'tor.
+-class GTestFlagSaver {
++class [[maybe_unused]] GTestFlagSaver {
+  public:
+   // The c'tor.
+   GTestFlagSaver() {
+@@ -228,7 +228,7 @@ class GTestFlagSaver {
+   int32_t stack_trace_depth_;
+   std::string stream_result_to_;
+   bool throw_on_failure_;
+-} GTEST_ATTRIBUTE_UNUSED_;
++};
+ 
+ // Converts a Unicode code point to a narrow string in UTF-8 encoding.
+ // code_point parameter is of type UInt32 because wchar_t may not be
+diff --git googletest/test/gtest_unittest.cc googletest/test/gtest_unittest.cc
+index 1730e8b8..721e3be8 100644
+--- googletest/test/gtest_unittest.cc
++++ googletest/test/gtest_unittest.cc
+@@ -2165,7 +2165,7 @@ class UnitTestRecordPropertyTestEnvironment : public Environment {
+ };
+ 
+ // This will test property recording outside of any test or test case.
+-static Environment* record_property_env GTEST_ATTRIBUTE_UNUSED_ =
++[[maybe_unused]] static Environment* record_property_env =
+     AddGlobalTestEnvironment(new UnitTestRecordPropertyTestEnvironment);
+ 
+ // This group of tests is for predicate assertions (ASSERT_PRED*, etc)
+@@ -6729,8 +6729,8 @@ TEST(ColoredOutputTest, UsesColorsWhenTermSupportsColors) {
+ 
+ // Verifies that StaticAssertTypeEq works in a namespace scope.
+ 
+-static bool dummy1 GTEST_ATTRIBUTE_UNUSED_ = StaticAssertTypeEq<bool, bool>();
+-static bool dummy2 GTEST_ATTRIBUTE_UNUSED_ =
++[[maybe_unused]] static bool dummy1 = StaticAssertTypeEq<bool, bool>();
++[[maybe_unused]] static bool dummy2 =
+     StaticAssertTypeEq<const int, const int>();
+ 
+ // Verifies that StaticAssertTypeEq works in a class.

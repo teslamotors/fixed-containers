@@ -1,0 +1,30 @@
+### CXX_FLAGS
+build --per_file_copt external/.*@-Wno-everything,-g0,-O3,-fno-sanitize=all,-fexceptions,-ftrivial-auto-var-init=uninitialized
+build --copt -Werror
+build --copt -fno-exceptions
+build --copt -ftrivial-auto-var-init=pattern
+
+### DIAGNOSTICS
+build --copt -Weverything
+# Disables C++98 to C++17 compatibility enforcement
+build --copt -Wno-c++98-compat-pedantic
+# Re-enable, as it is disabled by the previous one
+build --copt -Wc++98-compat-extra-semi
+# We specifically don't want std::move on return due to RVO
+build --copt -Wno-return-std-move-in-c++11
+# This is failing on the `consteval` keyword for some reason
+build --copt -Wno-c++20-compat
+# Need stdlib uprev, as even std::vector triggers this
+build --copt -Wno-ctad-maybe-unsupported
+# Has false positives
+# https://bugs.llvm.org/show_bug.cgi?id=18733
+# https://stackoverflow.com/questions/56041900/why-does-explicit-template-instantiation-result-in-weak-template-vtables-warning
+build --copt -Wno-weak-template-vtables
+#
+build --copt -Wno-global-constructors
+build --copt -Wno-padded
+build --copt -Wno-sign-conversion
+# due to gtest
+build --copt -Wno-covered-switch-default
+build --copt -Wno-exit-time-destructors
+build --copt -Wno-used-but-marked-unused
