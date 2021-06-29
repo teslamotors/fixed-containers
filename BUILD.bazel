@@ -11,6 +11,38 @@ cc_library(
 )
 
 cc_library(
+    name = "enum_map",
+    hdrs = ["fixed_containers/enum_map.hpp"],
+    deps = [
+        ":enum_utils",
+        ":index_range_predicate_iterator",
+        ":pair_view",
+        ":preconditions",
+        ":type_name",
+    ],
+    copts = ["-std=c++20"],
+)
+
+cc_library(
+    name = "enum_set",
+    hdrs = ["fixed_containers/enum_set.hpp"],
+    deps = [
+        ":enum_utils",
+        ":index_range_predicate_iterator",
+    ],
+    copts = ["-std=c++20"],
+)
+
+cc_library(
+    name = "enum_utils",
+    hdrs = ["fixed_containers/enum_utils.hpp"],
+    deps = [
+        "@com_github_neargye_magic_enum//:magic_enum",
+    ],
+    copts = ["-std=c++20"],
+)
+
+cc_library(
     name = "fixed_vector",
     hdrs = ["fixed_containers/fixed_vector.hpp"],
     deps = [
@@ -25,9 +57,21 @@ cc_library(
 )
 
 cc_library(
+    name = "index_range_predicate_iterator",
+    hdrs = ["fixed_containers/index_range_predicate_iterator.hpp"],
+    copts = ["-std=c++20"],
+)
+
+cc_library(
     name = "optional_storage",
     hdrs = ["fixed_containers/optional_storage.hpp"],
     deps = [":concepts"],
+    copts = ["-std=c++20"],
+)
+
+cc_library(
+    name = "pair_view",
+    hdrs = ["fixed_containers/pair_view.hpp"],
     copts = ["-std=c++20"],
 )
 
@@ -65,6 +109,19 @@ cc_library(
 )
 
 cc_library(
+    name = "enums_test_common",
+    hdrs = ["test/enums_test_common.hpp"],
+    deps = [
+        ":enum_map",
+        ":enum_utils",
+        "@com_github_neargye_magic_enum//:magic_enum",
+    ],
+    copts = ["-std=c++20"],
+    strip_include_prefix = "/test",
+    visibility = ["//visibility:private"],
+)
+
+cc_library(
     name = "test_utilities_common",
     hdrs = ["test/test_utilities_common.hpp"],
     deps = [
@@ -74,6 +131,46 @@ cc_library(
     copts = ["-std=c++20"],
     strip_include_prefix = "/test",
     visibility = ["//visibility:private"],
+)
+
+cc_test(
+    name = "enum_map_test",
+    srcs = ["test/enum_map_test.cpp"],
+    deps = [
+        ":enum_map",
+        ":fixed_vector",
+        ":enums_test_common",
+        ":mock_testing_types",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
+        "@com_github_ericniebler_range-v3//:range-v3",
+    ],
+    copts = ["-std=c++20"],
+)
+
+cc_test(
+    name = "enum_set_test",
+    srcs = ["test/enum_set_test.cpp"],
+    deps = [
+        ":enum_set",
+        ":enums_test_common",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
+        "@com_github_ericniebler_range-v3//:range-v3",
+    ],
+    copts = ["-std=c++20"],
+)
+
+cc_test(
+    name = "enum_utils_test",
+    srcs = ["test/enum_utils_test.cpp"],
+    deps = [
+        ":enum_utils",
+        ":enums_test_common",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
+    ],
+    copts = ["-std=c++20"],
 )
 
 cc_test(

@@ -1,5 +1,8 @@
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
+load("//:fixed_containers_deps.bzl", "fixed_containers_deps")
+fixed_containers_deps()
+
 http_archive(
     name = "com_microsoft_gsl",
     urls = ["https://github.com/microsoft/GSL/archive/v3.1.0.tar.gz"],
