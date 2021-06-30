@@ -7,12 +7,14 @@ package(default_visibility = ["//visibility:public"])
 cc_library(
     name = "concepts",
     hdrs = ["fixed_containers/concepts.hpp"],
+    includes = ["."],
     copts = ["-std=c++20"],
 )
 
 cc_library(
     name = "enum_map",
     hdrs = ["fixed_containers/enum_map.hpp"],
+    includes = ["."],
     deps = [
         ":enum_utils",
         ":index_range_predicate_iterator",
@@ -26,6 +28,7 @@ cc_library(
 cc_library(
     name = "enum_set",
     hdrs = ["fixed_containers/enum_set.hpp"],
+    includes = ["."],
     deps = [
         ":enum_utils",
         ":index_range_predicate_iterator",
@@ -36,6 +39,7 @@ cc_library(
 cc_library(
     name = "enum_utils",
     hdrs = ["fixed_containers/enum_utils.hpp"],
+    includes = ["."],
     deps = [
         "@com_github_neargye_magic_enum//:magic_enum",
     ],
@@ -45,6 +49,7 @@ cc_library(
 cc_library(
     name = "fixed_vector",
     hdrs = ["fixed_containers/fixed_vector.hpp"],
+    includes = ["."],
     deps = [
         ":concepts",
         ":optional_storage",
@@ -59,12 +64,14 @@ cc_library(
 cc_library(
     name = "index_range_predicate_iterator",
     hdrs = ["fixed_containers/index_range_predicate_iterator.hpp"],
+    includes = ["."],
     copts = ["-std=c++20"],
 )
 
 cc_library(
     name = "optional_storage",
     hdrs = ["fixed_containers/optional_storage.hpp"],
+    includes = ["."],
     deps = [":concepts"],
     copts = ["-std=c++20"],
 )
@@ -72,30 +79,35 @@ cc_library(
 cc_library(
     name = "pair_view",
     hdrs = ["fixed_containers/pair_view.hpp"],
+    includes = ["."],
     copts = ["-std=c++20"],
 )
 
 cc_library(
     name = "preconditions",
     hdrs = ["fixed_containers/preconditions.hpp"],
+    includes = ["."],
     copts = ["-std=c++20"],
 )
 
 cc_library(
     name = "random_access_iterator_transformer",
     hdrs = ["fixed_containers/random_access_iterator_transformer.hpp"],
+    includes = ["."],
     copts = ["-std=c++20"],
 )
 
 cc_library(
     name = "string_literal",
     hdrs = ["fixed_containers/string_literal.hpp"],
+    includes = ["."],
     copts = ["-std=c++20"],
 )
 
 cc_library(
     name = "type_name",
     hdrs = ["fixed_containers/type_name.hpp"],
+    includes = ["."],
     copts = ["-std=c++20"],
 )
 
