@@ -14,6 +14,12 @@ class PairView
     V* second_;
 
 public:
+    constexpr PairView()
+      : first_(nullptr)
+      , second_(nullptr)
+    {
+    }
+
     constexpr PairView(K* first, V* second)
       : first_(first)
       , second_(second)
@@ -91,9 +97,39 @@ struct tuple_element<N, fixed_containers::PairView<K, V>>
 {
     using type = decltype(std::declval<fixed_containers::PairView<K, V>>().template get<N>());
 };
+
 template <class K, class V, std::size_t N>
 struct tuple_element<N, const fixed_containers::PairView<K, V>>
 {
     using type = decltype(std::declval<const fixed_containers::PairView<K, V>>().template get<N>());
 };
+
+template <std::size_t N, class Tp1, class Tp2>
+constexpr typename tuple_element<N, fixed_containers::PairView<Tp1, Tp2>>::type& get(
+    fixed_containers::PairView<Tp1, Tp2>& in) noexcept
+{
+    return in.template get<N>();
+}
+
+template <std::size_t N, class Tp1, class Tp2>
+constexpr typename tuple_element<N, fixed_containers::PairView<Tp1, Tp2>>::type&& get(
+    fixed_containers::PairView<Tp1, Tp2>&& in) noexcept
+{
+    return std::forward<Tp1>(std::move(in).template get<N>());
+}
+
+template <std::size_t N, class Tp1, class Tp2>
+constexpr const typename tuple_element<N, fixed_containers::PairView<Tp1, Tp2>>::type& get(
+    const fixed_containers::PairView<Tp1, Tp2>& in) noexcept
+{
+    return in.template get<N>();
+}
+
+template <std::size_t N, class Tp1, class Tp2>
+constexpr const typename tuple_element<N, fixed_containers::PairView<Tp1, Tp2>>::type&& get(
+    const fixed_containers::PairView<Tp1, Tp2>&& in) noexcept
+{
+    return std::forward<const Tp1>(std::move(in).template get<N>());
+}
+
 }  // namespace std
