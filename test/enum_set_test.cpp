@@ -221,14 +221,26 @@ TEST(Utilities, EnumSet_InsertMultipleTimes)
     constexpr auto s1 = []()
     {
         EnumSet<TestEnum1> s{};
-        auto [it1, was_inserted_1] = s.insert(TestEnum1::TWO);
-        assert(was_inserted_1);
-        auto [it2, was_inserted_2] = s.insert(TestEnum1::FOUR);
-        assert(was_inserted_2);
-        auto [it3, was_inserted_3] = s.insert(TestEnum1::TWO);
-        assert(!was_inserted_3);
-        auto [it4, was_inserted_4] = s.insert(TestEnum1::FOUR);
-        assert(!was_inserted_4);
+        {
+            auto [it, was_inserted] = s.insert(TestEnum1::TWO);
+            assert(was_inserted);
+            assert(TestEnum1::TWO == *it);
+        }
+        {
+            auto [it, was_inserted] = s.insert(TestEnum1::FOUR);
+            assert(was_inserted);
+            assert(TestEnum1::FOUR == *it);
+        }
+        {
+            auto [it, was_inserted] = s.insert(TestEnum1::TWO);
+            assert(!was_inserted);
+            assert(TestEnum1::TWO == *it);
+        }
+        {
+            auto [it, was_inserted] = s.insert(TestEnum1::FOUR);
+            assert(!was_inserted);
+            assert(TestEnum1::FOUR == *it);
+        }
         return s;
     }();
 

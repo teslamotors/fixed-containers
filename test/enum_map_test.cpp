@@ -260,14 +260,30 @@ TEST(Utilities, EnumMap_InsertMultipleTimes)
     constexpr auto s1 = []()
     {
         EnumMap<TestEnum1, int> s{};
-        auto [it1, was_inserted_1] = s.insert({TestEnum1::TWO, 20});
-        assert(was_inserted_1);
-        auto [it2, was_inserted_2] = s.insert({TestEnum1::FOUR, 40});
-        assert(was_inserted_2);
-        auto [it3, was_inserted_3] = s.insert({TestEnum1::TWO, 99999});
-        assert(!was_inserted_3);
-        auto [it4, was_inserted_4] = s.insert({TestEnum1::FOUR, 88888});
-        assert(!was_inserted_4);
+        {
+            auto [it, was_inserted] = s.insert({TestEnum1::TWO, 20});
+            assert(was_inserted);
+            assert(TestEnum1::TWO == it->first());
+            assert(20 == it->second());
+        }
+        {
+            auto [it, was_inserted] = s.insert({TestEnum1::FOUR, 40});
+            assert(was_inserted);
+            assert(TestEnum1::FOUR == it->first());
+            assert(40 == it->second());
+        }
+        {
+            auto [it, was_inserted] = s.insert({TestEnum1::TWO, 99999});
+            assert(!was_inserted);
+            assert(TestEnum1::TWO == it->first());
+            assert(20 == it->second());
+        }
+        {
+            auto [it, was_inserted] = s.insert({TestEnum1::FOUR, 88888});
+            assert(!was_inserted);
+            assert(TestEnum1::FOUR == it->first());
+            assert(40 == it->second());
+        }
         return s;
     }();
 
