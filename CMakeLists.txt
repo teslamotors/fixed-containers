@@ -44,7 +44,7 @@ find_package(GTest CONFIG REQUIRED)
 
 macro(add_test_dependencies TEST_TARGET)
     target_link_libraries(${TEST_TARGET} GTest::gmock GTest::gtest GTest::gmock_main GTest::gtest_main)
-    target_include_directories(${TEST_TARGET} PRIVATE .)
+    target_include_directories(${TEST_TARGET} PRIVATE include)
     add_test(NAME ${TEST_TARGET} COMMAND ${TEST_TARGET})
 endmacro()
 
