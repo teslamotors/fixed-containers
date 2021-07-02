@@ -388,7 +388,7 @@ public:
             return 0;
         }
 
-        reset_at(EnumAdapterType::ordinal(key));
+        reset_at(i);
         return 1;
     }
 
