@@ -296,11 +296,10 @@ public:
      * Calling emplace_back on a full container is undefined.
      */
     template <class... Args>
-    /*not-constexpr*/ reference emplace_back(Args&&... args)
+    constexpr reference emplace_back(Args&&... args)
     {
         check_not_full(std::experimental::source_location::current());
-        // Note: placement-new is not constexpr
-        new (&array_[size_]) T(std::forward<Args>(args)...);
+        emplace_at(size_, std::forward<Args>(args)...);
         size_++;
         return this->back();
     }
@@ -403,11 +402,11 @@ public:
      * Calling emplace on a full container is undefined.
      */
     template <class... Args>
-    /*not-constexpr*/ iterator emplace(const_iterator it, Args&&... args)
+    constexpr iterator emplace(const_iterator it, Args&&... args)
     {
         check_not_full(std::experimental::source_location::current());
         const std::size_t index = this->advance_all_after_iterator_by_n(it, 1);
-        new (&array_[index]) T(std::forward<Args>(args)...);
+        emplace_at(index, std::forward<Args>(args)...);
         return begin() + index;
     }
 
@@ -806,6 +805,25 @@ protected:
     /*not-constexpr*/ void place_at(std::size_t i, OptionalT&& opt_v)
     {
         new (&array_[i]) OptionalT(std::move(opt_v));
+    }
+
+    template <class... Args>
+    constexpr void emplace_at(const std::size_t i, Args&&... args) requires
+        TriviallyMoveAssignable<value_type> && TriviallyDestructible<T>
+    {
+        if (std::is_constant_evaluated())
+        {
+            this->array_[i] = T(std::forward<Args>(args)...);
+        }
+        else
+        {
+            new (&array_[i]) T(std::forward<Args>(args)...);
+        }
+    }
+    template <class... Args>
+    /*not-constexpr*/ void emplace_at(std::size_t i, Args&&... args)
+    {
+        new (&array_[i]) T(std::forward<Args>(args)...);
     }
 };
 }  // namespace fixed_containers::fixed_vector_detail

@@ -433,6 +433,17 @@ TEST(Utilities, FixedVector_PushBack)
 TEST(Utilities, FixedVector_EmplaceBack)
 {
     {
+        constexpr auto v1 = []()
+        {
+            FixedVector<int, 11> v{0, 1, 2};
+            v.emplace_back(3);
+            v.emplace_back(4);
+            return v;
+        }();
+
+        static_assert(are_equal(v1, std::array{0, 1, 2, 3, 4}));
+    }
+    {
         auto v1 = []()
         {
             FixedVector<int, 11> v{0, 1, 2};
@@ -1103,6 +1114,17 @@ TEST(Utilities, FixedVector_Clear)
 
 TEST(Utilities, FixedVector_Emplace)
 {
+    {
+        constexpr auto v1 = []()
+        {
+            FixedVector<int, 11> v{0, 1, 2};
+            v.emplace(v.begin() + 1, 3);
+            v.emplace(v.begin() + 1, 4);
+            return v;
+        }();
+
+        static_assert(are_equal(v1, std::array{0, 4, 3, 1, 2}));
+    }
     {
         auto v1 = []()
         {
