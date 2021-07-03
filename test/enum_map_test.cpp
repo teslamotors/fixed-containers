@@ -856,8 +856,15 @@ TEST(Utilities, EnumMap_Ranges)
 
 TEST(Utilities, EnumMap_NonDefaultConstructible)
 {
-    constexpr EnumMap<TestEnum1, MockNonDefaultConstructible> s1{};
-    static_assert(s1.empty());
+    {
+        constexpr EnumMap<TestEnum1, MockNonDefaultConstructible> s1{};
+        static_assert(s1.empty());
+    }
+
+    {
+        EnumMap<TestEnum1, MockNonDefaultConstructible> s2{};
+        s2.emplace(TestEnum1::ONE, 3);
+    }
 }
 
 }  // namespace fixed_containers
