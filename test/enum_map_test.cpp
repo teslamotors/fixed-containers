@@ -358,6 +358,11 @@ TEST(Utilities, EnumMap_TryEmplace)
         ASSERT_EQ(TestEnum1::TWO, it->first());
         ASSERT_EQ(20, it->second());
     }
+
+    {
+        EnumMap<TestEnum1, MockMoveableButNotCopyable> s2{};
+        s2.emplace(TestEnum1::ONE, MockMoveableButNotCopyable{});
+    }
 }
 
 TEST(Utilities, EnumMap_Emplace)

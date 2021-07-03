@@ -368,7 +368,7 @@ public:
     template <class... Args>
     /*not-constexpr*/ std::pair<iterator, bool> emplace(Args&&... args) noexcept
     {
-        std::pair<K, V> as_pair = std::make_pair(args...);
+        std::pair<K, V> as_pair = std::make_pair(std::forward<Args>(args)...);
 
         const std::size_t ordinal = EnumAdapterType::ordinal(as_pair.first);
         if (values_[ordinal].has_value())
