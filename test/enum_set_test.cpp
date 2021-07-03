@@ -320,6 +320,42 @@ TEST(Utilities, EnumSet_Erase)
     static_assert(s1.contains(TestEnum1::FOUR));
 }
 
+TEST(Utilities, EnumSet_EraseIterator)
+{
+    constexpr auto s1 = []()
+    {
+        EnumSet<TestEnum1> s{TestEnum1::TWO, TestEnum1::THREE, TestEnum1::FOUR};
+        {
+            auto it = s.begin();
+            auto next = s.erase(it);
+            assert(*next == TestEnum1::THREE);
+        }
+
+        {
+            auto it = s.cbegin();
+            auto next = s.erase(it);
+            assert(*next == TestEnum1::FOUR);
+        }
+        return s;
+    }();
+
+    static_assert(s1.size() == 1);
+    static_assert(!s1.contains(TestEnum1::ONE));
+    static_assert(!s1.contains(TestEnum1::TWO));
+    static_assert(!s1.contains(TestEnum1::THREE));
+    static_assert(s1.contains(TestEnum1::FOUR));
+}
+
+TEST(Utilities, EnumSet_EraseIterator_InvalidIterator)
+{
+    EnumSet<TestEnum1> s{TestEnum1::TWO, TestEnum1::FOUR};
+    {
+        auto it = s.begin();
+        s.erase(it);
+        EXPECT_DEATH(s.erase(it), "");
+    }
+}
+
 TEST(Utilities, EnumSet_IteratorBasic)
 {
     constexpr EnumSet<TestEnum1> s1{

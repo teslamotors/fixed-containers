@@ -380,6 +380,23 @@ public:
         return {create_iterator(ordinal), true};
     }
 
+    constexpr iterator erase(const_iterator pos) noexcept
+    {
+        assert(pos != cend());
+        const std::size_t i = EnumAdapterType::ordinal(pos->first());
+        assert(contains_at(i));
+        reset_at(i);
+        return create_iterator(i);
+    }
+    constexpr iterator erase(iterator pos) noexcept
+    {
+        assert(pos != end());
+        const std::size_t i = EnumAdapterType::ordinal(pos->first());
+        assert(contains_at(i));
+        reset_at(i);
+        return create_iterator(i);
+    }
+
     constexpr size_type erase(const K& key) noexcept
     {
         const std::size_t i = EnumAdapterType::ordinal(key);

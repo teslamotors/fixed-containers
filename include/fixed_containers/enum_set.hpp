@@ -207,6 +207,15 @@ public:
         }
     }
 
+    constexpr const_iterator erase(const_iterator pos) noexcept
+    {
+        assert(pos != cend());
+        const std::size_t i = EnumAdapterType::ordinal(*pos);
+        assert(contains_at(i));
+        reset_at(i);
+        return create_const_iterator(i);
+    }
+
     constexpr size_type erase(const K& key) noexcept
     {
         const std::size_t i = EnumAdapterType::ordinal(key);

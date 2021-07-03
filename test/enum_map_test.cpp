@@ -423,6 +423,45 @@ TEST(Utilities, EnumMap_Erase)
     static_assert(s1.contains(TestEnum1::FOUR));
 }
 
+TEST(Utilities, EnumMap_EraseIterator)
+{
+    constexpr auto s1 = []()
+    {
+        EnumMap<TestEnum1, int> s{
+            {TestEnum1::TWO, 20}, {TestEnum1::THREE, 30}, {TestEnum1::FOUR, 40}};
+        {
+            auto it = s.begin();
+            auto next = s.erase(it);
+            assert(next->first() == TestEnum1::THREE);
+            assert(next->second() == 30);
+        }
+
+        {
+            auto it = s.cbegin();
+            auto next = s.erase(it);
+            assert(next->first() == TestEnum1::FOUR);
+            assert(next->second() == 40);
+        }
+        return s;
+    }();
+
+    static_assert(s1.size() == 1);
+    static_assert(!s1.contains(TestEnum1::ONE));
+    static_assert(!s1.contains(TestEnum1::TWO));
+    static_assert(!s1.contains(TestEnum1::THREE));
+    static_assert(s1.contains(TestEnum1::FOUR));
+}
+
+TEST(Utilities, EnumMap_EraseIterator_InvalidIterator)
+{
+    EnumMap<TestEnum1, int> s{{TestEnum1::TWO, 20}, {TestEnum1::FOUR, 40}};
+    {
+        auto it = s.begin();
+        s.erase(it);
+        EXPECT_DEATH(s.erase(it), "");
+    }
+}
+
 TEST(Utilities, EnumMap_Iterator_StructuredBinding)
 {
     constexpr auto s1 = []()
