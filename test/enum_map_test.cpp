@@ -347,7 +347,8 @@ TEST(Utilities, EnumMap_TryEmplace)
     }
 
     {
-        auto [it, was_inserted] = s1.try_emplace(TestEnum1::TWO, 209999999);
+        const TestEnum1 key = TestEnum1::TWO;
+        auto [it, was_inserted] = s1.try_emplace(key, 209999999);
         ASSERT_EQ(1, s1.size());
         ASSERT_TRUE(!s1.contains(TestEnum1::ONE));
         ASSERT_TRUE(s1.contains(TestEnum1::TWO));
