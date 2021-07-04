@@ -1,5 +1,6 @@
 #pragma once
 
+#include "fixed_containers/concepts.hpp"
 #include "fixed_containers/enum_utils.hpp"
 #include "fixed_containers/index_range_predicate_iterator.hpp"
 #include "fixed_containers/pair_view.hpp"
@@ -460,7 +461,8 @@ public:
     }
 
 private:
-    constexpr void touch_if_not_present(const std::size_t ordinal) noexcept
+    constexpr void touch_if_not_present(const std::size_t ordinal) noexcept requires
+        TriviallyMoveAssignable<V> && TriviallyDestructible<V>
     {
         if (values_[ordinal].has_value())
         {
@@ -474,8 +476,18 @@ private:
         }
         else
         {
+            // std::optional.emplace() is not constexpr at this time
             values_[ordinal].emplace();
         }
+    }
+    /*not-constexpr*/ void touch_if_not_present(const std::size_t ordinal) noexcept
+    {
+        if (values_[ordinal].has_value())
+        {
+            return;
+        }
+
+        values_[ordinal].emplace();
     }
 
     constexpr iterator create_iterator(const std::size_t start_index) noexcept
@@ -495,10 +507,19 @@ private:
         return values_[i].has_value();
     }
 
-    constexpr void reset_at(const std::size_t i) noexcept
+    constexpr void reset_at(const std::size_t i) noexcept requires TriviallyMoveAssignable<V> &&
+        TriviallyDestructible<V>
     {
-        // std::optional.reset() is not constexpr at this time
-        values_[i] = std::optional<V>{};
+        if (std::is_constant_evaluated())
+        {
+            // std::optional.reset() is not constexpr at this time
+            values_[i] = std::optional<V>{};
+        }
+        else
+        {
+            values_[i].reset();
+        }
     }
+    /*not-constexpr*/ void reset_at(const std::size_t i) noexcept { values_[i].reset(); }
 };
 }  // namespace fixed_containers

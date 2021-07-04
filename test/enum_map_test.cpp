@@ -922,4 +922,22 @@ TEST(Utilities, EnumMap_NonDefaultConstructible)
     }
 }
 
+TEST(Utilities, EnumMap_MoveableButNotCopyable)
+{
+    {
+        EnumMap<TestEnum1, MockMoveableButNotCopyable> s{};
+        s.emplace(TestEnum1::TWO, MockMoveableButNotCopyable{});
+    }
+}
+
+TEST(Utilities, EnumMap_NonAssignable)
+{
+    {
+        EnumMap<TestEnum1, MockNonAssignable> s{};
+        s[TestEnum1::TWO];
+
+        s.erase(TestEnum1::TWO);
+    }
+}
+
 }  // namespace fixed_containers
