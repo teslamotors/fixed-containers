@@ -369,15 +369,7 @@ public:
     /*not-constexpr*/ std::pair<iterator, bool> emplace(Args&&... args) noexcept
     {
         std::pair<K, V> as_pair{std::forward<Args>(args)...};
-
-        const std::size_t ordinal = EnumAdapterType::ordinal(as_pair.first);
-        if (values_[ordinal].has_value())
-        {
-            return {create_iterator(ordinal), false};
-        }
-
-        values_[ordinal].emplace(std::move(as_pair.second));
-        return {create_iterator(ordinal), true};
+        return try_emplace(as_pair.first, std::move(as_pair.second));
     }
 
     constexpr iterator erase(const_iterator pos) noexcept
