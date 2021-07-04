@@ -396,6 +396,19 @@ TEST(Utilities, EnumMap_Emplace)
         ASSERT_EQ(TestEnum1::TWO, it->first());
         ASSERT_EQ(20, it->second());
     }
+
+    {
+        auto [it, was_inserted] = s1.emplace(std::make_pair(TestEnum1::TWO, 209999999));
+        ASSERT_EQ(1, s1.size());
+        ASSERT_TRUE(!s1.contains(TestEnum1::ONE));
+        ASSERT_TRUE(s1.contains(TestEnum1::TWO));
+        ASSERT_TRUE(!s1.contains(TestEnum1::THREE));
+        ASSERT_TRUE(!s1.contains(TestEnum1::FOUR));
+        ASSERT_EQ(20, s1.at(TestEnum1::TWO));
+        ASSERT_FALSE(was_inserted);
+        ASSERT_EQ(TestEnum1::TWO, it->first());
+        ASSERT_EQ(20, it->second());
+    }
 }
 
 TEST(Utilities, EnumMap_Clear)
