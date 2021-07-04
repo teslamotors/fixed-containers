@@ -352,6 +352,22 @@ public:
         this->insert(list.begin(), list.end());
     }
 
+    template <class M>
+    constexpr std::pair<iterator, bool> insert_or_assign(
+        const K& key, M&& obj) noexcept requires std::is_assignable_v<mapped_type&, M&&>
+    {
+        const std::size_t ordinal = EnumAdapterType::ordinal(key);
+        const bool is_insertion = !values_[ordinal].has_value();
+        values_[ordinal] = std::forward<M>(obj);
+        return {create_iterator(ordinal), is_insertion};
+    }
+    template <class M>
+    constexpr iterator insert_or_assign(const_iterator /*hint*/, const K& key, M&& obj) noexcept
+        requires std::is_assignable_v<mapped_type&, M&&>
+    {
+        return insert_or_assign(key, std::forward<M>(obj)).first;
+    }
+
     template <class... Args>
     /*not-constexpr*/ std::pair<iterator, bool> try_emplace(const K& key, Args&&... args) noexcept
     {

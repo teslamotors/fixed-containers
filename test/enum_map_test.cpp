@@ -328,6 +328,47 @@ TEST(Utilities, EnumMap_InsertInitializer)
     static_assert(s1.contains(TestEnum1::FOUR));
 }
 
+TEST(Utilities, EnumMap_InsertOrAssign)
+{
+    constexpr auto s1 = []()
+    {
+        EnumMap<TestEnum1, int> s{};
+        {
+            auto [it, was_inserted] = s.insert_or_assign(TestEnum1::TWO, 20);
+            assert(was_inserted);
+            assert(TestEnum1::TWO == it->first());
+            assert(20 == it->second());
+        }
+        {
+            const TestEnum1 key = TestEnum1::FOUR;
+            auto [it, was_inserted] = s.insert_or_assign(key, 40);
+            assert(was_inserted);
+            assert(TestEnum1::FOUR == it->first());
+            assert(40 == it->second());
+        }
+        {
+            auto [it, was_inserted] = s.insert_or_assign(TestEnum1::TWO, 99999);
+            assert(!was_inserted);
+            assert(TestEnum1::TWO == it->first());
+            assert(99999 == it->second());
+        }
+        {
+            const TestEnum1 key = TestEnum1::FOUR;
+            auto [it, was_inserted] = s.insert_or_assign(key, 88888);
+            assert(!was_inserted);
+            assert(TestEnum1::FOUR == it->first());
+            assert(88888 == it->second());
+        }
+        return s;
+    }();
+
+    static_assert(s1.size() == 2);
+    static_assert(!s1.contains(TestEnum1::ONE));
+    static_assert(s1.contains(TestEnum1::TWO));
+    static_assert(!s1.contains(TestEnum1::THREE));
+    static_assert(s1.contains(TestEnum1::FOUR));
+}
+
 TEST(Utilities, EnumMap_TryEmplace)
 {
     EnumMap<TestEnum1, int> s1{};
