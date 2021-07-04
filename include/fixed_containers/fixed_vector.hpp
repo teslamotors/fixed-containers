@@ -752,7 +752,7 @@ protected:
     // types would fail to compile with an assignment, we need to guard the assignment with
     // constraints.
     constexpr void place_at(const std::size_t i, const value_type& v) requires
-        TriviallyCopyAssignable<value_type> && TriviallyDestructible<T>
+        TriviallyCopyAssignable<T> && TriviallyDestructible<T>
     {
         if (std::is_constant_evaluated())
         {
@@ -769,7 +769,7 @@ protected:
     }
 
     constexpr void place_at(const std::size_t i, value_type&& v) requires
-        TriviallyMoveAssignable<value_type> && TriviallyDestructible<T>
+        TriviallyMoveAssignable<T> && TriviallyDestructible<T>
     {
         if (std::is_constant_evaluated())
         {
@@ -791,7 +791,7 @@ protected:
     }
 
     constexpr void place_at(const std::size_t i, OptionalT&& opt_v) requires
-        TriviallyMoveAssignable<value_type> && TriviallyDestructible<T>
+        TriviallyMoveAssignable<T> && TriviallyDestructible<T>
     {
         if (std::is_constant_evaluated())
         {
@@ -809,7 +809,7 @@ protected:
 
     template <class... Args>
     constexpr void emplace_at(const std::size_t i, Args&&... args) requires
-        TriviallyMoveAssignable<value_type> && TriviallyDestructible<T>
+        TriviallyMoveAssignable<T> && TriviallyDestructible<T>
     {
         if (std::is_constant_evaluated())
         {
