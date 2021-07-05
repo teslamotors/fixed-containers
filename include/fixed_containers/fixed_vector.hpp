@@ -583,20 +583,20 @@ public:
     constexpr reverse_iterator rbegin() noexcept { return reverse_iterator(end()); }
     constexpr const_reverse_iterator rbegin() const noexcept
     {
-        return const_reverse_iterator(end());
+        return const_reverse_iterator(cend());
     }
     constexpr const_reverse_iterator crbegin() const noexcept
     {
-        return const_reverse_iterator(end());
+        return const_reverse_iterator(cend());
     }
     constexpr reverse_iterator rend() noexcept { return reverse_iterator(begin()); }
     constexpr const_reverse_iterator rend() const noexcept
     {
-        return const_reverse_iterator(begin());
+        return const_reverse_iterator(cbegin());
     }
     constexpr const_reverse_iterator crend() const noexcept
     {
-        return const_reverse_iterator(begin());
+        return const_reverse_iterator(cbegin());
     }
 
     /**
