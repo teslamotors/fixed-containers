@@ -41,6 +41,11 @@ static_assert(std::is_trivially_move_assignable_v<ES_3>);
 
 static_assert(ranges::bidirectional_iterator<ES_1::iterator>);
 static_assert(ranges::bidirectional_iterator<ES_1::const_iterator>);
+
+static_assert(std::is_trivially_copyable_v<ES_2::const_iterator>);
+static_assert(std::is_trivially_copyable_v<ES_2::iterator>);
+static_assert(std::is_trivially_copyable_v<ES_2::reverse_iterator>);
+static_assert(std::is_trivially_copyable_v<ES_2::const_reverse_iterator>);
 }  // namespace
 
 TEST(Utilities, EnumMap_DefaultCtor)
@@ -782,6 +787,32 @@ TEST(Utilities, EnumMap_Iterator_EnsureOrder)
     static_assert(std::prev(s1.end(), 2)->second() == 30);
     static_assert(std::prev(s1.end(), 3)->first() == TestEnum1::ONE);
     static_assert(std::prev(s1.end(), 3)->second() == 10);
+}
+
+TEST(Utilities, EnumMap_ReverseIteratorBasic)
+{
+    constexpr EnumMap<TestEnum1, int> s1{
+        {TestEnum1::ONE, 10}, {TestEnum1::TWO, 20}, {TestEnum1::THREE, 30}, {TestEnum1::FOUR, 40}};
+
+    static_assert(std::distance(s1.crbegin(), s1.crend()) == 4);
+
+    static_assert(s1.rbegin()->first() == TestEnum1::FOUR);
+    static_assert(s1.rbegin()->second() == 40);
+    static_assert(std::next(s1.rbegin(), 1)->first() == TestEnum1::THREE);
+    static_assert(std::next(s1.rbegin(), 1)->second() == 30);
+    static_assert(std::next(s1.crbegin(), 2)->first() == TestEnum1::TWO);
+    static_assert(std::next(s1.crbegin(), 2)->second() == 20);
+    static_assert(std::next(s1.rbegin(), 3)->first() == TestEnum1::ONE);
+    static_assert(std::next(s1.rbegin(), 3)->second() == 10);
+
+    static_assert(std::prev(s1.rend(), 1)->first() == TestEnum1::ONE);
+    static_assert(std::prev(s1.rend(), 1)->second() == 10);
+    static_assert(std::prev(s1.crend(), 2)->first() == TestEnum1::TWO);
+    static_assert(std::prev(s1.crend(), 2)->second() == 20);
+    static_assert(std::prev(s1.rend(), 3)->first() == TestEnum1::THREE);
+    static_assert(std::prev(s1.rend(), 3)->second() == 30);
+    static_assert(std::prev(s1.rend(), 4)->first() == TestEnum1::FOUR);
+    static_assert(std::prev(s1.rend(), 4)->second() == 40);
 }
 
 TEST(Utilities, EnumMap_Find)

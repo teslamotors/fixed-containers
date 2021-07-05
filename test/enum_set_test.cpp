@@ -10,6 +10,8 @@
 
 namespace fixed_containers
 {
+namespace
+{
 using ES_1 = EnumSet<TestEnum1>;
 using ES_2 = EnumSet<TestRichEnum1>;
 using ES_3 = EnumSet<NonConformingTestRichEnum1>;
@@ -28,6 +30,12 @@ static_assert(std::is_standard_layout_v<ES_3>);
 
 static_assert(ranges::bidirectional_iterator<ES_1::iterator>);
 static_assert(ranges::bidirectional_iterator<ES_1::const_iterator>);
+
+static_assert(std::is_trivially_copyable_v<ES_2::const_iterator>);
+static_assert(std::is_trivially_copyable_v<ES_2::iterator>);
+static_assert(std::is_trivially_copyable_v<ES_2::reverse_iterator>);
+static_assert(std::is_trivially_copyable_v<ES_2::const_reverse_iterator>);
+}  // namespace
 
 TEST(Utilities, EnumSet_All)
 {
@@ -407,6 +415,24 @@ TEST(Utilities, EnumSet_Iterator_EnsureOrder)
     static_assert(*std::prev(s1.end(), 1) == TestEnum1::FOUR);
     static_assert(*std::prev(s1.end(), 2) == TestEnum1::THREE);
     static_assert(*std::prev(s1.end(), 3) == TestEnum1::ONE);
+}
+
+TEST(Utilities, EnumSet_ReverseIteratorBasic)
+{
+    constexpr EnumSet<TestEnum1> s1{
+        TestEnum1::ONE, TestEnum1::TWO, TestEnum1::THREE, TestEnum1::FOUR};
+
+    static_assert(std::distance(s1.crbegin(), s1.crend()) == 4);
+
+    static_assert(*s1.rbegin() == TestEnum1::FOUR);
+    static_assert(*std::next(s1.rbegin(), 1) == TestEnum1::THREE);
+    static_assert(*std::next(s1.crbegin(), 2) == TestEnum1::TWO);
+    static_assert(*std::next(s1.rbegin(), 3) == TestEnum1::ONE);
+
+    static_assert(*std::prev(s1.rend(), 1) == TestEnum1::ONE);
+    static_assert(*std::prev(s1.crend(), 2) == TestEnum1::TWO);
+    static_assert(*std::prev(s1.rend(), 3) == TestEnum1::THREE);
+    static_assert(*std::prev(s1.rend(), 4) == TestEnum1::FOUR);
 }
 
 TEST(Utilities, EnumSet_RichEnum)

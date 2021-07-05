@@ -148,8 +148,10 @@ private:
 public:
     using const_iterator = IteratorImpl<IteratorConstness::CONST(), IteratorDirection::FORWARD()>;
     using iterator = IteratorImpl<IteratorConstness::MUTABLE(), IteratorDirection::FORWARD()>;
-    using const_reverse_iterator = std::reverse_iterator<const_iterator>;
-    using reverse_iterator = std::reverse_iterator<iterator>;
+    using const_reverse_iterator =
+        IteratorImpl<IteratorConstness::CONST(), IteratorDirection::REVERSE()>;
+    using reverse_iterator =
+        IteratorImpl<IteratorConstness::MUTABLE(), IteratorDirection::REVERSE()>;
     using size_type = typename KeyArrayType::size_type;
     using difference_type = typename KeyArrayType::difference_type;
 
@@ -300,6 +302,19 @@ public:
     constexpr iterator begin() noexcept { return create_iterator(0); }
     constexpr const_iterator end() const noexcept { return cend(); }
     constexpr iterator end() noexcept { return create_iterator(ENUM_COUNT); }
+
+    constexpr reverse_iterator rbegin() noexcept { return create_reverse_iterator(ENUM_COUNT); }
+    constexpr const_reverse_iterator rbegin() const noexcept { return crbegin(); }
+    constexpr const_reverse_iterator crbegin() const noexcept
+    {
+        return create_const_reverse_iterator(ENUM_COUNT);
+    }
+    constexpr reverse_iterator rend() noexcept { return create_reverse_iterator(0); }
+    constexpr const_reverse_iterator rend() const noexcept { return crend(); }
+    constexpr const_reverse_iterator crend() const noexcept
+    {
+        return create_const_reverse_iterator(0);
+    }
 
     [[nodiscard]] constexpr bool empty() const noexcept
     {
@@ -500,6 +515,19 @@ private:
     constexpr const_iterator create_const_iterator(const std::size_t start_index) const noexcept
     {
         return const_iterator{
+            IndexPredicate{&values_}, PairProvider<true>{&values_}, start_index, ENUM_COUNT};
+    }
+
+    constexpr reverse_iterator create_reverse_iterator(const std::size_t start_index) noexcept
+    {
+        return reverse_iterator{
+            IndexPredicate{&values_}, PairProvider<false>{&values_}, start_index, ENUM_COUNT};
+    }
+
+    constexpr const_reverse_iterator create_const_reverse_iterator(
+        const std::size_t start_index) const noexcept
+    {
+        return const_reverse_iterator{
             IndexPredicate{&values_}, PairProvider<true>{&values_}, start_index, ENUM_COUNT};
     }
 
