@@ -812,6 +812,20 @@ TEST(Utilities, FixedVector_IteratorAssignment)
 TEST(Utilities, FixedVector_Iterators)
 {
     {
+        constexpr FixedVector<int, 3> v1{77, 88, 99};
+
+        static_assert(std::distance(v1.cbegin(), v1.cend()) == 3);
+
+        static_assert(*v1.begin() == 77);
+        static_assert(*std::next(v1.begin(), 1) == 88);
+        static_assert(*std::next(v1.begin(), 2) == 99);
+
+        static_assert(*std::prev(v1.end(), 1) == 99);
+        static_assert(*std::prev(v1.end(), 2) == 88);
+        static_assert(*std::prev(v1.end(), 3) == 77);
+    }
+
+    {
         /*non-const*/ FixedVector<int, 8> v{};
         v.push_back(0);
         v.push_back(1);
@@ -865,6 +879,20 @@ TEST(Utilities, FixedVector_Iterators)
 
 TEST(Utilities, FixedVector_ReverseIterators)
 {
+    {
+        constexpr FixedVector<int, 3> v1{77, 88, 99};
+
+        static_assert(std::distance(v1.crbegin(), v1.crend()) == 3);
+
+        static_assert(*v1.rbegin() == 99);
+        static_assert(*std::next(v1.rbegin(), 1) == 88);
+        static_assert(*std::next(v1.rbegin(), 2) == 77);
+
+        static_assert(*std::prev(v1.rend(), 1) == 77);
+        static_assert(*std::prev(v1.rend(), 2) == 88);
+        static_assert(*std::prev(v1.rend(), 3) == 99);
+    }
+
     {
         /*non-cost*/ FixedVector<int, 8> v{};
         v.push_back(0);
