@@ -574,26 +574,20 @@ public:
      * Iterators
      */
     constexpr iterator begin() noexcept { return create_iterator(0); }
-    constexpr const_iterator begin() const noexcept { return create_const_iterator(0); }
+    constexpr const_iterator begin() const noexcept { return cbegin(); }
     constexpr const_iterator cbegin() const noexcept { return create_const_iterator(0); }
     constexpr iterator end() noexcept { return create_iterator(size_); }
-    constexpr const_iterator end() const noexcept { return create_const_iterator(size_); }
+    constexpr const_iterator end() const noexcept { return cend(); }
     constexpr const_iterator cend() const noexcept { return create_const_iterator(size_); }
 
     constexpr reverse_iterator rbegin() noexcept { return reverse_iterator(end()); }
-    constexpr const_reverse_iterator rbegin() const noexcept
-    {
-        return const_reverse_iterator(cend());
-    }
+    constexpr const_reverse_iterator rbegin() const noexcept { return crbegin(); }
     constexpr const_reverse_iterator crbegin() const noexcept
     {
         return const_reverse_iterator(cend());
     }
     constexpr reverse_iterator rend() noexcept { return reverse_iterator(begin()); }
-    constexpr const_reverse_iterator rend() const noexcept
-    {
-        return const_reverse_iterator(cbegin());
-    }
+    constexpr const_reverse_iterator rend() const noexcept { return crend(); }
     constexpr const_reverse_iterator crend() const noexcept
     {
         return const_reverse_iterator(cbegin());
