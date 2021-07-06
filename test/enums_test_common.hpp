@@ -264,4 +264,32 @@ NonCopyableRichEnum::values()
     return NonCopyableRichEnumValues::VALUES;
 }
 
+namespace detail
+{
+enum class TestRichEnumBool_BackingEnum : bool
+{
+    FALSE_VALUE = false,
+    TRUE_VALUE = true,
+};
+
+}  // namespace detail
+
+class TestRichEnumBool
+  : public SkeletalRichEnum<TestRichEnumBool, detail::TestRichEnumBool_BackingEnum>
+{
+    friend SkeletalRichEnum::ValuesFriend;
+    using SkeletalRichEnum::SkeletalRichEnum;
+
+public:
+    static constexpr const std::array<TestRichEnumBool, count()>& values();
+
+    FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(TestRichEnumBool, FALSE_VALUE)
+    FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(TestRichEnumBool, TRUE_VALUE)
+};
+
+constexpr const std::array<TestRichEnumBool, TestRichEnumBool::count()>& TestRichEnumBool::values()
+{
+    return SkeletalRichEnumValues<TestRichEnumBool>::VALUES;
+}
+
 }  // namespace fixed_containers

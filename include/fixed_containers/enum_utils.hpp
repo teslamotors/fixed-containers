@@ -216,7 +216,7 @@ public:
 // MACRO to reduce four lines into one and avoid bugs from potential discrepancy between the
 // BackingEnum::CONSTANT and the rich enum CONSTANT()
 // Must be used after the values() static function is declared in the rich enum.
-#define FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(RichEnumName, CONSTANT_NAME)             \
+#define FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(RichEnumName, CONSTANT_NAME)  \
     static constexpr const RichEnumName& CONSTANT_NAME()                             \
     {                                                                                \
         return enums::detail::backing_to_rich(values(), BackingEnum::CONSTANT_NAME); \
@@ -489,6 +489,17 @@ public:
         return this->backing_enum_ == other.backing_enum_;
     }
     constexpr bool operator!=(const SkeletalRichEnum& other) const { return !(*this == other); }
+
+    constexpr const RichEnumType& operator!()
+        const requires std::is_same_v<bool, magic_enum::underlying_type_t<BackingEnum>>
+    {
+        if (*this == RichEnumType::values()[0])
+        {
+            return RichEnumType::values()[1];
+        }
+
+        return RichEnumType::values()[0];
+    }
 
     [[nodiscard]] constexpr bool has_value() const { return backing_enum_.has_value(); }
 
