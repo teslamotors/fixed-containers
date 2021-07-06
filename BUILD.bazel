@@ -219,6 +219,17 @@ cc_test(
 )
 
 cc_test(
+    name = "index_range_predicate_iterator_test",
+    srcs = ["test/index_range_predicate_iterator_test.cpp"],
+    deps = [
+        ":index_range_predicate_iterator",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
+    ],
+    copts = ["-std=c++20"],
+)
+
+cc_test(
     name = "pair_view_test",
     srcs = ["test/pair_view_test.cpp"],
     deps = [

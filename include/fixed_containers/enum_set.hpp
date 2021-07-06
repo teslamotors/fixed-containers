@@ -52,11 +52,15 @@ private:
         constexpr bool operator()(const std::size_t i) const { return (*array_set_)[i]; }
     };
 
+    template <IteratorDirection DIRECTION>
+    using IteratorImpl = IndexRangePredicateIterator<IndexPredicate,
+                                                     ReferenceProvider,
+                                                     ReferenceProvider,
+                                                     IteratorConstness::CONST(),
+                                                     DIRECTION>;
+
 public:
-    using const_iterator = IndexRangePredicateIterator<IndexPredicate,
-                                                       ReferenceProvider,
-                                                       ReferenceProvider,
-                                                       IteratorConstness::CONST()>;
+    using const_iterator = IteratorImpl<IteratorDirection::FORWARD()>;
     using iterator = const_iterator;
     using const_reverse_iterator = std::reverse_iterator<const_iterator>;
     using reverse_iterator = const_reverse_iterator;

@@ -25,28 +25,62 @@ concept IndexBasedProvider = requires(P p, std::size_t i)
 // IndexPredicate is the type of a function that takes an index and
 // returns true if the object at that index in the collection matches the condition of the
 // predicate.
+
+// clang-format off
+// Using std::reverse_iterator fails to compile with the error message below.
+// Only applies to maps, because they leverage operator->
+// Therefore, this class provides native support for reverse iterators.
+// Furthermore, it is faster than std::reverse_iterator as the latter does
+// a copy + decrement on every dereference, whereas this class does not.
+/**
+/workspace/fixed_containers/test/enum_map_test.cpp:807:19: error: static_assert expression is not an integral constant expression
+    static_assert(s1.crbegin()->first() == TestEnum1::FOUR);
+                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/fixed_containers/test/enum_map_test.cpp:807:33: note: member call on variable whose lifetime has ended
+    static_assert(s1.crbegin()->first() == TestEnum1::FOUR);
+                                ^
+/bin/../lib/gcc/x86_64-linux-gnu/10/../../../../include/c++/10/bits/stl_iterator.h:368:20: note: declared here
+        _S_to_pointer(_Tp __t)
+                          ^
+/workspace/fixed_containers/test/enum_map_test.cpp:808:19: error: static_assert expression is not an integral constant expression
+    static_assert(s1.crbegin()->second() == 10);
+                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/fixed_containers/test/enum_map_test.cpp:808:33: note: member call on variable whose lifetime has ended
+    static_assert(s1.crbegin()->second() == 10);
+                                ^
+/bin/../lib/gcc/x86_64-linux-gnu/10/../../../../include/c++/10/bits/stl_iterator.h:368:20: note: declared here
+        _S_to_pointer(_Tp __t)
+                          ^
+2 errors generated.
+ */
+// clang-format on
+
 template <typename IndexPredicate,
           IndexBasedProvider ConstReferenceProvider,
           IndexBasedProvider MutableReferenceProvider,
-          IteratorConstness CONSTNESS>
+          IteratorConstness CONSTNESS,
+          IteratorDirection DIRECTION>
 class IndexRangePredicateIterator
 {
     using Self = IndexRangePredicateIterator<IndexPredicate,
                                              ConstReferenceProvider,
                                              MutableReferenceProvider,
-                                             CONSTNESS>;
+                                             CONSTNESS,
+                                             DIRECTION>;
 
     // Sibling has the same parameters, but different const-ness
     using Sibling = IndexRangePredicateIterator<IndexPredicate,
                                                 ConstReferenceProvider,
                                                 MutableReferenceProvider,
-                                                !CONSTNESS>;
+                                                !CONSTNESS,
+                                                DIRECTION>;
 
     // Give Sibling access to private members
     friend class IndexRangePredicateIterator<IndexPredicate,
                                              ConstReferenceProvider,
                                              MutableReferenceProvider,
-                                             !CONSTNESS>;
+                                             !CONSTNESS,
+                                             DIRECTION>;
 
     using ReferenceProvider = std::conditional_t<CONSTNESS == IteratorConstness::CONST(),
                                                  ConstReferenceProvider,
@@ -61,36 +95,10 @@ public:
     using difference_type = std::ptrdiff_t;
 
 private:
-    [[nodiscard]] static constexpr size_t index_of_next(const IndexPredicate& predicate,
-                                                        const std::size_t start_index,
-                                                        const std::size_t end_index) noexcept
-    {
-        for (std::size_t i = start_index + 1; i < end_index; i++)
-        {
-            if (predicate(i))
-            {
-                return i;
-            }
-        }
-
-        return end_index;
-    }
-
-    [[nodiscard]] static constexpr size_t index_of_previous(const IndexPredicate& predicate,
-                                                            const std::size_t start_index,
-                                                            const std::size_t end_index) noexcept
-    {
-        // Reverse unsigned iteration terminates when i underflows
-        for (std::size_t i = start_index - 1; i <= start_index; i--)
-        {
-            if (predicate(i))
-            {
-                return i;
-            }
-        }
-
-        return end_index;
-    }
+    IndexPredicate predicate_;
+    ReferenceProvider reference_provider_;
+    std::size_t current_index_;
+    std::size_t end_index_;
 
 public:
     constexpr IndexRangePredicateIterator() noexcept
@@ -100,15 +108,35 @@ public:
 
     constexpr IndexRangePredicateIterator(const IndexPredicate& predicate,
                                           const ReferenceProvider& reference_provider,
-                                          std::size_t start_index,
-                                          std::size_t end_index) noexcept
+                                          const std::size_t start_index,
+                                          const std::size_t end_index) noexcept
+        requires(DIRECTION == IteratorDirection::FORWARD())
       : predicate_(predicate)
       , reference_provider_(reference_provider)
-      , current_index_(start_index < end_index && predicate(start_index)
-                           ? start_index
-                           : index_of_next(predicate, start_index, end_index))
+      , current_index_(start_index)
       , end_index_(end_index)
     {
+        assert(start_index <= end_index);
+        if (start_index < end_index && !predicate(current_index_))
+        {
+            advance();
+        }
+
+        update_reference();
+    }
+    constexpr IndexRangePredicateIterator(const IndexPredicate& predicate,
+                                          const ReferenceProvider& reference_provider,
+                                          const std::size_t start_index,
+                                          const std::size_t end_index) noexcept
+        requires(DIRECTION == IteratorDirection::REVERSE())
+      : predicate_(predicate)
+      , reference_provider_(reference_provider)
+      , current_index_(start_index)
+      , end_index_(end_index)
+    {
+        assert(start_index <= end_index);
+        advance();
+
         update_reference();
     }
 
@@ -127,7 +155,7 @@ public:
 
     constexpr Self& operator++() noexcept
     {
-        this->current_index_ = index_of_next(predicate_, this->current_index_, end_index_);
+        advance();
         update_reference();
         return *this;
     }
@@ -135,14 +163,14 @@ public:
     constexpr Self operator++(int) & noexcept
     {
         Self tmp = *this;
-        this->current_index_ = index_of_next(predicate_, this->current_index_, end_index_);
+        advance();
         update_reference();
         return tmp;
     }
 
     constexpr Self& operator--() noexcept
     {
-        this->current_index_ = index_of_previous(predicate_, this->current_index_, end_index_);
+        recede();
         update_reference();
         return *this;
     }
@@ -150,7 +178,7 @@ public:
     constexpr Self operator--(int) & noexcept
     {
         Self tmp = *this;
-        this->current_index_ = index_of_previous(predicate_, this->current_index_, end_index_);
+        recede();
         update_reference();
         return tmp;
     }
@@ -172,7 +200,7 @@ public:
 private:
     constexpr void update_reference()
     {
-        if (current_index_ == end_index_)
+        if (current_index_ >= end_index_)
         {
             return;
         }
@@ -180,10 +208,56 @@ private:
         reference_provider_.update_to_index(this->current_index_);
     }
 
-    IndexPredicate predicate_;
-    ReferenceProvider reference_provider_;
-    std::size_t current_index_;
-    std::size_t end_index_;
+    constexpr void advance() noexcept
+    {
+        if constexpr (DIRECTION == IteratorDirection::FORWARD())
+        {
+            advance_left();
+        }
+        else
+        {
+            recede_left();
+        }
+    }
+    constexpr void recede() noexcept
+    {
+        if constexpr (DIRECTION == IteratorDirection::FORWARD())
+        {
+            recede_left();
+        }
+        else
+        {
+            advance_left();
+        }
+    }
+
+    constexpr void advance_left() noexcept
+    {
+        for (std::size_t i = current_index_ + 1; i < end_index_; i++)
+        {
+            if (predicate_(i))
+            {
+                current_index_ = i;
+                return;
+            }
+        }
+
+        current_index_ = end_index_;
+    }
+    constexpr void recede_left() noexcept
+    {
+        // Reverse unsigned iteration terminates when i underflows
+        for (std::size_t i = current_index_ - 1; i <= current_index_; i--)
+        {
+            if (predicate_(i))
+            {
+                current_index_ = i;
+                return;
+            }
+        }
+
+        current_index_ = current_index_ - 1;
+    }
 };
 
 struct IndexPredicateAlwaysTrue
@@ -193,10 +267,12 @@ struct IndexPredicateAlwaysTrue
 
 template <typename ConstReferenceProvider,
           typename MutableReferenceProvider,
-          IteratorConstness CONSTNESS>
+          IteratorConstness CONSTNESS,
+          IteratorDirection DIRECTION>
 using IndexRangeIterator = IndexRangePredicateIterator<IndexPredicateAlwaysTrue,
                                                        ConstReferenceProvider,
                                                        MutableReferenceProvider,
-                                                       CONSTNESS>;
+                                                       CONSTNESS,
+                                                       DIRECTION>;
 
 }  // namespace fixed_containers
