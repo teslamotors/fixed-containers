@@ -65,7 +65,7 @@ private:
                                                         const std::size_t start_index,
                                                         const std::size_t end_index) noexcept
     {
-        for (std::size_t i = start_index; i < end_index; i++)
+        for (std::size_t i = start_index + 1; i < end_index; i++)
         {
             if (predicate(i))
             {
@@ -81,7 +81,7 @@ private:
                                                             const std::size_t end_index) noexcept
     {
         // Reverse unsigned iteration terminates when i underflows
-        for (std::size_t i = start_index; i <= start_index; i--)
+        for (std::size_t i = start_index - 1; i <= start_index; i--)
         {
             if (predicate(i))
             {
@@ -127,7 +127,7 @@ public:
 
     constexpr Self& operator++() noexcept
     {
-        this->current_index_ = index_of_next(predicate_, this->current_index_ + 1, end_index_);
+        this->current_index_ = index_of_next(predicate_, this->current_index_, end_index_);
         update_reference();
         return *this;
     }
@@ -135,14 +135,14 @@ public:
     constexpr Self operator++(int) & noexcept
     {
         Self tmp = *this;
-        this->current_index_ = index_of_next(predicate_, this->current_index_ + 1, end_index_);
+        this->current_index_ = index_of_next(predicate_, this->current_index_, end_index_);
         update_reference();
         return tmp;
     }
 
     constexpr Self& operator--() noexcept
     {
-        this->current_index_ = index_of_previous(predicate_, this->current_index_ - 1, end_index_);
+        this->current_index_ = index_of_previous(predicate_, this->current_index_, end_index_);
         update_reference();
         return *this;
     }
@@ -150,7 +150,7 @@ public:
     constexpr Self operator--(int) & noexcept
     {
         Self tmp = *this;
-        this->current_index_ = index_of_previous(predicate_, this->current_index_ - 1, end_index_);
+        this->current_index_ = index_of_previous(predicate_, this->current_index_, end_index_);
         update_reference();
         return tmp;
     }
