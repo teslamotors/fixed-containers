@@ -233,6 +233,20 @@ public:
         return create_const_iterator(i);
     }
 
+    constexpr const_iterator erase(const_iterator first, const_iterator last) noexcept
+    {
+        const std::size_t from = first == end() ? ENUM_COUNT : EnumAdapterType::ordinal(*first);
+        const std::size_t to = last == end() ? ENUM_COUNT : EnumAdapterType::ordinal(*last);
+        assert(from <= to);
+
+        for (std::size_t i = from; i < to; i++)
+        {
+            reset_at(i);
+        }
+
+        return create_const_iterator(to);
+    }
+
     constexpr size_type erase(const K& key) noexcept
     {
         const std::size_t i = EnumAdapterType::ordinal(key);

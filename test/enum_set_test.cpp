@@ -2,6 +2,8 @@
 
 #include "enums_test_common.hpp"
 
+#include "fixed_containers/consteval_compare.hpp"
+
 #include <gtest/gtest.h>
 #include <range/v3/view/filter.hpp>
 
@@ -361,6 +363,63 @@ TEST(Utilities, EnumSet_EraseIterator_InvalidIterator)
         auto it = s.begin();
         s.erase(it);
         EXPECT_DEATH(s.erase(it), "");
+    }
+}
+
+TEST(Utilities, EnumSet_EraseRange)
+{
+    {
+        constexpr auto s1 = []()
+        {
+            EnumSet<TestEnum1> s{TestEnum1::TWO, TestEnum1::THREE, TestEnum1::FOUR};
+            auto from = s.begin();
+            std::advance(from, 1);
+            auto to = s.begin();
+            std::advance(to, 2);
+            auto next = s.erase(from, to);
+            assert(*next == TestEnum1::FOUR);
+            return s;
+        }();
+
+        static_assert(consteval_compare::equal<2, s1.size()>);
+        static_assert(!s1.contains(TestEnum1::ONE));
+        static_assert(s1.contains(TestEnum1::TWO));
+        static_assert(!s1.contains(TestEnum1::THREE));
+        static_assert(s1.contains(TestEnum1::FOUR));
+    }
+    {
+        constexpr auto s1 = []()
+        {
+            EnumSet<TestEnum1> s{TestEnum1::TWO, TestEnum1::FOUR};
+            auto from = s.begin();
+            auto to = s.begin();
+            auto next = s.erase(from, to);
+            assert(*next == TestEnum1::TWO);
+            return s;
+        }();
+
+        static_assert(consteval_compare::equal<2, s1.size()>);
+        static_assert(!s1.contains(TestEnum1::ONE));
+        static_assert(s1.contains(TestEnum1::TWO));
+        static_assert(!s1.contains(TestEnum1::THREE));
+        static_assert(s1.contains(TestEnum1::FOUR));
+    }
+    {
+        constexpr auto s1 = []()
+        {
+            EnumSet<TestEnum1> s{TestEnum1::ONE, TestEnum1::FOUR};
+            auto from = s.begin();
+            auto to = s.end();
+            auto next = s.erase(from, to);
+            assert(next == s.end());
+            return s;
+        }();
+
+        static_assert(consteval_compare::equal<0, s1.size()>);
+        static_assert(!s1.contains(TestEnum1::ONE));
+        static_assert(!s1.contains(TestEnum1::TWO));
+        static_assert(!s1.contains(TestEnum1::THREE));
+        static_assert(!s1.contains(TestEnum1::FOUR));
     }
 }
 

@@ -184,6 +184,7 @@ cc_test(
     name = "enum_map_test",
     srcs = ["test/enum_map_test.cpp"],
     deps = [
+        ":consteval_compare",
         ":enum_map",
         ":fixed_vector",
         ":enums_test_common",
@@ -199,6 +200,7 @@ cc_test(
     name = "enum_set_test",
     srcs = ["test/enum_set_test.cpp"],
     deps = [
+        ":consteval_compare",
         ":enum_set",
         ":enums_test_common",
         "@com_google_googletest//:gtest",
