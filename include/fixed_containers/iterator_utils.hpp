@@ -32,4 +32,32 @@ IteratorConstness::values()
     return SkeletalRichEnumValues<IteratorConstness>::VALUES;
 }
 
+namespace detail
+{
+enum class IteratorDirection_BackingEnum : bool
+{
+    FORWARD,
+    REVERSE,
+};
+}  // namespace detail
+
+class IteratorDirection
+  : public SkeletalRichEnum<IteratorDirection, detail::IteratorDirection_BackingEnum>
+{
+    friend SkeletalRichEnum::ValuesFriend;
+    using SkeletalRichEnum::SkeletalRichEnum;
+
+public:
+    static constexpr const std::array<IteratorDirection, count()>& values();
+
+    FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(IteratorDirection, FORWARD)
+    FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(IteratorDirection, REVERSE)
+};
+
+constexpr const std::array<IteratorDirection, IteratorDirection::count()>&
+IteratorDirection::values()
+{
+    return SkeletalRichEnumValues<IteratorDirection>::VALUES;
+}
+
 }  // namespace fixed_containers
