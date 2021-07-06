@@ -61,7 +61,7 @@ public:
     using difference_type = std::ptrdiff_t;
 
 private:
-    [[nodiscard]] constexpr static size_t index_of_next(IndexPredicate predicate,
+    [[nodiscard]] static constexpr size_t index_of_next(const IndexPredicate& predicate,
                                                         const std::size_t start_index,
                                                         const std::size_t end_index) noexcept
     {
@@ -76,7 +76,7 @@ private:
         return end_index;
     }
 
-    [[nodiscard]] constexpr static size_t index_of_previous(IndexPredicate predicate,
+    [[nodiscard]] static constexpr size_t index_of_previous(const IndexPredicate& predicate,
                                                             const std::size_t start_index,
                                                             const std::size_t end_index) noexcept
     {
@@ -98,8 +98,8 @@ public:
     {
     }
 
-    constexpr IndexRangePredicateIterator(IndexPredicate predicate,
-                                          ReferenceProvider reference_provider,
+    constexpr IndexRangePredicateIterator(const IndexPredicate& predicate,
+                                          const ReferenceProvider& reference_provider,
                                           std::size_t start_index,
                                           std::size_t end_index) noexcept
       : predicate_(predicate)
