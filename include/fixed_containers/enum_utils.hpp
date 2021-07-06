@@ -173,42 +173,43 @@ struct EnumValuesWithoutData
 template <class EnumValues>
 using EnumDataType = typename decltype(EnumValues::VALUES)::value_type::second_type;
 
-// WORKAROUND: std::optional fails with possible infinite loop
 template <class T>
-class SimpleOptional
+class StructuralTypeOptional
 {
-    T value_;
-    bool has_value_;
+public:  // Public so this type is a structural type and can thus be used in template parameters
+    T PRIVATE_value_;
+    bool PRIVATE_has_value_;
 
 public:
-    constexpr SimpleOptional() noexcept
-      : value_{}
-      , has_value_{false}
+    constexpr StructuralTypeOptional() noexcept
+      : PRIVATE_value_{}
+      , PRIVATE_has_value_{false}
     {
     }
-    constexpr SimpleOptional(const T& value) noexcept
-      : value_{value}
-      , has_value_{true}
+    constexpr StructuralTypeOptional(const T& value) noexcept
+      : PRIVATE_value_{value}
+      , PRIVATE_has_value_{true}
     {
     }
 
 public:
-    [[nodiscard]] constexpr bool operator==(const SimpleOptional<T>& other) const noexcept
+    [[nodiscard]] constexpr bool operator==(const StructuralTypeOptional<T>& other) const noexcept
     {
-        if (!has_value_ && !other.has_value_)
+        if (!PRIVATE_has_value_ && !other.PRIVATE_has_value_)
         {
             return true;
         }
 
-        return has_value_ && other.has_value_ && value_ == other.value_;
+        return PRIVATE_has_value_ && other.PRIVATE_has_value_ &&
+               PRIVATE_value_ == other.PRIVATE_value_;
     }
 
     [[nodiscard]] constexpr const T& value() const
     {
-        assert(has_value_);
-        return value_;
+        assert(PRIVATE_has_value_);
+        return PRIVATE_value_;
     }
-    [[nodiscard]] constexpr const bool& has_value() const { return has_value_; }
+    [[nodiscard]] constexpr const bool& has_value() const { return PRIVATE_has_value_; }
 };
 
 }  // namespace fixed_containers::enums::detail
@@ -455,9 +456,9 @@ private:
 
     static constexpr std::string_view INVALID_TO_STRING = "INVALID";
 
-private:
-    enums::detail::SimpleOptional<BackingEnum> backing_enum_;
-    EnumData enum_data_;  // Data is stored here and not in the child classes, to maintain
+public:  // Public so this type is a structural type and can thus be used in template parameters
+    enums::detail::StructuralTypeOptional<BackingEnum> PRIVATE_backing_enum_;
+    EnumData PRIVATE_enum_data_;  // Data is stored here and not in the child classes, to maintain
     // standard layout
 
 protected:
@@ -469,24 +470,24 @@ protected:
 
     constexpr SkeletalRichEnum(const BackingEnum& backing_enum) noexcept
         requires(std::is_empty_v<EnumData>)
-      : backing_enum_{backing_enum}
-      , enum_data_{}
+      : PRIVATE_backing_enum_{backing_enum}
+      , PRIVATE_enum_data_{}
     {
     }
 
     constexpr SkeletalRichEnum(const BackingEnum& backing_enum, const EnumData& enum_data) noexcept
         requires(!std::is_empty_v<EnumData>)
-      : backing_enum_{backing_enum}
-      , enum_data_{enum_data}
+      : PRIVATE_backing_enum_{backing_enum}
+      , PRIVATE_enum_data_{enum_data}
     {
     }
 
 public:
-    constexpr operator BackingEnum() const { return backing_enum_.value(); }
+    constexpr operator BackingEnum() const { return PRIVATE_backing_enum_.value(); }
 
     constexpr bool operator==(const SkeletalRichEnum& other) const
     {
-        return this->backing_enum_ == other.backing_enum_;
+        return this->PRIVATE_backing_enum_ == other.PRIVATE_backing_enum_;
     }
     constexpr bool operator!=(const SkeletalRichEnum& other) const { return !(*this == other); }
 
@@ -501,17 +502,17 @@ public:
         return RichEnumType::values()[0];
     }
 
-    [[nodiscard]] constexpr bool has_value() const { return backing_enum_.has_value(); }
+    [[nodiscard]] constexpr bool has_value() const { return PRIVATE_backing_enum_.has_value(); }
 
     [[nodiscard]] constexpr std::size_t ordinal() const
     {
-        return magic_enum::enum_integer(backing_enum_.value());
+        return magic_enum::enum_integer(PRIVATE_backing_enum_.value());
     }
     [[nodiscard]] constexpr std::string_view to_string() const
     {
         if (has_value())
         {
-            return magic_enum::enum_name(backing_enum_.value());
+            return magic_enum::enum_name(PRIVATE_backing_enum_.value());
         }
         return INVALID_TO_STRING;
     }
@@ -520,10 +521,10 @@ protected:
     // Intentionally non-virtual. Polymorphism breaks standard layout.
     constexpr ~SkeletalRichEnum() noexcept = default;
 
-    constexpr const BackingEnum& backing_enum() const { return backing_enum_.value(); }
+    constexpr const BackingEnum& backing_enum() const { return PRIVATE_backing_enum_.value(); }
     constexpr const EnumData& enum_data() const requires(!std::is_empty_v<EnumData>)
     {
-        return enum_data_;
+        return PRIVATE_enum_data_;
     }
 };
 
