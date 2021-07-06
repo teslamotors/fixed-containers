@@ -53,8 +53,10 @@ private:
     };
 
 public:
-    using const_iterator =
-        IndexRangePredicateIterator<IndexPredicate, ReferenceProvider, ReferenceProvider, true>;
+    using const_iterator = IndexRangePredicateIterator<IndexPredicate,
+                                                       ReferenceProvider,
+                                                       ReferenceProvider,
+                                                       IteratorConstness::CONST()>;
     using iterator = const_iterator;
     using const_reverse_iterator = std::reverse_iterator<const_iterator>;
     using reverse_iterator = const_reverse_iterator;

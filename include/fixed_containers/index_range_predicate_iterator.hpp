@@ -1,5 +1,7 @@
 #pragma once
 
+#include "fixed_containers/iterator_utils.hpp"
+
 #include <cstddef>
 #include <cstdint>
 #include <iterator>
@@ -26,28 +28,29 @@ concept IndexBasedProvider = requires(P p, std::size_t i)
 template <typename IndexPredicate,
           IndexBasedProvider ConstReferenceProvider,
           IndexBasedProvider MutableReferenceProvider,
-          bool IS_CONST>
+          IteratorConstness CONSTNESS>
 class IndexRangePredicateIterator
 {
     using Self = IndexRangePredicateIterator<IndexPredicate,
                                              ConstReferenceProvider,
                                              MutableReferenceProvider,
-                                             IS_CONST>;
+                                             CONSTNESS>;
 
     // Sibling has the same parameters, but different const-ness
     using Sibling = IndexRangePredicateIterator<IndexPredicate,
                                                 ConstReferenceProvider,
                                                 MutableReferenceProvider,
-                                                !IS_CONST>;
+                                                !CONSTNESS>;
 
     // Give Sibling access to private members
     friend class IndexRangePredicateIterator<IndexPredicate,
                                              ConstReferenceProvider,
                                              MutableReferenceProvider,
-                                             !IS_CONST>;
+                                             !CONSTNESS>;
 
-    using ReferenceProvider =
-        std::conditional_t<IS_CONST, ConstReferenceProvider, MutableReferenceProvider>;
+    using ReferenceProvider = std::conditional_t<CONSTNESS == IteratorConstness::CONST(),
+                                                 ConstReferenceProvider,
+                                                 MutableReferenceProvider>;
 
 public:
     using reference = decltype(std::declval<ReferenceProvider>().get());
@@ -110,7 +113,8 @@ public:
     }
 
     // Mutable iterator needs to be convertible to const iterator
-    constexpr IndexRangePredicateIterator(const Sibling& other) noexcept requires(IS_CONST)
+    constexpr IndexRangePredicateIterator(const Sibling& other) noexcept
+        requires(CONSTNESS == IteratorConstness::CONST())
       : IndexRangePredicateIterator{
             other.predicate_, other.reference_provider_, other.current_index_, other.end_index_}
     {
@@ -187,10 +191,12 @@ struct IndexPredicateAlwaysTrue
     constexpr bool operator()(const std::size_t /*i*/) const { return true; }
 };
 
-template <typename ConstReferenceProvider, typename MutableReferenceProvider, bool IS_CONST>
+template <typename ConstReferenceProvider,
+          typename MutableReferenceProvider,
+          IteratorConstness CONSTNESS>
 using IndexRangeIterator = IndexRangePredicateIterator<IndexPredicateAlwaysTrue,
                                                        ConstReferenceProvider,
                                                        MutableReferenceProvider,
-                                                       IS_CONST>;
+                                                       CONSTNESS>;
 
 }  // namespace fixed_containers

@@ -66,8 +66,22 @@ cc_library(
     name = "index_range_predicate_iterator",
     hdrs = ["include/fixed_containers/index_range_predicate_iterator.hpp"],
     includes = ["include"],
+    deps = [
+        ":iterator_utils"
+    ],
     copts = ["-std=c++20"],
 )
+
+cc_library(
+    name = "iterator_utils",
+    hdrs = ["include/fixed_containers/iterator_utils.hpp"],
+    includes = ["include"],
+    deps = [
+        ":enum_utils"
+    ],
+    copts = ["-std=c++20"],
+)
+
 
 cc_library(
     name = "optional_storage",
@@ -95,6 +109,9 @@ cc_library(
     name = "random_access_iterator_transformer",
     hdrs = ["include/fixed_containers/random_access_iterator_transformer.hpp"],
     includes = ["include"],
+    deps = [
+        ":iterator_utils"
+    ],
     copts = ["-std=c++20"],
 )
 

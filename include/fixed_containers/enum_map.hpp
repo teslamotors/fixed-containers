@@ -138,15 +138,15 @@ private:
         }
     };
 
-    template <bool IS_CONST>
+    template <IteratorConstness CONSTNESS>
     using IteratorImpl = IndexRangePredicateIterator<IndexPredicate,
                                                      PairProvider<true>,
                                                      PairProvider<false>,
-                                                     IS_CONST>;
+                                                     CONSTNESS>;
 
 public:
-    using const_iterator = IteratorImpl<true>;
-    using iterator = IteratorImpl<false>;
+    using const_iterator = IteratorImpl<IteratorConstness::CONST()>;
+    using iterator = IteratorImpl<IteratorConstness::MUTABLE()>;
     using const_reverse_iterator = std::reverse_iterator<const_iterator>;
     using reverse_iterator = std::reverse_iterator<iterator>;
     using size_type = typename KeyArrayType::size_type;

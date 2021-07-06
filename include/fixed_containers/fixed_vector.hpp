@@ -146,13 +146,13 @@ class FixedVectorBase
         }
     };
 
-    template <bool IS_CONST>
+    template <IteratorConstness CONSTNESS>
     using IteratorImpl =
         RandomAccessIteratorTransformer<typename std::array<OptionalT, CAPACITY>::const_iterator,
                                         typename std::array<OptionalT, CAPACITY>::iterator,
                                         Mapper,
                                         Mapper,
-                                        IS_CONST>;
+                                        CONSTNESS>;
 
 public:
     using value_type = T;
@@ -162,8 +162,8 @@ public:
     using const_pointer = const T*;
     using reference = T&;
     using const_reference = const T&;
-    using const_iterator = IteratorImpl<true>;
-    using iterator = IteratorImpl<false>;
+    using const_iterator = IteratorImpl<IteratorConstness::CONST()>;
+    using iterator = IteratorImpl<IteratorConstness::MUTABLE()>;
     using reverse_iterator = std::reverse_iterator<iterator>;
     using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 

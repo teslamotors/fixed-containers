@@ -1,5 +1,7 @@
 #pragma once
 
+#include "fixed_containers/iterator_utils.hpp"
+
 #include <iterator>
 #include <type_traits>
 #include <utility>
@@ -10,32 +12,34 @@ template <class ConstIterator,
           class MutableIterator,
           class ConstReferenceUnaryFunction,
           class MutableReferenceUnaryFunction,
-          bool IS_CONST>
+          IteratorConstness CONSTNESS>
 class RandomAccessIteratorTransformer
 {
     using Self = RandomAccessIteratorTransformer<ConstIterator,
                                                  MutableIterator,
                                                  ConstReferenceUnaryFunction,
                                                  MutableReferenceUnaryFunction,
-                                                 IS_CONST>;
+                                                 CONSTNESS>;
 
     // Sibling has the same parameters, but different const-ness
     using Sibling = RandomAccessIteratorTransformer<ConstIterator,
                                                     MutableIterator,
                                                     ConstReferenceUnaryFunction,
                                                     MutableReferenceUnaryFunction,
-                                                    !IS_CONST>;
+                                                    !CONSTNESS>;
 
     // Give Sibling access to private members
     friend class RandomAccessIteratorTransformer<ConstIterator,
                                                  MutableIterator,
                                                  ConstReferenceUnaryFunction,
                                                  MutableReferenceUnaryFunction,
-                                                 !IS_CONST>;
+                                                 !CONSTNESS>;
 
-    using IteratorType = std::conditional_t<IS_CONST, ConstIterator, MutableIterator>;
-    using UnaryFunction =
-        std::conditional_t<IS_CONST, ConstReferenceUnaryFunction, MutableReferenceUnaryFunction>;
+    using IteratorType =
+        std::conditional_t<CONSTNESS == IteratorConstness::CONST(), ConstIterator, MutableIterator>;
+    using UnaryFunction = std::conditional_t<CONSTNESS == IteratorConstness::CONST(),
+                                             ConstReferenceUnaryFunction,
+                                             MutableReferenceUnaryFunction>;
 
 public:
     using reference = decltype(std::declval<UnaryFunction>()(*std::declval<IteratorType>()));
@@ -63,8 +67,8 @@ public:
     }
 
     // Mutable iterator needs to be convertible to const iterator
-    template <bool U = IS_CONST, std::enable_if_t<U>...>
     constexpr RandomAccessIteratorTransformer(const Sibling& other) noexcept
+        requires(CONSTNESS == IteratorConstness::CONST())
       : iterator_(other.iterator_)
       , unary_function_(other.unary_function_)
     {
@@ -202,10 +206,11 @@ public:
 // 1) it + 5
 // 2) 5 + it
 // This function allows the latter.
-template <class CIt, class MIt, class ConstF, class MutF, bool IS_CONST>
-constexpr RandomAccessIteratorTransformer<CIt, MIt, ConstF, MutF, IS_CONST> operator+(
-    typename RandomAccessIteratorTransformer<CIt, MIt, ConstF, MutF, IS_CONST>::difference_type off,
-    RandomAccessIteratorTransformer<CIt, MIt, ConstF, MutF, IS_CONST> i)
+template <class CIt, class MIt, class ConstF, class MutF, IteratorConstness CONSTNESS>
+constexpr RandomAccessIteratorTransformer<CIt, MIt, ConstF, MutF, CONSTNESS> operator+(
+    typename RandomAccessIteratorTransformer<CIt, MIt, ConstF, MutF, CONSTNESS>::difference_type
+        off,
+    RandomAccessIteratorTransformer<CIt, MIt, ConstF, MutF, CONSTNESS> i)
 {
     return i + off;
 }
