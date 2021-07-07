@@ -181,6 +181,17 @@ cc_library(
 )
 
 cc_test(
+    name = "concepts_test",
+    srcs = ["test/concepts_test.cpp"],
+    deps = [
+        ":concepts",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
+    ],
+    copts = ["-std=c++20"],
+)
+
+cc_test(
     name = "enum_map_test",
     srcs = ["test/enum_map_test.cpp"],
     deps = [

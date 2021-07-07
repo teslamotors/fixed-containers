@@ -91,4 +91,21 @@ concept TriviallyDestructible = std::is_trivially_destructible_v<T>;
 template <class T>
 concept NotTriviallyDestructible = not TriviallyDestructible<T>;
 
+// The member type `is_transparent` is a convention that indicates to the user that this function
+// object is a transparent function object: it accepts arguments of arbitrary types and uses perfect
+// forwarding, which avoids unnecessary copying and conversion when the function object is used in
+// heterogeneous context, or with rvalue arguments.
+//
+// An example usage is transparent comparators:
+// ```
+// std::map<std::string, int, std::less<void>> my_map{};
+// ```
+// (https://en.cppreference.com/w/cpp/utility/functional/less_void)
+// When using transparent comparators, lookups on this map can happen with
+// `std::string_view` or `const char*` without having to convert them to `std::string`.
+template <class T>
+concept IsTransparent = requires()
+{
+    typename T::is_transparent;
+};
 }  // namespace fixed_containers
