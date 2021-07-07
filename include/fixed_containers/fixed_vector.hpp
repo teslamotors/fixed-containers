@@ -90,13 +90,13 @@ public:
         return std::move(push_back_all(list));
     }
 
-    template <class InputIt>
+    template <std::input_iterator InputIt>
     constexpr FixedVectorBuilder& push_back_all(InputIt first, InputIt last) & noexcept
     {
         vector_.push_back_all(first, last);
         return *this;
     }
-    template <class InputIt>
+    template <std::input_iterator InputIt>
     constexpr FixedVectorBuilder&& push_back_all(InputIt first, InputIt last) && noexcept
     {
         return std::move(push_back_all(first, last));
@@ -317,7 +317,7 @@ public:
         check_target_size(size_ + M, loc);
         this->push_back_all_internal(arr + 0, arr + M);
     }
-    template <class InputIt>
+    template <std::input_iterator InputIt>
     constexpr void push_back_all(InputIt first,
                                  InputIt last,
                                  const std::experimental::source_location& loc =
@@ -675,7 +675,7 @@ private:
         size_++;
     }
 
-    template <class InputIt>
+    template <std::input_iterator InputIt>
     constexpr void push_back_all_internal(InputIt first, InputIt last)
     {
         for (; first != last; ++first)
