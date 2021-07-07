@@ -763,14 +763,19 @@ TEST(Utilities, EnumMap_IteratorAssignment)
         EnumMap<TestEnum1, int> s{{TestEnum1::TWO, 20}, {TestEnum1::FOUR, 40}};
 
         {
-            EnumMap<TestEnum1, int>::const_iterator it = s.cbegin();
+            EnumMap<TestEnum1, int>::const_iterator it;  // Default construction
+            it = s.cbegin();
             assert(it == s.begin());  // Asserts are just to make the value used.
 
             it = s.cend();
             assert(it == s.cend());
 
-            it = s.end();  // Non-const needs to assignable to const
-            assert(it == s.end());
+            {
+                EnumMap<TestEnum1, int>::iterator non_const_it;  // Default construction
+                non_const_it = s.end();
+                it = non_const_it;  // Non-const needs to be assignable to const
+                assert(it == s.end());
+            }
 
             for (it = s.cbegin(); it != s.cend(); it++)
             {
