@@ -488,6 +488,7 @@ public:
     constexpr SkeletalRichEnum& operator=(const SkeletalRichEnum&) noexcept = default;
     constexpr SkeletalRichEnum& operator=(SkeletalRichEnum&&) noexcept = default;
 
+    constexpr const BackingEnum& backing_enum() const { return PRIVATE_backing_enum_.value(); }
     constexpr operator BackingEnum() const { return PRIVATE_backing_enum_.value(); }
 
     constexpr bool operator==(const SkeletalRichEnum& other) const
@@ -526,7 +527,6 @@ protected:
     // Intentionally non-virtual. Polymorphism breaks standard layout.
     constexpr ~SkeletalRichEnum() noexcept = default;
 
-    constexpr const BackingEnum& backing_enum() const { return PRIVATE_backing_enum_.value(); }
     constexpr const EnumData& enum_data() const requires(!std::is_empty_v<EnumData>)
     {
         return PRIVATE_enum_data_;
