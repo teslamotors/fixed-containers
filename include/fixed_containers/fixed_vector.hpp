@@ -993,7 +993,7 @@ using FixedVectorBaseWorkaround =
  * template parameter. Properties:
  *  - constexpr
  *  - retains the properties of T (e.g. if T is trivially copyable, then so is FixedVector<T>)
- *  - no pointers stored (shared memory friendly, can be accessed from different processes)
+ *  - no pointers stored (data layout is purely self-referential and can be serialized directly)
  *  - no dynamic allocations
  */
 template <typename T, std::size_t CAPACITY>

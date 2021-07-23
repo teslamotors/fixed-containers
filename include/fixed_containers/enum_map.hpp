@@ -50,7 +50,7 @@ namespace fixed_containers
  * Fixed-capacity map for enum keys. Properties:
  *  - constexpr
  *  - retains the properties of V (e.g. if T is trivially copyable, then so is EnumMap<K, V>)
- *  - no pointers stored (shared memory friendly, can be accessed from different processes)
+ *  - no pointers stored (data layout is purely self-referential and can be serialized directly)
  *  - no dynamic allocations
  */
 template <class K,
