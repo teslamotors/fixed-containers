@@ -1,5 +1,6 @@
 #pragma once
 
+#include "fixed_containers/concepts.hpp"
 #include "fixed_containers/enum_utils.hpp"
 #include "fixed_containers/index_range_predicate_iterator.hpp"
 
@@ -95,13 +96,13 @@ public:
             return std::move(*this);
         }
 
-        template <std::input_iterator InputIt>
+        template <InputIterator InputIt>
         constexpr Builder& insert(InputIt first, InputIt last) & noexcept
         {
             enum_set_.insert(first, last);
             return *this;
         }
-        template <std::input_iterator InputIt>
+        template <InputIterator InputIt>
         constexpr Builder&& insert(InputIt first, InputIt last) && noexcept
         {
             enum_set_.insert(first, last);
@@ -172,7 +173,7 @@ public:
         insert(list);
     }
 
-    template <std::input_iterator InputIt>
+    template <InputIterator InputIt>
     constexpr EnumSet(InputIt first, InputIt last) noexcept
       : EnumSet()
     {
@@ -222,7 +223,7 @@ public:
     {
         this->insert(list.begin(), list.end());
     }
-    template <std::input_iterator InputIt>
+    template <InputIterator InputIt>
     constexpr void insert(InputIt first, InputIt last) noexcept
     {
         for (; first != last; ++first)

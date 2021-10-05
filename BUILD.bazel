@@ -48,6 +48,7 @@ cc_library(
     hdrs = ["include/fixed_containers/enum_set.hpp"],
     includes = ["include"],
     deps = [
+        ":concepts",
         ":enum_utils",
         ":index_range_predicate_iterator",
     ],

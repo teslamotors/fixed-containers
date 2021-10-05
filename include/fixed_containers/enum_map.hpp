@@ -197,13 +197,13 @@ public:
             return std::move(*this);
         }
 
-        template <std::input_iterator InputIt>
+        template <InputIterator InputIt>
         constexpr Builder& insert(InputIt first, InputIt last) & noexcept
         {
             enum_map_.insert(first, last);
             return *this;
         }
-        template <std::input_iterator InputIt>
+        template <InputIterator InputIt>
         constexpr Builder&& insert(InputIt first, InputIt last) && noexcept
         {
             enum_map_.insert(first, last);
@@ -360,7 +360,7 @@ public:
         return {create_iterator(ordinal), true};
     }
 
-    template <std::input_iterator InputIt>
+    template <InputIterator InputIt>
     constexpr void insert(InputIt first, InputIt last) noexcept
     {
         for (; first != last; ++first)

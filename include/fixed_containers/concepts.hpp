@@ -91,6 +91,12 @@ concept TriviallyDestructible = std::is_trivially_destructible_v<T>;
 template <class T>
 concept NotTriviallyDestructible = not TriviallyDestructible<T>;
 
+// NOTE: this doesn't exactly match https://en.cppreference.com/w/cpp/iterator/input_iterator
+template <class Iterator>
+concept InputIterator =
+    std::is_convertible_v<typename std::iterator_traits<Iterator>::iterator_category,
+                          std::input_iterator_tag>;
+
 // The member type `is_transparent` is a convention that indicates to the user that this function
 // object is a transparent function object: it accepts arguments of arbitrary types and uses perfect
 // forwarding, which avoids unnecessary copying and conversion when the function object is used in

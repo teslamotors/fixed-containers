@@ -91,13 +91,13 @@ public:
         return std::move(push_back_all(list));
     }
 
-    template <std::input_iterator InputIt>
+    template <InputIterator InputIt>
     constexpr FixedVectorBuilder& push_back_all(InputIt first, InputIt last) & noexcept
     {
         vector_.push_back_all(first, last);
         return *this;
     }
-    template <std::input_iterator InputIt>
+    template <InputIterator InputIt>
     constexpr FixedVectorBuilder&& push_back_all(InputIt first, InputIt last) && noexcept
     {
         return std::move(push_back_all(first, last));
@@ -230,7 +230,7 @@ public:
     {
     }
 
-    template <std::input_iterator InputIt>
+    template <InputIterator InputIt>
     constexpr FixedVectorBase(InputIt first,
                               InputIt last,
                               const std::experimental::source_location& loc =
@@ -317,7 +317,7 @@ public:
         check_target_size(size_ + M, loc);
         this->push_back_all_internal(arr + 0, arr + M);
     }
-    template <std::input_iterator InputIt>
+    template <InputIterator InputIt>
     constexpr void push_back_all(InputIt first,
                                  InputIt last,
                                  const std::experimental::source_location& loc =
@@ -378,7 +378,7 @@ public:
         place_at(index, std::move(v));
         return begin() + index;
     }
-    template <std::input_iterator InputIt>
+    template <InputIterator InputIt>
     constexpr iterator insert(const_iterator it,
                               InputIt first,
                               InputIt last,
@@ -426,7 +426,7 @@ public:
     /**
      * Replaces the contents with copies of those in range [first, last)
      */
-    template <std::input_iterator InputIt>
+    template <InputIterator InputIt>
     constexpr void assign(InputIt first,
                           InputIt last,
                           const std::experimental::source_location& loc =
@@ -669,7 +669,7 @@ private:
         size_++;
     }
 
-    template <std::input_iterator InputIt>
+    template <InputIterator InputIt>
     constexpr void push_back_all_internal(InputIt first, InputIt last)
     {
         for (; first != last; ++first)
@@ -852,7 +852,7 @@ public:
       : Base(count, loc)
     {
     }
-    template <std::input_iterator InputIt>
+    template <InputIterator InputIt>
     constexpr FixedVector(InputIt first,
                           InputIt last,
                           const std::experimental::source_location& loc =
@@ -899,7 +899,7 @@ public:
       : Base(count, loc)
     {
     }
-    template <std::input_iterator InputIt>
+    template <InputIterator InputIt>
     constexpr FixedVector(InputIt first,
                           InputIt last,
                           const std::experimental::source_location& loc =
