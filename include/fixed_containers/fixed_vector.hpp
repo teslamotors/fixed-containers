@@ -980,14 +980,6 @@ public:
 
 namespace fixed_containers
 {
-// [WORKAROUND-2] This would be FixedVector directly, there is a bug with downstream tools.
-// Extend this type into FixedVector until that's fixed.
-template <typename T, std::size_t CAPACITY>
-using FixedVectorBaseWorkaround =
-    std::conditional_t<TriviallyCopyable<T>,
-                       fixed_vector_detail::trivially_copyable::FixedVector<T, CAPACITY>,
-                       fixed_vector_detail::non_trivially_copyable::FixedVector<T, CAPACITY>>;
-
 /**
  * Fixed-capacity vector with maximum size that is declared at compile-time via
  * template parameter. Properties:
@@ -997,43 +989,8 @@ using FixedVectorBaseWorkaround =
  *  - no dynamic allocations
  */
 template <typename T, std::size_t CAPACITY>
-class FixedVector : public FixedVectorBaseWorkaround<T, CAPACITY>
-{
-public:
-    using Builder = fixed_vector_detail::FixedVectorBuilder<T, FixedVector<T, CAPACITY>>;
-
-    using Base = FixedVectorBaseWorkaround<T, CAPACITY>;
-
-    constexpr FixedVector() noexcept
-      : Base()
-    {
-    }
-    constexpr FixedVector(std::initializer_list<T> list,
-                          const std::experimental::source_location& loc =
-                              std::experimental::source_location::current()) noexcept
-      : Base(list, loc)
-    {
-    }
-    constexpr FixedVector(std::size_t count,
-                          const T& value,
-                          const std::experimental::source_location& loc =
-                              std::experimental::source_location::current()) noexcept
-      : Base(count, value, loc)
-    {
-    }
-    constexpr explicit FixedVector(std::size_t count,
-                                   const std::experimental::source_location& loc =
-                                       std::experimental::source_location::current()) noexcept
-      : Base(count, loc)
-    {
-    }
-    template <std::input_iterator InputIt>
-    constexpr FixedVector(InputIt first,
-                          InputIt last,
-                          const std::experimental::source_location& loc =
-                              std::experimental::source_location::current()) noexcept
-      : Base(first, last, loc)
-    {
-    }
-};
+using FixedVector =
+    std::conditional_t<TriviallyCopyable<T>,
+                       fixed_vector_detail::trivially_copyable::FixedVector<T, CAPACITY>,
+                       fixed_vector_detail::non_trivially_copyable::FixedVector<T, CAPACITY>>;
 }  // end namespace fixed_containers
