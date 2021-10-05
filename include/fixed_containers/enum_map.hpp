@@ -18,10 +18,12 @@
 namespace fixed_containers::enum_map_customize
 {
 template <class T, class K>
-concept EnumMapChecking = requires(K key, const std::experimental::source_location& loc)
+concept EnumMapChecking = requires(K key,
+                                   std::size_t size,
+                                   const std::experimental::source_location& loc)
 {
     T::missing_enum_entries(loc);
-    T::out_of_range(key, loc);  // ~ std::out_of_range
+    T::out_of_range(key, size, loc);  // ~ std::out_of_range
 };
 
 template <class K, class V>
@@ -36,7 +38,9 @@ struct AbortChecking
     }
 
     [[noreturn]] static constexpr void out_of_range(
-        const K& /*key*/, const std::experimental::source_location& /*loc*/)
+        const K& /*key*/,
+        const std::size_t /*size*/,
+        const std::experimental::source_location& /*loc*/)
     {
         std::abort();
     }
@@ -267,7 +271,7 @@ public:
         const std::size_t ordinal = EnumAdapterType::ordinal(key);
         if (preconditions::test(values_[ordinal].has_value()))
         {
-            CheckingType::out_of_range(key, loc);
+            CheckingType::out_of_range(key, size(), loc);
         }
         return values_[ordinal].value();
     }
@@ -279,7 +283,7 @@ public:
         const std::size_t ordinal = EnumAdapterType::ordinal(key);
         if (preconditions::test(values_[ordinal].has_value()))
         {
-            CheckingType::out_of_range(key, loc);
+            CheckingType::out_of_range(key, size(), loc);
         }
         return values_[ordinal].value();
     }
