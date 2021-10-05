@@ -32,7 +32,7 @@ concept FixedVectorChecking = requires(std::size_t i,
 template <typename T, std::size_t /*CAPACITY*/>
 struct AbortChecking
 {
-    static constexpr auto TYPE_NAME = type_name<T>();
+    static constexpr auto TYPE_NAME = fixed_containers::type_name<T>();
 
     [[noreturn]] static constexpr void out_of_range(
         const std::size_t /*index*/,
@@ -55,7 +55,8 @@ struct AbortChecking
     }
 
     [[noreturn]] static constexpr void invalid_argument(
-        const StringLiteral& /*error_message*/, const std::experimental::source_location& /*loc*/)
+        const fixed_containers::StringLiteral& /*error_message*/,
+        const std::experimental::source_location& /*loc*/)
     {
         std::abort();
     }
