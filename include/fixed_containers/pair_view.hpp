@@ -105,29 +105,29 @@ struct tuple_element<N, const fixed_containers::PairView<K, V>>
 };
 
 template <std::size_t N, class Tp1, class Tp2>
-constexpr typename tuple_element<N, fixed_containers::PairView<Tp1, Tp2>>::type& get(
-    fixed_containers::PairView<Tp1, Tp2>& in) noexcept
+constexpr auto get(fixed_containers::PairView<Tp1, Tp2>& in) noexcept ->
+    typename tuple_element<N, fixed_containers::PairView<Tp1, Tp2>>::type&
 {
     return in.template get<N>();
 }
 
 template <std::size_t N, class Tp1, class Tp2>
-constexpr typename tuple_element<N, fixed_containers::PairView<Tp1, Tp2>>::type&& get(
-    fixed_containers::PairView<Tp1, Tp2>&& in) noexcept
+constexpr auto get(fixed_containers::PairView<Tp1, Tp2>&& in) noexcept ->
+    typename tuple_element<N, fixed_containers::PairView<Tp1, Tp2>>::type&&
 {
     return std::forward<Tp1>(std::move(in).template get<N>());
 }
 
 template <std::size_t N, class Tp1, class Tp2>
-constexpr const typename tuple_element<N, fixed_containers::PairView<Tp1, Tp2>>::type& get(
-    const fixed_containers::PairView<Tp1, Tp2>& in) noexcept
+constexpr auto get(const fixed_containers::PairView<Tp1, Tp2>& in) noexcept -> const
+    typename tuple_element<N, fixed_containers::PairView<Tp1, Tp2>>::type&
 {
     return in.template get<N>();
 }
 
 template <std::size_t N, class Tp1, class Tp2>
-constexpr const typename tuple_element<N, fixed_containers::PairView<Tp1, Tp2>>::type&& get(
-    const fixed_containers::PairView<Tp1, Tp2>&& in) noexcept
+constexpr auto get(const fixed_containers::PairView<Tp1, Tp2>&& in) noexcept -> const
+    typename tuple_element<N, fixed_containers::PairView<Tp1, Tp2>>::type&&
 {
     return std::forward<const Tp1>(std::move(in).template get<N>());
 }
