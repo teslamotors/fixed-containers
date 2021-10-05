@@ -12,6 +12,13 @@ cc_library(
 )
 
 cc_library(
+    name = "consteval_compare",
+    hdrs = ["include/fixed_containers/consteval_compare.hpp"],
+    includes = ["include"],
+    copts = ["-std=c++20"],
+)
+
+cc_library(
     name = "constexpr_support",
     hdrs = ["include/fixed_containers/constexpr_support.hpp"],
     includes = ["include"],
