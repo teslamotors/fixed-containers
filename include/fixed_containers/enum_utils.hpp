@@ -483,6 +483,11 @@ protected:
     }
 
 public:
+    constexpr SkeletalRichEnum(const SkeletalRichEnum&) noexcept = default;
+    constexpr SkeletalRichEnum(SkeletalRichEnum&&) noexcept = default;
+    constexpr SkeletalRichEnum& operator=(const SkeletalRichEnum&) noexcept = default;
+    constexpr SkeletalRichEnum& operator=(SkeletalRichEnum&&) noexcept = default;
+
     constexpr operator BackingEnum() const { return PRIVATE_backing_enum_.value(); }
 
     constexpr bool operator==(const SkeletalRichEnum& other) const
