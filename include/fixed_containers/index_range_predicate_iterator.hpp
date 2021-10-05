@@ -25,36 +25,6 @@ concept IndexBasedProvider = requires(P p, std::size_t i)
 // IndexPredicate is the type of a function that takes an index and
 // returns true if the object at that index in the collection matches the condition of the
 // predicate.
-
-// clang-format off
-// Using std::reverse_iterator fails to compile with the error message below.
-// Only applies to maps, because they leverage operator->
-// Therefore, this class provides native support for reverse iterators.
-// Furthermore, it is faster than std::reverse_iterator as the latter does
-// a copy + decrement on every dereference, whereas this class does not.
-/**
-/workspace/fixed_containers/test/enum_map_test.cpp:807:19: error: static_assert expression is not an integral constant expression
-    static_assert(s1.crbegin()->first() == TestEnum1::FOUR);
-                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/workspace/fixed_containers/test/enum_map_test.cpp:807:33: note: member call on variable whose lifetime has ended
-    static_assert(s1.crbegin()->first() == TestEnum1::FOUR);
-                                ^
-/bin/../lib/gcc/x86_64-linux-gnu/10/../../../../include/c++/10/bits/stl_iterator.h:368:20: note: declared here
-        _S_to_pointer(_Tp __t)
-                          ^
-/workspace/fixed_containers/test/enum_map_test.cpp:808:19: error: static_assert expression is not an integral constant expression
-    static_assert(s1.crbegin()->second() == 10);
-                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/workspace/fixed_containers/test/enum_map_test.cpp:808:33: note: member call on variable whose lifetime has ended
-    static_assert(s1.crbegin()->second() == 10);
-                                ^
-/bin/../lib/gcc/x86_64-linux-gnu/10/../../../../include/c++/10/bits/stl_iterator.h:368:20: note: declared here
-        _S_to_pointer(_Tp __t)
-                          ^
-2 errors generated.
- */
-// clang-format on
-
 template <typename IndexPredicate,
           IndexBasedProvider ConstReferenceProvider,
           IndexBasedProvider MutableReferenceProvider,
