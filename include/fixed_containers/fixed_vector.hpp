@@ -129,8 +129,7 @@ private:
 // FixedVectorBase is only used for avoiding too much duplication for the destructor split
 template <typename T,
           std::size_t CAPACITY,
-          fixed_vector_customize::FixedVectorChecking CheckingType =
-              fixed_vector_customize::AbortChecking<T, CAPACITY>>
+          fixed_vector_customize::FixedVectorChecking CheckingType>
 class FixedVectorBase
 {
     using OptionalT = detail::OptionalStorage<T>;
@@ -603,8 +602,8 @@ public:
     /**
      * Equality.
      */
-    template <std::size_t C>
-    constexpr bool operator==(const FixedVectorBase<T, C>& other) const
+    template <std::size_t C, fixed_vector_customize::FixedVectorChecking CheckingType2>
+    constexpr bool operator==(const FixedVectorBase<T, C, CheckingType2>& other) const
     {
         if constexpr (CAPACITY == C)
         {
@@ -818,13 +817,16 @@ protected:
 
 namespace fixed_containers::fixed_vector_detail::trivially_copyable
 {
-template <typename T, std::size_t CAPACITY>
-class FixedVector : public fixed_vector_detail::FixedVectorBase<T, CAPACITY>
+template <typename T,
+          std::size_t CAPACITY,
+          fixed_vector_customize::FixedVectorChecking CheckingType>
+class FixedVector : public fixed_vector_detail::FixedVectorBase<T, CAPACITY, CheckingType>
 {
-    using Base = fixed_vector_detail::FixedVectorBase<T, CAPACITY>;
+    using Base = fixed_vector_detail::FixedVectorBase<T, CAPACITY, CheckingType>;
 
 public:
-    using Builder = fixed_vector_detail::FixedVectorBuilder<T, FixedVector<T, CAPACITY>>;
+    using Builder =
+        fixed_vector_detail::FixedVectorBuilder<T, FixedVector<T, CAPACITY, CheckingType>>;
 
     constexpr FixedVector() noexcept
       : Base()
@@ -862,13 +864,16 @@ public:
 
 namespace fixed_containers::fixed_vector_detail::non_trivially_copyable
 {
-template <typename T, std::size_t CAPACITY>
-class FixedVector : public fixed_vector_detail::FixedVectorBase<T, CAPACITY>
+template <typename T,
+          std::size_t CAPACITY,
+          fixed_vector_customize::FixedVectorChecking CheckingType>
+class FixedVector : public fixed_vector_detail::FixedVectorBase<T, CAPACITY, CheckingType>
 {
-    using Base = fixed_vector_detail::FixedVectorBase<T, CAPACITY>;
+    using Base = fixed_vector_detail::FixedVectorBase<T, CAPACITY, CheckingType>;
 
 public:
-    using Builder = fixed_vector_detail::FixedVectorBuilder<T, FixedVector<T, CAPACITY>>;
+    using Builder =
+        fixed_vector_detail::FixedVectorBuilder<T, FixedVector<T, CAPACITY, CheckingType>>;
 
     constexpr FixedVector() noexcept
       : Base()
@@ -982,9 +987,12 @@ namespace fixed_containers
  *  - no pointers stored (data layout is purely self-referential and can be serialized directly)
  *  - no dynamic allocations
  */
-template <typename T, std::size_t CAPACITY>
-using FixedVector =
-    std::conditional_t<TriviallyCopyable<T>,
-                       fixed_vector_detail::trivially_copyable::FixedVector<T, CAPACITY>,
-                       fixed_vector_detail::non_trivially_copyable::FixedVector<T, CAPACITY>>;
+template <typename T,
+          std::size_t CAPACITY,
+          fixed_vector_customize::FixedVectorChecking CheckingType =
+              fixed_vector_customize::AbortChecking<T, CAPACITY>>
+using FixedVector = std::conditional_t<
+    TriviallyCopyable<T>,
+    fixed_vector_detail::trivially_copyable::FixedVector<T, CAPACITY, CheckingType>,
+    fixed_vector_detail::non_trivially_copyable::FixedVector<T, CAPACITY, CheckingType>>;
 }  // end namespace fixed_containers
