@@ -2,6 +2,7 @@
 
 #include "fixed_containers/iterator_utils.hpp"
 
+#include <compare>
 #include <iterator>
 #include <type_traits>
 #include <utility>
@@ -146,24 +147,9 @@ public:
         return this->iterator_ == other.iterator_;
     }
 
-    constexpr bool operator<(const Self& other) const noexcept
+    constexpr std::strong_ordering operator<=>(const Self& other) const
     {
-        return this->iterator_ < other.iterator_;
-    }
-
-    constexpr bool operator<=(const Self& other) const noexcept
-    {
-        return this->iterator_ <= other.iterator_;
-    }
-
-    constexpr bool operator>(const Self& other) const noexcept
-    {
-        return this->iterator_ > other.iterator_;
-    }
-
-    constexpr bool operator>=(const Self& other) const noexcept
-    {
-        return this->iterator_ >= other.iterator_;
+        return this->iterator_ <=> other.iterator_;
     }
 
     constexpr bool operator==(const Sibling& other) const noexcept
@@ -171,24 +157,9 @@ public:
         return this->iterator_ == other.iterator_;
     }
 
-    constexpr bool operator<(const Sibling& other) const noexcept
+    constexpr std::strong_ordering operator<=>(const Sibling& other) const
     {
-        return this->iterator_ < other.iterator_;
-    }
-
-    constexpr bool operator<=(const Sibling& other) const noexcept
-    {
-        return this->iterator_ <= other.iterator_;
-    }
-
-    constexpr bool operator>(const Sibling& other) const noexcept
-    {
-        return this->iterator_ > other.iterator_;
-    }
-
-    constexpr bool operator>=(const Sibling& other) const noexcept
-    {
-        return this->iterator_ >= other.iterator_;
+        return this->iterator_ <=> other.iterator_;
     }
 };
 
