@@ -146,11 +146,6 @@ public:
         return this->iterator_ == other.iterator_;
     }
 
-    constexpr bool operator!=(const Self& other) const noexcept
-    {
-        return this->iterator_ != other.iterator_;
-    }
-
     constexpr bool operator<(const Self& other) const noexcept
     {
         return this->iterator_ < other.iterator_;
@@ -174,11 +169,6 @@ public:
     constexpr bool operator==(const Sibling& other) const noexcept
     {
         return this->iterator_ == other.iterator_;
-    }
-
-    constexpr bool operator!=(const Sibling& other) const noexcept
-    {
-        return this->iterator_ != other.iterator_;
     }
 
     constexpr bool operator<(const Sibling& other) const noexcept

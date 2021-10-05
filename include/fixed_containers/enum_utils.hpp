@@ -495,7 +495,6 @@ public:
     {
         return this->PRIVATE_backing_enum_ == other.PRIVATE_backing_enum_;
     }
-    constexpr bool operator!=(const SkeletalRichEnum& other) const { return !(*this == other); }
 
     constexpr const RichEnumType& operator!()
         const requires std::is_same_v<bool, magic_enum::underlying_type_t<BackingEnum>>

@@ -491,11 +491,6 @@ public:
         return values_ == other.values_;
     }
 
-    [[nodiscard]] constexpr bool operator!=(const EnumMap<K, V>& other) const
-    {
-        return !(*this == other);
-    }
-
 private:
     constexpr void touch_if_not_present(const std::size_t ordinal) noexcept requires
         TriviallyMoveAssignable<V> && TriviallyDestructible<V>

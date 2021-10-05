@@ -276,8 +276,6 @@ public:
         return array_set_ == other.array_set_;
     }
 
-    constexpr bool operator!=(const EnumSet<K>& other) const { return !(*this == other); }
-
 private:
     constexpr const_iterator create_const_iterator(const std::size_t start_index) const noexcept
     {

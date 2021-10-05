@@ -158,14 +158,10 @@ public:
         return current_index_ == other.current_index_ && end_index_ == other.end_index_;
     }
 
-    constexpr bool operator!=(const Self& other) const noexcept { return !(*this == other); }
-
     constexpr bool operator==(const Sibling& other) const noexcept
     {
         return current_index_ == other.current_index_ && end_index_ == other.end_index_;
     }
-
-    constexpr bool operator!=(const Sibling& other) const noexcept { return !(*this == other); }
 
 private:
     constexpr void update_reference()

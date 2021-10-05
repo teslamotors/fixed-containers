@@ -630,12 +630,6 @@ public:
         return true;
     }
 
-    template <std::size_t C>
-    constexpr bool operator!=(const FixedVectorBase<T, C>& other) const
-    {
-        return !(*this == other);
-    }
-
 private:
     /*
      * Helper for insert

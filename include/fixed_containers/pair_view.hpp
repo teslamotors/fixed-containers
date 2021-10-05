@@ -60,11 +60,6 @@ public:
         return std::tie(first(), second()) == std::tie(other.first(), other.second());
     }
 
-    [[nodiscard]] constexpr bool operator!=(const PairView<K, V>& other) const
-    {
-        return !(*this == other);
-    }
-
     template <std::size_t N>
     [[nodiscard]] constexpr const auto& get() const
     {
