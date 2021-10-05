@@ -15,8 +15,6 @@ SET(DIAGNOSTIC_FLAGS
         -Wno-c++98-compat-pedantic
         # Re-enable, as it is disabled by the previous one
         -Wc++98-compat-extra-semi
-        # We specifically don't want std::move on return due to RVO
-        -Wno-return-std-move-in-c++11
         # This is failing on the `consteval` keyword for some reason
         -Wno-c++20-compat
         # Need stdlib uprev, as even std::vector triggers this
