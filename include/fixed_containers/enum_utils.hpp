@@ -131,26 +131,31 @@ template <class RichEnum, class BackingEnum>
 static constexpr std::optional<std::reference_wrapper<const RichEnum>> value_of(
     const std::string_view& name)
 {
-    std::optional<BackingEnum> maybe_backing_enum = magic_enum::enum_cast<BackingEnum>(name);
-    if (!maybe_backing_enum)
+    for (const RichEnum& v : RichEnum::values())
     {
-        return std::nullopt;
+        if (v.to_string() == name)
+        {
+            return v;
+        }
     }
 
-    return RichEnum::values()[magic_enum::enum_integer(maybe_backing_enum.value())];
+    return std::nullopt;
 }
 
 template <class RichEnum, class BackingEnum>
 static constexpr std::optional<std::reference_wrapper<const RichEnum>> value_of(
     const BackingEnum& backing_enum)
 {
-    auto maybe_i = magic_enum::enum_index(backing_enum);
-    if (!maybe_i.has_value())
+    // We can't assume that the value of the enum matches its ordinal.
+    for (const RichEnum& v : RichEnum::values())
     {
-        return std::nullopt;
+        if (v.backing_enum() == backing_enum)
+        {
+            return v;
+        }
     }
 
-    return RichEnum::values()[maybe_i.value()];
+    return std::nullopt;
 }
 
 struct EmptyEnumData
@@ -417,10 +422,12 @@ class SkeletalRichEnumValues
     static constexpr auto VALUES = wrap_array(magic_enum::enum_values<BackingEnumType>());
 };
 
+// Does not use magic_enum but doesn't provide full functionality, so users are responsible for
+// providing it.
 template <class RichEnumType,
           class BackingEnumType,
           class EnumValuesType = enums::detail::EnumValuesWithoutData>
-class SkeletalRichEnum
+class SkeletalRichEnumLite
 {
 public:
     using BackingEnum = BackingEnumType;
@@ -431,8 +438,6 @@ protected:
     using ValuesFriend = SkeletalRichEnumValues<RichEnumType>;
 
 public:
-    static constexpr std::size_t count() { return magic_enum::enum_count<BackingEnumType>(); }
-
     static constexpr std::optional<std::reference_wrapper<const RichEnumType>> value_of(
         std::size_t i)
     {
@@ -466,19 +471,95 @@ protected:
     // dedicated enum constant. Does not exclude child-classes from using their own INVALID enum
     // constant.
     // Note that child-classes don't have to provide a default constructor.
-    constexpr SkeletalRichEnum() noexcept = default;
+    constexpr SkeletalRichEnumLite() noexcept = default;
 
-    constexpr SkeletalRichEnum(const BackingEnum& backing_enum) noexcept
+    constexpr SkeletalRichEnumLite(const BackingEnum& backing_enum) noexcept
         requires(std::is_empty_v<EnumData>)
       : PRIVATE_backing_enum_{backing_enum}
       , PRIVATE_enum_data_{}
     {
     }
 
-    constexpr SkeletalRichEnum(const BackingEnum& backing_enum, const EnumData& enum_data) noexcept
+    constexpr SkeletalRichEnumLite(const BackingEnum& backing_enum,
+                                   const EnumData& enum_data) noexcept
         requires(!std::is_empty_v<EnumData>)
       : PRIVATE_backing_enum_{backing_enum}
       , PRIVATE_enum_data_{enum_data}
+    {
+    }
+
+public:
+    constexpr SkeletalRichEnumLite(const SkeletalRichEnumLite&) noexcept = default;
+    constexpr SkeletalRichEnumLite(SkeletalRichEnumLite&&) noexcept = default;
+    constexpr SkeletalRichEnumLite& operator=(const SkeletalRichEnumLite&) noexcept = default;
+    constexpr SkeletalRichEnumLite& operator=(SkeletalRichEnumLite&&) noexcept = default;
+
+    constexpr const BackingEnum& backing_enum() const { return PRIVATE_backing_enum_.value(); }
+    constexpr operator BackingEnum() const { return PRIVATE_backing_enum_.value(); }
+
+    constexpr bool operator==(const SkeletalRichEnumLite& other) const
+    {
+        return this->PRIVATE_backing_enum_ == other.PRIVATE_backing_enum_;
+    }
+    constexpr bool operator!=(const SkeletalRichEnumLite& other) const { return !(*this == other); }
+
+    [[nodiscard]] constexpr bool has_value() const { return PRIVATE_backing_enum_.has_value(); }
+
+protected:
+    // Intentionally non-virtual. Polymorphism breaks standard layout.
+    constexpr ~SkeletalRichEnumLite() noexcept = default;
+
+    constexpr const EnumData& enum_data() const requires(!std::is_empty_v<EnumData>)
+    {
+        return PRIVATE_enum_data_;
+    }
+};
+
+template <class RichEnumType, class BackingEnumType, class EnumValuesType>
+constexpr void SkeletalRichEnumLite<RichEnumType, BackingEnumType, EnumValuesType>::assertions()
+{
+    static_assert(must_be_rich_enum<RichEnumType>);
+}
+
+template <class RichEnumType,
+          class BackingEnumType,
+          class EnumValuesType = enums::detail::EnumValuesWithoutData>
+class SkeletalRichEnum : public SkeletalRichEnumLite<RichEnumType, BackingEnumType, EnumValuesType>
+{
+    using Base = SkeletalRichEnumLite<RichEnumType, BackingEnumType, EnumValuesType>;
+
+public:
+    using BackingEnum = BackingEnumType;
+
+protected:
+    using EnumData = enums::detail::EnumDataType<EnumValuesType>;
+    using EnumValues = EnumValuesType;
+    using ValuesFriend = SkeletalRichEnumValues<RichEnumType>;
+
+public:
+    static constexpr std::size_t count() { return magic_enum::enum_count<BackingEnumType>(); }
+
+private:
+    static constexpr void assertions();
+
+    static constexpr std::string_view INVALID_TO_STRING = "INVALID";
+
+protected:
+    // Default constructor for supporting sentinel value semantics (e.g. INVALID) without a
+    // dedicated enum constant. Does not exclude child-classes from using their own INVALID enum
+    // constant.
+    // Note that child-classes don't have to provide a default constructor.
+    constexpr SkeletalRichEnum() noexcept = default;
+
+    constexpr SkeletalRichEnum(const BackingEnum& backing_enum) noexcept
+        requires(std::is_empty_v<EnumData>)
+      : Base{backing_enum}
+    {
+    }
+
+    constexpr SkeletalRichEnum(const BackingEnum& backing_enum, const EnumData& enum_data) noexcept
+        requires(!std::is_empty_v<EnumData>)
+      : Base{backing_enum, enum_data}
     {
     }
 
@@ -487,14 +568,6 @@ public:
     constexpr SkeletalRichEnum(SkeletalRichEnum&&) noexcept = default;
     constexpr SkeletalRichEnum& operator=(const SkeletalRichEnum&) noexcept = default;
     constexpr SkeletalRichEnum& operator=(SkeletalRichEnum&&) noexcept = default;
-
-    constexpr const BackingEnum& backing_enum() const { return PRIVATE_backing_enum_.value(); }
-    constexpr operator BackingEnum() const { return PRIVATE_backing_enum_.value(); }
-
-    constexpr bool operator==(const SkeletalRichEnum& other) const
-    {
-        return this->PRIVATE_backing_enum_ == other.PRIVATE_backing_enum_;
-    }
 
     constexpr const RichEnumType& operator!()
         const requires std::is_same_v<bool, magic_enum::underlying_type_t<BackingEnum>>
@@ -507,17 +580,15 @@ public:
         return RichEnumType::values()[0];
     }
 
-    [[nodiscard]] constexpr bool has_value() const { return PRIVATE_backing_enum_.has_value(); }
-
     [[nodiscard]] constexpr std::size_t ordinal() const
     {
-        return magic_enum::enum_integer(PRIVATE_backing_enum_.value());
+        return magic_enum::enum_integer(this->PRIVATE_backing_enum_.value());
     }
     [[nodiscard]] constexpr std::string_view to_string() const
     {
-        if (has_value())
+        if (this->has_value())
         {
-            return magic_enum::enum_name(PRIVATE_backing_enum_.value());
+            return magic_enum::enum_name(this->PRIVATE_backing_enum_.value());
         }
         return INVALID_TO_STRING;
     }
@@ -525,11 +596,6 @@ public:
 protected:
     // Intentionally non-virtual. Polymorphism breaks standard layout.
     constexpr ~SkeletalRichEnum() noexcept = default;
-
-    constexpr const EnumData& enum_data() const requires(!std::is_empty_v<EnumData>)
-    {
-        return PRIVATE_enum_data_;
-    }
 };
 
 template <class RichEnumType, class BackingEnumType, class EnumValuesType>
