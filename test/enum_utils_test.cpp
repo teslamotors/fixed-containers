@@ -64,11 +64,9 @@ static_assert(has_matching_count_and_values_size<DefaultValuesTestEnum2>);
 
 static_assert(is_rich_enum<TestRichEnum1>);
 static_assert(is_rich_enum_via_adapter<TestRichEnum1>);
-static_assert(must_be_rich_enum<TestRichEnum1>);
 
 static_assert(!is_rich_enum<NonConformingTestRichEnum1>);
 static_assert(is_rich_enum_via_adapter<NonConformingTestRichEnum1>);
-static_assert(must_be_rich_enum_via_adapter<NonConformingTestRichEnum1>);
 static_assert(has_zero_based_sorted_contiguous_ordinal<NonConformingTestRichEnum1>);
 static_assert(has_matching_count_and_values_size<NonConformingTestRichEnum1>);
 

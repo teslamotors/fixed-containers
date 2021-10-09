@@ -335,47 +335,6 @@ concept is_rich_enum_via_adapter = enums::detail::has_static_sizet_count_void<En
     enums::detail::has_static_std_string_view_to_string_r<EnumAdapter<T>, T> &&
     has_matching_count_and_values_size<T> && has_zero_based_sorted_contiguous_ordinal<T>;
 
-// This will also flag which part failed the check.
-template <class T>
-constexpr bool must_be_rich_enum = []() -> bool
-{
-    static_assert(enums::detail::has_static_sizet_count_void<T>,
-                  "Class must have static function `std::size_t count()`");
-    static_assert(enums::detail::has_static_const_ref_array_values_void<T, T>,
-                  "Class must have static function `const std::array<T, count()>& values()`");
-    static_assert(enums::detail::has_member_sizet_ordinal_void_const<T>,
-                  "Class must have member function `std::size_t ordinal() const`");
-    static_assert(enums::detail::has_member_std_string_view_to_string_void_const<T>,
-                  "Class must have member function `std::string_view to_string() const`");
-    static_assert(has_matching_count_and_values_size<T>,
-                  "The size of the values array must match count()");
-    static_assert(has_zero_based_sorted_contiguous_ordinal<T>,
-                  "Verify that: "
-                  "1) ordinal() returns zero-based and contiguous values"
-                  "2) the values in the values() array are sorted by ordinal");
-    return is_rich_enum<T>;
-}();
-
-template <class T>
-constexpr bool must_be_rich_enum_via_adapter = []() -> bool
-{
-    static_assert(enums::detail::has_static_sizet_count_void<EnumAdapter<T>>,
-                  "Adapter must have static function `std::size_t count()`");
-    static_assert(enums::detail::has_static_const_ref_array_values_void<EnumAdapter<T>, T>,
-                  "Adapter must have static function `std::array<T, count()> values()`");
-    static_assert(enums::detail::has_static_sizet_ordinal_r<EnumAdapter<T>, T>,
-                  "Adapter must have static function `std::size_t ordinal(MyEnum)`");
-    static_assert(enums::detail::has_static_std_string_view_to_string_r<EnumAdapter<T>, T>,
-                  "Adapter must have static function `std::string_view to_string(myEnum)`");
-    static_assert(has_matching_count_and_values_size<T>,
-                  "The size of the values array must match count()");
-    static_assert(has_zero_based_sorted_contiguous_ordinal<T>,
-                  "Verify that: "
-                  "1) ordinal() returns zero-based and contiguous values"
-                  "2) the values in the values() array are sorted by ordinal");
-    return is_rich_enum_via_adapter<T>;
-}();
-
 template <class RichEnumType>
 class SkeletalRichEnumValues
 {
@@ -512,7 +471,7 @@ protected:
 template <class RichEnumType, class BackingEnumType, class EnumValuesType>
 constexpr void SkeletalRichEnumLite<RichEnumType, BackingEnumType, EnumValuesType>::assertions()
 {
-    static_assert(must_be_rich_enum<RichEnumType>);
+    static_assert(is_rich_enum<RichEnumType>);
 }
 
 template <class RichEnumType,
@@ -595,7 +554,7 @@ protected:
 template <class RichEnumType, class BackingEnumType, class EnumValuesType>
 constexpr void SkeletalRichEnum<RichEnumType, BackingEnumType, EnumValuesType>::assertions()
 {
-    static_assert(must_be_rich_enum<RichEnumType>);
+    static_assert(is_rich_enum<RichEnumType>);
 }
 
 template <class RichEnumType,
