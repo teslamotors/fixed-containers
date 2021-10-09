@@ -7,7 +7,7 @@
 #include <cstddef>
 #include <type_traits>
 
-namespace fixed_containers
+namespace fixed_containers::enums
 {
 enum class CustomValuesTestEnum1
 {
@@ -225,4 +225,4 @@ TEST(Utilities, RichEnum_BoolNegate)
     }
 }
 
-}  // namespace fixed_containers
+}  // namespace fixed_containers::enums

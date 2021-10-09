@@ -74,7 +74,7 @@ public:
 
 private:
     using Checking = CheckingType;
-    using EnumAdapterType = EnumAdapter<K>;
+    using EnumAdapterType = enums::EnumAdapter<K>;
     static constexpr std::size_t ENUM_COUNT = EnumAdapterType::count();
     using KeyArrayType = std::array<K, ENUM_COUNT>;
     using ValueArrayType = std::array<std::optional<V>, ENUM_COUNT>;

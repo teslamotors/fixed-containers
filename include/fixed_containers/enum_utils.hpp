@@ -221,7 +221,7 @@ public:
         return enums::detail::backing_to_rich(values(), BackingEnum::CONSTANT_NAME); \
     }
 
-namespace fixed_containers
+namespace fixed_containers::enums
 {
 using enums::detail::IsSortedAndContiguousWithOffset;
 template <class T>
@@ -589,4 +589,4 @@ protected:
     }
 };
 
-}  // namespace fixed_containers
+}  // namespace fixed_containers::enums

@@ -35,7 +35,7 @@ public:
     using pointer = const_pointer;
 
 private:
-    using EnumAdapterType = EnumAdapter<K>;
+    using EnumAdapterType = enums::EnumAdapter<K>;
     static constexpr std::size_t ENUM_COUNT = EnumAdapterType::count();
     using KeyArrayType = std::array<K, ENUM_COUNT>;
     static constexpr const KeyArrayType& ENUM_VALUES = EnumAdapterType::values();

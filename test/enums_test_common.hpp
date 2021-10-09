@@ -9,7 +9,7 @@
 #include <cstddef>
 #include <string_view>
 
-namespace fixed_containers
+namespace fixed_containers::enums
 {
 enum class TestEnum1
 {
@@ -292,4 +292,4 @@ constexpr const std::array<TestRichEnumBool, TestRichEnumBool::count()>& TestRic
     return SkeletalRichEnumValues<TestRichEnumBool>::VALUES;
 }
 
-}  // namespace fixed_containers
+}  // namespace fixed_containers::enums

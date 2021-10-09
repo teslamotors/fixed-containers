@@ -14,7 +14,7 @@ enum class IteratorConstness_BackingEnum : bool
 }  // namespace detail
 
 class IteratorConstness
-  : public SkeletalRichEnum<IteratorConstness, detail::IteratorConstness_BackingEnum>
+  : public enums::SkeletalRichEnum<IteratorConstness, detail::IteratorConstness_BackingEnum>
 {
     friend SkeletalRichEnum::ValuesFriend;
     using SkeletalRichEnum::SkeletalRichEnum;
@@ -29,7 +29,7 @@ public:
 constexpr const std::array<IteratorConstness, IteratorConstness::count()>&
 IteratorConstness::values()
 {
-    return SkeletalRichEnumValues<IteratorConstness>::VALUES;
+    return enums::SkeletalRichEnumValues<IteratorConstness>::VALUES;
 }
 
 namespace detail
@@ -86,7 +86,7 @@ declared here _S_to_pointer(_Tp __t)
 // a copy + decrement on every dereference, whereas a non-wrapper doesn't need to do that.
 // clang-format off
 class IteratorDirection
-  : public SkeletalRichEnum<IteratorDirection, detail::IteratorDirection_BackingEnum>
+  : public enums::SkeletalRichEnum<IteratorDirection, detail::IteratorDirection_BackingEnum>
 {
     friend SkeletalRichEnum::ValuesFriend;
     using SkeletalRichEnum::SkeletalRichEnum;
@@ -101,7 +101,7 @@ public:
 constexpr const std::array<IteratorDirection, IteratorDirection::count()>&
 IteratorDirection::values()
 {
-    return SkeletalRichEnumValues<IteratorDirection>::VALUES;
+    return enums::SkeletalRichEnumValues<IteratorDirection>::VALUES;
 }
 
 }  // namespace fixed_containers
