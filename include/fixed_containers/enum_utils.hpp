@@ -12,40 +12,10 @@
 
 namespace fixed_containers::enums::detail
 {
-struct IsSortedAndContiguousWithOffset
-{
-    bool is_sorted_and_contiguous;
-    std::size_t offset;
-};
-
-template <class T, std::size_t ENUM_COUNT, class INDEX_PROVIDER>
-constexpr IsSortedAndContiguousWithOffset has_sorted_contiguous_index(
-    const std::array<T, ENUM_COUNT>& values, INDEX_PROVIDER index_provider)
-{
-    std::size_t offset = index_provider(values[0]);
-    for (size_t i = 0; i < values.size(); i++)
-    {
-        const std::size_t index = index_provider(values[i]);
-        if (index - offset != i)
-        {
-            return {false, ENUM_COUNT};
-        }
-    }
-
-    return {true, offset};
-}
-
-template <class T, std::size_t ENUM_COUNT, class INDEX_PROVIDER>
-constexpr bool has_zero_based_sorted_contiguous_index(const std::array<T, ENUM_COUNT>& values,
-                                                      INDEX_PROVIDER index_provider)
-{
-    auto ret = has_sorted_contiguous_index(values, index_provider);
-    return ret.is_sorted_and_contiguous && ret.offset == 0;
-}
 template <class T>
-struct magic_enum_to_index
+concept has_enum_typename = requires()
 {
-    constexpr std::size_t operator()(const T& key) { return magic_enum::enum_integer(key); }
+    typename T::Enum;
 };
 
 template <typename T>
@@ -72,12 +42,12 @@ concept has_static_sizet_count_void = requires()
         } -> std::same_as<std::size_t>;
 };
 
-template <typename T, typename R>
+template <typename T, typename EnumType, std::size_t ENTRY_COUNT>
 concept has_static_const_ref_array_values_void = requires()
 {
     {
         T::values()
-        } -> std::same_as<const std::array<R, T::count()>&>;
+        } -> std::same_as<const std::array<EnumType, ENTRY_COUNT>&>;
 };
 
 template <typename T, typename R>
@@ -96,11 +66,65 @@ concept has_static_sizet_ordinal_r = requires(const R r)
         } -> std::same_as<std::size_t>;
 };
 
-template <class T, std::size_t ENUM_COUNT>
-constexpr bool has_matching_count_and_values_size(const std::array<T, ENUM_COUNT>& values)
+template <class T>
+concept is_enum = std::is_enum_v<T>;
+
+template <is_enum T>
+struct EnumOrdinalFunctor
 {
-    return values.size() == ENUM_COUNT;
+    constexpr std::size_t operator()(const T& key) const
+    {
+        return magic_enum::enum_index(key).value();
+    }
+};
+
+template <has_member_sizet_ordinal_void_const T>
+struct RichEnumOrdinalFunctor
+{
+    constexpr std::size_t operator()(const T& key) const { return key.ordinal(); }
+};
+
+template <class T>
+requires has_enum_typename<T> && has_static_sizet_ordinal_r<T, typename T::Enum>
+struct RichEnumAdapterOrdinalFunctor
+{
+    using K = typename T::Enum;
+    constexpr std::size_t operator()(const K& key) const { return T::ordinal(key); }
+};
+
+template <class ValuesArray, class OrdinalProvider>
+constexpr bool has_zero_based_and_sorted_contiguous_ordinal(const ValuesArray& values_array,
+                                                            const OrdinalProvider& ordinal)
+{
+    for (std::size_t i = 0; i < values_array.size(); i++)
+    {
+        if (ordinal(values_array[i]) != i)
+        {
+            return false;
+        }
+    }
+    return true;
 }
+
+template <is_enum T>
+constexpr bool has_zero_based_and_sorted_contiguous_ordinal()
+{
+    return has_zero_based_and_sorted_contiguous_ordinal(magic_enum::enum_values<T>(),
+                                                        detail::EnumOrdinalFunctor<T>{});
+}
+
+template <class T>
+concept is_rich_enum = has_static_sizet_count_void<T> &&
+    has_static_const_ref_array_values_void<T, T, T::count()> &&
+    has_member_sizet_ordinal_void_const<T> && has_member_std_string_view_to_string_void_const<T> &&
+    has_zero_based_and_sorted_contiguous_ordinal(T::values(), RichEnumOrdinalFunctor<T>{});
+
+template <class T>
+concept is_enum_adapter = has_enum_typename<T> && has_static_sizet_count_void<T> &&
+    has_static_const_ref_array_values_void<T, typename T::Enum, T::count()> &&
+    has_static_sizet_ordinal_r<T, typename T::Enum> &&
+    has_static_std_string_view_to_string_r<T, typename T::Enum> &&
+    has_zero_based_and_sorted_contiguous_ordinal(T::values(), RichEnumAdapterOrdinalFunctor<T>{});
 
 template <class RICH_ENUM, class BACKING_ENUM>
 static constexpr const RICH_ENUM& backing_to_rich(
@@ -223,22 +247,14 @@ public:
 
 namespace fixed_containers::enums
 {
-using enums::detail::IsSortedAndContiguousWithOffset;
 template <class T>
-constexpr IsSortedAndContiguousWithOffset is_enum_with_sorted_contiguous_index = []()
-{
-    static_assert(std::is_enum_v<T>);
-    return enums::detail::has_sorted_contiguous_index<T, magic_enum::enum_count<T>()>(
-        magic_enum::enum_values<T>(), enums::detail::magic_enum_to_index<T>{});
-}();
+concept is_enum = detail::is_enum<T>;
 
 template <class T>
-concept is_enum_with_zero_based_sorted_contiguous_index = []()
-{
-    static_assert(std::is_enum_v<T>);
-    return enums::detail::has_zero_based_sorted_contiguous_index<T, magic_enum::enum_count<T>()>(
-        magic_enum::enum_values<T>(), enums::detail::magic_enum_to_index<T>{});
-}();
+concept is_rich_enum = detail::is_rich_enum<T>;
+
+template <class T>
+concept is_enum_adapter = detail::is_enum_adapter<T>;
 
 /**
  * Adapter for builtin `enum`s and `enum class`es, i.e. types that meet the std::is_enum
@@ -256,6 +272,7 @@ struct BuiltinEnumAdapter
 {
     static_assert(std::is_enum_v<T>);
 
+    using Enum = T;
     static constexpr std::size_t count() { return magic_enum::enum_count<T>(); }
     static constexpr const std::array<T, count()>& values() { return magic_enum::enum_values<T>(); }
     static constexpr std::size_t ordinal(const T& key)
@@ -277,29 +294,7 @@ struct BuiltinEnumAdapter
 template <class T>
 struct RichEnumAdapter
 {
-    static_assert(
-        enums::detail::has_static_sizet_count_void<T>,
-        "Class needs to have a public static function `std::size_t count()`. To use a different "
-        "function, specialize RichEnumAdapter<K>");
-    static_assert(enums::detail::has_static_sizet_count_void<T>,
-                  "Class needs to have a public static function `std::array<T, "
-                  "count()> values()`. "
-                  "To use a different function, specialize RichEnumAdapter<K>");
-    static_assert(enums::detail::has_member_sizet_ordinal_void_const<T>,
-                  "Class needs to have a public function `std::size_t ordinal() const`. To use a "
-                  "different function, specialize RichEnumAdapter<K>");
-    static_assert(
-        enums::detail::has_member_std_string_view_to_string_void_const<T>,
-        "Class needs to have a public function `std::string_view to_string() const`. To use a "
-        "different function, specialize RichEnumAdapter<K>");
-    static_assert(enums::detail::has_matching_count_and_values_size<T, T::count()>(T::values()),
-                  "The size of the values array must match count()");
-    static_assert(enums::detail::has_zero_based_sorted_contiguous_index<T, T::count()>(
-                      T::values(), [](const T& key) { return key.ordinal(); }),
-                  "Verify that: "
-                  "1) ordinal() returns zero-based and contiguous values"
-                  "2) the values in the values() array are sorted by ordinal");
-
+    using Enum = T;
     static constexpr std::size_t count() { return T::count(); }
     static constexpr const std::array<T, count()>& values() { return T::values(); }
     static constexpr std::size_t ordinal(const T& key) { return key.ordinal(); }
@@ -311,29 +306,7 @@ using EnumAdapter =
     std::conditional_t<std::is_enum_v<T>, BuiltinEnumAdapter<T>, RichEnumAdapter<T>>;
 
 template <class T>
-concept has_matching_count_and_values_size = enums::detail::has_matching_count_and_values_size < T,
-        EnumAdapter<T>::count()
-> (EnumAdapter<T>::values());
-
-template <class T>
-concept has_zero_based_sorted_contiguous_ordinal =
-    enums::detail::has_zero_based_sorted_contiguous_index < T,
-        EnumAdapter<T>::count()
-> (EnumAdapter<T>::values(), [](const T& key) { return EnumAdapter<T>::ordinal(key); });
-
-template <class T>
-concept is_rich_enum = enums::detail::has_static_sizet_count_void<T> &&
-    enums::detail::has_static_const_ref_array_values_void<T, T> &&
-    enums::detail::has_member_sizet_ordinal_void_const<T> &&
-    enums::detail::has_member_std_string_view_to_string_void_const<T> &&
-    has_matching_count_and_values_size<T> && has_zero_based_sorted_contiguous_ordinal<T>;
-
-template <class T>
-concept is_rich_enum_via_adapter = enums::detail::has_static_sizet_count_void<EnumAdapter<T>> &&
-    enums::detail::has_static_const_ref_array_values_void<EnumAdapter<T>, T> &&
-    enums::detail::has_static_sizet_ordinal_r<EnumAdapter<T>, T> &&
-    enums::detail::has_static_std_string_view_to_string_r<EnumAdapter<T>, T> &&
-    has_matching_count_and_values_size<T> && has_zero_based_sorted_contiguous_ordinal<T>;
+concept has_enum_adapter = std::is_class_v<EnumAdapter<T>> && is_enum_adapter<EnumAdapter<T>>;
 
 template <class RichEnumType>
 class SkeletalRichEnumValues

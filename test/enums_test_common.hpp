@@ -182,6 +182,7 @@ NonConformingTestRichEnum1::all_values()
 template <>
 struct RichEnumAdapter<NonConformingTestRichEnum1>
 {
+    using Enum = NonConformingTestRichEnum1;
     static constexpr std::size_t count() { return NonConformingTestRichEnum1::size(); }
 
     static constexpr const std::array<NonConformingTestRichEnum1, 2>& values()

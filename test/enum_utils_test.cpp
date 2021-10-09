@@ -24,10 +24,8 @@ enum class DefaultValuesTestEnum2
     THREE,
     FOUR,
 };
-static_assert(is_enum_with_zero_based_sorted_contiguous_index<DefaultValuesTestEnum2>);
-static_assert(
-    is_enum_with_sorted_contiguous_index<DefaultValuesTestEnum2>.is_sorted_and_contiguous);
-static_assert(is_rich_enum_via_adapter<DefaultValuesTestEnum2>);
+
+static_assert(has_enum_adapter<DefaultValuesTestEnum2>);
 
 enum class UnsortedContiguousValuesTestEnum3
 {
@@ -36,9 +34,6 @@ enum class UnsortedContiguousValuesTestEnum3
     FOUR = 14,
     THREE = 13,
 };
-static_assert(!is_enum_with_zero_based_sorted_contiguous_index<UnsortedContiguousValuesTestEnum3>);
-static_assert(
-    is_enum_with_sorted_contiguous_index<UnsortedContiguousValuesTestEnum3>.is_sorted_and_contiguous);
 
 enum class SortedContiguousValuesTestEnum4
 {
@@ -47,32 +42,25 @@ enum class SortedContiguousValuesTestEnum4
     THREE = 13,
     FOUR = 14,
 };
-static_assert(
-    is_enum_with_sorted_contiguous_index<SortedContiguousValuesTestEnum4>.is_sorted_and_contiguous);
 
 static_assert(std::is_trivially_copyable_v<TestRichEnum1>);
 static_assert(!std::is_trivial_v<TestRichEnum1>);
 static_assert(std::is_standard_layout_v<TestRichEnum1>);
 
 static_assert(!is_rich_enum<CustomValuesTestEnum1>);
-static_assert(has_zero_based_sorted_contiguous_ordinal<CustomValuesTestEnum1>);
-static_assert(has_matching_count_and_values_size<CustomValuesTestEnum1>);
+static_assert(detail::has_zero_based_and_sorted_contiguous_ordinal<CustomValuesTestEnum1>());
 
 static_assert(!is_rich_enum<DefaultValuesTestEnum2>);
-static_assert(has_zero_based_sorted_contiguous_ordinal<DefaultValuesTestEnum2>);
-static_assert(has_matching_count_and_values_size<DefaultValuesTestEnum2>);
+static_assert(detail::has_zero_based_and_sorted_contiguous_ordinal<DefaultValuesTestEnum2>());
 
 static_assert(is_rich_enum<TestRichEnum1>);
-static_assert(is_rich_enum_via_adapter<TestRichEnum1>);
+static_assert(has_enum_adapter<TestRichEnum1>);
 
 static_assert(!is_rich_enum<NonConformingTestRichEnum1>);
-static_assert(is_rich_enum_via_adapter<NonConformingTestRichEnum1>);
-static_assert(has_zero_based_sorted_contiguous_ordinal<NonConformingTestRichEnum1>);
-static_assert(has_matching_count_and_values_size<NonConformingTestRichEnum1>);
-
-static_assert(has_zero_based_sorted_contiguous_ordinal<DefaultValuesTestEnum2>);
-static_assert(has_zero_based_sorted_contiguous_ordinal<UnsortedContiguousValuesTestEnum3>);
-static_assert(has_zero_based_sorted_contiguous_ordinal<SortedContiguousValuesTestEnum4>);
+static_assert(has_enum_adapter<NonConformingTestRichEnum1>);
+static_assert(detail::has_zero_based_and_sorted_contiguous_ordinal(
+    NonConformingTestRichEnum1::all_values(),
+    [](const NonConformingTestRichEnum1& key) { return key.index(); }));
 
 TEST(Utilities, BuiltinEnumAdapter_Ordinal)
 {
