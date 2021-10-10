@@ -137,7 +137,7 @@ constexpr std::optional<std::reference_wrapper<const RichEnum>> value_of(std::si
     return RichEnum::values()[i];
 }
 
-template <class RichEnum, class BackingEnum>
+template <class RichEnum>
 static constexpr std::optional<std::reference_wrapper<const RichEnum>> value_of(
     const std::string_view& name)
 {
@@ -383,7 +383,7 @@ public:
     static constexpr std::optional<std::reference_wrapper<const RichEnumType>> value_of(
         const std::string_view& name)
     {
-        return rich_enums::detail::value_of<RichEnumType, BackingEnum>(name);
+        return rich_enums::detail::value_of<RichEnumType>(name);
     }
 
     static constexpr std::optional<std::reference_wrapper<const RichEnumType>> value_of(
