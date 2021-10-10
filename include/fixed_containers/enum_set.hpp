@@ -4,11 +4,9 @@
 #include "fixed_containers/enum_utils.hpp"
 #include "fixed_containers/index_range_predicate_iterator.hpp"
 
-#include <algorithm>
 #include <array>
 #include <cassert>
 #include <cstddef>
-#include <functional>
 #include <initializer_list>
 
 namespace fixed_containers
@@ -160,10 +158,12 @@ public:
 private:
     // std::bitset is not sufficiently constexpr to use here, using a std::array instead.
     std::array<bool, ENUM_COUNT> array_set_;
+    std::size_t size_;
 
 public:
     constexpr EnumSet() noexcept
       : array_set_()
+      , size_{}
     {
     }
 
@@ -197,17 +197,20 @@ public:
     constexpr const_reverse_iterator rbegin() const noexcept { return crbegin(); }
     constexpr const_reverse_iterator rend() const noexcept { return crend(); }
 
-    [[nodiscard]] constexpr bool empty() const noexcept
-    {
-        return std::none_of(array_set_.cbegin(), array_set_.cend(), std::identity{});
-    }
+    [[nodiscard]] constexpr bool empty() const noexcept { return size_ == 0; }
 
-    [[nodiscard]] constexpr std::size_t size() const noexcept
-    {
-        return std::count(array_set_.cbegin(), array_set_.cend(), true);
-    }
+    [[nodiscard]] constexpr std::size_t size() const noexcept { return size_; }
 
-    constexpr void clear() noexcept { std::fill(array_set_.begin(), array_set_.end(), false); }
+    constexpr void clear() noexcept
+    {
+        for (std::size_t i = 0; i < array_set_.size(); i++)
+        {
+            if (array_set_[i])
+            {
+                reset_at(i);
+            }
+        }
+    }
     constexpr std::pair<const_iterator, bool> insert(const K& key) noexcept
     {
         const std::size_t ordinal = EnumAdapterType::ordinal(key);
@@ -216,6 +219,7 @@ public:
             return {create_const_iterator(ordinal), false};
         }
 
+        size_++;
         array_set_[EnumAdapterType::ordinal(key)] = true;
         return {create_const_iterator(ordinal), true};
     }
@@ -249,7 +253,10 @@ public:
 
         for (std::size_t i = from; i < to; i++)
         {
-            reset_at(i);
+            if (array_set_[i])
+            {
+                reset_at(i);
+            }
         }
 
         return create_const_iterator(to);
@@ -295,7 +302,12 @@ private:
         return array_set_[i];
     }
 
-    constexpr void reset_at(const std::size_t i) noexcept { array_set_[i] = false; }
+    constexpr void reset_at(const std::size_t i) noexcept
+    {
+        assert(array_set_[i]);
+        array_set_[i] = false;
+        size_--;
+    }
 };
 
 }  // namespace fixed_containers

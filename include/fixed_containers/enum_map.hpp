@@ -9,11 +9,9 @@
 #include "fixed_containers/preconditions.hpp"
 #include "fixed_containers/type_name.hpp"
 
-#include <algorithm>
 #include <array>
 #include <cassert>
 #include <cstddef>
-#include <functional>
 #include <initializer_list>
 #include <type_traits>
 
@@ -230,11 +228,13 @@ public:
 protected:  // [WORKAROUND-1] - Needed by the non-trivially-copyable flavor of EnumMap
     ValueArrayType values_;
     std::array<bool, ENUM_COUNT> array_set_;
+    std::size_t size_;
 
 public:
     constexpr EnumMapBase() noexcept
       : values_{}
       , array_set_{}
+      , size_{}
     {
     }
 
@@ -301,15 +301,9 @@ public:
         return create_const_reverse_iterator(0);
     }
 
-    [[nodiscard]] constexpr bool empty() const noexcept
-    {
-        return std::none_of(array_set_.cbegin(), array_set_.cend(), std::identity{});
-    }
+    [[nodiscard]] constexpr bool empty() const noexcept { return size_ == 0; }
 
-    [[nodiscard]] constexpr std::size_t size() const noexcept
-    {
-        return std::count_if(array_set_.cbegin(), array_set_.cend(), std::identity{});
-    }
+    [[nodiscard]] constexpr std::size_t size() const noexcept { return size_; }
 
     constexpr void clear() noexcept
     {
@@ -329,6 +323,7 @@ public:
             return {create_iterator(ordinal), false};
         }
 
+        size_++;
         array_set_[ordinal] = true;
         constexpr_support::emplace(values_[ordinal], value.second);
         return {create_iterator(ordinal), true};
@@ -341,6 +336,7 @@ public:
             return {create_iterator(ordinal), false};
         }
 
+        size_++;
         array_set_[ordinal] = true;
         constexpr_support::emplace(values_[ordinal], std::move(value.second));
         return {create_iterator(ordinal), true};
@@ -365,7 +361,11 @@ public:
     {
         const std::size_t ordinal = EnumAdapterType::ordinal(key);
         const bool is_insertion = !array_set_[ordinal];
-        array_set_[ordinal] = true;
+        if (is_insertion)
+        {
+            size_++;
+            array_set_[ordinal] = true;
+        }
         values_[ordinal] = std::forward<M>(obj);
         return {create_iterator(ordinal), is_insertion};
     }
@@ -385,6 +385,7 @@ public:
             return {create_iterator(ordinal), false};
         }
 
+        size_++;
         array_set_[ordinal] = true;
         constexpr_support::emplace(values_[ordinal], std::forward<Args>(args)...);
         return {create_iterator(ordinal), true};
@@ -509,6 +510,7 @@ private:
             return;
         }
 
+        size_++;
         array_set_[ordinal] = true;
         constexpr_support::emplace(values_[ordinal], V{});
     }
@@ -548,6 +550,7 @@ private:
         assert(array_set_[i]);
         constexpr_support::destroy(values_[i].value);
         array_set_[i] = false;
+        size_--;
     }
 };
 }  // namespace fixed_containers::enum_map_detail
@@ -651,6 +654,7 @@ public:
       : EnumMap()
     {
         this->array_set_ = other.array_set_;
+        this->size_ = other.size_;
         for (std::size_t i = 0; i < Base::ENUM_COUNT; i++)
         {
             if (this->array_set_[i])
@@ -663,6 +667,7 @@ public:
       : EnumMap()
     {
         this->array_set_ = other.array_set_;
+        this->size_ = other.size_;
         for (std::size_t i = 0; i < Base::ENUM_COUNT; i++)
         {
             if (this->array_set_[i])
@@ -683,6 +688,7 @@ public:
 
         this->clear();
         this->array_set_ = other.array_set_;
+        this->size_ = other.size_;
         for (std::size_t i = 0; i < Base::ENUM_COUNT; i++)
         {
             if (this->array_set_[i])
@@ -701,6 +707,7 @@ public:
 
         this->clear();
         this->array_set_ = other.array_set_;
+        this->size_ = other.size_;
         for (std::size_t i = 0; i < Base::ENUM_COUNT; i++)
         {
             if (this->array_set_[i])
