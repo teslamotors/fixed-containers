@@ -588,14 +588,7 @@ public:
         return Base::template create_with_all_entries<Self>(pairs, loc);
     }
 
-    constexpr EnumMap() noexcept
-      : Base()
-    {
-    }
-    constexpr EnumMap(std::initializer_list<value_type> list) noexcept
-      : Base(list)
-    {
-    }
+    using Base::Base;
 };
 }  // namespace fixed_containers::enum_map_detail::trivially_copyable
 
@@ -632,14 +625,7 @@ public:
         return Base::template create_with_all_entries<Self>(pairs, loc);
     }
 
-    constexpr EnumMap() noexcept
-      : Base()
-    {
-    }
-    constexpr EnumMap(std::initializer_list<value_type> list) noexcept
-      : Base(list)
-    {
-    }
+    using Base::Base;
 
     constexpr EnumMap(const EnumMap& other) requires TriviallyCopyConstructible<V>
     = default;

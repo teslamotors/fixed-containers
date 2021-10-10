@@ -829,37 +829,7 @@ public:
     using Builder =
         fixed_vector_detail::FixedVectorBuilder<T, FixedVector<T, CAPACITY, CheckingType>>;
 
-    constexpr FixedVector() noexcept
-      : Base()
-    {
-    }
-    constexpr FixedVector(std::initializer_list<T> list,
-                          const std::experimental::source_location& loc =
-                              std::experimental::source_location::current()) noexcept
-      : Base(list, loc)
-    {
-    }
-    constexpr FixedVector(std::size_t count,
-                          const T& value,
-                          const std::experimental::source_location& loc =
-                              std::experimental::source_location::current()) noexcept
-      : Base(count, value, loc)
-    {
-    }
-    constexpr explicit FixedVector(std::size_t count,
-                                   const std::experimental::source_location& loc =
-                                       std::experimental::source_location::current()) noexcept
-      : Base(count, loc)
-    {
-    }
-    template <InputIterator InputIt>
-    constexpr FixedVector(InputIt first,
-                          InputIt last,
-                          const std::experimental::source_location& loc =
-                              std::experimental::source_location::current()) noexcept
-      : Base(first, last, loc)
-    {
-    }
+    using Base::Base;
 };
 }  // namespace fixed_containers::fixed_vector_detail::trivially_copyable
 
@@ -876,37 +846,7 @@ public:
     using Builder =
         fixed_vector_detail::FixedVectorBuilder<T, FixedVector<T, CAPACITY, CheckingType>>;
 
-    constexpr FixedVector() noexcept
-      : Base()
-    {
-    }
-    constexpr FixedVector(std::initializer_list<T> list,
-                          const std::experimental::source_location& loc =
-                              std::experimental::source_location::current()) noexcept
-      : Base(list, loc)
-    {
-    }
-    constexpr FixedVector(std::size_t count,
-                          const T& value,
-                          const std::experimental::source_location& loc =
-                              std::experimental::source_location::current()) noexcept
-      : Base(count, value, loc)
-    {
-    }
-    constexpr explicit FixedVector(std::size_t count,
-                                   const std::experimental::source_location& loc =
-                                       std::experimental::source_location::current()) noexcept
-      : Base(count, loc)
-    {
-    }
-    template <InputIterator InputIt>
-    constexpr FixedVector(InputIt first,
-                          InputIt last,
-                          const std::experimental::source_location& loc =
-                              std::experimental::source_location::current()) noexcept
-      : Base(first, last, loc)
-    {
-    }
+    using Base::Base;
 
     constexpr FixedVector(const FixedVector& other) requires TriviallyCopyConstructible<T>
     = default;
