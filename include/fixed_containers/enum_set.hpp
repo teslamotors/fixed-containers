@@ -120,6 +120,17 @@ public:
             return std::move(*this);
         }
 
+        constexpr Builder& erase(const K& key) & noexcept
+        {
+            enum_set_.erase(key);
+            return *this;
+        }
+        constexpr Builder&& erase(const K& key) && noexcept
+        {
+            enum_set_.erase(key);
+            return std::move(*this);
+        }
+
         constexpr EnumSet<K> build() const& { return enum_set_; }
         constexpr EnumSet<K> build() && { return std::move(enum_set_); }
 
