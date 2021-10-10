@@ -9,6 +9,81 @@
 #include <cstddef>
 #include <initializer_list>
 
+namespace fixed_containers::enum_set_detail
+{
+template <class K, class EnumSetType>
+class EnumSetBuilder
+{
+public:
+    constexpr EnumSetBuilder() {}
+
+    constexpr EnumSetBuilder& insert(const K& key) & noexcept
+    {
+        enum_set_.insert(key);
+        return *this;
+    }
+    constexpr EnumSetBuilder&& insert(const K& key) && noexcept
+    {
+        enum_set_.insert(key);
+        return std::move(*this);
+    }
+
+    constexpr EnumSetBuilder& insert(std::initializer_list<K> list) & noexcept
+    {
+        enum_set_.insert(list);
+        return *this;
+    }
+    constexpr EnumSetBuilder&& insert(std::initializer_list<K> list) && noexcept
+    {
+        enum_set_.insert(list);
+        return std::move(*this);
+    }
+
+    template <InputIterator InputIt>
+    constexpr EnumSetBuilder& insert(InputIt first, InputIt last) & noexcept
+    {
+        enum_set_.insert(first, last);
+        return *this;
+    }
+    template <InputIterator InputIt>
+    constexpr EnumSetBuilder&& insert(InputIt first, InputIt last) && noexcept
+    {
+        enum_set_.insert(first, last);
+        return std::move(*this);
+    }
+
+    template <class Container>
+    constexpr EnumSetBuilder& insert(const Container& container) & noexcept
+    {
+        enum_set_.insert(container.cbegin(), container.cend());
+        return *this;
+    }
+    template <class Container>
+    constexpr EnumSetBuilder&& insert(const Container& container) && noexcept
+    {
+        enum_set_.insert(container.cbegin(), container.cend());
+        return std::move(*this);
+    }
+
+    constexpr EnumSetBuilder& erase(const K& key) & noexcept
+    {
+        enum_set_.erase(key);
+        return *this;
+    }
+    constexpr EnumSetBuilder&& erase(const K& key) && noexcept
+    {
+        enum_set_.erase(key);
+        return std::move(*this);
+    }
+
+    constexpr EnumSetType build() const& { return enum_set_; }
+    constexpr EnumSetType build() && { return std::move(enum_set_); }
+
+private:
+    EnumSetType enum_set_;
+};
+}  // namespace fixed_containers::enum_set_detail
+
 namespace fixed_containers
 {
 /**
@@ -67,76 +142,7 @@ public:
     using difference_type = typename KeyArrayType::difference_type;
 
 public:
-    class Builder
-    {
-    public:
-        constexpr Builder() {}
-
-        constexpr Builder& insert(const K& key) & noexcept
-        {
-            enum_set_.insert(key);
-            return *this;
-        }
-        constexpr Builder&& insert(const K& key) && noexcept
-        {
-            enum_set_.insert(key);
-            return std::move(*this);
-        }
-
-        constexpr Builder& insert(std::initializer_list<K> list) & noexcept
-        {
-            enum_set_.insert(list);
-            return *this;
-        }
-        constexpr Builder&& insert(std::initializer_list<K> list) && noexcept
-        {
-            enum_set_.insert(list);
-            return std::move(*this);
-        }
-
-        template <InputIterator InputIt>
-        constexpr Builder& insert(InputIt first, InputIt last) & noexcept
-        {
-            enum_set_.insert(first, last);
-            return *this;
-        }
-        template <InputIterator InputIt>
-        constexpr Builder&& insert(InputIt first, InputIt last) && noexcept
-        {
-            enum_set_.insert(first, last);
-            return std::move(*this);
-        }
-
-        template <class Container>
-        constexpr Builder& insert(const Container& container) & noexcept
-        {
-            enum_set_.insert(container.cbegin(), container.cend());
-            return *this;
-        }
-        template <class Container>
-        constexpr Builder&& insert(const Container& container) && noexcept
-        {
-            enum_set_.insert(container.cbegin(), container.cend());
-            return std::move(*this);
-        }
-
-        constexpr Builder& erase(const K& key) & noexcept
-        {
-            enum_set_.erase(key);
-            return *this;
-        }
-        constexpr Builder&& erase(const K& key) && noexcept
-        {
-            enum_set_.erase(key);
-            return std::move(*this);
-        }
-
-        constexpr EnumSet<K> build() const& { return enum_set_; }
-        constexpr EnumSet<K> build() && { return std::move(enum_set_); }
-
-    private:
-        EnumSet<K> enum_set_;
-    };
+    using Builder = enum_set_detail::EnumSetBuilder<K, EnumSet<K>>;
 
     static constexpr EnumSet<K> all()
     {
