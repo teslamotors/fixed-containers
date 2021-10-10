@@ -99,6 +99,8 @@ namespace fixed_containers
 template <class K>
 class EnumSet
 {
+    using Self = EnumSet<K>;
+
 public:
     using key_type = K;
     using value_type = K;
@@ -142,20 +144,26 @@ public:
     using difference_type = typename KeyArrayType::difference_type;
 
 public:
-    using Builder = enum_set_detail::EnumSetBuilder<K, EnumSet<K>>;
+    using Builder = enum_set_detail::EnumSetBuilder<K, Self>;
 
-    static constexpr EnumSet<K> all()
+    template <class EnumSetType = Self>
+    static constexpr EnumSetType all()
     {
-        EnumSet<K> output{};
+        EnumSetType output{};
         output.insert(ENUM_VALUES.cbegin(), ENUM_VALUES.cend());
         return output;
     }
 
-    static constexpr EnumSet<K> none() { return {}; }
-
-    static constexpr EnumSet<K> complement_of(const EnumSet<K>& s)
+    template <class EnumSetType = Self>
+    static constexpr EnumSetType none()
     {
-        EnumSet<K> output = all();
+        return {};
+    }
+
+    template <class Container, class EnumSetType = Self>
+    static constexpr EnumSetType complement_of(const Container& s)
+    {
+        EnumSetType output = all();
         for (const K& key : s)
         {
             output.erase(key);
@@ -164,10 +172,10 @@ public:
         return output;
     }
 
-    template <class Container>
-    static constexpr EnumSet<K> copy_of(const Container& container)
+    template <class Container, class EnumSetType = Self>
+    static constexpr EnumSetType copy_of(const Container& container)
     {
-        EnumSet<K> output{};
+        EnumSetType output{};
         output.insert(container.begin(), container.end());
         return output;
     }
