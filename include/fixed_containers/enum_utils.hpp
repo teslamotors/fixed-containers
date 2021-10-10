@@ -126,13 +126,6 @@ concept is_enum_adapter = has_enum_typename<T> && has_static_sizet_count_void<T>
     has_static_std_string_view_to_string_r<T, typename T::Enum> &&
     has_zero_based_and_sorted_contiguous_ordinal(T::values(), RichEnumAdapterOrdinalFunctor<T>{});
 
-template <class RICH_ENUM, class BACKING_ENUM>
-static constexpr const RICH_ENUM& backing_to_rich(
-    const std::array<RICH_ENUM, RICH_ENUM::count()>& values, BACKING_ENUM backing_enum)
-{
-    return values.at(magic_enum::enum_index(backing_enum).value());
-}
-
 template <class RichEnum>
 constexpr std::optional<std::reference_wrapper<const RichEnum>> value_of(std::size_t i)
 {
@@ -163,10 +156,25 @@ template <class RichEnum, class BackingEnum>
 static constexpr std::optional<std::reference_wrapper<const RichEnum>> value_of(
     const BackingEnum& backing_enum)
 {
-    // We can't assume that the value of the enum matches its ordinal.
-    for (const RichEnum& v : RichEnum::values())
+    const auto& rich_enum_values = RichEnum::values();
+    const auto enum_integer = static_cast<std::size_t>(backing_enum);
+
+    // Optimistically try the index for zero-based and contiguous enum values.
     {
-        if (v.backing_enum() == backing_enum)
+        if (enum_integer < rich_enum_values.size())
+        {
+            const RichEnum& v = rich_enum_values.at(enum_integer);
+            if (v.ordinal() == enum_integer)
+            {
+                return v;
+            }
+        }
+    }
+
+    // If the above fails, linearly search the array
+    for (const RichEnum& v : rich_enum_values)
+    {
+        if (v.ordinal() == enum_integer)
         {
             return v;
         }
@@ -239,10 +247,11 @@ public:
 // MACRO to reduce four lines into one and avoid bugs from potential discrepancy between the
 // BackingEnum::CONSTANT and the rich enum CONSTANT()
 // Must be used after the values() static function is declared in the rich enum.
-#define FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(RichEnumName, CONSTANT_NAME)  \
-    static constexpr const RichEnumName& CONSTANT_NAME()                             \
-    {                                                                                \
-        return enums::detail::backing_to_rich(values(), BackingEnum::CONSTANT_NAME); \
+#define FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(RichEnumName, CONSTANT_NAME)           \
+    static constexpr const RichEnumName& CONSTANT_NAME()                                      \
+    {                                                                                         \
+        return enums::detail::value_of<RichEnumName, BackingEnum>(BackingEnum::CONSTANT_NAME) \
+            .value();                                                                         \
     }
 
 namespace fixed_containers::enums

@@ -222,7 +222,7 @@ public:
 private:
     static constexpr const NonCopyableRichEnum& at(const BackingEnum& backing_enum)
     {
-        return enums::detail::backing_to_rich(values(), backing_enum);
+        return enums::detail::value_of<NonCopyableRichEnum>(backing_enum).value();
     }
 
 public:
