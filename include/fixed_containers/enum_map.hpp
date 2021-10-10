@@ -225,6 +225,8 @@ public:
         return output;
     }
 
+    static constexpr std::size_t max_size() noexcept { return ENUM_COUNT; }
+
 protected:  // [WORKAROUND-1] - Needed by the non-trivially-copyable flavor of EnumMap
     ValueArrayType values_;
     std::array<bool, ENUM_COUNT> array_set_;

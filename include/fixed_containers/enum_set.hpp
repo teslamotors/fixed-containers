@@ -166,6 +166,8 @@ public:
         return output;
     }
 
+    static constexpr std::size_t max_size() noexcept { return ENUM_COUNT; }
+
 private:
     // std::bitset is not sufficiently constexpr to use here, using a std::array instead.
     std::array<bool, ENUM_COUNT> array_set_;

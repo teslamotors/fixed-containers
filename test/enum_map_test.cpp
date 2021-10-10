@@ -210,6 +210,15 @@ TEST(Utilities, EnumMap_CreateWithAllEntries)
     EXPECT_DEATH(get_incomplete_map(), "");
 }
 
+TEST(Utilities, EnumMap_MaxSize)
+{
+    constexpr EnumMap<TestEnum1, int> s1{{TestEnum1::TWO, 20}, {TestEnum1::FOUR, 40}};
+    static_assert(s1.max_size() == 4);
+
+    constexpr EnumMap<TestEnum1, int> s2{};
+    static_assert(s2.max_size() == 4);
+}
+
 TEST(Utilities, EnumMap_EmptyAndSize)
 {
     constexpr EnumMap<TestEnum1, int> s1{{TestEnum1::TWO, 20}, {TestEnum1::FOUR, 40}};

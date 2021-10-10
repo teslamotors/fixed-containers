@@ -216,6 +216,15 @@ TEST(Utilities, EnumSet_Contains)
     static_assert(s1.contains(TestEnum1::FOUR));
 }
 
+TEST(Utilities, EnumSet_MaxSize)
+{
+    constexpr EnumSet<TestEnum1> s1{TestEnum1::TWO, TestEnum1::FOUR};
+    static_assert(s1.max_size() == 4);
+
+    constexpr EnumSet<TestEnum1> s2{};
+    static_assert(s2.max_size() == 4);
+}
+
 TEST(Utilities, EnumSet_EmptyAndSize)
 {
     constexpr EnumSet<TestEnum1> s1{TestEnum1::TWO, TestEnum1::FOUR};
