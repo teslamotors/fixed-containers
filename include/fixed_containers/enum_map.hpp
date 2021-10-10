@@ -29,8 +29,8 @@ concept EnumMapChecking = requires(K key,
 template <class K, class V>
 struct AbortChecking
 {
-    static constexpr auto KEY_TYPE_NAME = type_name<K>();
-    static constexpr auto VALUE_TYPE_NAME = type_name<V>();
+    static constexpr auto KEY_TYPE_NAME = fixed_containers::type_name<K>();
+    static constexpr auto VALUE_TYPE_NAME = fixed_containers::type_name<V>();
 
     [[noreturn]] static void missing_enum_entries(const std::experimental::source_location& /*loc*/)
     {
