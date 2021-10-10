@@ -14,10 +14,10 @@ namespace fixed_containers
 {
 namespace
 {
-using TestEnum1 = enums::TestEnum1;
-using TestRichEnum1 = enums::TestRichEnum1;
-using NonConformingTestRichEnum1 = enums::NonConformingTestRichEnum1;
-using NonCopyableRichEnum = enums::NonCopyableRichEnum;
+using TestEnum1 = rich_enums::TestEnum1;
+using TestRichEnum1 = rich_enums::TestRichEnum1;
+using NonConformingTestRichEnum1 = rich_enums::NonConformingTestRichEnum1;
+using NonCopyableRichEnum = rich_enums::NonCopyableRichEnum;
 
 using ES_1 = EnumSet<TestEnum1>;
 using ES_2 = EnumSet<TestRichEnum1>;

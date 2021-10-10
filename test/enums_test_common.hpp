@@ -9,7 +9,7 @@
 #include <cstddef>
 #include <string_view>
 
-namespace fixed_containers::enums
+namespace fixed_containers::rich_enums
 {
 enum class TestEnum1
 {
@@ -222,7 +222,7 @@ public:
 private:
     static constexpr const NonCopyableRichEnum& at(const BackingEnum& backing_enum)
     {
-        return enums::detail::value_of<NonCopyableRichEnum>(backing_enum).value();
+        return rich_enums::detail::value_of<NonCopyableRichEnum>(backing_enum).value();
     }
 
 public:
@@ -293,4 +293,4 @@ constexpr const std::array<TestRichEnumBool, TestRichEnumBool::count()>& TestRic
     return SkeletalRichEnumValues<TestRichEnumBool>::VALUES;
 }
 
-}  // namespace fixed_containers::enums
+}  // namespace fixed_containers::rich_enums
