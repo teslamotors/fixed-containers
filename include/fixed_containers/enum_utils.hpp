@@ -10,7 +10,7 @@
 #include <string_view>
 #include <type_traits>
 
-namespace fixed_containers::rich_enums::detail
+namespace fixed_containers::rich_enums_detail
 {
 template <class T>
 concept has_enum_typename = requires()
@@ -110,7 +110,7 @@ template <is_enum T>
 constexpr bool has_zero_based_and_sorted_contiguous_ordinal()
 {
     return has_zero_based_and_sorted_contiguous_ordinal(magic_enum::enum_values<T>(),
-                                                        detail::EnumOrdinalFunctor<T>{});
+                                                        rich_enums_detail::EnumOrdinalFunctor<T>{});
 }
 
 template <class T>
@@ -242,7 +242,7 @@ public:
     [[nodiscard]] constexpr const bool& has_value() const { return PRIVATE_has_value_; }
 };
 
-}  // namespace fixed_containers::rich_enums::detail
+}  // namespace fixed_containers::rich_enums_detail
 
 // MACRO to reduce four lines into one and avoid bugs from potential discrepancy between the
 // BackingEnum::CONSTANT and the rich enum CONSTANT()
@@ -250,7 +250,7 @@ public:
 #define FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(RichEnumName, CONSTANT_NAME) \
     static constexpr const RichEnumName& CONSTANT_NAME()                            \
     {                                                                               \
-        return ::fixed_containers::rich_enums::detail::value_of<RichEnumName>(      \
+        return ::fixed_containers::rich_enums_detail::value_of<RichEnumName>(      \
                    BackingEnum::CONSTANT_NAME)                                      \
             .value();                                                               \
     }
@@ -258,13 +258,13 @@ public:
 namespace fixed_containers::rich_enums
 {
 template <class T>
-concept is_enum = detail::is_enum<T>;
+concept is_enum = rich_enums_detail::is_enum<T>;
 
 template <class T>
-concept is_rich_enum = detail::is_rich_enum<T>;
+concept is_rich_enum = rich_enums_detail::is_rich_enum<T>;
 
 template <class T>
-concept is_enum_adapter = detail::is_enum_adapter<T>;
+concept is_enum_adapter = rich_enums_detail::is_enum_adapter<T>;
 
 /**
  * Adapter for builtin `enum`s and `enum class`es, i.e. types that meet the std::is_enum
@@ -362,14 +362,14 @@ class SkeletalRichEnumValues
 // providing it.
 template <class RichEnumType,
           class BackingEnumType,
-          class EnumValuesType = rich_enums::detail::EnumValuesWithoutData>
+          class EnumValuesType = rich_enums_detail::EnumValuesWithoutData>
 class SkeletalRichEnumLite
 {
 public:
     using BackingEnum = BackingEnumType;
 
 protected:
-    using EnumData = rich_enums::detail::EnumDataType<EnumValuesType>;
+    using EnumData = rich_enums_detail::EnumDataType<EnumValuesType>;
     using EnumValues = EnumValuesType;
     using ValuesFriend = SkeletalRichEnumValues<RichEnumType>;
 
@@ -377,19 +377,19 @@ public:
     static constexpr std::optional<std::reference_wrapper<const RichEnumType>> value_of(
         std::size_t i)
     {
-        return rich_enums::detail::value_of<RichEnumType>(i);
+        return rich_enums_detail::value_of<RichEnumType>(i);
     }
 
     static constexpr std::optional<std::reference_wrapper<const RichEnumType>> value_of(
         const std::string_view& name)
     {
-        return rich_enums::detail::value_of<RichEnumType>(name);
+        return rich_enums_detail::value_of<RichEnumType>(name);
     }
 
     static constexpr std::optional<std::reference_wrapper<const RichEnumType>> value_of(
         const BackingEnum& backing_enum)
     {
-        return rich_enums::detail::value_of<RichEnumType>(backing_enum);
+        return rich_enums_detail::value_of<RichEnumType>(backing_enum);
     }
 
 private:
@@ -398,7 +398,7 @@ private:
     static constexpr std::string_view INVALID_TO_STRING = "INVALID";
 
 public:  // Public so this type is a structural type and can thus be used in template parameters
-    rich_enums::detail::StructuralTypeOptional<BackingEnum> PRIVATE_backing_enum_;
+    rich_enums_detail::StructuralTypeOptional<BackingEnum> PRIVATE_backing_enum_;
     EnumData PRIVATE_enum_data_;  // Data is stored here and not in the child classes, to maintain
     // standard layout
 
@@ -459,7 +459,7 @@ constexpr void SkeletalRichEnumLite<RichEnumType, BackingEnumType, EnumValuesTyp
 
 template <class RichEnumType,
           class BackingEnumType,
-          class EnumValuesType = rich_enums::detail::EnumValuesWithoutData>
+          class EnumValuesType = rich_enums_detail::EnumValuesWithoutData>
 class SkeletalRichEnum : public SkeletalRichEnumLite<RichEnumType, BackingEnumType, EnumValuesType>
 {
     using Base = SkeletalRichEnumLite<RichEnumType, BackingEnumType, EnumValuesType>;
@@ -468,7 +468,7 @@ public:
     using BackingEnum = BackingEnumType;
 
 protected:
-    using EnumData = rich_enums::detail::EnumDataType<EnumValuesType>;
+    using EnumData = rich_enums_detail::EnumDataType<EnumValuesType>;
     using EnumValues = EnumValuesType;
     using ValuesFriend = SkeletalRichEnumValues<RichEnumType>;
 
@@ -542,7 +542,7 @@ constexpr void SkeletalRichEnum<RichEnumType, BackingEnumType, EnumValuesType>::
 
 template <class RichEnumType,
           class BackingEnumType,
-          class EnumValuesType = rich_enums::detail::EnumValuesWithoutData>
+          class EnumValuesType = rich_enums_detail::EnumValuesWithoutData>
 class NonDefaultConstructibleSkeletalRichEnum
   : public SkeletalRichEnum<RichEnumType, BackingEnumType, EnumValuesType>
 {

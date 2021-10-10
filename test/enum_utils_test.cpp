@@ -48,17 +48,17 @@ static_assert(!std::is_trivial_v<TestRichEnum1>);
 static_assert(std::is_standard_layout_v<TestRichEnum1>);
 
 static_assert(!is_rich_enum<CustomValuesTestEnum1>);
-static_assert(detail::has_zero_based_and_sorted_contiguous_ordinal<CustomValuesTestEnum1>());
+static_assert(rich_enums_detail::has_zero_based_and_sorted_contiguous_ordinal<CustomValuesTestEnum1>());
 
 static_assert(!is_rich_enum<DefaultValuesTestEnum2>);
-static_assert(detail::has_zero_based_and_sorted_contiguous_ordinal<DefaultValuesTestEnum2>());
+static_assert(rich_enums_detail::has_zero_based_and_sorted_contiguous_ordinal<DefaultValuesTestEnum2>());
 
 static_assert(is_rich_enum<TestRichEnum1>);
 static_assert(has_enum_adapter<TestRichEnum1>);
 
 static_assert(!is_rich_enum<NonConformingTestRichEnum1>);
 static_assert(has_enum_adapter<NonConformingTestRichEnum1>);
-static_assert(detail::has_zero_based_and_sorted_contiguous_ordinal(
+static_assert(rich_enums_detail::has_zero_based_and_sorted_contiguous_ordinal(
     NonConformingTestRichEnum1::all_values(),
     [](const NonConformingTestRichEnum1& key) { return key.index(); }));
 
