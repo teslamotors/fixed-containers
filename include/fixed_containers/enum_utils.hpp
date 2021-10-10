@@ -247,11 +247,12 @@ public:
 // MACRO to reduce four lines into one and avoid bugs from potential discrepancy between the
 // BackingEnum::CONSTANT and the rich enum CONSTANT()
 // Must be used after the values() static function is declared in the rich enum.
-#define FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(RichEnumName, CONSTANT_NAME)                \
-    static constexpr const RichEnumName& CONSTANT_NAME()                                           \
-    {                                                                                              \
-        return rich_enums::detail::value_of<RichEnumName, BackingEnum>(BackingEnum::CONSTANT_NAME) \
-            .value();                                                                              \
+#define FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(RichEnumName, CONSTANT_NAME) \
+    static constexpr const RichEnumName& CONSTANT_NAME()                            \
+    {                                                                               \
+        return ::fixed_containers::rich_enums::detail::value_of<RichEnumName>(      \
+                   BackingEnum::CONSTANT_NAME)                                      \
+            .value();                                                               \
     }
 
 namespace fixed_containers::rich_enums
