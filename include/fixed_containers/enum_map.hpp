@@ -1,8 +1,10 @@
 #pragma once
 
 #include "fixed_containers/concepts.hpp"
+#include "fixed_containers/constexpr_support.hpp"
 #include "fixed_containers/enum_utils.hpp"
 #include "fixed_containers/index_range_predicate_iterator.hpp"
+#include "fixed_containers/optional_storage.hpp"
 #include "fixed_containers/pair_view.hpp"
 #include "fixed_containers/preconditions.hpp"
 #include "fixed_containers/type_name.hpp"
@@ -11,8 +13,8 @@
 #include <array>
 #include <cassert>
 #include <cstddef>
+#include <functional>
 #include <initializer_list>
-#include <optional>
 #include <type_traits>
 
 namespace fixed_containers::enum_map_customize
@@ -48,20 +50,70 @@ struct AbortChecking
 
 }  // namespace fixed_containers::enum_map_customize
 
-namespace fixed_containers
+namespace fixed_containers::enum_map_detail
 {
-/**
- * Fixed-capacity map for enum keys. Properties:
- *  - constexpr
- *  - retains the properties of V (e.g. if T is trivially copyable, then so is EnumMap<K, V>)
- *  - no pointers stored (data layout is purely self-referential and can be serialized directly)
- *  - no dynamic allocations
- */
-template <class K,
-          class V,
-          enum_map_customize::EnumMapChecking<K> CheckingType =
-              enum_map_customize::AbortChecking<K, V>>
-class EnumMap
+template <class K, class V, class EnumMapType>
+class EnumMapBuilder
+{
+    using value_type = std::pair<const K, V>;
+
+public:
+    constexpr EnumMapBuilder() {}
+
+    constexpr EnumMapBuilder& insert(const value_type& key) & noexcept
+    {
+        enum_map_.insert(key);
+        return *this;
+    }
+    constexpr EnumMapBuilder&& insert(const value_type& key) && noexcept
+    {
+        enum_map_.insert(key);
+        return std::move(*this);
+    }
+    constexpr EnumMapBuilder& insert(value_type&& key) & noexcept
+    {
+        enum_map_.insert(std::move(key));
+        return *this;
+    }
+    constexpr EnumMapBuilder&& insert(value_type&& key) && noexcept
+    {
+        enum_map_.insert(std::move(key));
+        return std::move(*this);
+    }
+
+    constexpr EnumMapBuilder& insert(std::initializer_list<value_type> list) & noexcept
+    {
+        enum_map_.insert(list);
+        return *this;
+    }
+    constexpr EnumMapBuilder&& insert(std::initializer_list<value_type> list) && noexcept
+    {
+        enum_map_.insert(list);
+        return std::move(*this);
+    }
+
+    template <InputIterator InputIt>
+    constexpr EnumMapBuilder& insert(InputIt first, InputIt last) & noexcept
+    {
+        enum_map_.insert(first, last);
+        return *this;
+    }
+    template <InputIterator InputIt>
+    constexpr EnumMapBuilder&& insert(InputIt first, InputIt last) && noexcept
+    {
+        enum_map_.insert(first, last);
+        return std::move(*this);
+    }
+
+    constexpr EnumMapType build() const& { return enum_map_; }
+    constexpr EnumMapType build() && { return std::move(enum_map_); }
+
+private:
+    EnumMapType enum_map_;
+};
+
+template <class K, class V, enum_map_customize::EnumMapChecking<K> CheckingType>
+class EnumMapBase
 {
 public:
     using key_type = K;
@@ -72,26 +124,15 @@ public:
     using pointer = std::add_pointer_t<reference>;
     using const_pointer = std::add_pointer_t<const_reference>;
 
-private:
+protected:  // [WORKAROUND-1] - Needed by the non-trivially-copyable flavor of EnumMap
     using Checking = CheckingType;
     using EnumAdapterType = rich_enums::EnumAdapter<K>;
     static constexpr std::size_t ENUM_COUNT = EnumAdapterType::count();
     using KeyArrayType = std::array<K, ENUM_COUNT>;
-    using ValueArrayType = std::array<std::optional<V>, ENUM_COUNT>;
+    using ValueArrayType = std::array<detail::OptionalStorage<V>, ENUM_COUNT>;
     static constexpr const KeyArrayType& ENUM_VALUES = EnumAdapterType::values();
 
-    struct OptionalToHasValueTransformer
-    {
-        constexpr bool operator()(const std::optional<V>& t) const noexcept
-        {
-            return t.has_value();
-        }
-        constexpr bool operator()(const std::optional<V>* const t) const noexcept
-        {
-            return t->has_value();
-        }
-    };
-
+private:
     template <bool IS_CONST>
     struct PairProvider
     {
@@ -127,7 +168,7 @@ private:
 
         constexpr void update_to_index(const std::size_t i) noexcept
         {
-            current_ = ConstOrMutablePairView{&ENUM_VALUES[i], &(*values_)[i].value()};
+            current_ = ConstOrMutablePairView{&ENUM_VALUES[i], &(*values_)[i].value};
         }
 
         constexpr ConstOrMutableReference get() const noexcept { return current_; }
@@ -135,11 +176,8 @@ private:
 
     struct IndexPredicate
     {
-        const ValueArrayType* array_set_;
-        constexpr bool operator()(const std::size_t i) const
-        {
-            return (*array_set_)[i].has_value();
-        }
+        const std::array<bool, ENUM_COUNT>* array_set_;
+        constexpr bool operator()(const std::size_t i) const { return (*array_set_)[i]; }
     };
 
     template <IteratorConstness CONSTNESS, IteratorDirection DIRECTION>
@@ -160,68 +198,10 @@ public:
     using difference_type = typename KeyArrayType::difference_type;
 
 public:
-    class Builder
+    template <class EnumMapType, class Container>
+    static constexpr EnumMapType create_with_keys(const Container& sp, const V& value)
     {
-    public:
-        constexpr Builder() {}
-
-        constexpr Builder& insert(const value_type& key) & noexcept
-        {
-            enum_map_.insert(key);
-            return *this;
-        }
-        constexpr Builder&& insert(const value_type& key) && noexcept
-        {
-            enum_map_.insert(key);
-            return std::move(*this);
-        }
-        constexpr Builder& insert(value_type&& key) & noexcept
-        {
-            enum_map_.insert(std::move(key));
-            return *this;
-        }
-        constexpr Builder&& insert(value_type&& key) && noexcept
-        {
-            enum_map_.insert(std::move(key));
-            return std::move(*this);
-        }
-
-        constexpr Builder& insert(std::initializer_list<value_type> list) & noexcept
-        {
-            enum_map_.insert(list);
-            return *this;
-        }
-        constexpr Builder&& insert(std::initializer_list<value_type> list) && noexcept
-        {
-            enum_map_.insert(list);
-            return std::move(*this);
-        }
-
-        template <InputIterator InputIt>
-        constexpr Builder& insert(InputIt first, InputIt last) & noexcept
-        {
-            enum_map_.insert(first, last);
-            return *this;
-        }
-        template <InputIterator InputIt>
-        constexpr Builder&& insert(InputIt first, InputIt last) && noexcept
-        {
-            enum_map_.insert(first, last);
-            return std::move(*this);
-        }
-
-        constexpr EnumMap<K, V> build() const& { return enum_map_; }
-        constexpr EnumMap<K, V> build() && { return std::move(enum_map_); }
-
-    private:
-        EnumMap<K, V> enum_map_;
-    };
-
-public:
-    template <class Container>
-    static constexpr EnumMap<K, V> create_with_keys(const Container& sp, const V& value = V())
-    {
-        EnumMap<K, V> output{};
+        EnumMapType output{};
         for (auto&& k : sp)
         {
             output[k] = value;
@@ -229,12 +209,11 @@ public:
         return output;
     }
 
-    static constexpr EnumMap<K, V> create_with_all_entries(
-        std::initializer_list<value_type> pairs,
-        const std::experimental::source_location& loc =
-            std::experimental::source_location::current())
+    template <class EnumMapType>
+    static constexpr EnumMapType create_with_all_entries(
+        std::initializer_list<value_type> pairs, const std::experimental::source_location& loc)
     {
-        EnumMap<K, V> output{};
+        EnumMapType output{};
         for (const auto& [k, value] : pairs)
         {
             output[k] = value;
@@ -248,17 +227,19 @@ public:
         return output;
     }
 
-private:
+protected:  // [WORKAROUND-1] - Needed by the non-trivially-copyable flavor of EnumMap
     ValueArrayType values_;
+    std::array<bool, ENUM_COUNT> array_set_;
 
 public:
-    constexpr EnumMap() noexcept
+    constexpr EnumMapBase() noexcept
       : values_{}
+      , array_set_{}
     {
     }
 
-    constexpr EnumMap(std::initializer_list<value_type> list) noexcept
-      : EnumMap()
+    constexpr EnumMapBase(std::initializer_list<value_type> list) noexcept
+      : EnumMapBase()
     {
         this->insert(list);
     }
@@ -269,11 +250,11 @@ public:
                                       std::experimental::source_location::current()) noexcept
     {
         const std::size_t ordinal = EnumAdapterType::ordinal(key);
-        if (preconditions::test(values_[ordinal].has_value()))
+        if (preconditions::test(array_set_[ordinal]))
         {
             CheckingType::out_of_range(key, size(), loc);
         }
-        return values_[ordinal].value();
+        return values_[ordinal].value;
     }
     [[nodiscard]] constexpr const V& at(
         const K& key,
@@ -281,23 +262,23 @@ public:
             std::experimental::source_location::current()) const noexcept
     {
         const std::size_t ordinal = EnumAdapterType::ordinal(key);
-        if (preconditions::test(values_[ordinal].has_value()))
+        if (preconditions::test(array_set_[ordinal]))
         {
             CheckingType::out_of_range(key, size(), loc);
         }
-        return values_[ordinal].value();
+        return values_[ordinal].value;
     }
     constexpr V& operator[](const K& key) noexcept
     {
         const std::size_t ordinal = EnumAdapterType::ordinal(key);
         touch_if_not_present(ordinal);
-        return values_[ordinal].value();
+        return values_[ordinal].value;
     }
     constexpr V& operator[](K&& key) noexcept
     {
         const std::size_t ordinal = EnumAdapterType::ordinal(key);
         touch_if_not_present(ordinal);
-        return values_[ordinal].value();
+        return values_[ordinal].value;
     }
 
     constexpr const_iterator cbegin() const noexcept { return create_const_iterator(0); }
@@ -322,41 +303,46 @@ public:
 
     [[nodiscard]] constexpr bool empty() const noexcept
     {
-        return std::none_of(values_.cbegin(), values_.cend(), OptionalToHasValueTransformer{});
+        return std::none_of(array_set_.cbegin(), array_set_.cend(), std::identity{});
     }
 
     [[nodiscard]] constexpr std::size_t size() const noexcept
     {
-        return std::count_if(values_.cbegin(), values_.cend(), OptionalToHasValueTransformer{});
+        return std::count_if(array_set_.cbegin(), array_set_.cend(), std::identity{});
     }
 
     constexpr void clear() noexcept
     {
         for (std::size_t i = 0; i < values_.size(); i++)
         {
-            reset_at(i);
+            if (array_set_[i])
+            {
+                reset_at(i);
+            }
         }
     }
     constexpr std::pair<iterator, bool> insert(const value_type& value) noexcept
     {
         const std::size_t ordinal = EnumAdapterType::ordinal(value.first);
-        if (values_[ordinal].has_value())
+        if (array_set_[ordinal])
         {
             return {create_iterator(ordinal), false};
         }
 
-        values_[ordinal] = value.second;
+        array_set_[ordinal] = true;
+        constexpr_support::emplace(values_[ordinal], value.second);
         return {create_iterator(ordinal), true};
     }
     constexpr std::pair<iterator, bool> insert(value_type&& value) noexcept
     {
         const std::size_t ordinal = EnumAdapterType::ordinal(value.first);
-        if (values_[ordinal].has_value())
+        if (array_set_[ordinal])
         {
             return {create_iterator(ordinal), false};
         }
 
-        values_[ordinal] = std::move(value.second);
+        array_set_[ordinal] = true;
+        constexpr_support::emplace(values_[ordinal], std::move(value.second));
         return {create_iterator(ordinal), true};
     }
 
@@ -378,7 +364,8 @@ public:
         const K& key, M&& obj) noexcept requires std::is_assignable_v<mapped_type&, M&&>
     {
         const std::size_t ordinal = EnumAdapterType::ordinal(key);
-        const bool is_insertion = !values_[ordinal].has_value();
+        const bool is_insertion = !array_set_[ordinal];
+        array_set_[ordinal] = true;
         values_[ordinal] = std::forward<M>(obj);
         return {create_iterator(ordinal), is_insertion};
     }
@@ -393,12 +380,13 @@ public:
     /*not-constexpr*/ std::pair<iterator, bool> try_emplace(const K& key, Args&&... args) noexcept
     {
         const std::size_t ordinal = EnumAdapterType::ordinal(key);
-        if (values_[ordinal].has_value())
+        if (array_set_[ordinal])
         {
             return {create_iterator(ordinal), false};
         }
 
-        values_[ordinal].emplace(std::forward<Args>(args)...);
+        array_set_[ordinal] = true;
+        constexpr_support::emplace(values_[ordinal], std::forward<Args>(args)...);
         return {create_iterator(ordinal), true};
     }
 
@@ -436,7 +424,10 @@ public:
 
         for (std::size_t i = from; i < to; i++)
         {
-            reset_at(i);
+            if (array_set_[i])
+            {
+                reset_at(i);
+            }
         }
 
         return create_iterator(to);
@@ -486,84 +477,263 @@ public:
         return static_cast<std::size_t>(contains(key));
     }
 
-    [[nodiscard]] constexpr bool operator==(const EnumMap<K, V>& other) const
+    template <enum_map_customize::EnumMapChecking<K> CheckingType2>
+    [[nodiscard]] constexpr bool operator==(const EnumMapBase<K, V, CheckingType2>& other) const
     {
-        return values_ == other.values_;
+        for (std::size_t i = 0; i < ENUM_COUNT; i++)
+        {
+            if (this->array_set_[i] != other.array_set_[i])
+            {
+                return false;
+            }
+
+            if (!this->array_set_[i])
+            {
+                continue;
+            }
+
+            if (this->values_[i].value != other.values_[i].value)
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
 private:
-    constexpr void touch_if_not_present(const std::size_t ordinal) noexcept requires
-        TriviallyMoveAssignable<V> && TriviallyDestructible<V>
+    constexpr void touch_if_not_present(const std::size_t ordinal) noexcept
     {
-        if (values_[ordinal].has_value())
+        if (array_set_[ordinal])
         {
             return;
         }
 
-        if (std::is_constant_evaluated())
-        {
-            // Converting assignment is not constexpr at this time
-            values_[ordinal] = std::optional<V>{V{}};
-        }
-        else
-        {
-            // std::optional.emplace() is not constexpr at this time
-            values_[ordinal].emplace();
-        }
-    }
-    /*not-constexpr*/ void touch_if_not_present(const std::size_t ordinal) noexcept
-    {
-        if (values_[ordinal].has_value())
-        {
-            return;
-        }
-
-        values_[ordinal].emplace();
+        array_set_[ordinal] = true;
+        constexpr_support::emplace(values_[ordinal], V{});
     }
 
     constexpr iterator create_iterator(const std::size_t start_index) noexcept
     {
         return iterator{
-            IndexPredicate{&values_}, PairProvider<false>{&values_}, start_index, ENUM_COUNT};
+            IndexPredicate{&array_set_}, PairProvider<false>{&values_}, start_index, ENUM_COUNT};
     }
 
     constexpr const_iterator create_const_iterator(const std::size_t start_index) const noexcept
     {
         return const_iterator{
-            IndexPredicate{&values_}, PairProvider<true>{&values_}, start_index, ENUM_COUNT};
+            IndexPredicate{&array_set_}, PairProvider<true>{&values_}, start_index, ENUM_COUNT};
     }
 
     constexpr reverse_iterator create_reverse_iterator(const std::size_t start_index) noexcept
     {
         return reverse_iterator{
-            IndexPredicate{&values_}, PairProvider<false>{&values_}, start_index, ENUM_COUNT};
+            IndexPredicate{&array_set_}, PairProvider<false>{&values_}, start_index, ENUM_COUNT};
     }
 
     constexpr const_reverse_iterator create_const_reverse_iterator(
         const std::size_t start_index) const noexcept
     {
         return const_reverse_iterator{
-            IndexPredicate{&values_}, PairProvider<true>{&values_}, start_index, ENUM_COUNT};
+            IndexPredicate{&array_set_}, PairProvider<true>{&values_}, start_index, ENUM_COUNT};
     }
 
     [[nodiscard]] constexpr bool contains_at(const std::size_t i) const noexcept
     {
-        return values_[i].has_value();
+        return array_set_[i];
     }
 
-    constexpr void reset_at(const std::size_t i) noexcept requires TriviallyMoveAssignable<V> &&
-        TriviallyDestructible<V>
+    constexpr void reset_at(const std::size_t i) noexcept
     {
-        if (std::is_constant_evaluated())
+        assert(array_set_[i]);
+        constexpr_support::destroy(values_[i].value);
+        array_set_[i] = false;
+    }
+};
+}  // namespace fixed_containers::enum_map_detail
+
+namespace fixed_containers::enum_map_detail::trivially_copyable
+{
+template <class K, class V, enum_map_customize::EnumMapChecking<K> CheckingType>
+class EnumMap : public enum_map_detail::EnumMapBase<K, V, CheckingType>
+{
+    using Self = EnumMap<K, V, CheckingType>;
+    using Base = enum_map_detail::EnumMapBase<K, V, CheckingType>;
+
+public:
+    using key_type = K;
+    using mapped_type = V;
+    using value_type = std::pair<const K, V>;
+    using reference = PairView<const K, V>&;
+    using const_reference = const PairView<const K, const V>&;
+    using pointer = std::add_pointer_t<reference>;
+    using const_pointer = std::add_pointer_t<const_reference>;
+
+public:
+    using Builder = enum_map_detail::EnumMapBuilder<K, V, Self>;
+
+    template <class Container>
+    static constexpr Self create_with_keys(const Container& sp, const V& value = V())
+    {
+        return Base::template create_with_keys<Self>(sp, value);
+    }
+
+    static constexpr Self create_with_all_entries(std::initializer_list<value_type> pairs,
+                                                  const std::experimental::source_location& loc =
+                                                      std::experimental::source_location::current())
+    {
+        return Base::template create_with_all_entries<Self>(pairs, loc);
+    }
+
+    constexpr EnumMap() noexcept
+      : Base()
+    {
+    }
+    constexpr EnumMap(std::initializer_list<value_type> list) noexcept
+      : Base(list)
+    {
+    }
+};
+}  // namespace fixed_containers::enum_map_detail::trivially_copyable
+
+namespace fixed_containers::enum_map_detail::non_trivially_copyable
+{
+template <class K, class V, enum_map_customize::EnumMapChecking<K> CheckingType>
+class EnumMap : public enum_map_detail::EnumMapBase<K, V, CheckingType>
+{
+    using Self = EnumMap<K, V, CheckingType>;
+    using Base = enum_map_detail::EnumMapBase<K, V, CheckingType>;
+
+public:
+    using key_type = K;
+    using mapped_type = V;
+    using value_type = std::pair<const K, V>;
+    using reference = PairView<const K, V>&;
+    using const_reference = const PairView<const K, const V>&;
+    using pointer = std::add_pointer_t<reference>;
+    using const_pointer = std::add_pointer_t<const_reference>;
+
+public:
+    using Builder = enum_map_detail::EnumMapBuilder<K, V, EnumMap<K, V, CheckingType>>;
+
+    template <class Container>
+    static constexpr Self create_with_keys(const Container& sp, const V& value = V())
+    {
+        return Base::template create_with_keys<Self>(sp, value);
+    }
+
+    static constexpr Self create_with_all_entries(std::initializer_list<value_type> pairs,
+                                                  const std::experimental::source_location& loc =
+                                                      std::experimental::source_location::current())
+    {
+        return Base::template create_with_all_entries<Self>(pairs, loc);
+    }
+
+    constexpr EnumMap() noexcept
+      : Base()
+    {
+    }
+    constexpr EnumMap(std::initializer_list<value_type> list) noexcept
+      : Base(list)
+    {
+    }
+
+    constexpr EnumMap(const EnumMap& other) requires TriviallyCopyConstructible<V>
+    = default;
+    constexpr EnumMap(EnumMap&& other) noexcept requires TriviallyMoveConstructible<V>
+    = default;
+    constexpr EnumMap& operator=(const EnumMap& other) requires TriviallyCopyAssignable<V>
+    = default;
+    constexpr EnumMap& operator=(EnumMap&& other) noexcept requires TriviallyMoveAssignable<V>
+    = default;
+
+    constexpr EnumMap(const EnumMap& other)
+      : EnumMap()
+    {
+        this->array_set_ = other.array_set_;
+        for (std::size_t i = 0; i < Base::ENUM_COUNT; i++)
         {
-            // std::optional.reset() is not constexpr at this time
-            values_[i] = std::optional<V>{};
-        }
-        else
-        {
-            values_[i].reset();
+            if (this->array_set_[i])
+            {
+                constexpr_support::place_copy(this->values_[i], other.values_[i]);
+            }
         }
     }
-    /*not-constexpr*/ void reset_at(const std::size_t i) noexcept { values_[i].reset(); }
+    constexpr EnumMap(EnumMap&& other) noexcept
+      : EnumMap()
+    {
+        this->array_set_ = other.array_set_;
+        for (std::size_t i = 0; i < Base::ENUM_COUNT; i++)
+        {
+            if (this->array_set_[i])
+            {
+                constexpr_support::place_move(this->values_[i], std::move(other.values_[i]));
+            }
+        }
+        // Clear the moved-out-of-map. This is consistent with both std::map
+        // as well as the trivial move constructor of this class.
+        other.clear();
+    }
+    constexpr EnumMap& operator=(const EnumMap& other)
+    {
+        if (this == &other)
+        {
+            return *this;
+        }
+
+        this->clear();
+        this->array_set_ = other.array_set_;
+        for (std::size_t i = 0; i < Base::ENUM_COUNT; i++)
+        {
+            if (this->array_set_[i])
+            {
+                constexpr_support::place_copy(this->values_[i], other.values_[i]);
+            }
+        }
+        return *this;
+    }
+    constexpr EnumMap& operator=(EnumMap&& other) noexcept
+    {
+        if (this == &other)
+        {
+            return *this;
+        }
+
+        this->clear();
+        this->array_set_ = other.array_set_;
+        for (std::size_t i = 0; i < Base::ENUM_COUNT; i++)
+        {
+            if (this->array_set_[i])
+            {
+                constexpr_support::place_move(this->values_[i], std::move(other.values_[i]));
+            }
+        }
+        // The trivial assignment operator does not `other.clear()`, so don't do it here either for
+        // consistency across EnumMaps. std::map<T> does clear it, so behavior is different.
+        // Both choices are fine, because the state of a moved object is intentionally unspecified
+        // as per the standard and use-after-move is undefined behavior.
+        return *this;
+    }
+
+    constexpr ~EnumMap() noexcept { this->clear(); }
 };
-}  // namespace fixed_containers
+}  // namespace fixed_containers::enum_map_detail::non_trivially_copyable
+
+namespace fixed_containers
+{
+/**
+ * Fixed-capacity map for enum keys. Properties:
+ *  - constexpr
+ *  - retains the properties of V (e.g. if T is trivially copyable, then so is EnumMapBase<K, V>)
+ *  - no pointers stored (data layout is purely self-referential and can be serialized directly)
+ *  - no dynamic allocations
+ */
+template <class K,
+          class V,
+          enum_map_customize::EnumMapChecking<K> CheckingType =
+              enum_map_customize::AbortChecking<K, V>>
+using EnumMap =
+    std::conditional_t<TriviallyCopyable<V>,
+                       enum_map_detail::trivially_copyable::EnumMap<K, V, CheckingType>,
+                       enum_map_detail::non_trivially_copyable::EnumMap<K, V, CheckingType>>;
+}  // end namespace fixed_containers

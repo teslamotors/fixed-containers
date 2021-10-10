@@ -2,6 +2,7 @@
 
 #include "enums_test_common.hpp"
 #include "mock_testing_types.hpp"
+#include "test_utilities_common.hpp"
 
 #include "fixed_containers/consteval_compare.hpp"
 #include "fixed_containers/fixed_vector.hpp"
@@ -1040,5 +1041,373 @@ TEST(Utilities, EnumMap_NonAssignable)
         s.erase(TestEnum1::TWO);
     }
 }
+
+namespace
+{
+struct InstanceCounterNonTrivialAssignment
+{
+    static int counter;
+    using Self = InstanceCounterNonTrivialAssignment;
+
+    int value;
+
+    explicit InstanceCounterNonTrivialAssignment(int value_in_ctor = 0)
+      : value{value_in_ctor}
+    {
+        counter++;
+    }
+    InstanceCounterNonTrivialAssignment(const Self& other)
+      : value{other.value}
+    {
+        counter++;
+    }
+    InstanceCounterNonTrivialAssignment(Self&& other) noexcept
+      : value{other.value}
+    {
+        counter++;
+    }
+    InstanceCounterNonTrivialAssignment& operator=(const Self& other)
+    {
+        value = other.value;
+        return *this;
+    }
+    InstanceCounterNonTrivialAssignment& operator=(Self&& other) noexcept
+    {
+        value = other.value;
+        return *this;
+    }
+    ~InstanceCounterNonTrivialAssignment() { counter--; }
+};
+int InstanceCounterNonTrivialAssignment::counter = 0;
+
+static_assert(!TriviallyCopyAssignable<EnumMap<TestEnum1, InstanceCounterNonTrivialAssignment>>);
+static_assert(!TriviallyCopyAssignable<InstanceCounterNonTrivialAssignment>);
+static_assert(!TriviallyMoveAssignable<EnumMap<TestEnum1, InstanceCounterNonTrivialAssignment>>);
+static_assert(!TriviallyMoveAssignable<InstanceCounterNonTrivialAssignment>);
+static_assert(!TriviallyDestructible<EnumMap<TestEnum1, InstanceCounterNonTrivialAssignment>>);
+static_assert(!TriviallyDestructible<InstanceCounterNonTrivialAssignment>);
+
+struct InstanceCounterTrivialAssignment
+{
+    static int counter;
+    using Self = InstanceCounterTrivialAssignment;
+
+    int value;
+
+    explicit InstanceCounterTrivialAssignment(int value_in_ctor = 0)
+      : value{value_in_ctor}
+    {
+        counter++;
+    }
+    InstanceCounterTrivialAssignment(const Self& other)
+      : value{other.value}
+    {
+        counter++;
+    }
+    InstanceCounterTrivialAssignment(Self&& other) noexcept
+      : value{other.value}
+    {
+        counter++;
+    }
+    InstanceCounterTrivialAssignment& operator=(const Self&) = default;
+    InstanceCounterTrivialAssignment& operator=(Self&&) noexcept = default;
+    ~InstanceCounterTrivialAssignment() { counter--; }
+};
+int InstanceCounterTrivialAssignment::counter = 0;
+
+static_assert(TriviallyCopyAssignable<EnumMap<TestEnum1, InstanceCounterTrivialAssignment>>);
+static_assert(TriviallyCopyAssignable<InstanceCounterTrivialAssignment>);
+static_assert(TriviallyMoveAssignable<EnumMap<TestEnum1, InstanceCounterTrivialAssignment>>);
+static_assert(TriviallyMoveAssignable<InstanceCounterTrivialAssignment>);
+static_assert(!TriviallyDestructible<EnumMap<TestEnum1, InstanceCounterTrivialAssignment>>);
+static_assert(!TriviallyDestructible<InstanceCounterTrivialAssignment>);
+
+static_assert(EnumMap<TestEnum1, InstanceCounterNonTrivialAssignment>::const_iterator{} ==
+              EnumMap<TestEnum1, InstanceCounterNonTrivialAssignment>::const_iterator{});
+
+template <typename T>
+struct EnumMapInstanceCheckFixture : public ::testing::Test
+{
+};
+TYPED_TEST_SUITE_P(EnumMapInstanceCheckFixture);
+}  // namespace
+
+TYPED_TEST_P(EnumMapInstanceCheckFixture, EnumMap_InstanceCheck)
+{
+    using MapOfInstanceCounterType = TypeParam;
+    using InstanceCounterType = typename MapOfInstanceCounterType::mapped_type;
+    MapOfInstanceCounterType v1{};
+
+    // [] l-value
+    ASSERT_EQ(0, InstanceCounterType::counter);
+    {  // IMPORTANT SCOPE, don't remove.
+        // This will be destroyed when we go out of scope
+        InstanceCounterType aa{1};
+        ASSERT_EQ(1, InstanceCounterType::counter);
+        v1[TestEnum1::ONE] = aa;
+        ASSERT_EQ(2, InstanceCounterType::counter);
+        v1[TestEnum1::ONE] = aa;
+        v1[TestEnum1::ONE] = aa;
+        v1[TestEnum1::ONE] = aa;
+        v1[TestEnum1::ONE] = aa;
+        v1[TestEnum1::ONE] = aa;
+        ASSERT_EQ(2, InstanceCounterType::counter);
+        v1.clear();
+        ASSERT_EQ(1, InstanceCounterType::counter);
+    }
+    ASSERT_EQ(0, InstanceCounterType::counter);
+
+    // Insert l-value
+    ASSERT_EQ(0, InstanceCounterType::counter);
+    {  // IMPORTANT SCOPE, don't remove.
+        // This will be destroyed when we go out of scope
+        InstanceCounterType aa{1};
+        ASSERT_EQ(1, InstanceCounterType::counter);
+        v1.insert({TestEnum1::ONE, aa});
+        ASSERT_EQ(1, v1.size());
+        ASSERT_EQ(2, InstanceCounterType::counter);
+        v1.insert({TestEnum1::ONE, aa});
+        v1.insert({TestEnum1::ONE, aa});
+        v1.insert({TestEnum1::ONE, aa});
+        ASSERT_EQ(1, v1.size());
+        ASSERT_EQ(2, InstanceCounterType::counter);
+        v1.clear();
+        ASSERT_EQ(0, v1.size());
+        ASSERT_EQ(1, InstanceCounterType::counter);
+    }
+    ASSERT_EQ(0, InstanceCounterType::counter);
+
+    // Double clear
+    {
+        v1.clear();
+        v1.clear();
+    }
+
+    // [] r-value
+    ASSERT_EQ(0, InstanceCounterType::counter);
+    {  // IMPORTANT SCOPE, don't remove.
+        // This will be destroyed when we go out of scope
+        InstanceCounterType aa{1};
+        ASSERT_EQ(1, InstanceCounterType::counter);
+        v1[TestEnum1::ONE] = std::move(aa);
+        ASSERT_EQ(1, v1.size());
+        ASSERT_EQ(2, InstanceCounterType::counter);
+        v1.clear();
+        ASSERT_EQ(0, v1.size());
+        ASSERT_EQ(1, InstanceCounterType::counter);
+        v1[TestEnum1::ONE] = InstanceCounterType{};  // With temporary
+        v1[TestEnum1::ONE] = InstanceCounterType{};  // With temporary
+        v1[TestEnum1::ONE] = InstanceCounterType{};  // With temporary
+        ASSERT_EQ(1, v1.size());
+        ASSERT_EQ(2, InstanceCounterType::counter);
+    }
+    ASSERT_EQ(1, InstanceCounterType::counter);
+    v1.clear();
+    ASSERT_EQ(0, InstanceCounterType::counter);
+
+    // insert r-value
+    ASSERT_EQ(0, InstanceCounterType::counter);
+    {  // IMPORTANT SCOPE, don't remove.
+        // This will be destroyed when we go out of scope
+        InstanceCounterType aa{1};
+        ASSERT_EQ(1, InstanceCounterType::counter);
+        v1.insert({TestEnum1::ONE, std::move(aa)});
+        ASSERT_EQ(1, v1.size());
+        ASSERT_EQ(2, InstanceCounterType::counter);
+        v1.clear();
+        ASSERT_EQ(0, v1.size());
+        ASSERT_EQ(1, InstanceCounterType::counter);
+        v1.insert({TestEnum1::ONE, InstanceCounterType{}});  // With temporary
+        v1.insert({TestEnum1::ONE, InstanceCounterType{}});  // With temporary
+        v1.insert({TestEnum1::ONE, InstanceCounterType{}});  // With temporary
+        ASSERT_EQ(1, v1.size());
+        ASSERT_EQ(2, InstanceCounterType::counter);
+    }
+    ASSERT_EQ(1, InstanceCounterType::counter);
+    v1.clear();
+    ASSERT_EQ(0, InstanceCounterType::counter);
+
+    // Emplace
+    ASSERT_EQ(0, InstanceCounterType::counter);
+    {  // IMPORTANT SCOPE, don't remove.
+        // This will be destroyed when we go out of scope
+        InstanceCounterType aa{1};
+        ASSERT_EQ(1, InstanceCounterType::counter);
+        v1.emplace(TestEnum1::ONE, aa);
+        ASSERT_EQ(1, v1.size());
+        ASSERT_EQ(2, InstanceCounterType::counter);
+        v1.emplace(TestEnum1::ONE, aa);
+        v1.emplace(TestEnum1::ONE, aa);
+        v1.emplace(TestEnum1::ONE, aa);
+        ASSERT_EQ(1, v1.size());
+        ASSERT_EQ(2, InstanceCounterType::counter);
+        v1.clear();
+        ASSERT_EQ(0, v1.size());
+        ASSERT_EQ(1, InstanceCounterType::counter);
+    }
+    ASSERT_EQ(0, InstanceCounterType::counter);
+
+    // Try-Emplace
+    ASSERT_EQ(0, InstanceCounterType::counter);
+    {  // IMPORTANT SCOPE, don't remove.
+        // This will be destroyed when we go out of scope
+        InstanceCounterType aa{1};
+        ASSERT_EQ(1, InstanceCounterType::counter);
+        v1.try_emplace(TestEnum1::ONE, aa);
+        ASSERT_EQ(1, v1.size());
+        ASSERT_EQ(2, InstanceCounterType::counter);
+        v1.try_emplace(TestEnum1::ONE, aa);
+        v1.try_emplace(TestEnum1::ONE, aa);
+        v1.try_emplace(TestEnum1::ONE, InstanceCounterType{1});
+        ASSERT_EQ(1, v1.size());
+        ASSERT_EQ(2, InstanceCounterType::counter);
+        v1.clear();
+        ASSERT_EQ(0, v1.size());
+        ASSERT_EQ(1, InstanceCounterType::counter);
+    }
+    ASSERT_EQ(0, InstanceCounterType::counter);
+
+    // Erase with iterators
+    {
+        v1[TestEnum1::ONE] = InstanceCounterType{1};
+        v1[TestEnum1::TWO] = InstanceCounterType{2};
+        v1[TestEnum1::THREE] = InstanceCounterType{3};
+        v1[TestEnum1::FOUR] = InstanceCounterType{4};
+
+        ASSERT_EQ(4, v1.size());
+        ASSERT_EQ(4, InstanceCounterType::counter);
+        v1.erase(v1.begin());
+        ASSERT_EQ(3, v1.size());
+        ASSERT_EQ(3, InstanceCounterType::counter);
+        v1.erase(std::next(v1.begin(), 2), std::next(v1.begin(), 3));
+        ASSERT_EQ(2, v1.size());
+        ASSERT_EQ(2, InstanceCounterType::counter);
+        v1.erase(v1.cbegin());
+        ASSERT_EQ(1, v1.size());
+        ASSERT_EQ(1, InstanceCounterType::counter);
+
+        v1[TestEnum1::ONE] = InstanceCounterType{1};
+        v1.erase(v1.begin(), v1.end());
+        ASSERT_EQ(0, v1.size());
+        ASSERT_EQ(0, InstanceCounterType::counter);
+    }
+
+    // Erase with key
+    {
+        v1[TestEnum1::ONE] = InstanceCounterType{1};
+        v1[TestEnum1::TWO] = InstanceCounterType{2};
+        v1[TestEnum1::THREE] = InstanceCounterType{3};
+        v1[TestEnum1::FOUR] = InstanceCounterType{4};
+
+        ASSERT_EQ(4, v1.size());
+        ASSERT_EQ(4, InstanceCounterType::counter);
+        v1.erase(TestEnum1::ONE);
+        ASSERT_EQ(3, v1.size());
+        ASSERT_EQ(3, InstanceCounterType::counter);
+        v1.erase(TestEnum1::ONE);  // not in map
+        ASSERT_EQ(3, v1.size());
+        ASSERT_EQ(3, InstanceCounterType::counter);
+        v1.erase(TestEnum1::THREE);
+        ASSERT_EQ(2, v1.size());
+        ASSERT_EQ(2, InstanceCounterType::counter);
+        v1.clear();
+        ASSERT_EQ(0, v1.size());
+        ASSERT_EQ(0, InstanceCounterType::counter);
+    }
+
+    ASSERT_EQ(0, InstanceCounterType::counter);
+    v1[TestEnum1::ONE] = InstanceCounterType{1};
+    v1[TestEnum1::TWO] = InstanceCounterType{2};
+    ASSERT_EQ(2, InstanceCounterType::counter);
+
+    {  // IMPORTANT SCOPE, don't remove.
+        MapOfInstanceCounterType v2{v1};
+        ASSERT_EQ(4, InstanceCounterType::counter);
+    }
+    ASSERT_EQ(2, InstanceCounterType::counter);
+
+    {  // IMPORTANT SCOPE, don't remove.
+        MapOfInstanceCounterType v2 = v1;
+        ASSERT_EQ(4, InstanceCounterType::counter);
+        v1 = v2;
+        ASSERT_EQ(4, InstanceCounterType::counter);
+    }
+    ASSERT_EQ(2, InstanceCounterType::counter);
+
+    {  // IMPORTANT SCOPE, don't remove.
+        MapOfInstanceCounterType v2{std::move(v1)};
+        ASSERT_EQ(2, InstanceCounterType::counter);
+    }
+    ASSERT_EQ(0, InstanceCounterType::counter);
+    v1[TestEnum1::ONE] = InstanceCounterType{1};
+    v1[TestEnum1::TWO] = InstanceCounterType{2};
+    ASSERT_EQ(2, InstanceCounterType::counter);
+
+    {  // IMPORTANT SCOPE, don't remove.
+        MapOfInstanceCounterType v2 = std::move(v1);
+        ASSERT_EQ(2, InstanceCounterType::counter);
+    }
+    ASSERT_EQ(0, InstanceCounterType::counter);
+
+    // Lookup
+    {
+        v1[TestEnum1::ONE] = InstanceCounterType{1};
+        v1[TestEnum1::TWO] = InstanceCounterType{2};
+        v1[TestEnum1::FOUR] = InstanceCounterType{4};
+
+        const auto v2 = v1;
+        ASSERT_EQ(3, v1.size());
+        ASSERT_EQ(3, v2.size());
+        ASSERT_EQ(6, InstanceCounterType::counter);
+
+        (void)v1.find(TestEnum1::ONE);
+        (void)v1.find(TestEnum1::THREE);
+        (void)v2.find(TestEnum1::ONE);
+        (void)v2.find(TestEnum1::THREE);
+        ASSERT_EQ(3, v1.size());
+        ASSERT_EQ(3, v2.size());
+        ASSERT_EQ(6, InstanceCounterType::counter);
+
+        (void)v1.contains(TestEnum1::ONE);
+        (void)v1.contains(TestEnum1::THREE);
+        (void)v2.contains(TestEnum1::ONE);
+        (void)v2.contains(TestEnum1::THREE);
+        ASSERT_EQ(3, v1.size());
+        ASSERT_EQ(3, v2.size());
+        ASSERT_EQ(6, InstanceCounterType::counter);
+
+        (void)v1.count(TestEnum1::ONE);
+        (void)v1.count(TestEnum1::THREE);
+        (void)v2.count(TestEnum1::ONE);
+        (void)v2.count(TestEnum1::THREE);
+        ASSERT_EQ(3, v1.size());
+        ASSERT_EQ(3, v2.size());
+        ASSERT_EQ(6, InstanceCounterType::counter);
+
+        v1.clear();
+        ASSERT_EQ(0, v1.size());
+        ASSERT_EQ(3, InstanceCounterType::counter);
+    }
+
+    ASSERT_EQ(0, InstanceCounterType::counter);
+
+    v1.clear();
+    ASSERT_EQ(0, v1.size());
+    ASSERT_EQ(0, InstanceCounterType::counter);
+}
+
+REGISTER_TYPED_TEST_SUITE_P(EnumMapInstanceCheckFixture, EnumMap_InstanceCheck);
+
+// We want same semantics as std::map, so run it with std::map as well
+using EnumMapInstanceCheckTypes =
+    testing::Types<std::map<TestEnum1, InstanceCounterNonTrivialAssignment>,
+                   std::map<TestEnum1, InstanceCounterTrivialAssignment>,
+                   EnumMap<TestEnum1, InstanceCounterNonTrivialAssignment>,
+                   EnumMap<TestEnum1, InstanceCounterTrivialAssignment>>;
+
+INSTANTIATE_TYPED_TEST_SUITE_P(Utilities,
+                               EnumMapInstanceCheckFixture,
+                               EnumMapInstanceCheckTypes,
+                               NameProviderForTypeParameterizedTest);
 
 }  // namespace fixed_containers

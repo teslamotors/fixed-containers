@@ -34,8 +34,10 @@ cc_library(
     includes = ["include"],
     deps = [
         ":concepts",
+        ":constexpr_support",
         ":enum_utils",
         ":index_range_predicate_iterator",
+        ":optional_storage",
         ":pair_view",
         ":preconditions",
         ":type_name",
@@ -201,6 +203,7 @@ cc_test(
         ":fixed_vector",
         ":enums_test_common",
         ":mock_testing_types",
+        ":test_utilities_common",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
         "@com_github_ericniebler_range-v3//:range-v3",
