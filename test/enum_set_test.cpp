@@ -1,6 +1,7 @@
 #include "fixed_containers/enum_set.hpp"
 
 #include "enums_test_common.hpp"
+#include "test_utilities_common.hpp"
 
 #include "fixed_containers/consteval_compare.hpp"
 
@@ -250,23 +251,23 @@ TEST(Utilities, EnumSet_InsertMultipleTimes)
         EnumSet<TestEnum1> s{};
         {
             auto [it, was_inserted] = s.insert(TestEnum1::TWO);
-            assert(was_inserted);
-            assert(TestEnum1::TWO == *it);
+            assert_or_abort(was_inserted);
+            assert_or_abort(TestEnum1::TWO == *it);
         }
         {
             auto [it, was_inserted] = s.insert(TestEnum1::FOUR);
-            assert(was_inserted);
-            assert(TestEnum1::FOUR == *it);
+            assert_or_abort(was_inserted);
+            assert_or_abort(TestEnum1::FOUR == *it);
         }
         {
             auto [it, was_inserted] = s.insert(TestEnum1::TWO);
-            assert(!was_inserted);
-            assert(TestEnum1::TWO == *it);
+            assert_or_abort(!was_inserted);
+            assert_or_abort(TestEnum1::TWO == *it);
         }
         {
             auto [it, was_inserted] = s.insert(TestEnum1::FOUR);
-            assert(!was_inserted);
-            assert(TestEnum1::FOUR == *it);
+            assert_or_abort(!was_inserted);
+            assert_or_abort(TestEnum1::FOUR == *it);
         }
         return s;
     }();
@@ -334,9 +335,9 @@ TEST(Utilities, EnumSet_Erase)
     {
         EnumSet<TestEnum1> s{TestEnum1::TWO, TestEnum1::FOUR};
         auto removed_count = s.erase(TestEnum1::TWO);
-        assert(removed_count == 1);
+        assert_or_abort(removed_count == 1);
         removed_count = s.erase(TestEnum1::THREE);
-        assert(removed_count == 0);
+        assert_or_abort(removed_count == 0);
         return s;
     }();
 
@@ -355,13 +356,13 @@ TEST(Utilities, EnumSet_EraseIterator)
         {
             auto it = s.begin();
             auto next = s.erase(it);
-            assert(*next == TestEnum1::THREE);
+            assert_or_abort(*next == TestEnum1::THREE);
         }
 
         {
             auto it = s.cbegin();
             auto next = s.erase(it);
-            assert(*next == TestEnum1::FOUR);
+            assert_or_abort(*next == TestEnum1::FOUR);
         }
         return s;
     }();
@@ -394,7 +395,7 @@ TEST(Utilities, EnumSet_EraseRange)
             auto to = s.begin();
             std::advance(to, 2);
             auto next = s.erase(from, to);
-            assert(*next == TestEnum1::FOUR);
+            assert_or_abort(*next == TestEnum1::FOUR);
             return s;
         }();
 
@@ -411,7 +412,7 @@ TEST(Utilities, EnumSet_EraseRange)
             auto from = s.begin();
             auto to = s.begin();
             auto next = s.erase(from, to);
-            assert(*next == TestEnum1::TWO);
+            assert_or_abort(*next == TestEnum1::TWO);
             return s;
         }();
 
@@ -428,7 +429,7 @@ TEST(Utilities, EnumSet_EraseRange)
             auto from = s.begin();
             auto to = s.end();
             auto next = s.erase(from, to);
-            assert(next == s.end());
+            assert_or_abort(next == s.end());
             return s;
         }();
 

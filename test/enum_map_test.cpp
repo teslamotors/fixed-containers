@@ -273,27 +273,27 @@ TEST(Utilities, EnumMap_InsertMultipleTimes)
         EnumMap<TestEnum1, int> s{};
         {
             auto [it, was_inserted] = s.insert({TestEnum1::TWO, 20});
-            assert(was_inserted);
-            assert(TestEnum1::TWO == it->first());
-            assert(20 == it->second());
+            assert_or_abort(was_inserted);
+            assert_or_abort(TestEnum1::TWO == it->first());
+            assert_or_abort(20 == it->second());
         }
         {
             auto [it, was_inserted] = s.insert({TestEnum1::FOUR, 40});
-            assert(was_inserted);
-            assert(TestEnum1::FOUR == it->first());
-            assert(40 == it->second());
+            assert_or_abort(was_inserted);
+            assert_or_abort(TestEnum1::FOUR == it->first());
+            assert_or_abort(40 == it->second());
         }
         {
             auto [it, was_inserted] = s.insert({TestEnum1::TWO, 99999});
-            assert(!was_inserted);
-            assert(TestEnum1::TWO == it->first());
-            assert(20 == it->second());
+            assert_or_abort(!was_inserted);
+            assert_or_abort(TestEnum1::TWO == it->first());
+            assert_or_abort(20 == it->second());
         }
         {
             auto [it, was_inserted] = s.insert({TestEnum1::FOUR, 88888});
-            assert(!was_inserted);
-            assert(TestEnum1::FOUR == it->first());
-            assert(40 == it->second());
+            assert_or_abort(!was_inserted);
+            assert_or_abort(TestEnum1::FOUR == it->first());
+            assert_or_abort(40 == it->second());
         }
         return s;
     }();
@@ -346,29 +346,29 @@ TEST(Utilities, EnumMap_InsertOrAssign)
         EnumMap<TestEnum1, int> s{};
         {
             auto [it, was_inserted] = s.insert_or_assign(TestEnum1::TWO, 20);
-            assert(was_inserted);
-            assert(TestEnum1::TWO == it->first());
-            assert(20 == it->second());
+            assert_or_abort(was_inserted);
+            assert_or_abort(TestEnum1::TWO == it->first());
+            assert_or_abort(20 == it->second());
         }
         {
             const TestEnum1 key = TestEnum1::FOUR;
             auto [it, was_inserted] = s.insert_or_assign(key, 40);
-            assert(was_inserted);
-            assert(TestEnum1::FOUR == it->first());
-            assert(40 == it->second());
+            assert_or_abort(was_inserted);
+            assert_or_abort(TestEnum1::FOUR == it->first());
+            assert_or_abort(40 == it->second());
         }
         {
             auto [it, was_inserted] = s.insert_or_assign(TestEnum1::TWO, 99999);
-            assert(!was_inserted);
-            assert(TestEnum1::TWO == it->first());
-            assert(99999 == it->second());
+            assert_or_abort(!was_inserted);
+            assert_or_abort(TestEnum1::TWO == it->first());
+            assert_or_abort(99999 == it->second());
         }
         {
             const TestEnum1 key = TestEnum1::FOUR;
             auto [it, was_inserted] = s.insert_or_assign(key, 88888);
-            assert(!was_inserted);
-            assert(TestEnum1::FOUR == it->first());
-            assert(88888 == it->second());
+            assert_or_abort(!was_inserted);
+            assert_or_abort(TestEnum1::FOUR == it->first());
+            assert_or_abort(88888 == it->second());
         }
         return s;
     }();
@@ -481,9 +481,9 @@ TEST(Utilities, EnumMap_Erase)
     {
         EnumMap<TestEnum1, int> s{{TestEnum1::TWO, 20}, {TestEnum1::FOUR, 40}};
         auto removed_count = s.erase(TestEnum1::TWO);
-        assert(removed_count == 1);
+        assert_or_abort(removed_count == 1);
         removed_count = s.erase(TestEnum1::THREE);
-        assert(removed_count == 0);
+        assert_or_abort(removed_count == 0);
         return s;
     }();
 
@@ -503,15 +503,15 @@ TEST(Utilities, EnumMap_EraseIterator)
         {
             auto it = s.begin();
             auto next = s.erase(it);
-            assert(next->first() == TestEnum1::THREE);
-            assert(next->second() == 30);
+            assert_or_abort(next->first() == TestEnum1::THREE);
+            assert_or_abort(next->second() == 30);
         }
 
         {
             auto it = s.cbegin();
             auto next = s.erase(it);
-            assert(next->first() == TestEnum1::FOUR);
-            assert(next->second() == 40);
+            assert_or_abort(next->first() == TestEnum1::FOUR);
+            assert_or_abort(next->second() == 40);
         }
         return s;
     }();
@@ -545,8 +545,8 @@ TEST(Utilities, EnumMap_EraseRange)
             auto to = s.begin();
             std::advance(to, 2);
             auto next = s.erase(from, to);
-            assert(next->first() == TestEnum1::FOUR);
-            assert(next->second() == 40);
+            assert_or_abort(next->first() == TestEnum1::FOUR);
+            assert_or_abort(next->second() == 40);
             return s;
         }();
 
@@ -563,8 +563,8 @@ TEST(Utilities, EnumMap_EraseRange)
             auto from = s.begin();
             auto to = s.begin();
             auto next = s.erase(from, to);
-            assert(next->first() == TestEnum1::TWO);
-            assert(next->second() == 20);
+            assert_or_abort(next->first() == TestEnum1::TWO);
+            assert_or_abort(next->second() == 20);
             return s;
         }();
 
@@ -581,7 +581,7 @@ TEST(Utilities, EnumMap_EraseRange)
             auto from = s.begin();
             auto to = s.end();
             auto next = s.erase(from, to);
-            assert(next == s.end());
+            assert_or_abort(next == s.end());
             return s;
         }();
 
@@ -770,16 +770,16 @@ TEST(Utilities, EnumMap_IteratorAssignment)
         {
             EnumMap<TestEnum1, int>::const_iterator it;  // Default construction
             it = s.cbegin();
-            assert(it == s.begin());  // Asserts are just to make the value used.
+            assert_or_abort(it == s.begin());  // Asserts are just to make the value used.
 
             it = s.cend();
-            assert(it == s.cend());
+            assert_or_abort(it == s.cend());
 
             {
                 EnumMap<TestEnum1, int>::iterator non_const_it;  // Default construction
                 non_const_it = s.end();
                 it = non_const_it;  // Non-const needs to be assignable to const
-                assert(it == s.end());
+                assert_or_abort(it == s.end());
             }
 
             for (it = s.cbegin(); it != s.cend(); it++)
@@ -796,13 +796,13 @@ TEST(Utilities, EnumMap_IteratorAssignment)
         }
         {
             EnumMap<TestEnum1, int>::iterator it = s.begin();
-            assert(it == s.begin());  // Asserts are just to make the value used.
+            assert_or_abort(it == s.begin());  // Asserts are just to make the value used.
 
             // Const should not be assignable to non-const
             // it = s.cend();
 
             it = s.end();
-            assert(it == s.end());
+            assert_or_abort(it == s.end());
 
             for (it = s.begin(); it != s.end(); it++)
             {
