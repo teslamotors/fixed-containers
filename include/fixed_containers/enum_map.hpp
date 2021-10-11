@@ -327,7 +327,7 @@ public:
 
         size_++;
         array_set_[ordinal] = true;
-        constexpr_support::emplace(values_[ordinal], value.second);
+        constexpr_support::emplace_homogeneous(values_[ordinal], value.second);
         return {create_iterator(ordinal), true};
     }
     constexpr std::pair<iterator, bool> insert(value_type&& value) noexcept
@@ -340,7 +340,7 @@ public:
 
         size_++;
         array_set_[ordinal] = true;
-        constexpr_support::emplace(values_[ordinal], std::move(value.second));
+        constexpr_support::emplace_homogeneous(values_[ordinal], std::move(value.second));
         return {create_iterator(ordinal), true};
     }
 
@@ -389,7 +389,7 @@ public:
 
         size_++;
         array_set_[ordinal] = true;
-        constexpr_support::emplace(values_[ordinal], std::forward<Args>(args)...);
+        constexpr_support::emplace_homogeneous(values_[ordinal], std::forward<Args>(args)...);
         return {create_iterator(ordinal), true};
     }
 
@@ -514,7 +514,9 @@ private:
 
         size_++;
         array_set_[ordinal] = true;
-        constexpr_support::emplace(values_[ordinal], V{});
+        // Use "heterogeneous" flavor to avoid creating a temporary copy of OptionalStorage<V> on
+        // the stack when operator[] is used.
+        constexpr_support::emplace_default_constructed_heterogeneous<V>(values_[ordinal]);
     }
 
     constexpr iterator create_iterator(const std::size_t start_index) noexcept

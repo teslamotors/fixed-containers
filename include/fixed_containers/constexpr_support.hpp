@@ -5,6 +5,29 @@
 #include <type_traits>
 #include <utility>
 
+namespace fixed_containers::constexpr_support_detail
+{
+template <class Target, class ValueTypeToConstruct = Target, class... Args>
+constexpr void emplace(Target& to, Args&&... args) noexcept requires
+    TriviallyMoveAssignable<Target> && TriviallyDestructible<Target>
+{
+    if (std::is_constant_evaluated())
+    {
+        to = ValueTypeToConstruct(std::forward<Args>(args)...);
+    }
+    else
+    {
+        new (&to) ValueTypeToConstruct(std::forward<Args>(args)...);
+    }
+}
+template <class Target, class ValueTypeToConstruct = Target, class... Args>
+/*not-constexpr*/ void emplace(Target& to, Args&&... args) noexcept
+{
+    new (&to) ValueTypeToConstruct(std::forward<Args>(args)...);
+}
+
+}  // namespace fixed_containers::constexpr_support_detail
+
 namespace fixed_containers::constexpr_support
 {
 // NOTE for the following functions:
@@ -52,23 +75,26 @@ template <class T>
     new (&to) T(std::move(from));
 }
 
-template <class T, class... Args>
-constexpr void emplace(T& to, Args&&... args) noexcept requires TriviallyMoveAssignable<T> &&
-    TriviallyDestructible<T>
+template <class Target, class... Args>
+constexpr void emplace_homogeneous(Target& to, Args&&... args)
 {
-    if (std::is_constant_evaluated())
-    {
-        to = T(std::forward<Args>(args)...);
-    }
-    else
-    {
-        new (&to) T(std::forward<Args>(args)...);
-    }
+    constexpr_support_detail::emplace(to, std::forward<Args>(args)...);
 }
-template <class T, class... Args>
-/*not-constexpr*/ void emplace(T& to, Args&&... args) noexcept
+template <class ValueTypeToConstruct, class Target, class... Args>
+constexpr void emplace_heterogeneous(Target& to, Args&&... args)
 {
-    new (&to) T(std::forward<Args>(args)...);
+    constexpr_support_detail::emplace<Target, ValueTypeToConstruct>(to,
+                                                                    std::forward<Args>(args)...);
+}
+template <DefaultConstructible ValueTypeToConstruct, class Target>
+constexpr void emplace_default_constructed_homogeneous(Target& to)
+{
+    emplace_homogeneous(to);
+}
+template <DefaultConstructible ValueTypeToConstruct, class Target>
+constexpr void emplace_default_constructed_heterogeneous(Target& to)
+{
+    emplace_heterogeneous<ValueTypeToConstruct>(to);
 }
 
 template <class T>
