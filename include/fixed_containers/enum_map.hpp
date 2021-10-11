@@ -196,7 +196,7 @@ public:
     using difference_type = typename KeyArrayType::difference_type;
 
 public:
-    template <class EnumMapType, class Container>
+    template <class Container, class EnumMapType>
     static constexpr EnumMapType create_with_keys(const Container& sp, const V& value)
     {
         EnumMapType output{};
@@ -583,18 +583,22 @@ public:
 public:
     using Builder = enum_map_detail::EnumMapBuilder<K, V, Self>;
 
-    template <class Container>
-    static constexpr Self create_with_keys(const Container& sp, const V& value = V())
+    template <class Container, class EnumMapType = Self>
+    static constexpr EnumMapType create_with_keys(const Container& sp, const V& value = V())
     {
-        return Base::template create_with_keys<Self>(sp, value);
+        return Base::template create_with_keys<Container, EnumMapType>(sp, value);
     }
 
-    static constexpr Self create_with_all_entries(std::initializer_list<value_type> pairs,
-                                                  const std::experimental::source_location& loc =
-                                                      std::experimental::source_location::current())
+    template <class EnumMapType = Self>
+    static constexpr EnumMapType create_with_all_entries(
+        std::initializer_list<value_type> pairs,
+        const std::experimental::source_location& loc =
+            std::experimental::source_location::current())
     {
-        return Base::template create_with_all_entries<Self>(pairs, loc);
+        return Base::template create_with_all_entries<EnumMapType>(pairs, loc);
     }
+
+    static constexpr std::size_t max_size() noexcept { return Base::max_size(); }
 
     using Base::Base;
 };
@@ -626,18 +630,22 @@ public:
 public:
     using Builder = enum_map_detail::EnumMapBuilder<K, V, EnumMap<K, V, CheckingType>>;
 
-    template <class Container>
-    static constexpr Self create_with_keys(const Container& sp, const V& value = V())
+    template <class Container, class EnumMapType = Self>
+    static constexpr EnumMapType create_with_keys(const Container& sp, const V& value = V())
     {
-        return Base::template create_with_keys<Self>(sp, value);
+        return Base::template create_with_keys<Container, EnumMapType>(sp, value);
     }
 
-    static constexpr Self create_with_all_entries(std::initializer_list<value_type> pairs,
-                                                  const std::experimental::source_location& loc =
-                                                      std::experimental::source_location::current())
+    template <class EnumMapType = Self>
+    static constexpr EnumMapType create_with_all_entries(
+        std::initializer_list<value_type> pairs,
+        const std::experimental::source_location& loc =
+            std::experimental::source_location::current())
     {
-        return Base::template create_with_all_entries<Self>(pairs, loc);
+        return Base::template create_with_all_entries<EnumMapType>(pairs, loc);
     }
+
+    static constexpr std::size_t max_size() noexcept { return Base::max_size(); }
 
     using Base::Base;
 
