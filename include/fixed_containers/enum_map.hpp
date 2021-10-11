@@ -598,8 +598,6 @@ public:
         return Base::template create_with_all_entries<EnumMapType>(pairs, loc);
     }
 
-    static constexpr std::size_t max_size() noexcept { return Base::max_size(); }
-
     using Base::Base;
 };
 }  // namespace fixed_containers::enum_map_detail::trivially_copyable
@@ -644,8 +642,6 @@ public:
     {
         return Base::template create_with_all_entries<EnumMapType>(pairs, loc);
     }
-
-    static constexpr std::size_t max_size() noexcept { return Base::max_size(); }
 
     using Base::Base;
 
