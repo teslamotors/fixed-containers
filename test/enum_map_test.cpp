@@ -258,6 +258,45 @@ TEST(Utilities, EnumMap_OperatorBracket_NonConstexpr)
     ASSERT_TRUE(s1.contains(TestEnum1::FOUR));
 }
 
+namespace
+{
+struct ConstructionCounter
+{
+    static int counter;
+    using Self = ConstructionCounter;
+
+    int value;
+
+    explicit ConstructionCounter(int value_in_ctor = 0)
+      : value{value_in_ctor}
+    {
+        counter++;
+    }
+    ConstructionCounter(const Self& other)
+      : value{other.value}
+    {
+        counter++;
+    }
+    ConstructionCounter& operator=(const Self& other) = default;
+};
+int ConstructionCounter::counter = 0;
+}  // namespace
+
+TEST(Utilities, EnumMap_OperatorBracket_EnsureNoUnnecessaryTemporaries)
+{
+    EnumMap<TestEnum1, ConstructionCounter> s1{};
+    ASSERT_EQ(0, ConstructionCounter::counter);
+    ConstructionCounter instance1{25};
+    ConstructionCounter instance2{35};
+    ASSERT_EQ(2, ConstructionCounter::counter);
+    s1[TestEnum1::TWO] = instance1;
+    ASSERT_EQ(3, ConstructionCounter::counter);
+    s1[TestEnum1::FOUR] = s1.at(TestEnum1::TWO);
+    ASSERT_EQ(4, ConstructionCounter::counter);
+    s1[TestEnum1::FOUR] = instance2;
+    ASSERT_EQ(4, ConstructionCounter::counter);
+}
+
 TEST(Utilities, EnumMap_Insert)
 {
     constexpr auto s1 = []()
