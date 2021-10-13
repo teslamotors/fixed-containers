@@ -250,7 +250,7 @@ public:
 #define FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(RichEnumName, CONSTANT_NAME) \
     static constexpr const RichEnumName& CONSTANT_NAME()                            \
     {                                                                               \
-        return ::fixed_containers::rich_enums_detail::value_of<RichEnumName>(      \
+        return ::fixed_containers::rich_enums_detail::value_of<RichEnumName>(       \
                    BackingEnum::CONSTANT_NAME)                                      \
             .value();                                                               \
     }
