@@ -180,7 +180,7 @@ NonConformingTestRichEnum1::all_values()
 }
 
 template <>
-struct RichEnumAdapter<NonConformingTestRichEnum1>
+struct EnumAdapter<NonConformingTestRichEnum1>
 {
     using Enum = NonConformingTestRichEnum1;
     static constexpr std::size_t count() { return NonConformingTestRichEnum1::size(); }

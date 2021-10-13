@@ -126,6 +126,29 @@ concept is_enum_adapter = has_enum_typename<T> && has_static_sizet_count_void<T>
     has_static_std_string_view_to_string_r<T, typename T::Enum> &&
     has_zero_based_and_sorted_contiguous_ordinal(T::values(), RichEnumAdapterOrdinalFunctor<T>{});
 
+template <is_enum T>
+struct BuiltinEnumAdapter
+{
+    using Enum = T;
+    static constexpr std::size_t count() { return magic_enum::enum_count<T>(); }
+    static constexpr const std::array<T, count()>& values() { return magic_enum::enum_values<T>(); }
+    static constexpr std::size_t ordinal(const T& key)
+    {
+        return magic_enum::enum_index(key).value();
+    }
+    static constexpr std::string_view to_string(const T& key) { return magic_enum::enum_name(key); }
+};
+
+template <is_rich_enum T>
+struct RichEnumAdapter
+{
+    using Enum = T;
+    static constexpr std::size_t count() { return T::count(); }
+    static constexpr const std::array<T, count()>& values() { return T::values(); }
+    static constexpr std::size_t ordinal(const T& key) { return key.ordinal(); }
+    static constexpr std::string_view to_string(const T& key) { return key.to_string(); }
+};
+
 template <class RichEnum>
 constexpr std::optional<std::reference_wrapper<const RichEnum>> value_of(std::size_t i)
 {
@@ -267,56 +290,33 @@ template <class T>
 concept is_enum_adapter = rich_enums_detail::is_enum_adapter<T>;
 
 /**
- * Adapter for builtin `enum`s and `enum class`es, i.e. types that meet the std::is_enum
- * type trait.
+ * Adapter for any enum or enum-like class. Implementation for enums and rich enums is
+ * provided. To create an adapter for a custom type or custom behavior for a specific enum,
+ * specialize this struct.
  *
- * Enum-related types like EnumSet & EnumMap use this adapter automatically so users generally don't
- * have to deal with this type.
- *
- * While in the majority of cases this adapter should be sufficient and will just transparently
- * work, it is possible to provide a specialization if behavior different than what magic_enum
- * provides is desired.
+ * Enum-related utilities like EnumSet & EnumMap use this adapter internally to support any type of
+ * enum.
  */
 template <class T>
-struct BuiltinEnumAdapter
+struct EnumAdapter
 {
-    static_assert(std::is_enum_v<T>);
-
-    using Enum = T;
-    static constexpr std::size_t count() { return magic_enum::enum_count<T>(); }
-    static constexpr const std::array<T, count()>& values() { return magic_enum::enum_values<T>(); }
-    static constexpr std::size_t ordinal(const T& key)
-    {
-        return magic_enum::enum_index(key).value();
-    }
-    static constexpr std::string_view to_string(const T& key) { return magic_enum::enum_name(key); }
+    // Empty so the template can be instantiated but doesn't fulfil any of the traits.
 };
 
-/**
- * Adapter for rich enums, i.e. classes with compile-time known members and functionality.
- *
- * Enum-related utilities like EnumSet & EnumMap use this adapter automatically iff the type meets
- * the fixed_containers::is_rich_enum type trait.
- *
- * If a type has different function names and/or properties than fixed_containers::is_rich_enum
- * requires, a template specialization of this adapter can be used to make the type compatible.
- */
-template <class T>
-struct RichEnumAdapter
+template <is_enum T>
+struct EnumAdapter<T> : public rich_enums_detail::BuiltinEnumAdapter<T>
 {
-    using Enum = T;
-    static constexpr std::size_t count() { return T::count(); }
-    static constexpr const std::array<T, count()>& values() { return T::values(); }
-    static constexpr std::size_t ordinal(const T& key) { return key.ordinal(); }
-    static constexpr std::string_view to_string(const T& key) { return key.to_string(); }
+    using Enum = typename rich_enums_detail::BuiltinEnumAdapter<T>::Enum;
+};
+
+template <is_rich_enum T>
+struct EnumAdapter<T> : public rich_enums_detail::RichEnumAdapter<T>
+{
+    using Enum = typename rich_enums_detail::RichEnumAdapter<T>::Enum;
 };
 
 template <class T>
-using EnumAdapter =
-    std::conditional_t<std::is_enum_v<T>, BuiltinEnumAdapter<T>, RichEnumAdapter<T>>;
-
-template <class T>
-concept has_enum_adapter = std::is_class_v<EnumAdapter<T>> && is_enum_adapter<EnumAdapter<T>>;
+concept has_enum_adapter = is_enum_adapter<EnumAdapter<T>>;
 
 template <class RichEnumType>
 class SkeletalRichEnumValues

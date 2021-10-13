@@ -64,92 +64,94 @@ static_assert(rich_enums_detail::has_zero_based_and_sorted_contiguous_ordinal(
     NonConformingTestRichEnum1::all_values(),
     [](const NonConformingTestRichEnum1& key) { return key.index(); }));
 
+static_assert(!has_enum_adapter<std::size_t>);
+
 TEST(Utilities, BuiltinEnumAdapter_Ordinal)
 {
     {
         using E1 = CustomValuesTestEnum1;
 
-        static_assert(4 == BuiltinEnumAdapter<E1>::count());
-        static_assert(0 == BuiltinEnumAdapter<E1>::ordinal(E1::ONE));
-        static_assert(1 == BuiltinEnumAdapter<E1>::ordinal(E1::TWO));
-        static_assert(2 == BuiltinEnumAdapter<E1>::ordinal(E1::THREE));
-        static_assert(3 == BuiltinEnumAdapter<E1>::ordinal(E1::FOUR));
+        static_assert(4 == EnumAdapter<E1>::count());
+        static_assert(0 == EnumAdapter<E1>::ordinal(E1::ONE));
+        static_assert(1 == EnumAdapter<E1>::ordinal(E1::TWO));
+        static_assert(2 == EnumAdapter<E1>::ordinal(E1::THREE));
+        static_assert(3 == EnumAdapter<E1>::ordinal(E1::FOUR));
     }
     {
         using E2 = DefaultValuesTestEnum2;
 
-        static_assert(4 == BuiltinEnumAdapter<E2>::count());
-        static_assert(0 == BuiltinEnumAdapter<E2>::ordinal(E2::ONE));
-        static_assert(1 == BuiltinEnumAdapter<E2>::ordinal(E2::TWO));
-        static_assert(2 == BuiltinEnumAdapter<E2>::ordinal(E2::THREE));
-        static_assert(3 == BuiltinEnumAdapter<E2>::ordinal(E2::FOUR));
+        static_assert(4 == EnumAdapter<E2>::count());
+        static_assert(0 == EnumAdapter<E2>::ordinal(E2::ONE));
+        static_assert(1 == EnumAdapter<E2>::ordinal(E2::TWO));
+        static_assert(2 == EnumAdapter<E2>::ordinal(E2::THREE));
+        static_assert(3 == EnumAdapter<E2>::ordinal(E2::FOUR));
     }
     {
         using E3 = UnsortedContiguousValuesTestEnum3;
 
-        static_assert(4 == BuiltinEnumAdapter<E3>::count());
-        static_assert(0 == BuiltinEnumAdapter<E3>::ordinal(E3::ONE));
-        static_assert(1 == BuiltinEnumAdapter<E3>::ordinal(E3::TWO));
-        static_assert(2 == BuiltinEnumAdapter<E3>::ordinal(E3::THREE));
-        static_assert(3 == BuiltinEnumAdapter<E3>::ordinal(E3::FOUR));
+        static_assert(4 == EnumAdapter<E3>::count());
+        static_assert(0 == EnumAdapter<E3>::ordinal(E3::ONE));
+        static_assert(1 == EnumAdapter<E3>::ordinal(E3::TWO));
+        static_assert(2 == EnumAdapter<E3>::ordinal(E3::THREE));
+        static_assert(3 == EnumAdapter<E3>::ordinal(E3::FOUR));
     }
     {
         using E4 = SortedContiguousValuesTestEnum4;
 
-        static_assert(4 == BuiltinEnumAdapter<E4>::count());
-        static_assert(0 == BuiltinEnumAdapter<E4>::ordinal(E4::ONE));
-        static_assert(1 == BuiltinEnumAdapter<E4>::ordinal(E4::TWO));
-        static_assert(2 == BuiltinEnumAdapter<E4>::ordinal(E4::THREE));
-        static_assert(3 == BuiltinEnumAdapter<E4>::ordinal(E4::FOUR));
+        static_assert(4 == EnumAdapter<E4>::count());
+        static_assert(0 == EnumAdapter<E4>::ordinal(E4::ONE));
+        static_assert(1 == EnumAdapter<E4>::ordinal(E4::TWO));
+        static_assert(2 == EnumAdapter<E4>::ordinal(E4::THREE));
+        static_assert(3 == EnumAdapter<E4>::ordinal(E4::FOUR));
     }
 }
 
 TEST(Utilities, RichEnumAdapter_Ordinal)
 {
-    static_assert(4 == RichEnumAdapter<TestRichEnum1>::count());
-    static_assert(0 == RichEnumAdapter<TestRichEnum1>::ordinal(TestRichEnum1::C_ONE()));
-    static_assert(1 == RichEnumAdapter<TestRichEnum1>::ordinal(TestRichEnum1::C_TWO()));
-    static_assert(2 == RichEnumAdapter<TestRichEnum1>::ordinal(TestRichEnum1::C_THREE()));
-    static_assert(3 == RichEnumAdapter<TestRichEnum1>::ordinal(TestRichEnum1::C_FOUR()));
+    static_assert(4 == EnumAdapter<TestRichEnum1>::count());
+    static_assert(0 == EnumAdapter<TestRichEnum1>::ordinal(TestRichEnum1::C_ONE()));
+    static_assert(1 == EnumAdapter<TestRichEnum1>::ordinal(TestRichEnum1::C_TWO()));
+    static_assert(2 == EnumAdapter<TestRichEnum1>::ordinal(TestRichEnum1::C_THREE()));
+    static_assert(3 == EnumAdapter<TestRichEnum1>::ordinal(TestRichEnum1::C_FOUR()));
 }
 
-TEST(Utilities, SpecializedRichEnumAdapter_Ordinal)
+TEST(Utilities, SpecializedEnumAdapter_Ordinal)
 {
-    static_assert(2 == RichEnumAdapter<NonConformingTestRichEnum1>::count());
-    static_assert(0 == RichEnumAdapter<NonConformingTestRichEnum1>::ordinal(
+    static_assert(2 == EnumAdapter<NonConformingTestRichEnum1>::count());
+    static_assert(0 == EnumAdapter<NonConformingTestRichEnum1>::ordinal(
                            NonConformingTestRichEnum1::NC_ONE()));
-    static_assert(1 == RichEnumAdapter<NonConformingTestRichEnum1>::ordinal(
+    static_assert(1 == EnumAdapter<NonConformingTestRichEnum1>::ordinal(
                            NonConformingTestRichEnum1::NC_TWO()));
 }
 
 TEST(Utilities, BuiltinEnumAdapter_ToSting)
 {
-    static_assert(4 == BuiltinEnumAdapter<CustomValuesTestEnum1>::count());
+    static_assert(4 == EnumAdapter<CustomValuesTestEnum1>::count());
     static_assert("ONE" ==
-                  BuiltinEnumAdapter<CustomValuesTestEnum1>::to_string(CustomValuesTestEnum1::ONE));
+                  EnumAdapter<CustomValuesTestEnum1>::to_string(CustomValuesTestEnum1::ONE));
     static_assert("TWO" ==
-                  BuiltinEnumAdapter<CustomValuesTestEnum1>::to_string(CustomValuesTestEnum1::TWO));
-    static_assert("THREE" == BuiltinEnumAdapter<CustomValuesTestEnum1>::to_string(
-                                 CustomValuesTestEnum1::THREE));
-    static_assert("FOUR" == BuiltinEnumAdapter<CustomValuesTestEnum1>::to_string(
-                                CustomValuesTestEnum1::FOUR));
+                  EnumAdapter<CustomValuesTestEnum1>::to_string(CustomValuesTestEnum1::TWO));
+    static_assert("THREE" ==
+                  EnumAdapter<CustomValuesTestEnum1>::to_string(CustomValuesTestEnum1::THREE));
+    static_assert("FOUR" ==
+                  EnumAdapter<CustomValuesTestEnum1>::to_string(CustomValuesTestEnum1::FOUR));
 }
 
 TEST(Utilities, RichEnumAdapter_ToSting)
 {
-    static_assert(4 == RichEnumAdapter<TestRichEnum1>::count());
-    static_assert("C_ONE" == RichEnumAdapter<TestRichEnum1>::to_string(TestRichEnum1::C_ONE()));
-    static_assert("C_TWO" == RichEnumAdapter<TestRichEnum1>::to_string(TestRichEnum1::C_TWO()));
-    static_assert("C_THREE" == RichEnumAdapter<TestRichEnum1>::to_string(TestRichEnum1::C_THREE()));
-    static_assert("C_FOUR" == RichEnumAdapter<TestRichEnum1>::to_string(TestRichEnum1::C_FOUR()));
+    static_assert(4 == EnumAdapter<TestRichEnum1>::count());
+    static_assert("C_ONE" == EnumAdapter<TestRichEnum1>::to_string(TestRichEnum1::C_ONE()));
+    static_assert("C_TWO" == EnumAdapter<TestRichEnum1>::to_string(TestRichEnum1::C_TWO()));
+    static_assert("C_THREE" == EnumAdapter<TestRichEnum1>::to_string(TestRichEnum1::C_THREE()));
+    static_assert("C_FOUR" == EnumAdapter<TestRichEnum1>::to_string(TestRichEnum1::C_FOUR()));
 }
 
-TEST(Utilities, SpecializedRichEnumAdapter_ToSting)
+TEST(Utilities, SpecializedEnumAdapter_ToSting)
 {
-    static_assert(2 == RichEnumAdapter<NonConformingTestRichEnum1>::count());
-    static_assert("NC_ONE" == RichEnumAdapter<NonConformingTestRichEnum1>::to_string(
+    static_assert(2 == EnumAdapter<NonConformingTestRichEnum1>::count());
+    static_assert("NC_ONE" == EnumAdapter<NonConformingTestRichEnum1>::to_string(
                                   NonConformingTestRichEnum1::NC_ONE()));
-    static_assert("NC_TWO" == RichEnumAdapter<NonConformingTestRichEnum1>::to_string(
+    static_assert("NC_TWO" == EnumAdapter<NonConformingTestRichEnum1>::to_string(
                                   NonConformingTestRichEnum1::NC_TWO()));
 }
 
