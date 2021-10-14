@@ -20,11 +20,10 @@ cc_library(
 
 http_archive(
     name = "com_google_googletest",
-    urls = ["https://github.com/google/googletest/archive/eb6e9273dcf9c6535abb45306afe558aa961e3c3.tar.gz"],
-    strip_prefix = "googletest-eb6e9273dcf9c6535abb45306afe558aa961e3c3",
-    sha256 = "b3e3fe31ac3f201b5b8ca0fa6c730b16a730d55c20741b0c3ec23a433756fd20",
+    urls = ["https://github.com/google/googletest/archive/16f637fbf4ffc3f7a01fa4eceb7906634565242f.tar.gz"],
+    strip_prefix = "googletest-16f637fbf4ffc3f7a01fa4eceb7906634565242f",
+    sha256 = "879a4064738cb3c76a11d449145b442654d7282f3cd0f5f03ec8c3dc862646c6",
     patches = [
-            "//:patches/gtest_wcovered_switch_default.patch",
             "//:patches/gtest_use_maybe_unused_instead_of_attribute_unused.patch",
     ],
 )

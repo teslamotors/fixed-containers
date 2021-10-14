@@ -23,6 +23,5 @@ build --copt -Wno-global-constructors
 build --copt -Wno-padded
 build --copt -Wno-sign-conversion
 # due to gtest
-build --copt -Wno-covered-switch-default
 build --copt -Wno-exit-time-destructors
 build --copt -Wno-used-but-marked-unused

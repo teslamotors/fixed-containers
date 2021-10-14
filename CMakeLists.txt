@@ -29,7 +29,6 @@ SET(DIAGNOSTIC_FLAGS
         -Wno-sign-conversion
 
         # due to gtest
-        -Wno-covered-switch-default
         -Wno-exit-time-destructors
         -Wno-used-but-marked-unused
         )
