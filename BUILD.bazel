@@ -5,6 +5,16 @@ exports_files(["LICENSE"])
 package(default_visibility = ["//visibility:public"])
 
 cc_library(
+    name = "bidirectional_iterator",
+    hdrs = ["include/fixed_containers/bidirectional_iterator.hpp"],
+    includes = ["include"],
+    deps = [
+        ":iterator_utils",
+    ],
+    copts = ["-std=c++20"],
+)
+
+cc_library(
     name = "concepts",
     hdrs = ["include/fixed_containers/concepts.hpp"],
     includes = ["include"],
@@ -63,6 +73,58 @@ cc_library(
     includes = ["include"],
     deps = [
         "@com_github_neargye_magic_enum//:magic_enum",
+    ],
+    copts = ["-std=c++20"],
+)
+
+cc_library(
+    name = "fixed_index_based_storage",
+    hdrs = ["include/fixed_containers/fixed_index_based_storage.hpp"],
+    includes = ["include"],
+    deps = [
+        ":consteval_compare",
+        ":constexpr_support",
+        ":fixed_vector",
+    ],
+    copts = ["-std=c++20"],
+)
+
+cc_library(
+    name = "fixed_map",
+    hdrs = ["include/fixed_containers/fixed_map.hpp",],
+    includes = ["include"],
+    deps = [
+        ":bidirectional_iterator",
+        ":fixed_red_black_tree",
+        ":pair_view",
+    ],
+    copts = ["-std=c++20"],
+)
+
+cc_library(
+    name = "fixed_red_black_tree",
+    hdrs = [
+        "include/fixed_containers/fixed_red_black_tree.hpp",
+        "include/fixed_containers/fixed_red_black_tree_nodes.hpp",
+        "include/fixed_containers/fixed_red_black_tree_ops.hpp",
+        "include/fixed_containers/fixed_red_black_tree_storage.hpp",
+        "include/fixed_containers/fixed_red_black_tree_types.hpp",
+    ],
+    includes = ["include"],
+    deps = [
+        ":concepts",
+        ":fixed_index_based_storage",
+    ],
+    copts = ["-std=c++20"],
+)
+
+cc_library(
+    name = "fixed_set",
+    hdrs = ["include/fixed_containers/fixed_set.hpp"],
+    includes = ["include"],
+    deps = [
+        ":bidirectional_iterator",
+        ":fixed_red_black_tree",
     ],
     copts = ["-std=c++20"],
 )
@@ -234,6 +296,51 @@ cc_test(
         ":enums_test_common",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
+    ],
+    copts = ["-std=c++20"],
+)
+
+cc_test(
+    name = "fixed_map_test",
+    srcs = ["test/fixed_map_test.cpp"],
+    deps = [
+        ":concepts",
+        ":consteval_compare",
+        ":fixed_map",
+        ":mock_testing_types",
+        ":test_utilities_common",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
+        "@com_github_ericniebler_range-v3//:range-v3",
+    ],
+    copts = ["-std=c++20"],
+)
+
+cc_test(
+    name = "fixed_red_black_tree_test",
+    srcs = ["test/fixed_red_black_tree_test.cpp"],
+    deps = [
+        ":concepts",
+        ":consteval_compare",
+        ":fixed_red_black_tree",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
+    ],
+    copts = ["-std=c++20"],
+)
+
+cc_test(
+    name = "fixed_set_test",
+    srcs = ["test/fixed_set_test.cpp"],
+    deps = [
+        ":concepts",
+        ":consteval_compare",
+        ":fixed_set",
+        ":mock_testing_types",
+        ":test_utilities_common",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
+        "@com_github_ericniebler_range-v3//:range-v3",
     ],
     copts = ["-std=c++20"],
 )
