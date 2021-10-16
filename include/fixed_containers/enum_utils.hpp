@@ -437,7 +437,6 @@ public:
     {
         return this->PRIVATE_backing_enum_ == other.PRIVATE_backing_enum_;
     }
-    constexpr bool operator!=(const SkeletalRichEnumLite& other) const { return !(*this == other); }
 
     [[nodiscard]] constexpr bool has_value() const { return PRIVATE_backing_enum_.has_value(); }
 
