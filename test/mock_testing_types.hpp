@@ -173,4 +173,29 @@ struct MockNonTrivialInt
     constexpr bool operator==(const MockNonTrivialInt& other) const { return value == other.value; }
 };
 
+struct MockBComparableToA
+{
+    int value;
+
+    constexpr std::strong_ordering operator<=>(const MockBComparableToA& other) const
+    {
+        return value <=> other.value;
+    }
+};
+
+struct MockAComparableToB
+{
+    int value;
+
+    constexpr std::strong_ordering operator<=>(const MockAComparableToB& other) const
+    {
+        return value <=> other.value;
+    }
+
+    constexpr std::strong_ordering operator<=>(const MockBComparableToA& other) const
+    {
+        return value <=> other.value;
+    }
+};
+
 }  // namespace fixed_containers
