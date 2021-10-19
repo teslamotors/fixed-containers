@@ -158,7 +158,10 @@ private:
     }
 
 public:
-    constexpr std::size_t index() const { return magic_enum::enum_integer(backing_enum_); }
+    constexpr std::size_t index() const
+    {
+        return static_cast<std::size_t>(magic_enum::enum_integer(backing_enum_));
+    }
     constexpr std::string_view str() const { return magic_enum::enum_name(backing_enum_); }
 };
 
@@ -243,7 +246,10 @@ public:
     constexpr NonCopyableRichEnum& operator=(const NonCopyableRichEnum& other) = delete;
 
 public:
-    constexpr std::size_t ordinal() const { return magic_enum::enum_integer(backing_enum_); }
+    constexpr std::size_t ordinal() const
+    {
+        return static_cast<std::size_t>(magic_enum::enum_integer(backing_enum_));
+    }
     constexpr std::string_view to_string() const { return magic_enum::enum_name(backing_enum_); }
 };
 

@@ -366,7 +366,7 @@ public:
         check_not_full(loc);
         const std::size_t index = this->advance_all_after_iterator_by_n(it, 1);
         place_at(index, v);
-        return begin() + index;
+        return begin() + static_cast<difference_type>(index);
     }
     constexpr iterator insert(const_iterator it,
                               value_type&& v,
@@ -376,7 +376,7 @@ public:
         check_not_full(loc);
         const std::size_t index = this->advance_all_after_iterator_by_n(it, 1);
         place_at(index, std::move(v));
-        return begin() + index;
+        return begin() + static_cast<difference_type>(index);
     }
     template <InputIterator InputIt>
     constexpr iterator insert(const_iterator it,
@@ -385,7 +385,7 @@ public:
                               const std::experimental::source_location& loc =
                                   std::experimental::source_location::current())
     {
-        std::size_t entry_count_to_add = std::distance(first, last);
+        const auto entry_count_to_add = static_cast<std::size_t>(std::distance(first, last));
         check_target_size(size_ + entry_count_to_add, loc);
         std::size_t write_index = this->advance_all_after_iterator_by_n(it, entry_count_to_add);
 
@@ -394,7 +394,7 @@ public:
             place_at(write_index, *first);
             write_index++;
         }
-        return begin() + write_index;
+        return begin() + static_cast<difference_type>(write_index);
     }
 
     /**
@@ -407,7 +407,7 @@ public:
         check_not_full(std::experimental::source_location::current());
         const std::size_t index = this->advance_all_after_iterator_by_n(it, 1);
         emplace_at(index, std::forward<Args>(args)...);
-        return begin() + index;
+        return begin() + static_cast<difference_type>(index);
     }
 
     /**
@@ -466,7 +466,7 @@ public:
         }
 
         size_ -= entry_count_to_remove;
-        return iterator{this->begin() + write_start};
+        return iterator{this->begin() + static_cast<difference_type>(write_start)};
     }
 
     /**

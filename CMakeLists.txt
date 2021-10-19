@@ -26,7 +26,6 @@ SET(DIAGNOSTIC_FLAGS
         #
         -Wno-global-constructors
         -Wno-padded
-        -Wno-sign-conversion
 
         # due to gtest
         -Wno-exit-time-destructors
