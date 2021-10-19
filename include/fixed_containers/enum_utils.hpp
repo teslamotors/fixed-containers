@@ -440,6 +440,11 @@ public:
 
     [[nodiscard]] constexpr bool has_value() const { return PRIVATE_backing_enum_.has_value(); }
 
+    [[nodiscard]] constexpr std::size_t ordinal() const
+    {
+        return static_cast<std::size_t>(this->PRIVATE_backing_enum_.value());
+    }
+
 protected:
     // Intentionally non-virtual. Polymorphism breaks standard layout.
     constexpr ~SkeletalRichEnumLite() noexcept = default;
@@ -515,10 +520,6 @@ public:
         return RichEnumType::values()[0];
     }
 
-    [[nodiscard]] constexpr std::size_t ordinal() const
-    {
-        return magic_enum::enum_integer(this->PRIVATE_backing_enum_.value());
-    }
     [[nodiscard]] constexpr std::string_view to_string() const
     {
         if (this->has_value())
