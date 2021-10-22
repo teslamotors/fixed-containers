@@ -13,7 +13,6 @@
 #include <range/v3/view/transform.hpp>
 
 #include <array>
-#include <atomic>
 
 namespace fixed_containers
 {
