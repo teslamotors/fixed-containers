@@ -12,6 +12,7 @@
 #include <range/v3/view/filter.hpp>
 
 #include <iterator>
+#include <memory>
 #include <type_traits>
 #include <utility>
 
@@ -463,6 +464,20 @@ TEST(Utilities, EnumMap_TryEmplace)
     {
         EnumMap<TestEnum1, MockMoveableButNotCopyable> s2{};
         s2.emplace(TestEnum1::ONE, MockMoveableButNotCopyable{});
+    }
+}
+
+TEST(Utilities, EnumMap_TryEmplace_TypeConversion)
+{
+    {
+        int* raw_ptr = new int;
+        EnumMap<TestEnum1, std::unique_ptr<int>> s{};
+        s.try_emplace(TestEnum1::THREE, raw_ptr);
+    }
+    {
+        int* raw_ptr = new int;
+        std::map<TestEnum1, std::unique_ptr<int>> s{};
+        s.try_emplace(TestEnum1::THREE, raw_ptr);
     }
 }
 

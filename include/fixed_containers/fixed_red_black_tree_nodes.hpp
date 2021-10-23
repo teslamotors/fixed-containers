@@ -194,14 +194,19 @@ private:
     NodeIndex right_index_ = NULL_INDEX;
 
 public:
-    // clang-format off
-    explicit constexpr CompactRedBlackTreeNode(const K& k) noexcept : key_(k), value_() {}
-    explicit constexpr CompactRedBlackTreeNode(K&& k) noexcept : key_(std::move(k)), value_() {}
-    constexpr CompactRedBlackTreeNode(const K& k, const V& v) noexcept : key_(k), value_(v) {}
-    constexpr CompactRedBlackTreeNode(const K& k, V&& v) noexcept : key_(k), value_(std::move(v)) {}
-    constexpr CompactRedBlackTreeNode(K&& k, const V& v) noexcept : key_(std::move(k)), value_(v) {}
-    constexpr CompactRedBlackTreeNode(K&& k, V&& v) noexcept : key_(std::move(k)), value_(std::move(v)) {}
-    // clang-format on
+    template <class K0>
+    constexpr CompactRedBlackTreeNode(K0&& k) noexcept
+      : key_(std::forward<K0>(k))
+      , value_()
+    {
+    }
+
+    template <class K0, class V0>
+    constexpr CompactRedBlackTreeNode(K0&& k, V0&& v) noexcept
+      : key_(std::forward<K0>(k))
+      , value_(std::forward<V0>(v))
+    {
+    }
 
     template <class K0, class V0>
     constexpr CompactRedBlackTreeNode(K0&& k,

@@ -12,6 +12,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <memory>
 
 namespace fixed_containers
 {
@@ -296,6 +297,20 @@ TEST(Utilities, FixedMap_TryEmplace)
         ASSERT_FALSE(was_inserted);
         ASSERT_EQ(2, it->first());
         ASSERT_EQ(20, it->second());
+    }
+}
+
+TEST(Utilities, FixedMap_TryEmplace_TypeConversion)
+{
+    {
+        int* raw_ptr = new int;
+        FixedMap<int, std::unique_ptr<int>, 10> s{};
+        s.try_emplace(3, raw_ptr);
+    }
+    {
+        int* raw_ptr = new int;
+        std::map<int, std::unique_ptr<int>> s{};
+        s.try_emplace(3, raw_ptr);
     }
 }
 
