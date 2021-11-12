@@ -35,7 +35,8 @@ public:
     }
 
     constexpr StringLiteral() noexcept
-      : StringLiteral("")
+      : size_(0)
+      , cstr_("")
     {
     }
 

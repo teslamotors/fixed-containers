@@ -13,8 +13,14 @@ static_assert(std::is_standard_layout_v<StringLiteral>);
 
 TEST(Utilities, StringLiteral_DefaultCtor)
 {
-    constexpr StringLiteral ZERO;
-    static_assert(ZERO.size() == 0);
+    {
+        constexpr StringLiteral ZERO;
+        static_assert(ZERO.size() == 0);
+    }
+    {
+        StringLiteral zero{};
+        EXPECT_EQ(0, zero.size());
+    }
 }
 
 TEST(Utilities, StringLiteral_Ctor)
