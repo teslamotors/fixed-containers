@@ -113,7 +113,7 @@ for (const auto& [key, value] : my_map)
 ```
 This syntax works as-is for `FixedMap` and `EnumMap`.
 
-# Building the tests
+# Building and running the tests
 
 ### cmake
 
@@ -129,9 +129,30 @@ cmake .. -DCMAKE_C_COMPILER=/bin/clang-13 -DCMAKE_CXX_COMPILER=/bin/clang++-13 -
 cmake --build .
 ```
 
-### bazel
+3) Run tests
 ```
-CC=clang++-13 bazel build ...
+ctest -C Debug
+```
+
+### bazel
+#### clang
+1) Build
+```
+CC=clang++-13 bazel build --config=clang ...
+```
+2) Run tests
+```
+CC=clang++-13 bazel test --config=clang :all_tests
+```
+#### gcc
+1) Build
+```
+CC=g++-11 bazel build ...
+```
+
+2) Run tests
+```
+CC=g++-11 bazel test :all_tests
 ```
 
 ## Licensed under the [MIT License](LICENSE)

@@ -6,35 +6,57 @@ enable_testing()
 
 #set(CMAKE_VERBOSE_MAKEFILE ON)
 
-SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Werror")
-SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -fno-exceptions -ftrivial-auto-var-init=pattern")
+if("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
+    set(USING_CLANG ON)
+else()
+    set(USING_CLANG OFF)
+endif()
 
-SET(DIAGNOSTIC_FLAGS
+SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Werror")
+SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -fno-exceptions")
+
+if(${USING_CLANG})
+    SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -ftrivial-auto-var-init=pattern")
+endif()
+
+SET(DIAGNOSTIC_FLAGS "")
+if(${USING_CLANG})
+    SET(DIAGNOSTIC_FLAGS ${DIAGNOSTIC_FLAGS}
+        # Only available in clang
         -Weverything
         # Disables C++98 to C++17 compatibility enforcement
         -Wno-c++98-compat-pedantic
         # Re-enable, as it is disabled by the previous one
         -Wc++98-compat-extra-semi
-        # This is failing on the `consteval` keyword for some reason
-        -Wno-c++20-compat
-        # Need stdlib uprev, as even std::vector triggers this
-        -Wno-ctad-maybe-unsupported
+
         # Has false positives
         # https://bugs.llvm.org/show_bug.cgi?id=18733
         # https://stackoverflow.com/questions/56041900/why-does-explicit-template-instantiation-result-in-weak-template-vtables-warning
         -Wno-weak-template-vtables
         #
         -Wno-global-constructors
-        -Wno-padded
 
         # due to gtest
         -Wno-exit-time-destructors
         -Wno-used-but-marked-unused
+    )
+endif()
+
+
+SET(DIAGNOSTIC_FLAGS ${DIAGNOSTIC_FLAGS}
+        -Wall
+        -Wextra
+        -Wpedantic
+        # This is failing on the `consteval` keyword for some reason
+        -Wno-c++20-compat
+        # Need stdlib uprev, as even std::vector triggers this
+        -Wno-ctad-maybe-unsupported
+
+        -Wno-padded
         )
 string (REPLACE ";" " " DIAGNOSTIC_FLAGS "${DIAGNOSTIC_FLAGS}")
 
 SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${DIAGNOSTIC_FLAGS}")
-
 
 find_package(GTest CONFIG REQUIRED)
 
