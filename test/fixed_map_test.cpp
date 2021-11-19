@@ -160,27 +160,27 @@ TEST(Utilities, FixedMap_InsertMultipleTimes)
         FixedMap<int, int, 10> s{};
         {
             auto [it, was_inserted] = s.insert({2, 20});
-            assert(was_inserted);
-            assert(2 == it->first());
-            assert(20 == it->second());
+            assert_or_abort(was_inserted);
+            assert_or_abort(2 == it->first());
+            assert_or_abort(20 == it->second());
         }
         {
             auto [it, was_inserted] = s.insert({4, 40});
-            assert(was_inserted);
-            assert(4 == it->first());
-            assert(40 == it->second());
+            assert_or_abort(was_inserted);
+            assert_or_abort(4 == it->first());
+            assert_or_abort(40 == it->second());
         }
         {
             auto [it, was_inserted] = s.insert({2, 99999});
-            assert(!was_inserted);
-            assert(2 == it->first());
-            assert(20 == it->second());
+            assert_or_abort(!was_inserted);
+            assert_or_abort(2 == it->first());
+            assert_or_abort(20 == it->second());
         }
         {
             auto [it, was_inserted] = s.insert({4, 88888});
-            assert(!was_inserted);
-            assert(4 == it->first());
-            assert(40 == it->second());
+            assert_or_abort(!was_inserted);
+            assert_or_abort(4 == it->first());
+            assert_or_abort(40 == it->second());
         }
         return s;
     }();
@@ -233,29 +233,29 @@ TEST(Utilities, FixedMap_InsertOrAssign)
         FixedMap<int, int, 10> s{};
         {
             auto [it, was_inserted] = s.insert_or_assign(2, 20);
-            assert(was_inserted);
-            assert(2 == it->first());
-            assert(20 == it->second());
+            assert_or_abort(was_inserted);
+            assert_or_abort(2 == it->first());
+            assert_or_abort(20 == it->second());
         }
         {
             const int key = 4;
             auto [it, was_inserted] = s.insert_or_assign(key, 40);
-            assert(was_inserted);
-            assert(4 == it->first());
-            assert(40 == it->second());
+            assert_or_abort(was_inserted);
+            assert_or_abort(4 == it->first());
+            assert_or_abort(40 == it->second());
         }
         {
             auto [it, was_inserted] = s.insert_or_assign(2, 99999);
-            assert(!was_inserted);
-            assert(2 == it->first());
-            assert(99999 == it->second());
+            assert_or_abort(!was_inserted);
+            assert_or_abort(2 == it->first());
+            assert_or_abort(99999 == it->second());
         }
         {
             const int key = 4;
             auto [it, was_inserted] = s.insert_or_assign(key, 88888);
-            assert(!was_inserted);
-            assert(4 == it->first());
-            assert(88888 == it->second());
+            assert_or_abort(!was_inserted);
+            assert_or_abort(4 == it->first());
+            assert_or_abort(88888 == it->second());
         }
         return s;
     }();
@@ -369,9 +369,9 @@ TEST(Utilities, FixedMap_Erase)
     {
         FixedMap<int, int, 10> s{{2, 20}, {4, 40}};
         auto removed_count = s.erase(2);
-        assert(removed_count == 1);
+        assert_or_abort(removed_count == 1);
         removed_count = s.erase(3);
-        assert(removed_count == 0);
+        assert_or_abort(removed_count == 0);
         return s;
     }();
 
@@ -390,15 +390,15 @@ TEST(Utilities, FixedMap_EraseIterator)
         {
             auto it = s.begin();
             auto next = s.erase(it);
-            assert(next->first() == 3);
-            assert(next->second() == 30);
+            assert_or_abort(next->first() == 3);
+            assert_or_abort(next->second() == 30);
         }
 
         {
             auto it = s.cbegin();
             auto next = s.erase(it);
-            assert(next->first() == 4);
-            assert(next->second() == 40);
+            assert_or_abort(next->first() == 4);
+            assert_or_abort(next->second() == 40);
         }
         return s;
     }();
@@ -431,8 +431,8 @@ TEST(Utilities, FixedMap_EraseRange)
             auto to = s.begin();
             std::advance(to, 2);
             auto next = s.erase(from, to);
-            assert(next->first() == 4);
-            assert(next->second() == 40);
+            assert_or_abort(next->first() == 4);
+            assert_or_abort(next->second() == 40);
             return s;
         }();
 
@@ -449,8 +449,8 @@ TEST(Utilities, FixedMap_EraseRange)
             auto from = s.begin();
             auto to = s.begin();
             auto next = s.erase(from, to);
-            assert(next->first() == 2);
-            assert(next->second() == 20);
+            assert_or_abort(next->first() == 2);
+            assert_or_abort(next->second() == 20);
             return s;
         }();
 
@@ -467,7 +467,7 @@ TEST(Utilities, FixedMap_EraseRange)
             auto from = s.begin();
             auto to = s.end();
             auto next = s.erase(from, to);
-            assert(next == s.end());
+            assert_or_abort(next == s.end());
             return s;
         }();
 
@@ -653,18 +653,18 @@ TEST(Utilities, FixedMap_IteratorAssignment)
         {
             FixedMap<int, int, 10>::const_iterator it;  // Default construction
             it = s.cbegin();
-            assert(it == s.begin());
-            assert(it->first() == 2);
-            assert(it->second() == 20);
+            assert_or_abort(it == s.begin());
+            assert_or_abort(it->first() == 2);
+            assert_or_abort(it->second() == 20);
 
             it = s.cend();
-            assert(it == s.cend());
+            assert_or_abort(it == s.cend());
 
             {
                 FixedMap<int, int, 10>::iterator non_const_it;  // Default construction
                 non_const_it = s.end();
                 it = non_const_it;  // Non-const needs to be assignable to const
-                assert(it == s.end());
+                assert_or_abort(it == s.end());
             }
 
             for (it = s.cbegin(); it != s.cend(); it++)
@@ -679,13 +679,13 @@ TEST(Utilities, FixedMap_IteratorAssignment)
         }
         {
             FixedMap<int, int, 10>::iterator it = s.begin();
-            assert(it == s.begin());  // Asserts are just to make the value used.
+            assert_or_abort(it == s.begin());  // Asserts are just to make the value used.
 
             // Const should not be assignable to non-const
             // it = s.cend();
 
             it = s.end();
-            assert(it == s.end());
+            assert_or_abort(it == s.end());
 
             for (it = s.begin(); it != s.end(); it++)
             {

@@ -127,23 +127,23 @@ TEST(Utilities, FixedSet_InsertMultipleTimes)
         FixedSet<int, 10> s{};
         {
             auto [it, was_inserted] = s.insert(2);
-            assert(was_inserted);
-            assert(2 == *it);
+            assert_or_abort(was_inserted);
+            assert_or_abort(2 == *it);
         }
         {
             auto [it, was_inserted] = s.insert(4);
-            assert(was_inserted);
-            assert(4 == *it);
+            assert_or_abort(was_inserted);
+            assert_or_abort(4 == *it);
         }
         {
             auto [it, was_inserted] = s.insert(2);
-            assert(!was_inserted);
-            assert(2 == *it);
+            assert_or_abort(!was_inserted);
+            assert_or_abort(2 == *it);
         }
         {
             auto [it, was_inserted] = s.insert(4);
-            assert(!was_inserted);
-            assert(4 == *it);
+            assert_or_abort(!was_inserted);
+            assert_or_abort(4 == *it);
         }
         return s;
     }();
@@ -211,9 +211,9 @@ TEST(Utilities, FixedSet_Erase)
     {
         FixedSet<int, 10> s{2, 4};
         auto removed_count = s.erase(2);
-        assert(removed_count == 1);
+        assert_or_abort(removed_count == 1);
         removed_count = s.erase(3);
-        assert(removed_count == 0);
+        assert_or_abort(removed_count == 0);
         return s;
     }();
 
@@ -232,13 +232,13 @@ TEST(Utilities, FixedSet_EraseIterator)
         {
             auto it = s.begin();
             auto next = s.erase(it);
-            assert(*next == 3);
+            assert_or_abort(*next == 3);
         }
 
         {
             auto it = s.cbegin();
             auto next = s.erase(it);
-            assert(*next == 4);
+            assert_or_abort(*next == 4);
         }
         return s;
     }();
@@ -271,7 +271,7 @@ TEST(Utilities, FixedSet_EraseRange)
             auto to = s.begin();
             std::advance(to, 2);
             auto next = s.erase(from, to);
-            assert(*next == 4);
+            assert_or_abort(*next == 4);
             return s;
         }();
 
@@ -288,7 +288,7 @@ TEST(Utilities, FixedSet_EraseRange)
             auto from = s.begin();
             auto to = s.begin();
             auto next = s.erase(from, to);
-            assert(*next == 2);
+            assert_or_abort(*next == 2);
             return s;
         }();
 
@@ -305,7 +305,7 @@ TEST(Utilities, FixedSet_EraseRange)
             auto from = s.begin();
             auto to = s.end();
             auto next = s.erase(from, to);
-            assert(next == s.end());
+            assert_or_abort(next == s.end());
             return s;
         }();
 
