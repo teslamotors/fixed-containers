@@ -35,8 +35,11 @@ template <class K,
           class Compare = std::less<K>,
           RedBlackTreeNodeColorCompactness COMPACTNESS =
               RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR(),
-          template <IsFixedIndexBasedStorage, std::size_t> typename StorageTemplate =
-              FixedIndexBasedPoolStorage>
+          template <class /*Would be IsFixedIndexBasedStorage but gcc doesn't like the constraints
+                             here. clang accepts it */
+                    ,
+                    std::size_t>
+          typename StorageTemplate = FixedIndexBasedPoolStorage>
 struct FixedRedBlackTree
 {
 private:

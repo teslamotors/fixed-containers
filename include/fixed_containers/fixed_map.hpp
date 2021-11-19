@@ -55,8 +55,11 @@ template <class K,
           class Compare = std::less<K>,
           fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness COMPACTNESS =
               fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR(),
-          template <IsFixedIndexBasedStorage, std::size_t> typename StorageTemplate =
-              FixedIndexBasedPoolStorage,
+          template <class /*Would be IsFixedIndexBasedStorage but gcc doesn't like the constraints
+                             here. clang accepts it */
+                    ,
+                    std::size_t>
+          typename StorageTemplate = FixedIndexBasedPoolStorage,
           fixed_map_customize::FixedMapChecking<K> CheckingType =
               fixed_map_customize::AbortChecking<K, V, CAPACITY>>
 class FixedMap
