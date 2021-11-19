@@ -208,12 +208,12 @@ TEST(Utilities, RichEnum_BoolNegate)
     {
         constexpr const TestRichEnumBool& F_VALUE = TestRichEnumBool::FALSE_VALUE();
         static_assert(F_VALUE.has_value());
-        static_assert(!F_VALUE == TestRichEnumBool::TRUE_VALUE());
+        static_assert((!F_VALUE) == TestRichEnumBool::TRUE_VALUE());
     }
     {
         constexpr const TestRichEnumBool& T_VALUE = TestRichEnumBool::TRUE_VALUE();
         static_assert(T_VALUE.has_value());
-        static_assert(!T_VALUE == TestRichEnumBool::FALSE_VALUE());
+        static_assert((!T_VALUE) == TestRichEnumBool::FALSE_VALUE());
     }
 }
 
