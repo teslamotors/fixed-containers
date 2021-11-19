@@ -7,6 +7,24 @@
 
 namespace fixed_containers
 {
+/**
+ * A PairView is essentially a pair of references.
+ *
+ * A PairView will propagate its constness to the underlying references. Put differently
+ * a `const` PairView will only provide `const` views.
+ *
+ * For example:
+ * 1) `PairView<const int, double>`
+ * - Cannot modify first. Can modify second.
+ * 2) `const PairView<const int, double>`
+ * - Cannot modify first. Cannot modify second.
+ *
+ * This is different than std::pair<const int&, double&> which would allow modification of the
+ * second parameter either way.
+ *
+ * A notable use of PairView is for maps that don't store a `std::pair<const K, V>` and thus are
+ * unable to return a live pointer to it (e.g. in iterators).
+ */
 template <class K, class V>
 class PairView
 {
