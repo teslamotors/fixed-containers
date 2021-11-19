@@ -13,7 +13,7 @@ enum class Fruit
     ORANGE,
     PEAR,
 };
-}  // test_namespace
+}  // namespace test_namespace
 
 namespace test_namespace2
 {
@@ -30,10 +30,27 @@ TEST(Utilities, type_name_enum)
     EXPECT_EQ(type_name<decltype(fruit_cv)>(), "const volatile test_namespace::Fruit");
     volatile const Fruit fruit_vc{Fruit::ORANGE};
     EXPECT_EQ(type_name<decltype(fruit_vc)>(), "const volatile test_namespace::Fruit");
+
+#ifdef __clang__
     EXPECT_EQ(type_name<decltype(fruit_vc)&>(), "const volatile test_namespace::Fruit &");
+#elif defined(__GNUC__)
+    EXPECT_EQ(type_name<decltype(fruit_vc)&>(), "const volatile test_namespace::Fruit&");
+#endif
+
+#ifdef __clang__
     EXPECT_EQ(type_name<decltype(fruit_vc)*>(), "const volatile test_namespace::Fruit *");
+#elif defined(__GNUC__)
+    EXPECT_EQ(type_name<decltype(fruit_vc)*>(), "const volatile test_namespace::Fruit*");
+#endif
+
     volatile const Fruit* const volatile fruit_vc_ptr{&fruit_vc};
-    EXPECT_EQ(type_name<decltype(fruit_vc_ptr)*&>(), "const volatile test_namespace::Fruit *const volatile *&");
+#ifdef __clang__
+    EXPECT_EQ(type_name<decltype(fruit_vc_ptr)*&>(),
+              "const volatile test_namespace::Fruit *const volatile *&");
+#elif defined(__GNUC__)
+    EXPECT_EQ(type_name<decltype(fruit_vc_ptr)*&>(),
+              "const volatile test_namespace::Fruit* const volatile*&");
+#endif
 }
 
 using MyVariant = std::variant<Fruit, float>;
@@ -44,7 +61,8 @@ TEST(Utilities, type_name_variant)
 
     MyVariant my_variant = 1.0f;
     std::visit(
-        [&](auto v) {
+        [&](auto v)
+        {
             if constexpr (std::is_same_v<decltype(v), float>)
             {
                 EXPECT_EQ(v, 1.0);
@@ -60,4 +78,4 @@ TEST(Utilities, type_name_variant)
 }
 
 }  // namespace
-}  // test_namespac2
+}  // namespace test_namespace2
