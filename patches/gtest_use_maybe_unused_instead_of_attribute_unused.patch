@@ -47,15 +47,6 @@ diff --git googlemock/include/gmock/gmock-spec-builders.h googlemock/include/gmo
 index 41323c1c..dd8c056b 100644
 --- googlemock/include/gmock/gmock-spec-builders.h
 +++ googlemock/include/gmock/gmock-spec-builders.h
-@@ -674,7 +674,7 @@ class GTEST_API_ Sequence {
- // thread.  However, for clarity of your tests we recommend you to set
- // up mocks in the main thread unless you have a good reason not to do
- // so.
--class GTEST_API_ InSequence {
-+class GTEST_API_ [[maybe_unused]] InSequence {
-  public:
-   InSequence();
-   ~InSequence();
 @@ -682,7 +682,7 @@ class GTEST_API_ InSequence {
    bool sequence_created_;
  
@@ -137,15 +128,6 @@ diff --git googletest/include/gtest/gtest.h googletest/include/gtest/gtest.h
 index 5eaf9a1a..d2fbe9af 100644
 --- googletest/include/gtest/gtest.h
 +++ googletest/include/gtest/gtest.h
-@@ -2231,7 +2231,7 @@ GTEST_API_ AssertionResult DoubleLE(const char* expr1, const char* expr2,
- // Example:
- //   testing::ScopedTrace trace("file.cc", 123, "message");
- //
--class GTEST_API_ ScopedTrace {
-+class GTEST_API_ [[maybe_unused]] ScopedTrace {
-  public:
-   // The c'tor pushes the given source file location and message onto
-   // a trace stack maintained by Google Test.
 @@ -2262,7 +2262,7 @@ class GTEST_API_ ScopedTrace {
    void PushTrace(const char* file, int line, std::string message);
  
