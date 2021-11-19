@@ -138,10 +138,9 @@ private:
             std::conditional_t<IS_CONST, const ValueArrayType, ValueArrayType>;
         using ConstOrMutablePairView =
             std::conditional_t<IS_CONST, PairView<const K, const V>, PairView<const K, V>>;
-        using ConstOrMutableReference = std::conditional_t<IS_CONST, const_reference, reference>;
 
         ConstOrMutableValueArray* values_;
-        mutable ConstOrMutablePairView current_;  // Needed for liveness
+        ConstOrMutablePairView current_;  // Needed for liveness
 
         constexpr PairProvider() noexcept
           : PairProvider{nullptr}
@@ -169,7 +168,14 @@ private:
             current_ = ConstOrMutablePairView{&ENUM_VALUES[i], &(*values_)[i].value};
         }
 
-        constexpr ConstOrMutableReference get() const noexcept { return current_; }
+        constexpr const_reference get() const noexcept requires IS_CONST { return current_; }
+        constexpr reference get() const noexcept requires(not IS_CONST)
+        {
+            // The function is tagged `const` and would add a `const` to the returned type.
+            // This is usually fine, but PairView intentionally propagates its constness to each of
+            // its views. Therefore, remove the `const`.
+            return const_cast<reference>(current_);
+        }
     };
 
     struct IndexPredicate

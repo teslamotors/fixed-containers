@@ -531,7 +531,7 @@ TEST(Utilities, FixedMap_IteratorTypes)
         for (const auto& key_and_value : s)
         {
             static_assert(std::is_same_v<decltype(key_and_value), const PairView<const int, int>&>);
-            // key_and_value.second() = 5; Not allowed
+            // key_and_value.second() = 5; // Not allowed
         }
 
         for (auto& key_and_value : s)
@@ -588,15 +588,25 @@ TEST(Utilities, FixedMap_IteratorTypes)
         std::map<int, int> std_map{};
         for (auto&& [key, v] : std_map)
         {
-            (void)key;
-            (void)v;
+            static_assert(std::is_same_v<decltype(key), const int>);
+            static_assert(std::is_same_v<decltype(v), int>);
+        }
+        for (const auto& [key, v] : std_map)
+        {
+            static_assert(std::is_same_v<decltype(key), const int>);
+            static_assert(std::is_same_v<decltype(v), const int>);
         }
 
         FixedMap<int, int, 10> this_map{};
         for (auto&& [key, v] : this_map)
         {
-            (void)key;
-            (void)v;
+            static_assert(std::is_same_v<decltype(key), const int&>);
+            static_assert(std::is_same_v<decltype(v), int&>);
+        }
+        for (const auto& [key, v] : this_map)
+        {
+            static_assert(std::is_same_v<decltype(key), const int&>);
+            static_assert(std::is_same_v<decltype(v), const int&>);
         }
     }
 }

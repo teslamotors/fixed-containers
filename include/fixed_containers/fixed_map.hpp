@@ -83,11 +83,10 @@ private:
         using ConstOrMutableTree = std::conditional_t<IS_CONST, const Tree, Tree>;
         using ConstOrMutablePairView =
             std::conditional_t<IS_CONST, PairView<const K, const V>, PairView<const K, V>>;
-        using ConstOrMutableReference = std::conditional_t<IS_CONST, const_reference, reference>;
 
         ConstOrMutableTree* tree_;
         NodeIndex current_index_;
-        mutable ConstOrMutablePairView storage_;  // Needed for liveness
+        ConstOrMutablePairView storage_;  // Needed for liveness
 
         constexpr PairProvider() noexcept
           : PairProvider{nullptr, CAPACITY}
@@ -144,7 +143,14 @@ private:
             update_storage();
         }
 
-        constexpr ConstOrMutableReference get() const noexcept { return storage_; }
+        constexpr const_reference get() const noexcept requires IS_CONST { return storage_; }
+        constexpr reference get() const noexcept requires(not IS_CONST)
+        {
+            // The function is tagged `const` and would add a `const` to the returned type.
+            // This is usually fine, but PairView intentionally propagates its constness to each of
+            // its views. Therefore, remove the `const`.
+            return const_cast<reference>(storage_);
+        }
 
         constexpr bool operator==(const PairProvider& other) const noexcept
         {

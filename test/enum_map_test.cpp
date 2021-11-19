@@ -710,7 +710,7 @@ TEST(Utilities, EnumMap_IteratorTypes)
         {
             static_assert(
                 std::is_same_v<decltype(key_and_value), const PairView<const TestEnum1, int>&>);
-            // key_and_value.second() = 5; Not allowed
+            // key_and_value.second() = 5;  // Not allowed
         }
 
         for (auto& key_and_value : s)
@@ -768,15 +768,25 @@ TEST(Utilities, EnumMap_IteratorTypes)
         std::map<TestEnum1, int> std_map{};
         for (auto&& [key, v] : std_map)
         {
-            (void)key;
-            (void)v;
+            static_assert(std::is_same_v<decltype(key), const TestEnum1>);
+            static_assert(std::is_same_v<decltype(v), int>);
+        }
+        for (const auto& [key, v] : std_map)
+        {
+            static_assert(std::is_same_v<decltype(key), const TestEnum1>);
+            static_assert(std::is_same_v<decltype(v), const int>);
         }
 
         EnumMap<TestEnum1, int> this_map{};
         for (auto&& [key, v] : this_map)
         {
-            (void)key;
-            (void)v;
+            static_assert(std::is_same_v<decltype(key), const TestEnum1&>);
+            static_assert(std::is_same_v<decltype(v), int&>);
+        }
+        for (const auto& [key, v] : this_map)
+        {
+            static_assert(std::is_same_v<decltype(key), const TestEnum1&>);
+            static_assert(std::is_same_v<decltype(v), const int&>);
         }
     }
 }
