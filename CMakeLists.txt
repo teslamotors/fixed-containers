@@ -12,8 +12,15 @@ else()
     set(USING_CLANG OFF)
 endif()
 
-SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Werror")
-SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -fno-exceptions")
+SET(CMAKE_CXX_FLAGS "")
+if(MSVC)
+    SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /WX /EHs-")
+
+    SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /wd4804 /wd4018")  # due to magic-enum, mixed arithmetic
+    SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /wd4530")  # due to ostream, exception handler
+else()
+    SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Werror -fno-exceptions")
+endif()
 
 if(${USING_CLANG})
     SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -ftrivial-auto-var-init=pattern")
@@ -39,21 +46,27 @@ if(${USING_CLANG})
         # due to gtest
         -Wno-exit-time-destructors
         -Wno-used-but-marked-unused
-    )
-endif()
 
-
-SET(DIAGNOSTIC_FLAGS ${DIAGNOSTIC_FLAGS}
-        -Wall
-        -Wextra
-        -Wpedantic
         # This is failing on the `consteval` keyword for some reason
         -Wno-c++20-compat
         # Need stdlib uprev, as even std::vector triggers this
         -Wno-ctad-maybe-unsupported
 
         -Wno-padded
-        )
+    )
+elseif(MSVC)
+    SET(DIAGNOSTIC_FLAGS ${DIAGNOSTIC_FLAGS}
+        /W4
+    )
+else()
+    SET(DIAGNOSTIC_FLAGS ${DIAGNOSTIC_FLAGS}
+        -Wall
+        -Wextra
+        -Wpedantic
+    )
+endif()
+
+
 string (REPLACE ";" " " DIAGNOSTIC_FLAGS "${DIAGNOSTIC_FLAGS}")
 
 SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${DIAGNOSTIC_FLAGS}")
