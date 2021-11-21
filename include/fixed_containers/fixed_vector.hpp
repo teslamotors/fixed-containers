@@ -4,6 +4,7 @@
 #include "fixed_containers/optional_storage.hpp"
 #include "fixed_containers/preconditions.hpp"
 #include "fixed_containers/random_access_iterator_transformer.hpp"
+#include "fixed_containers/source_location.hpp"
 #include "fixed_containers/string_literal.hpp"
 #include "fixed_containers/type_name.hpp"
 
@@ -13,15 +14,13 @@
 #include <iterator>
 #include <type_traits>
 
-#include <experimental/source_location>
-
 namespace fixed_containers::fixed_vector_customize
 {
 template <class T>
 concept FixedVectorChecking = requires(std::size_t i,
                                        std::size_t s,
                                        const StringLiteral& error_message,
-                                       const std::experimental::source_location& loc)
+                                       const std_transition::source_location& loc)
 {
     T::out_of_range(i, s, loc);  // ~ std::out_of_range
     T::length_error(s, loc);     // ~ std::length_error
@@ -34,29 +33,28 @@ struct AbortChecking
 {
     static constexpr auto TYPE_NAME = fixed_containers::type_name<T>();
 
-    [[noreturn]] static constexpr void out_of_range(
-        const std::size_t /*index*/,
-        const std::size_t /*size*/,
-        const std::experimental::source_location& /*loc*/)
+    [[noreturn]] static constexpr void out_of_range(const std::size_t /*index*/,
+                                                    const std::size_t /*size*/,
+                                                    const std_transition::source_location& /*loc*/)
     {
         std::abort();
     }
 
     [[noreturn]] static void length_error(const std::size_t /*target_capacity*/,
-                                          const std::experimental::source_location& /*loc*/)
+                                          const std_transition::source_location& /*loc*/)
     {
         std::abort();
     }
 
     [[noreturn]] static constexpr void empty_vector_access(
-        const std::experimental::source_location& /*loc*/)
+        const std_transition::source_location& /*loc*/)
     {
         std::abort();
     }
 
     [[noreturn]] static constexpr void invalid_argument(
         const fixed_containers::StringLiteral& /*error_message*/,
-        const std::experimental::source_location& /*loc*/)
+        const std_transition::source_location& /*loc*/)
     {
         std::abort();
     }
@@ -169,7 +167,7 @@ public:
 
 private:
     static constexpr void check_target_size(size_type target_size,
-                                            const std::experimental::source_location& loc)
+                                            const std_transition::source_location& loc)
     {
         if (preconditions::test(target_size <= CAPACITY))
         {
@@ -185,8 +183,8 @@ public:
     static constexpr std::size_t capacity() noexcept { return CAPACITY; }
     static constexpr std::size_t max_size() noexcept { return capacity(); }
     static constexpr void reserve(const std::size_t new_capacity,
-                                  const std::experimental::source_location& loc =
-                                      std::experimental::source_location::current()) noexcept
+                                  const std_transition::source_location& loc =
+                                      std_transition::source_location::current()) noexcept
     {
         if (preconditions::test(new_capacity <= CAPACITY))
         {
@@ -202,8 +200,8 @@ public:
     }
 
     constexpr FixedVectorBase(std::initializer_list<T> list,
-                              const std::experimental::source_location& loc =
-                                  std::experimental::source_location::current()) noexcept
+                              const std_transition::source_location& loc =
+                                  std_transition::source_location::current()) noexcept
       : FixedVectorBase()
     {
         push_back_all(list, loc);
@@ -211,8 +209,8 @@ public:
 
     constexpr FixedVectorBase(std::size_t count,
                               const T& value,
-                              const std::experimental::source_location& loc =
-                                  std::experimental::source_location::current()) noexcept
+                              const std_transition::source_location& loc =
+                                  std_transition::source_location::current()) noexcept
       : FixedVectorBase()
     {
         check_target_size(count, loc);
@@ -224,8 +222,8 @@ public:
     }
 
     constexpr explicit FixedVectorBase(std::size_t count,
-                                       const std::experimental::source_location& loc =
-                                           std::experimental::source_location::current()) noexcept
+                                       const std_transition::source_location& loc =
+                                           std_transition::source_location::current()) noexcept
       : FixedVectorBase(count, T(), loc)
     {
     }
@@ -233,8 +231,8 @@ public:
     template <InputIterator InputIt>
     constexpr FixedVectorBase(InputIt first,
                               InputIt last,
-                              const std::experimental::source_location& loc =
-                                  std::experimental::source_location::current()) noexcept
+                              const std_transition::source_location& loc =
+                                  std_transition::source_location::current()) noexcept
       : FixedVectorBase()
     {
         push_back_all(first, last, loc);
@@ -246,16 +244,16 @@ public:
      * elements. If the current size is less than count, additional elements are appended
      * (default/copy initialized).
      */
-    constexpr void resize(size_type count,
-                          const std::experimental::source_location& loc =
-                              std::experimental::source_location::current())
+    constexpr void resize(
+        size_type count,
+        const std_transition::source_location& loc = std_transition::source_location::current())
     {
         this->resize(count, T{}, loc);
     }
-    constexpr void resize(size_type count,
-                          const value_type& v,
-                          const std::experimental::source_location& loc =
-                              std::experimental::source_location::current())
+    constexpr void resize(
+        size_type count,
+        const value_type& v,
+        const std_transition::source_location& loc = std_transition::source_location::current())
     {
         check_target_size(count, loc);
 
@@ -277,16 +275,16 @@ public:
      * Appends the given element value to the end of the container.
      * If we are already at capacity, Undefined Behavior
      */
-    constexpr void push_back(const value_type& v,
-                             const std::experimental::source_location& loc =
-                                 std::experimental::source_location::current())
+    constexpr void push_back(
+        const value_type& v,
+        const std_transition::source_location& loc = std_transition::source_location::current())
     {
         check_not_full(loc);
         this->push_back_internal(v);
     }
-    constexpr void push_back(value_type&& v,
-                             const std::experimental::source_location& loc =
-                                 std::experimental::source_location::current())
+    constexpr void push_back(
+        value_type&& v,
+        const std_transition::source_location& loc = std_transition::source_location::current())
     {
         check_not_full(loc);
         this->push_back_internal(std::move(v));
@@ -298,7 +296,7 @@ public:
     template <class... Args>
     constexpr reference emplace_back(Args&&... args)
     {
-        check_not_full(std::experimental::source_location::current());
+        check_not_full(std_transition::source_location::current());
         emplace_at(size_, std::forward<Args>(args)...);
         size_++;
         return this->back();
@@ -309,34 +307,34 @@ public:
      * Calling push_back on a full container is undefined.
      */
     template <std::size_t M>
-    constexpr void push_back_all(const T (&arr)[M],
-                                 const std::experimental::source_location& loc =
-                                     std::experimental::source_location::current())
+    constexpr void push_back_all(
+        const T (&arr)[M],
+        const std_transition::source_location& loc = std_transition::source_location::current())
     {
         static_assert(M <= CAPACITY, "Array bigger than capacity");
         check_target_size(size_ + M, loc);
         this->push_back_all_internal(arr + 0, arr + M);
     }
     template <InputIterator InputIt>
-    constexpr void push_back_all(InputIt first,
-                                 InputIt last,
-                                 const std::experimental::source_location& loc =
-                                     std::experimental::source_location::current())
+    constexpr void push_back_all(
+        InputIt first,
+        InputIt last,
+        const std_transition::source_location& loc = std_transition::source_location::current())
     {
         check_target_size(size_ + static_cast<size_type>(std::distance(first, last)), loc);
         this->push_back_all_internal(first, last);
     }
     template <class Container>
-    constexpr void push_back_all(const Container& sp,
-                                 const std::experimental::source_location& loc =
-                                     std::experimental::source_location::current())
+    constexpr void push_back_all(
+        const Container& sp,
+        const std_transition::source_location& loc = std_transition::source_location::current())
     {
         check_target_size(size_ + sp.size(), loc);
         this->push_back_all_internal(sp.begin(), sp.end());
     }
-    constexpr void push_back_all(std::initializer_list<T> list,
-                                 const std::experimental::source_location& loc =
-                                     std::experimental::source_location::current())
+    constexpr void push_back_all(
+        std::initializer_list<T> list,
+        const std_transition::source_location& loc = std_transition::source_location::current())
     {
         check_target_size(size_ + list.size(), loc);
         this->push_back_all_internal(list.begin(), list.end());
@@ -346,8 +344,8 @@ public:
      * Removes the last element of the container.
      * Calling pop_back on an empty container is undefined.
      */
-    constexpr void pop_back(const std::experimental::source_location& loc =
-                                std::experimental::source_location::current())
+    constexpr void pop_back(
+        const std_transition::source_location& loc = std_transition::source_location::current())
     {
         check_not_empty(loc);
         destroy_at(size_ - 1);
@@ -358,20 +356,20 @@ public:
      * Inserts elements at the iterator-specified location in the container.
      * Calling insert on a full container is undefined.
      */
-    constexpr iterator insert(const_iterator it,
-                              const value_type& v,
-                              const std::experimental::source_location& loc =
-                                  std::experimental::source_location::current())
+    constexpr iterator insert(
+        const_iterator it,
+        const value_type& v,
+        const std_transition::source_location& loc = std_transition::source_location::current())
     {
         check_not_full(loc);
         const std::size_t index = this->advance_all_after_iterator_by_n(it, 1);
         place_at(index, v);
         return begin() + static_cast<difference_type>(index);
     }
-    constexpr iterator insert(const_iterator it,
-                              value_type&& v,
-                              const std::experimental::source_location& loc =
-                                  std::experimental::source_location::current())
+    constexpr iterator insert(
+        const_iterator it,
+        value_type&& v,
+        const std_transition::source_location& loc = std_transition::source_location::current())
     {
         check_not_full(loc);
         const std::size_t index = this->advance_all_after_iterator_by_n(it, 1);
@@ -379,11 +377,11 @@ public:
         return begin() + static_cast<difference_type>(index);
     }
     template <InputIterator InputIt>
-    constexpr iterator insert(const_iterator it,
-                              InputIt first,
-                              InputIt last,
-                              const std::experimental::source_location& loc =
-                                  std::experimental::source_location::current())
+    constexpr iterator insert(
+        const_iterator it,
+        InputIt first,
+        InputIt last,
+        const std_transition::source_location& loc = std_transition::source_location::current())
     {
         const auto entry_count_to_add = static_cast<std::size_t>(std::distance(first, last));
         check_target_size(size_ + entry_count_to_add, loc);
@@ -404,7 +402,7 @@ public:
     template <class... Args>
     constexpr iterator emplace(const_iterator it, Args&&... args)
     {
-        check_not_full(std::experimental::source_location::current());
+        check_not_full(std_transition::source_location::current());
         const std::size_t index = this->advance_all_after_iterator_by_n(it, 1);
         emplace_at(index, std::forward<Args>(args)...);
         return begin() + static_cast<difference_type>(index);
@@ -413,10 +411,10 @@ public:
     /**
      * Replaces the contents with count copies of a given value
      */
-    constexpr void assign(size_type count,
-                          const value_type& v,
-                          const std::experimental::source_location& loc =
-                              std::experimental::source_location::current())
+    constexpr void assign(
+        size_type count,
+        const value_type& v,
+        const std_transition::source_location& loc = std_transition::source_location::current())
     {
         check_target_size(count, loc);
         this->clear();
@@ -427,10 +425,10 @@ public:
      * Replaces the contents with copies of those in range [first, last)
      */
     template <InputIterator InputIt>
-    constexpr void assign(InputIt first,
-                          InputIt last,
-                          const std::experimental::source_location& loc =
-                              std::experimental::source_location::current())
+    constexpr void assign(
+        InputIt first,
+        InputIt last,
+        const std_transition::source_location& loc = std_transition::source_location::current())
     {
         this->clear();
         this->push_back_all(first, last, loc);
@@ -441,8 +439,8 @@ public:
      */
     constexpr iterator erase(const_iterator first,
                              const_iterator last,
-                             const std::experimental::source_location& loc =
-                                 std::experimental::source_location::current()) noexcept
+                             const std_transition::source_location& loc =
+                                 std_transition::source_location::current()) noexcept
     {
         if (preconditions::test(first <= last))
         {
@@ -473,8 +471,8 @@ public:
      * Erases the specified element from the container.
      */
     constexpr iterator erase(const_iterator it,
-                             const std::experimental::source_location& loc =
-                                 std::experimental::source_location::current()) noexcept
+                             const std_transition::source_location& loc =
+                                 std_transition::source_location::current()) noexcept
     {
         return erase(it, it + 1, loc);
     }
@@ -496,18 +494,18 @@ public:
     {
         // Cannot capture real source_location for operator[]
         // This operator should not range-check according to the spec, but we want the extra safety.
-        return at(i, std::experimental::source_location::current());
+        return at(i, std_transition::source_location::current());
     }
     constexpr const_reference operator[](size_type i) const noexcept
     {
         // Cannot capture real source_location for operator[]
         // This operator should not range-check according to the spec, but we want the extra safety.
-        return at(i, std::experimental::source_location::current());
+        return at(i, std_transition::source_location::current());
     }
 
     constexpr reference at(size_type i,
-                           const std::experimental::source_location& loc =
-                               std::experimental::source_location::current()) noexcept
+                           const std_transition::source_location& loc =
+                               std_transition::source_location::current()) noexcept
     {
         if (preconditions::test(i < size_))
         {
@@ -516,8 +514,8 @@ public:
         return array_[i].value;
     }
     constexpr const_reference at(size_type i,
-                                 const std::experimental::source_location& loc =
-                                     std::experimental::source_location::current()) const noexcept
+                                 const std_transition::source_location& loc =
+                                     std_transition::source_location::current()) const noexcept
     {
         if (preconditions::test(i < size_))
         {
@@ -526,26 +524,26 @@ public:
         return array_[i].value;
     }
 
-    constexpr reference front(const std::experimental::source_location& loc =
-                                  std::experimental::source_location::current())
+    constexpr reference front(
+        const std_transition::source_location& loc = std_transition::source_location::current())
     {
         check_not_empty(loc);
         return array_[0].value;
     }
-    constexpr const_reference front(const std::experimental::source_location& loc =
-                                        std::experimental::source_location::current()) const
+    constexpr const_reference front(const std_transition::source_location& loc =
+                                        std_transition::source_location::current()) const
     {
         check_not_empty(loc);
         return array_[0].value;
     }
-    constexpr reference back(const std::experimental::source_location& loc =
-                                 std::experimental::source_location::current())
+    constexpr reference back(
+        const std_transition::source_location& loc = std_transition::source_location::current())
     {
         check_not_empty(loc);
         return array_[size_ - 1].value;
     }
-    constexpr const_reference back(const std::experimental::source_location& loc =
-                                       std::experimental::source_location::current()) const
+    constexpr const_reference back(const std_transition::source_location& loc =
+                                       std_transition::source_location::current()) const
     {
         check_not_empty(loc);
         return array_[size_ - 1].value;
@@ -698,14 +696,14 @@ private:
         return static_cast<std::size_t>(it - cbegin());
     }
 
-    constexpr void check_not_full(const std::experimental::source_location& loc) const
+    constexpr void check_not_full(const std_transition::source_location& loc) const
     {
         if (preconditions::test(!full()))
         {
             Checking::length_error(CAPACITY + 1, loc);
         }
     }
-    constexpr void check_not_empty(const std::experimental::source_location& loc) const
+    constexpr void check_not_empty(const std_transition::source_location& loc) const
     {
         if (preconditions::test(!empty()))
         {
@@ -834,29 +832,29 @@ public:
     {
     }
     constexpr FixedVector(std::initializer_list<T> list,
-                          const std::experimental::source_location& loc =
-                              std::experimental::source_location::current()) noexcept
+                          const std_transition::source_location& loc =
+                              std_transition::source_location::current()) noexcept
       : Base(list, loc)
     {
     }
     constexpr FixedVector(std::size_t count,
                           const T& value,
-                          const std::experimental::source_location& loc =
-                              std::experimental::source_location::current()) noexcept
+                          const std_transition::source_location& loc =
+                              std_transition::source_location::current()) noexcept
       : Base(count, value, loc)
     {
     }
     constexpr explicit FixedVector(std::size_t count,
-                                   const std::experimental::source_location& loc =
-                                       std::experimental::source_location::current()) noexcept
+                                   const std_transition::source_location& loc =
+                                       std_transition::source_location::current()) noexcept
       : Base(count, loc)
     {
     }
     template <InputIterator InputIt>
     constexpr FixedVector(InputIt first,
                           InputIt last,
-                          const std::experimental::source_location& loc =
-                              std::experimental::source_location::current()) noexcept
+                          const std_transition::source_location& loc =
+                              std_transition::source_location::current()) noexcept
       : Base(first, last, loc)
     {
     }
@@ -881,29 +879,29 @@ public:
     {
     }
     constexpr FixedVector(std::initializer_list<T> list,
-                          const std::experimental::source_location& loc =
-                              std::experimental::source_location::current()) noexcept
+                          const std_transition::source_location& loc =
+                              std_transition::source_location::current()) noexcept
       : Base(list, loc)
     {
     }
     constexpr FixedVector(std::size_t count,
                           const T& value,
-                          const std::experimental::source_location& loc =
-                              std::experimental::source_location::current()) noexcept
+                          const std_transition::source_location& loc =
+                              std_transition::source_location::current()) noexcept
       : Base(count, value, loc)
     {
     }
     constexpr explicit FixedVector(std::size_t count,
-                                   const std::experimental::source_location& loc =
-                                       std::experimental::source_location::current()) noexcept
+                                   const std_transition::source_location& loc =
+                                       std_transition::source_location::current()) noexcept
       : Base(count, loc)
     {
     }
     template <InputIterator InputIt>
     constexpr FixedVector(InputIt first,
                           InputIt last,
-                          const std::experimental::source_location& loc =
-                              std::experimental::source_location::current()) noexcept
+                          const std_transition::source_location& loc =
+                              std_transition::source_location::current()) noexcept
       : Base(first, last, loc)
     {
     }

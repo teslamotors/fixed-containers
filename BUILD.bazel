@@ -50,6 +50,7 @@ cc_library(
         ":optional_storage",
         ":pair_view",
         ":preconditions",
+        ":source_location",
         ":type_name",
     ],
     copts = ["-std=c++20"],
@@ -97,6 +98,7 @@ cc_library(
         ":bidirectional_iterator",
         ":fixed_red_black_tree",
         ":pair_view",
+        ":source_location",
     ],
     copts = ["-std=c++20"],
 )
@@ -138,6 +140,7 @@ cc_library(
         ":optional_storage",
         ":preconditions",
         ":random_access_iterator_transformer",
+        ":source_location",
         ":string_literal",
         ":type_name",
     ],
@@ -194,6 +197,13 @@ cc_library(
     deps = [
         ":iterator_utils"
     ],
+    copts = ["-std=c++20"],
+)
+
+cc_library(
+    name = "source_location",
+    hdrs = ["include/fixed_containers/source_location.hpp"],
+    includes = ["include"],
     copts = ["-std=c++20"],
 )
 
