@@ -489,10 +489,20 @@ public:
         return static_cast<std::size_t>(contains(key));
     }
 
-    template <std::size_t C>
-    [[nodiscard]] constexpr bool operator==(const FixedMap<K, V, C>& other) const
+    template <std::size_t CAPACITY_2,
+              class Compare2,
+              fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness COMPACTNESS_2,
+              template <class /*Would be IsFixedIndexBasedStorage but gcc doesn't like the
+                                 constraints here. clang accepts it */
+                        ,
+                        std::size_t>
+              typename StorageTemplate2,
+              fixed_map_customize::FixedMapChecking<K> CheckingType2>
+    [[nodiscard]] constexpr bool operator==(
+        const FixedMap<K, V, CAPACITY_2, Compare2, COMPACTNESS_2, StorageTemplate2, CheckingType2>&
+            other) const
     {
-        if constexpr (CAPACITY == C)
+        if constexpr (CAPACITY == CAPACITY_2)
         {
             if (this == &other)
             {
