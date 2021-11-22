@@ -285,8 +285,6 @@ public:
             }
             i = left_index;
         }
-
-        assert(false);
     }
     [[nodiscard]] constexpr NodeIndex index_of_min_at() const noexcept
     {
@@ -307,8 +305,6 @@ public:
             }
             i = right_index;
         }
-
-        assert(false);
     }
     [[nodiscard]] constexpr NodeIndex index_of_max_at() const noexcept
     {
