@@ -24,32 +24,49 @@ using namespace test_namespace;
 
 TEST(Utilities, type_name_enum)
 {
+#if defined(__clang__) || defined(__GNUC__)
     static_assert(type_name<Fruit>() == "test_namespace::Fruit");
+#elif defined(_MSC_VER)
+    static_assert(type_name<Fruit>() == "enum test_namespace::Fruit");
+#endif
 
     const volatile Fruit fruit_cv{Fruit::ORANGE};
-    EXPECT_EQ(type_name<decltype(fruit_cv)>(), "const volatile test_namespace::Fruit");
     volatile const Fruit fruit_vc{Fruit::ORANGE};
-    EXPECT_EQ(type_name<decltype(fruit_vc)>(), "const volatile test_namespace::Fruit");
 
-#ifdef __clang__
+#if defined(__clang__) || defined(__GNUC__)
+    EXPECT_EQ(type_name<decltype(fruit_cv)>(), "const volatile test_namespace::Fruit");
+    EXPECT_EQ(type_name<decltype(fruit_vc)>(), "const volatile test_namespace::Fruit");
+#elif defined(_MSC_VER)
+    EXPECT_EQ(type_name<decltype(fruit_cv)>(), "volatile const enum test_namespace::Fruit");
+    EXPECT_EQ(type_name<decltype(fruit_vc)>(), "volatile const enum test_namespace::Fruit");
+#endif
+
+#if defined(__clang__)
     EXPECT_EQ(type_name<decltype(fruit_vc)&>(), "const volatile test_namespace::Fruit &");
 #elif defined(__GNUC__)
     EXPECT_EQ(type_name<decltype(fruit_vc)&>(), "const volatile test_namespace::Fruit&");
+#elif defined(_MSC_VER)
+    EXPECT_EQ(type_name<decltype(fruit_vc)*&>(), "volatile const enum test_namespace::Fruit*&");
 #endif
 
-#ifdef __clang__
+#if defined(__clang__)
     EXPECT_EQ(type_name<decltype(fruit_vc)*>(), "const volatile test_namespace::Fruit *");
 #elif defined(__GNUC__)
     EXPECT_EQ(type_name<decltype(fruit_vc)*>(), "const volatile test_namespace::Fruit*");
+#elif defined(_MSC_VER)
+    EXPECT_EQ(type_name<decltype(fruit_vc)*>(), "volatile const enum test_namespace::Fruit*");
 #endif
 
     volatile const Fruit* const volatile fruit_vc_ptr{&fruit_vc};
-#ifdef __clang__
+#if defined(__clang__)
     EXPECT_EQ(type_name<decltype(fruit_vc_ptr)*&>(),
               "const volatile test_namespace::Fruit *const volatile *&");
 #elif defined(__GNUC__)
     EXPECT_EQ(type_name<decltype(fruit_vc_ptr)*&>(),
               "const volatile test_namespace::Fruit* const volatile*&");
+#elif defined(_MSC_VER)
+    ASSERT_EQ(type_name<decltype(fruit_vc_ptr)*&>(),
+              "volatile const enum test_namespace::Fruit*volatile const *&");
 #endif
 }
 
@@ -57,7 +74,11 @@ using MyVariant = std::variant<Fruit, float>;
 
 TEST(Utilities, type_name_variant)
 {
+#if defined(__clang__) || defined(__GNUC__)
     static_assert(type_name<MyVariant>() == "std::variant<test_namespace::Fruit, float>");
+#elif defined(_MSC_VER)
+    static_assert(type_name<MyVariant>() == "class std::variant<enum test_namespace::Fruit,float>");
+#endif
 
     MyVariant my_variant = 1.0f;
     std::visit(
