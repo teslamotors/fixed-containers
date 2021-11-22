@@ -863,7 +863,7 @@ TEST(Utilities, FixedMap_Equality)
 {
     {
         constexpr FixedMap<int, int, 10> s1{{1, 10}, {4, 40}};
-        constexpr FixedMap<int, int, 10> s2{{4, 40}, {1, 10}};
+        constexpr FixedMap<int, int, 11> s2{{4, 40}, {1, 10}};
         constexpr FixedMap<int, int, 10> s3{{1, 10}, {3, 30}};
         constexpr FixedMap<int, int, 10> s4{{1, 10}};
 
