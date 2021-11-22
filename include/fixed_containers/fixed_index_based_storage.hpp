@@ -12,6 +12,7 @@
 
 namespace fixed_containers
 {
+#if defined(__clang__) || defined(__GNUC__)
 // WORKAROUND-1: Verification that the layout assumptions are correct
 static_assert(consteval_compare::equal<sizeof(std::optional<int>), sizeof(std::pair<int, bool>)>);
 static_assert(
@@ -22,6 +23,7 @@ static_assert(
         return static_cast<void*>(&t) == static_cast<void*>(&t.value());
     }(),
     "std::optional's layout is not as expected");
+#endif
 
 template <class StorageType>
 concept IsFixedIndexBasedStorage = requires(const StorageType& a,
@@ -129,12 +131,16 @@ private:
     template <class... Args>
     void set_new_at_impl(const std::size_t& i, Args&&... args) noexcept
     {
+#if defined(__clang__) || defined(__GNUC__)
         // std::optional<> has constraints for emplace(), but incomplete types will fail them and
         // cause a compiler error.
         // WORKAROUND-1: manually do what emplace() does.
         auto* cast = reinterpret_cast<std::pair<T, bool>*>(&nodes_[i]);
         new (&cast->first) T(std::forward<Args>(args)...);
         cast->second = true;
+#elif defined(_MSC_VER)
+        nodes_[i].emplace(std::forward<Args>(args)...);
+#endif
     }
 
     constexpr void reset_at(const std::size_t i) noexcept requires TriviallyMoveAssignable<T> &&
