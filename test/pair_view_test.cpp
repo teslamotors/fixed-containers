@@ -8,12 +8,12 @@ TEST(Utilities, PairView_std_get)
 {
     {
         std::pair<int, int> s;
-        std::get<1>(s);
+        static_cast<void>(std::get<1>(s));
     }
 
     {
         PairView<int, int> s;
-        std::get<1>(s);
+        static_cast<void>(std::get<1>(s));
     }
 }
 
