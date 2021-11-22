@@ -16,29 +16,37 @@ template <class ConstIterator,
           IteratorConstness CONSTNESS>
 class RandomAccessIteratorTransformer
 {
+    // msvc WORKAROUND: "Error C2891 'CONSTNESS' : cannot take the address of a template parameter"
+    // Explanation:
+    // "You can't take the address of a template parameter unless it is an lvalue. Type parameters
+    // are not lvalues because they have no address" To work around that, force l-values.
+    static constexpr IteratorConstness CONSTNESS_LVALUE = CONSTNESS;
+    static constexpr IteratorConstness NEGATED_CONSTNESS_LVALUE = !CONSTNESS;
+
     using Self = RandomAccessIteratorTransformer<ConstIterator,
                                                  MutableIterator,
                                                  ConstReferenceUnaryFunction,
                                                  MutableReferenceUnaryFunction,
-                                                 CONSTNESS>;
+                                                 CONSTNESS_LVALUE>;
 
     // Sibling has the same parameters, but different const-ness
     using Sibling = RandomAccessIteratorTransformer<ConstIterator,
                                                     MutableIterator,
                                                     ConstReferenceUnaryFunction,
                                                     MutableReferenceUnaryFunction,
-                                                    !CONSTNESS>;
+                                                    NEGATED_CONSTNESS_LVALUE>;
 
     // Give Sibling access to private members
     friend class RandomAccessIteratorTransformer<ConstIterator,
                                                  MutableIterator,
                                                  ConstReferenceUnaryFunction,
                                                  MutableReferenceUnaryFunction,
-                                                 !CONSTNESS>;
+                                                 NEGATED_CONSTNESS_LVALUE>;
 
-    using IteratorType =
-        std::conditional_t<CONSTNESS == IteratorConstness::CONST(), ConstIterator, MutableIterator>;
-    using UnaryFunction = std::conditional_t<CONSTNESS == IteratorConstness::CONST(),
+    using IteratorType = std::conditional_t<CONSTNESS_LVALUE == IteratorConstness::CONST(),
+                                            ConstIterator,
+                                            MutableIterator>;
+    using UnaryFunction = std::conditional_t<CONSTNESS_LVALUE == IteratorConstness::CONST(),
                                              ConstReferenceUnaryFunction,
                                              MutableReferenceUnaryFunction>;
 

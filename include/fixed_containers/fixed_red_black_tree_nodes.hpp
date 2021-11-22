@@ -287,12 +287,6 @@ public:
     constexpr void set_color(const Color& c) { parent_index_and_color_.set_color(c); }
 };
 
-template <class K, class V, RedBlackTreeNodeColorCompactness COMPACTNESS>
-using RedBlackTreeNode =
-    std::conditional_t<COMPACTNESS == RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR(),
-                       CompactRedBlackTreeNode<K, V>,
-                       DefaultRedBlackTreeNode<K, V>>;
-
 template <class S>
 class RedBlackTreeNodeView
 {

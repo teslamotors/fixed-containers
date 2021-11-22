@@ -32,27 +32,34 @@ template <typename IndexPredicate,
           IteratorDirection DIRECTION>
 class IndexRangePredicateIterator
 {
+    // msvc WORKAROUND: "Error C2891 'CONSTNESS' : cannot take the address of a template parameter"
+    // Explanation:
+    // "You can't take the address of a template parameter unless it is an lvalue. Type parameters are not lvalues because they have no address"
+    // To work around that, force l-values.
+    static constexpr IteratorConstness CONSTNESS_LVALUE = CONSTNESS;
+    static constexpr IteratorConstness NEGATED_CONSTNESS_LVALUE = !CONSTNESS;
+
     using Self = IndexRangePredicateIterator<IndexPredicate,
                                              ConstReferenceProvider,
                                              MutableReferenceProvider,
-                                             CONSTNESS,
+                                             CONSTNESS_LVALUE,
                                              DIRECTION>;
 
     // Sibling has the same parameters, but different const-ness
     using Sibling = IndexRangePredicateIterator<IndexPredicate,
                                                 ConstReferenceProvider,
                                                 MutableReferenceProvider,
-                                                !CONSTNESS,
+                                                NEGATED_CONSTNESS_LVALUE,
                                                 DIRECTION>;
 
     // Give Sibling access to private members
     friend class IndexRangePredicateIterator<IndexPredicate,
                                              ConstReferenceProvider,
                                              MutableReferenceProvider,
-                                             !CONSTNESS,
+                                             NEGATED_CONSTNESS_LVALUE,
                                              DIRECTION>;
 
-    using ReferenceProvider = std::conditional_t<CONSTNESS == IteratorConstness::CONST(),
+    using ReferenceProvider = std::conditional_t<CONSTNESS_LVALUE == IteratorConstness::CONST(),
                                                  ConstReferenceProvider,
                                                  MutableReferenceProvider>;
 
