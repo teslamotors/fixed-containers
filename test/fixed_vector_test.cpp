@@ -33,11 +33,20 @@ static_assert(ranges::random_access_iterator<VecType::const_iterator>);
 namespace trivially_copyable_but_not_copyable_or_moveable_vector
 {
 using VecType = FixedVector<MockTriviallyCopyableButNotCopyableOrMoveable, 5>;
+#if defined(__clang__) || defined(__GNUC__)
 static_assert(TriviallyCopyable<VecType>);
 static_assert(NotCopyAssignable<VecType>);
 static_assert(NotCopyConstructible<VecType>);
 static_assert(NotMoveAssignable<VecType>);
 static_assert(TriviallyDestructible<VecType>);
+#elif defined(_MSC_VER)
+static_assert(NotTriviallyCopyable<VecType>);
+static_assert(CopyAssignable<VecType>);
+static_assert(CopyConstructible<VecType>);
+static_assert(MoveAssignable<VecType>);
+static_assert(NotTriviallyDestructible<VecType>);
+#endif
+
 static_assert(NotTrivial<VecType>);
 static_assert(StandardLayout<VecType>);
 }  // namespace trivially_copyable_but_not_copyable_or_moveable_vector

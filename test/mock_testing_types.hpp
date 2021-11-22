@@ -132,7 +132,11 @@ struct MockMoveableButNotCopyable
 // std::atomic<int> is an example of this
 using MockTriviallyCopyableButNotCopyableOrMoveable = std::atomic<int>;
 
+#if defined(__clang__) || defined(__GNUC__)
 static_assert(TriviallyCopyable<MockTriviallyCopyableButNotCopyableOrMoveable>);
+#elif defined(_MSC_VER)
+static_assert(NotTriviallyCopyable<MockTriviallyCopyableButNotCopyableOrMoveable>);
+#endif
 static_assert(NotCopyConstructible<MockTriviallyCopyableButNotCopyableOrMoveable>);
 static_assert(NotMoveConstructible<MockTriviallyCopyableButNotCopyableOrMoveable>);
 static_assert(NotCopyAssignable<MockTriviallyCopyableButNotCopyableOrMoveable>);
