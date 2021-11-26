@@ -9,6 +9,60 @@
 #include <cstddef>
 #include <string_view>
 
+namespace example
+{
+// DEFINITION
+namespace detail
+{
+enum class ColorBackingEnum
+{
+    RED,
+    YELLOW,
+    BLUE,
+    GREEN,
+};
+}  // namespace detail
+
+// SkeletalRichEnum base class automatically provides all general-purpose functionality.
+class Color : public fixed_containers::rich_enums::SkeletalRichEnum<Color, detail::ColorBackingEnum>
+{
+    friend SkeletalRichEnum::ValuesFriend;
+    using SkeletalRichEnum::SkeletalRichEnum;
+
+public:
+    static constexpr const std::array<Color, count()>& values();
+
+    static constexpr const Color& RED()
+    {
+        return ::fixed_containers::rich_enums_detail::value_of<Color>(BackingEnum::RED).value();
+    }
+    // Optionally use this macro to simplify defining rich enum constants
+    FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(Color, YELLOW)
+    FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(Color, BLUE)
+    FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(Color, GREEN)
+
+    // Custom member function
+    [[nodiscard]] constexpr bool is_primary() const
+    {
+        return backing_enum() == detail::ColorBackingEnum::RED ||
+               backing_enum() == detail::ColorBackingEnum::YELLOW ||
+               backing_enum() == detail::ColorBackingEnum::BLUE;
+    }
+};
+constexpr const std::array<Color, Color::count()>& Color::values()
+{
+    return ::fixed_containers::rich_enums::SkeletalRichEnumValues<Color>::VALUES;
+}
+
+// USAGE
+static_assert(::fixed_containers::rich_enums::is_rich_enum<Color>);  // Type-trait `concept`.
+inline constexpr const Color& COLOR = Color::RED();                  // Note the parens
+static_assert("RED" == COLOR.to_string());                           // auto-provided member
+static_assert(COLOR.is_primary());                                   // Custom member
+static_assert(COLOR == Color::value_of("RED").value());              // auto-provided
+static_assert(4 == Color::count());                                  // auto-provided
+}  // namespace example
+
 namespace fixed_containers::rich_enums
 {
 enum class TestEnum1

@@ -2,11 +2,86 @@
 
 Header-only C++20 library that provides containers with the following properties:
 
-- Fixed-capacity, declared at compile-time
-- constexpr
-- containers retain the properties of T (e.g. if T is trivially copyable, then so is FixedVector<T>)
-- no pointers stored (data layout is purely self-referential and can be serialized directly)
-- no dynamic allocations
+* Fixed-capacity, declared at compile-time
+* constexpr
+* containers retain the properties of T (e.g. if T is trivially copyable, then so is FixedVector<T>)
+* no pointers stored (data layout is purely self-referential and can be serialized directly)
+* no dynamic allocations
+
+# Features
+
+* `FixedVector` - Vector implementation with `std::vector` API and "fixed container" properties
+* `FixedMap`/`FixedSet` - Red-Black Tree map/set implementation with `std::map`/`std::set` API and "fixed container" properties.
+* `EnumMap`/`EnumSet` - For enum keys only, Map/Set implementation with `std::map`/`std::set` API and "fixed container" properties. O(1) lookups.
+* `StringLiteral` - Compile-time null-terminated literal string.
+* Rich enums - `enum` & `class` hybrid.
+
+## Rich enum features
+* Rich enums behave like an enum (compile-time known values, can be used in switch-statements and as template parameters as well as `EnumMap`/`EnumSet` etc).
+* Can have member functions and fields.
+* Readily available `count()`, `to_string()`.
+* Conversion from string, ordinal.
+* Implicit `std::optional`-like semantics.
+* Avoid the need for error-prone sentinel values like `UNKNOWN`, `UNINITIALIZED`, `COUNT` etc.
+* Avoid Undefined Behavior from uninitialized state. Default constructor can be disabled altogether.
+* `EnumAdapter<T>` can adapt any enum-like class to the rich enum API.
+
+```C++
+namespace example
+{
+// DEFINITION
+namespace detail
+{
+enum class ColorBackingEnum
+{
+    RED,
+    YELLOW,
+    BLUE,
+    GREEN,
+};
+}  // namespace detail
+
+// SkeletalRichEnum base class automatically provides all general-purpose functionality.
+class Color : public fixed_containers::rich_enums::SkeletalRichEnum<Color, detail::ColorBackingEnum>
+{
+    friend SkeletalRichEnum::ValuesFriend;
+    using SkeletalRichEnum::SkeletalRichEnum;
+
+public:
+    static constexpr const std::array<Color, count()>& values();
+
+    static constexpr const Color& RED()
+    {
+        return ::fixed_containers::rich_enums_detail::value_of<Color>(BackingEnum::RED).value();
+    }
+    // Optionally use this macro to simplify defining rich enum constants
+    FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(Color, YELLOW)
+    FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(Color, BLUE)
+    FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(Color, GREEN)
+
+    // Custom member function
+    [[nodiscard]] constexpr bool is_primary() const
+    {
+        return backing_enum() == detail::ColorBackingEnum::RED ||
+               backing_enum() == detail::ColorBackingEnum::YELLOW ||
+               backing_enum() == detail::ColorBackingEnum::BLUE;
+    }
+};
+constexpr const std::array<Color, Color::count()>& Color::values()
+{
+    return ::fixed_containers::rich_enums::SkeletalRichEnumValues<Color>::VALUES;
+}
+
+// USAGE
+static_assert(::fixed_containers::rich_enums::is_rich_enum<Color>);  // Type-trait `concept`.
+inline constexpr const Color& COLOR = Color::RED();                  // Note the parens
+static_assert("RED" == COLOR.to_string());                           // auto-provided member
+static_assert(COLOR.is_primary());                                   // Custom member
+static_assert(COLOR == Color::value_of("RED").value());              // auto-provided
+static_assert(4 == Color::count());                                  // auto-provided
+}  // namespace example
+```
+More examples can be found [here](test/enums_test_common.hpp).
 
 # Integration
 
