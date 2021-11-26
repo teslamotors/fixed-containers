@@ -44,6 +44,7 @@ if(${USING_CLANG})
         -Wno-global-constructors
 
         # due to gtest
+        -Wno-covered-switch-default # v1.11.0 fails (needs new release). bazel points to a newer commit with the fix.
         -Wno-exit-time-destructors
         -Wno-used-but-marked-unused
 
