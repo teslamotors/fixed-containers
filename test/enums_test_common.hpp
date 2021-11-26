@@ -21,7 +21,7 @@ enum class TestEnum1
 
 namespace detail
 {
-enum class TestRichEnum1_BackingEnum
+enum class TestRichEnum1BackingEnum
 {
     C_ONE,
     C_TWO,
@@ -36,7 +36,7 @@ struct TestRichEnum1Data
 
 struct TestRichEnum1Values
 {
-    using BE = TestRichEnum1_BackingEnum;
+    using BE = TestRichEnum1BackingEnum;
     static constexpr auto VALUES = EnumMap<BE, TestRichEnum1Data>::create_with_all_entries({
         {BE::C_ONE, {1}},
         {BE::C_TWO, {2}},
@@ -47,7 +47,7 @@ struct TestRichEnum1Values
 
 }  // namespace detail
 
-class TestRichEnum1 : public SkeletalRichEnum<TestRichEnum1, detail::TestRichEnum1_BackingEnum>
+class TestRichEnum1 : public SkeletalRichEnum<TestRichEnum1, detail::TestRichEnum1BackingEnum>
 {
     friend SkeletalRichEnum::ValuesFriend;
     using SkeletalRichEnum::SkeletalRichEnum;
@@ -68,7 +68,7 @@ constexpr const std::array<TestRichEnum1, TestRichEnum1::count()>& TestRichEnum1
 
 namespace detail
 {
-enum class TestRichEnum2_BackingEnum
+enum class TestRichEnum2BackingEnum
 {
     C_ONE,
     C_TWO,
@@ -83,7 +83,7 @@ struct TestRichEnum2Data
 
 struct TestRichEnum2Values
 {
-    using BE = TestRichEnum2_BackingEnum;
+    using BE = TestRichEnum2BackingEnum;
     static constexpr auto VALUES = EnumMap<BE, TestRichEnum2Data>::create_with_all_entries({
         {BE::C_ONE, {1}},
         {BE::C_TWO, {2}},
@@ -96,7 +96,7 @@ struct TestRichEnum2Values
 
 class TestRichEnum2
   : public NonDefaultConstructibleSkeletalRichEnum<TestRichEnum2,
-                                                   detail::TestRichEnum2_BackingEnum,
+                                                   detail::TestRichEnum2BackingEnum,
                                                    detail::TestRichEnum2Values>
 {
     friend SkeletalRichEnum::ValuesFriend;
@@ -273,7 +273,7 @@ NonCopyableRichEnum::values()
 
 namespace detail
 {
-enum class TestRichEnumBool_BackingEnum : bool
+enum class TestRichEnumBoolBackingEnum : bool
 {
     FALSE_VALUE = false,
     TRUE_VALUE = true,
@@ -282,7 +282,7 @@ enum class TestRichEnumBool_BackingEnum : bool
 }  // namespace detail
 
 class TestRichEnumBool
-  : public SkeletalRichEnum<TestRichEnumBool, detail::TestRichEnumBool_BackingEnum>
+  : public SkeletalRichEnum<TestRichEnumBool, detail::TestRichEnumBoolBackingEnum>
 {
     friend SkeletalRichEnum::ValuesFriend;
     using SkeletalRichEnum::SkeletalRichEnum;

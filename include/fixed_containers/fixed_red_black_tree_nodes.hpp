@@ -8,7 +8,7 @@
 
 namespace fixed_containers::fixed_red_black_tree_detail::detail
 {
-enum class RedBlackTreeNodeColorCompactness_BackingEnum : bool
+enum class RedBlackTreeNodeColorCompactnessBackingEnum : bool
 {
     DEDICATED_COLOR,
     EMBEDDED_COLOR,
@@ -19,7 +19,7 @@ namespace fixed_containers::fixed_red_black_tree_detail
 {
 class RedBlackTreeNodeColorCompactness
   : public rich_enums::SkeletalRichEnum<RedBlackTreeNodeColorCompactness,
-                                        detail::RedBlackTreeNodeColorCompactness_BackingEnum>
+                                        detail::RedBlackTreeNodeColorCompactnessBackingEnum>
 {
     friend SkeletalRichEnum::ValuesFriend;
     using SkeletalRichEnum::SkeletalRichEnum;

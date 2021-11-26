@@ -6,7 +6,7 @@ namespace fixed_containers
 {
 namespace detail
 {
-enum class IteratorConstness_BackingEnum : bool
+enum class IteratorConstnessBackingEnum : bool
 {
     MUTABLE,
     CONST,
@@ -14,7 +14,7 @@ enum class IteratorConstness_BackingEnum : bool
 }  // namespace detail
 
 class IteratorConstness
-  : public rich_enums::SkeletalRichEnum<IteratorConstness, detail::IteratorConstness_BackingEnum>
+  : public rich_enums::SkeletalRichEnum<IteratorConstness, detail::IteratorConstnessBackingEnum>
 {
     friend SkeletalRichEnum::ValuesFriend;
     using SkeletalRichEnum::SkeletalRichEnum;
@@ -34,7 +34,7 @@ IteratorConstness::values()
 
 namespace detail
 {
-enum class IteratorDirection_BackingEnum : bool
+enum class IteratorDirectionBackingEnum : bool
 {
     FORWARD,
     REVERSE,
@@ -86,7 +86,7 @@ declared here _S_to_pointer(_Tp __t)
 // a copy + decrement on every dereference, whereas a non-wrapper doesn't need to do that.
 // clang-format off
 class IteratorDirection
-  : public rich_enums::SkeletalRichEnum<IteratorDirection, detail::IteratorDirection_BackingEnum>
+  : public rich_enums::SkeletalRichEnum<IteratorDirection, detail::IteratorDirectionBackingEnum>
 {
     friend SkeletalRichEnum::ValuesFriend;
     using SkeletalRichEnum::SkeletalRichEnum;

@@ -175,9 +175,9 @@ TEST(Utilities, RichEnum_ValueOfName)
     static_assert(TestRichEnum1::value_of("INVALID") == std::nullopt);
 }
 
-TEST(Utilities, RichEnum_BackingEnum)
+TEST(Utilities, RichEnumBackingEnum)
 {
-    using BE = detail::TestRichEnum1_BackingEnum;
+    using BE = detail::TestRichEnum1BackingEnum;
     constexpr const TestRichEnum1& MY_VALUE = TestRichEnum1::value_of(BE::C_ONE).value();
 
     static_assert(MY_VALUE == TestRichEnum1::C_ONE());
