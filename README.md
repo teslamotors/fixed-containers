@@ -113,7 +113,7 @@ for (const auto& [key, value] : my_map)
 ```
 This syntax works as-is for `FixedMap` and `EnumMap`.
 
-# Building and running the tests
+# Running the tests
 
 ### cmake
 
