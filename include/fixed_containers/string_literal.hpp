@@ -45,7 +45,7 @@ public:
     [[nodiscard]] constexpr const char* c_str() const { return cstr_; }
     /*implicit*/ constexpr operator const char*() const { return c_str(); }
 
-    [[nodiscard]] constexpr std::string_view as_view() const { return cstr_; }
+    [[nodiscard]] constexpr std::string_view as_view() const { return {cstr_, size_}; }
     /*implicit*/ constexpr operator std::string_view() const { return as_view(); }
 
 private:
