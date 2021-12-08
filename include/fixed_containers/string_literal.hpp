@@ -41,12 +41,12 @@ public:
     }
 
     [[nodiscard]] constexpr std::size_t size() const { return size_; }
+
     [[nodiscard]] constexpr const char* c_str() const { return cstr_; }
     /*implicit*/ constexpr operator const char*() const { return cstr_; }
 
-    /*implicit*/ constexpr operator std::string_view() const { return cstr_; }
-
     [[nodiscard]] constexpr std::string_view as_view() const { return cstr_; }
+    /*implicit*/ constexpr operator std::string_view() const { return cstr_; }
 
 private:
     std::size_t size_;
