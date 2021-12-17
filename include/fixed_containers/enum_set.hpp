@@ -163,7 +163,7 @@ public:
     template <class Container, class EnumSetType = Self>
     static constexpr EnumSetType complement_of(const Container& s)
     {
-        EnumSetType output = all();
+        EnumSetType output = all<EnumSetType>();
         for (const K& key : s)
         {
             output.erase(key);
