@@ -179,6 +179,14 @@ public:
         tree_.insert_new_at(np, std::move(value));
         return {create_const_iterator(np.i), true};
     }
+    constexpr const_iterator insert(const_iterator /*hint*/, const K& key) noexcept
+    {
+        return insert(key).first;
+    }
+    constexpr const_iterator insert(const_iterator /*hint*/, K&& key) noexcept
+    {
+        return insert(std::move(key)).first;
+    }
 
     template <InputIterator InputIt>
     constexpr void insert(InputIt first, InputIt last) noexcept

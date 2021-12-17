@@ -8,6 +8,7 @@
 #include <gtest/gtest.h>
 #include <range/v3/view/filter.hpp>
 
+#include <algorithm>
 #include <iterator>
 #include <type_traits>
 
@@ -574,6 +575,29 @@ TEST(Utilities, EnumSet_Ranges)
 
     EXPECT_EQ(1, ranges::distance(f));
     EXPECT_EQ(TestRichEnum1::C_FOUR(), *f.begin());
+}
+
+TEST(Utilities, EnumSet_SetIntersection)
+{
+    constexpr EnumSet<TestEnum1> s1 = []()
+    {
+        EnumSet<TestEnum1> v1{TestEnum1::ONE, TestEnum1::FOUR};
+        EnumSet<TestEnum1> v2{TestEnum1::ONE};
+
+        EnumSet<TestEnum1> v_intersection;
+        std::set_intersection(v1.begin(),
+                              v1.end(),
+                              v2.begin(),
+                              v2.end(),
+                              std::inserter(v_intersection, v_intersection.begin()));
+        return v_intersection;
+    }();
+
+    static_assert(consteval_compare::equal<1, s1.size()>);
+    static_assert(s1.contains(TestEnum1::ONE));
+    static_assert(!s1.contains(TestEnum1::TWO));
+    static_assert(!s1.contains(TestEnum1::THREE));
+    static_assert(!s1.contains(TestEnum1::FOUR));
 }
 
 }  // namespace fixed_containers

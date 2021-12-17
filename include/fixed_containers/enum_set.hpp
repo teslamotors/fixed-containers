@@ -250,6 +250,10 @@ public:
         array_set_[EnumAdapterType::ordinal(key)] = true;
         return {create_const_iterator(ordinal), true};
     }
+    constexpr const_iterator insert(const_iterator /*hint*/, const K& key) noexcept
+    {
+        return insert(key).first;
+    }
     constexpr void insert(std::initializer_list<K> list) noexcept
     {
         this->insert(list.begin(), list.end());

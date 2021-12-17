@@ -412,4 +412,25 @@ TEST(Utilities, FixedSet_Ranges)
     EXPECT_EQ(4, *f.begin());
 }
 
+TEST(Utilities, FixedSet_SetIntersection)
+{
+    constexpr FixedSet<int, 10> s1 = []()
+    {
+        FixedSet<int, 10> v1{1, 4};
+        FixedSet<int, 10> v2{1};
+
+        FixedSet<int, 10> v_intersection;
+        std::set_intersection(v1.begin(),
+                              v1.end(),
+                              v2.begin(),
+                              v2.end(),
+                              std::inserter(v_intersection, v_intersection.begin()));
+        return v_intersection;
+    }();
+
+    static_assert(consteval_compare::equal<1, s1.size()>);
+    static_assert(s1.contains(1));
+    static_assert(!s1.contains(4));
+}
+
 }  // namespace fixed_containers
