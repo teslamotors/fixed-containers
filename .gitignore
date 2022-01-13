@@ -38,3 +38,6 @@ _deps
 .bazelversion
 # User-specific .bazelrc
 user.bazelrc
+
+### vcpkg ###
+vcpkg_installed/*
