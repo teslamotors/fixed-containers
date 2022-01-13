@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.16)
 project(fixed_containers)
 
 set(CMAKE_CXX_STANDARD 20)
