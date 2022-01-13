@@ -39,7 +39,7 @@ More examples can be found [here](test/enums_test_common.hpp).
 # Integration
 
 - Add the `include/` folder to your includes
-- Get the dependencies with [vcpkg](https://github.com/Microsoft/vcpkg)
+- Get the dependencies. For example, with [vcpkg](https://github.com/Microsoft/vcpkg):
 ```
 vcpkg install magic-enum ms-gsl range-v3 gtest
 ```
@@ -145,19 +145,14 @@ This syntax works as-is for `FixedMap` and `EnumMap`.
 
 ### cmake
 
-1) Get the dependencies (including test dependencies) with [vcpkg](https://github.com/Microsoft/vcpkg)
-```
-vcpkg install magic-enum ms-gsl range-v3 gtest
-```
-
-2) Build with the vcpkg toolchain file
+1) Build with the [vcpkg toolchain file](https://vcpkg.io/en/docs/users/integration.html#cmake-integration)
 ```
 mkdir build && cd build
 cmake .. -DCMAKE_C_COMPILER=/bin/clang-13 -DCMAKE_CXX_COMPILER=/bin/clang++-13 -DCMAKE_TOOLCHAIN_FILE=/path/to/vcpkg/scripts/buildsystems/vcpkg.cmake
 cmake --build .
 ```
 
-3) Run tests
+2) Run tests
 ```
 ctest -C Debug
 ```
