@@ -18,6 +18,7 @@ concept FixedMapChecking = requires(K key,
                                     const std_transition::source_location& loc)
 {
     T::out_of_range(key, size, loc);  // ~ std::out_of_range
+    T::length_error(size, loc);       // ~ std::length_error
 };
 
 template <class K, class V, std::size_t MAXIMUM_SIZE>
@@ -29,6 +30,12 @@ struct AbortChecking
     [[noreturn]] static constexpr void out_of_range(const K& /*key*/,
                                                     const std::size_t /*size*/,
                                                     const std_transition::source_location& /*loc*/)
+    {
+        std::abort();
+    }
+
+    [[noreturn]] static void length_error(const std::size_t /*target_capacity*/,
+                                          const std_transition::source_location& /*loc*/)
     {
         std::abort();
     }
@@ -214,10 +221,12 @@ public:
     }
 
     constexpr FixedMap(std::initializer_list<value_type> list,
-                       const Compare& comparator = {}) noexcept
+                       const Compare& comparator = {},
+                       const std_transition::source_location& loc =
+                           std_transition::source_location::current()) noexcept
       : FixedMap{comparator}
     {
-        this->insert(list);
+        this->insert(list, loc);
     }
 
 public:
@@ -245,8 +254,32 @@ public:
         return tree_.node_at(i).value();
     }
 
-    constexpr V& operator[](const K& key) noexcept { return tree_[key]; }
-    constexpr V& operator[](K&& key) noexcept { return tree_[std::move(key)]; }
+    constexpr V& operator[](const K& key) noexcept
+    {
+        NodeIndexAndParentIndex np = tree_.index_of_node_with_parent(key);
+        if (tree_.contains_at(np.i))
+        {
+            return tree_.node_at(np.i).value();
+        }
+
+        // Cannot capture real source_location for operator[]
+        check_not_full(std_transition::source_location::current());
+        tree_.insert_new_at(np, key);
+        return tree_.node_at(np.i).value();
+    }
+    constexpr V& operator[](K&& key) noexcept
+    {
+        NodeIndexAndParentIndex np = tree_.index_of_node_with_parent(key);
+        if (tree_.contains_at(np.i))
+        {
+            return tree_.node_at(np.i).value();
+        }
+
+        // Cannot capture real source_location for operator[]
+        check_not_full(std_transition::source_location::current());
+        tree_.insert_new_at(np, std::move(key));
+        return tree_.node_at(np.i).value();
+    }
 
     constexpr const_iterator cbegin() const noexcept
     {
@@ -280,43 +313,62 @@ public:
 
     constexpr void clear() noexcept { tree_.clear(); }
 
-    constexpr std::pair<iterator, bool> insert(const value_type& value) noexcept
+    constexpr std::pair<iterator, bool> insert(
+        const value_type& value,
+        const std_transition::source_location& loc =
+            std_transition::source_location::current()) noexcept
     {
         NodeIndexAndParentIndex np = tree_.index_of_node_with_parent(value.first);
         if (tree_.contains_at(np.i))
         {
             return {create_iterator(np.i), false};
         }
+
+        check_not_full(loc);
         tree_.insert_new_at(np, value.first, value.second);
         return {create_iterator(np.i), true};
     }
-    constexpr std::pair<iterator, bool> insert(value_type&& value) noexcept
+    constexpr std::pair<iterator, bool> insert(
+        value_type&& value,
+        const std_transition::source_location& loc =
+            std_transition::source_location::current()) noexcept
     {
         NodeIndexAndParentIndex np = tree_.index_of_node_with_parent(value.first);
         if (tree_.contains_at(np.i))
         {
             return {create_iterator(np.i), false};
         }
+
+        check_not_full(loc);
         tree_.insert_new_at(np, value.first, std::move(value.second));
         return {create_iterator(np.i), true};
     }
 
     template <InputIterator InputIt>
-    constexpr void insert(InputIt first, InputIt last) noexcept
+    constexpr void insert(InputIt first,
+                          InputIt last,
+                          const std_transition::source_location& loc =
+                              std_transition::source_location::current()) noexcept
     {
         for (; first != last; ++first)
         {
-            this->insert(*first);
+            this->insert(*first, loc);
         }
     }
-    constexpr void insert(std::initializer_list<value_type> list) noexcept
+    constexpr void insert(std::initializer_list<value_type> list,
+                          const std_transition::source_location& loc =
+                              std_transition::source_location::current()) noexcept
     {
-        this->insert(list.begin(), list.end());
+        this->insert(list.begin(), list.end(), loc);
     }
 
     template <class M>
     constexpr std::pair<iterator, bool> insert_or_assign(
-        const K& key, M&& obj) noexcept requires std::is_assignable_v<mapped_type&, M&&>
+        const K& key,
+        M&& obj,
+        const std_transition::source_location& loc =
+            std_transition::source_location::current()) noexcept requires
+        std::is_assignable_v<mapped_type&, M&&>
     {
         NodeIndexAndParentIndex np = tree_.index_of_node_with_parent(key);
         if (tree_.contains_at(np.i))
@@ -325,12 +377,17 @@ public:
             return {create_iterator(np.i), false};
         }
 
+        check_not_full(loc);
         tree_.insert_new_at(np, key, std::forward<M>(obj));
         return {create_iterator(np.i), true};
     }
     template <class M>
     constexpr std::pair<iterator, bool> insert_or_assign(
-        K&& key, M&& obj) noexcept requires std::is_assignable_v<mapped_type&, M&&>
+        K&& key,
+        M&& obj,
+        const std_transition::source_location& loc =
+            std_transition::source_location::current()) noexcept requires
+        std::is_assignable_v<mapped_type&, M&&>
     {
         NodeIndexAndParentIndex np = tree_.index_of_node_with_parent(key);
         if (tree_.contains_at(np.i))
@@ -339,20 +396,29 @@ public:
             return {create_iterator(np.i), false};
         }
 
+        check_not_full(loc);
         tree_.insert_new_at(np, std::move(key), std::forward<M>(obj));
         return {create_iterator(np.i), true};
     }
     template <class M>
-    constexpr iterator insert_or_assign(const_iterator /*hint*/, const K& key, M&& obj) noexcept
+    constexpr iterator insert_or_assign(const_iterator /*hint*/,
+                                        const K& key,
+                                        M&& obj,
+                                        const std_transition::source_location& loc =
+                                            std_transition::source_location::current()) noexcept
         requires std::is_assignable_v<mapped_type&, M&&>
     {
-        return insert_or_assign(key, std::forward<M>(obj)).first;
+        return insert_or_assign(key, std::forward<M>(obj), loc).first;
     }
     template <class M>
-    constexpr iterator insert_or_assign(const_iterator /*hint*/, K&& key, M&& obj) noexcept requires
-        std::is_assignable_v<mapped_type&, M&&>
+    constexpr iterator insert_or_assign(const_iterator /*hint*/,
+                                        K&& key,
+                                        M&& obj,
+                                        const std_transition::source_location& loc =
+                                            std_transition::source_location::current()) noexcept
+        requires std::is_assignable_v<mapped_type&, M&&>
     {
-        return insert_or_assign(std::move(key), std::forward<M>(obj)).first;
+        return insert_or_assign(std::move(key), std::forward<M>(obj), loc).first;
     }
 
     template <class... Args>
@@ -364,6 +430,7 @@ public:
             return {create_iterator(np.i), false};
         }
 
+        check_not_full(std_transition::source_location::current());
         tree_.insert_new_at(np, key, std::forward<Args>(args)...);
         return {create_iterator(np.i), true};
     }
@@ -376,6 +443,7 @@ public:
             return {create_iterator(np.i), false};
         }
 
+        check_not_full(std_transition::source_location::current());
         tree_.insert_new_at(np, std::move(key), std::forward<Args>(args)...);
         return {create_iterator(np.i), true};
     }
@@ -544,6 +612,14 @@ private:
         const NodeIndex& start_index) const noexcept
     {
         return const_reverse_iterator{PairProvider<true>{&tree_, start_index}};
+    }
+
+    constexpr void check_not_full(const std_transition::source_location& loc) const
+    {
+        if (preconditions::test(!full()))
+        {
+            CheckingType::length_error(MAXIMUM_SIZE + 1, loc);
+        }
     }
 };
 }  // namespace fixed_containers

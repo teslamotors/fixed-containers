@@ -97,6 +97,27 @@ TEST(FixedMap, OperatorBracket_NonConstexpr)
     ASSERT_TRUE(s1.contains(4));
 }
 
+TEST(FixedMap, OperatorBracket_ExceedsCapacity)
+{
+    {
+        FixedMap<int, int, 2> s1{};
+        s1[2];
+        s1[4];
+        s1[4];
+        s1[4];
+        EXPECT_DEATH(s1[6], "");
+    }
+    {
+        FixedMap<int, int, 2> s1{};
+        s1[2];
+        s1[4];
+        s1[4];
+        s1[4];
+        int key = 6;
+        EXPECT_DEATH(s1[key], "");
+    }
+}
+
 namespace
 {
 struct ConstructionCounter
@@ -151,6 +172,27 @@ TEST(FixedMap, Insert)
     static_assert(s1.contains(2));
     static_assert(!s1.contains(3));
     static_assert(s1.contains(4));
+}
+
+TEST(FixedMap, Insert_ExceedsCapacity)
+{
+    {
+        FixedMap<int, int, 2> s1{};
+        s1.insert({2, 20});
+        s1.insert({4, 40});
+        s1.insert({4, 41});
+        s1.insert({4, 42});
+        EXPECT_DEATH(s1.insert({6, 60}), "");
+    }
+    {
+        FixedMap<int, int, 2> s1{};
+        s1.insert({2, 20});
+        s1.insert({4, 40});
+        s1.insert({4, 41});
+        s1.insert({4, 42});
+        std::pair<int, int> key_value{6, 60};
+        EXPECT_DEATH(s1.insert(key_value), "");
+    }
 }
 
 TEST(FixedMap, InsertMultipleTimes)
@@ -267,6 +309,27 @@ TEST(FixedMap, InsertOrAssign)
     static_assert(s1.contains(4));
 }
 
+TEST(FixedMap, InsertOrAssign_ExceedsCapacity)
+{
+    {
+        FixedMap<int, int, 2> s1{};
+        s1.insert_or_assign(2, 20);
+        s1.insert_or_assign(4, 40);
+        s1.insert_or_assign(4, 41);
+        s1.insert_or_assign(4, 42);
+        EXPECT_DEATH(s1.insert_or_assign(6, 60), "");
+    }
+    {
+        FixedMap<int, int, 2> s1{};
+        s1.insert_or_assign(2, 20);
+        s1.insert_or_assign(4, 40);
+        s1.insert_or_assign(4, 41);
+        s1.insert_or_assign(4, 42);
+        int key = 6;
+        EXPECT_DEATH(s1.insert_or_assign(key, 60), "");
+    }
+}
+
 TEST(FixedMap, TryEmplace)
 {
     {
@@ -313,6 +376,27 @@ TEST(FixedMap, TryEmplace)
             ASSERT_EQ(2, it->first());
             ASSERT_EQ(20, it->second());
         }
+    }
+}
+
+TEST(FixedMap, TryEmplace_ExceedsCapacity)
+{
+    {
+        FixedMap<int, int, 2> s1{};
+        s1.try_emplace(2, 20);
+        s1.try_emplace(4, 40);
+        s1.try_emplace(4, 41);
+        s1.try_emplace(4, 42);
+        EXPECT_DEATH(s1.try_emplace(6, 60), "");
+    }
+    {
+        FixedMap<int, int, 2> s1{};
+        s1.try_emplace(2, 20);
+        s1.try_emplace(4, 40);
+        s1.try_emplace(4, 41);
+        s1.try_emplace(4, 42);
+        int key = 6;
+        EXPECT_DEATH(s1.try_emplace(key, 60), "");
     }
 }
 
@@ -380,6 +464,27 @@ TEST(FixedMap, Emplace)
             FixedMap<int, MockMoveableButNotCopyable, 5> s2{};
             s2.emplace(1, MockMoveableButNotCopyable{});
         }
+    }
+}
+
+TEST(FixedMap, Emplace_ExceedsCapacity)
+{
+    {
+        FixedMap<int, int, 2> s1{};
+        s1.emplace(2, 20);
+        s1.emplace(4, 40);
+        s1.emplace(4, 41);
+        s1.emplace(4, 42);
+        EXPECT_DEATH(s1.emplace(6, 60), "");
+    }
+    {
+        FixedMap<int, int, 2> s1{};
+        s1.emplace(2, 20);
+        s1.emplace(4, 40);
+        s1.emplace(4, 41);
+        s1.emplace(4, 42);
+        int key = 6;
+        EXPECT_DEATH(s1.emplace(key, 60), "");
     }
 }
 
