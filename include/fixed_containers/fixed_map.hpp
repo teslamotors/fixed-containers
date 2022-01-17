@@ -125,7 +125,7 @@ private:
             else
             {
                 current_index_ = tree_->index_of_successor_at(current_index_);
-                current_index_ = replace_null_index_with_capacity_for_end_iterator(current_index_);
+                current_index_ = replace_null_index_with_max_size_for_end_iterator(current_index_);
             }
 
             update_storage();
@@ -181,7 +181,7 @@ private:
     // The tree returns NULL_INDEX when an index is not available.
     // For the purposes of iterators, use NULL_INDEX for rend() and
     // MAXIMUM_SIZE for end()
-    static constexpr NodeIndex replace_null_index_with_capacity_for_end_iterator(
+    static constexpr NodeIndex replace_null_index_with_max_size_for_end_iterator(
         const NodeIndex& i) noexcept
     {
         return i == NULL_INDEX ? MAXIMUM_SIZE : i;
@@ -498,9 +498,13 @@ public:
                         std::size_t>
               typename StorageTemplate2,
               fixed_map_customize::FixedMapChecking<K> CheckingType2>
-    [[nodiscard]] constexpr bool operator==(
-        const FixedMap<K, V, MAXIMUM_SIZE_2, Compare2, COMPACTNESS_2, StorageTemplate2, CheckingType2>&
-            other) const
+    [[nodiscard]] constexpr bool operator==(const FixedMap<K,
+                                                           V,
+                                                           MAXIMUM_SIZE_2,
+                                                           Compare2,
+                                                           COMPACTNESS_2,
+                                                           StorageTemplate2,
+                                                           CheckingType2>& other) const
     {
         if constexpr (MAXIMUM_SIZE == MAXIMUM_SIZE_2)
         {
@@ -521,13 +525,13 @@ public:
 private:
     constexpr iterator create_iterator(const NodeIndex& start_index) noexcept
     {
-        const NodeIndex i = replace_null_index_with_capacity_for_end_iterator(start_index);
+        const NodeIndex i = replace_null_index_with_max_size_for_end_iterator(start_index);
         return iterator{PairProvider<false>{&tree_, i}};
     }
 
     constexpr const_iterator create_const_iterator(const NodeIndex& start_index) const noexcept
     {
-        const NodeIndex i = replace_null_index_with_capacity_for_end_iterator(start_index);
+        const NodeIndex i = replace_null_index_with_max_size_for_end_iterator(start_index);
         return const_iterator{PairProvider<true>{&tree_, i}};
     }
 

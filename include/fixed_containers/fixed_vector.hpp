@@ -273,7 +273,7 @@ public:
 
     /**
      * Appends the given element value to the end of the container.
-     * If we are already at capacity, Undefined Behavior
+     * Calling push_back on a full container is undefined.
      */
     constexpr void push_back(
         const value_type& v,
@@ -311,7 +311,7 @@ public:
         const T (&arr)[M],
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
-        static_assert(M <= MAXIMUM_SIZE, "Array bigger than capacity");
+        static_assert(M <= MAXIMUM_SIZE, "Array bigger than max size");
         check_target_size(size_ + M, loc);
         this->push_back_all_internal(arr + 0, arr + M);
     }
