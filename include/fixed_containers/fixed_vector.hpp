@@ -180,8 +180,8 @@ protected:  // [WORKAROUND-1] - Needed by the non-trivially-copyable flavor of F
     std::array<OptionalT, MAXIMUM_SIZE> array_;
 
 public:
-    static constexpr std::size_t capacity() noexcept { return MAXIMUM_SIZE; }
-    static constexpr std::size_t max_size() noexcept { return capacity(); }
+    static constexpr std::size_t max_size() noexcept { return MAXIMUM_SIZE; }
+    static constexpr std::size_t capacity() noexcept { return max_size(); }
     static constexpr void reserve(const std::size_t new_capacity,
                                   const std_transition::source_location& loc =
                                       std_transition::source_location::current()) noexcept
