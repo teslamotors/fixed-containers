@@ -546,13 +546,4 @@ private:
         return const_reverse_iterator{PairProvider<true>{&tree_, start_index}};
     }
 };
-
-template <class Key, class T, size_t MaxObjects, class Compare = std::less<Key>>
-using fixed_map = FixedMap<Key, T, MaxObjects, Compare>;
-
-template <class Key, class T, size_t MaxObjects, class Compare = std::less<Key>>
-constexpr bool full(const fixed_map<Key, T, MaxObjects, Compare>& m)
-{
-    return m.full();
-}
 }  // namespace fixed_containers
