@@ -47,7 +47,7 @@ concept IsFixedRedBlackTreeStorage = IsFixedIndexBasedStorage<StorageType> &&
 
 template <class K,
           class V,
-          std::size_t CAPACITY,
+          std::size_t MAXIMUM_SIZE,
           RedBlackTreeNodeColorCompactness COMPACTNESS,
           template <IsFixedIndexBasedStorage, std::size_t>
           typename StorageTemplate>
@@ -62,16 +62,16 @@ class FixedRedBlackTreeStorage
 public:
     using KeyType = K;
     using ValueType = V;
-    using NodeType = std::conditional_t<COMPACTNESS_LVALUE ==
-                                         RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR(),
+    using NodeType =
+        std::conditional_t<COMPACTNESS_LVALUE == RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR(),
                            CompactRedBlackTreeNode<K, V>,
                            DefaultRedBlackTreeNode<K, V>>;
     static constexpr bool HAS_ASSOCIATED_VALUE = NodeType::HAS_ASSOCIATED_VALUE;
-    using size_type = typename StorageTemplate<NodeType, CAPACITY>::size_type;
-    using difference_type = typename StorageTemplate<NodeType, CAPACITY>::difference_type;
+    using size_type = typename StorageTemplate<NodeType, MAXIMUM_SIZE>::size_type;
+    using difference_type = typename StorageTemplate<NodeType, MAXIMUM_SIZE>::difference_type;
 
 private:
-    StorageTemplate<NodeType, CAPACITY> storage_;
+    StorageTemplate<NodeType, MAXIMUM_SIZE> storage_;
 
 public:
     constexpr FixedRedBlackTreeStorage()

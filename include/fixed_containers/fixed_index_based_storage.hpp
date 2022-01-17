@@ -44,16 +44,16 @@ concept IsFixedIndexBasedStorage = requires(const StorageType& a,
     b.delete_at_and_return_repositioned_index(i);
 };
 
-template <class T, std::size_t CAPACITY>
+template <class T, std::size_t MAXIMUM_SIZE>
 class FixedIndexBasedPoolStorage
 {
 public:
-    using size_type = typename std::array<std::optional<T>, CAPACITY>::size_type;
-    using difference_type = typename std::array<std::optional<T>, CAPACITY>::difference_type;
+    using size_type = typename std::array<std::optional<T>, MAXIMUM_SIZE>::size_type;
+    using difference_type = typename std::array<std::optional<T>, MAXIMUM_SIZE>::difference_type;
 
 private:
-    std::array<std::optional<T>, CAPACITY> nodes_{};
-    FixedVector<std::size_t, CAPACITY> available_indexes_stack_{};
+    std::array<std::optional<T>, MAXIMUM_SIZE> nodes_{};
+    FixedVector<std::size_t, MAXIMUM_SIZE> available_indexes_stack_{};
 
 public:
     constexpr FixedIndexBasedPoolStorage() noexcept
@@ -66,16 +66,16 @@ public:
     constexpr void clear()
     {
         available_indexes_stack_.clear();
-        for (std::size_t i = 0; i < CAPACITY; i++)
+        for (std::size_t i = 0; i < MAXIMUM_SIZE; i++)
         {
             reset_at(i);
-            available_indexes_stack_.push_back(CAPACITY - i - 1);
+            available_indexes_stack_.push_back(MAXIMUM_SIZE - i - 1);
         }
     }
 
     [[nodiscard]] constexpr std::size_t size() const noexcept
     {
-        return CAPACITY - available_indexes_stack_.size();
+        return MAXIMUM_SIZE - available_indexes_stack_.size();
     }
     [[nodiscard]] constexpr bool empty() const noexcept { return available_indexes_stack_.full(); }
     [[nodiscard]] constexpr bool full() const noexcept { return available_indexes_stack_.empty(); }
@@ -164,15 +164,15 @@ private:
 // place (this is O(1)).
 // However, this means that indexes (and derived iterators of classes building on top of this)
 // are invalidated on every remove.
-template <class T, std::size_t CAPACITY>
+template <class T, std::size_t MAXIMUM_SIZE>
 class FixedIndexBasedContiguousStorage
 {
 public:
-    using size_type = typename FixedVector<T, CAPACITY>::size_type;
-    using difference_type = typename FixedVector<T, CAPACITY>::difference_type;
+    using size_type = typename FixedVector<T, MAXIMUM_SIZE>::size_type;
+    using difference_type = typename FixedVector<T, MAXIMUM_SIZE>::difference_type;
 
 private:
-    FixedVector<T, CAPACITY> nodes_{};
+    FixedVector<T, MAXIMUM_SIZE> nodes_{};
 
 public:
     constexpr FixedIndexBasedContiguousStorage() noexcept

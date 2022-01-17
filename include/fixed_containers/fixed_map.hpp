@@ -20,7 +20,7 @@ concept FixedMapChecking = requires(K key,
     T::out_of_range(key, size, loc);  // ~ std::out_of_range
 };
 
-template <class K, class V, std::size_t CAPACITY>
+template <class K, class V, std::size_t MAXIMUM_SIZE>
 struct AbortChecking
 {
     static constexpr auto KEY_TYPE_NAME = fixed_containers::type_name<K>();
@@ -49,7 +49,7 @@ namespace fixed_containers
  */
 template <class K,
           class V,
-          std::size_t CAPACITY,
+          std::size_t MAXIMUM_SIZE,
           class Compare = std::less<K>,
           fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness COMPACTNESS =
               fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR(),
@@ -59,7 +59,7 @@ template <class K,
                     std::size_t>
           typename StorageTemplate = FixedIndexBasedPoolStorage,
           fixed_map_customize::FixedMapChecking<K> CheckingType =
-              fixed_map_customize::AbortChecking<K, V, CAPACITY>>
+              fixed_map_customize::AbortChecking<K, V, MAXIMUM_SIZE>>
 class FixedMap
 {
 public:
@@ -76,7 +76,7 @@ private:
     using NodeIndexAndParentIndex = fixed_red_black_tree_detail::NodeIndexAndParentIndex;
     static constexpr NodeIndex NULL_INDEX = fixed_red_black_tree_detail::NULL_INDEX;
     using Tree = fixed_red_black_tree_detail::
-        FixedRedBlackTree<K, V, CAPACITY, Compare, COMPACTNESS, StorageTemplate>;
+        FixedRedBlackTree<K, V, MAXIMUM_SIZE, Compare, COMPACTNESS, StorageTemplate>;
 
     template <bool IS_CONST>
     struct PairProvider
@@ -90,7 +90,7 @@ private:
         ConstOrMutablePairView storage_;  // Needed for liveness
 
         constexpr PairProvider() noexcept
-          : PairProvider{nullptr, CAPACITY}
+          : PairProvider{nullptr, MAXIMUM_SIZE}
         {
         }
 
@@ -132,7 +132,7 @@ private:
         }
         constexpr void recede() noexcept
         {
-            if (current_index_ == CAPACITY)
+            if (current_index_ == MAXIMUM_SIZE)
             {
                 current_index_ = tree_->index_of_max_at();
             }
@@ -165,7 +165,7 @@ private:
     private:
         constexpr void update_storage() noexcept
         {
-            if (current_index_ < CAPACITY && tree_->contains_at(current_index_))
+            if (current_index_ < MAXIMUM_SIZE && tree_->contains_at(current_index_))
             {
                 fixed_red_black_tree_detail::RedBlackTreeNodeView node =
                     tree_->node_at(current_index_);
@@ -180,11 +180,11 @@ private:
 
     // The tree returns NULL_INDEX when an index is not available.
     // For the purposes of iterators, use NULL_INDEX for rend() and
-    // CAPACITY for end()
+    // MAXIMUM_SIZE for end()
     static constexpr NodeIndex replace_null_index_with_capacity_for_end_iterator(
         const NodeIndex& i) noexcept
     {
-        return i == NULL_INDEX ? CAPACITY : i;
+        return i == NULL_INDEX ? MAXIMUM_SIZE : i;
     }
 
 public:
@@ -197,7 +197,7 @@ public:
     using difference_type = typename Tree::difference_type;
 
 public:
-    static constexpr std::size_t max_size() noexcept { return CAPACITY; }
+    static constexpr std::size_t max_size() noexcept { return MAXIMUM_SIZE; }
 
 private:
     Tree tree_;
@@ -252,17 +252,17 @@ public:
     {
         return create_const_iterator(tree_.index_of_min_at());
     }
-    constexpr const_iterator cend() const noexcept { return create_const_iterator(CAPACITY); }
+    constexpr const_iterator cend() const noexcept { return create_const_iterator(MAXIMUM_SIZE); }
     constexpr const_iterator begin() const noexcept { return cbegin(); }
     constexpr iterator begin() noexcept { return create_iterator(tree_.index_of_min_at()); }
     constexpr const_iterator end() const noexcept { return cend(); }
-    constexpr iterator end() noexcept { return create_iterator(CAPACITY); }
+    constexpr iterator end() noexcept { return create_iterator(MAXIMUM_SIZE); }
 
-    constexpr reverse_iterator rbegin() noexcept { return create_reverse_iterator(CAPACITY); }
+    constexpr reverse_iterator rbegin() noexcept { return create_reverse_iterator(MAXIMUM_SIZE); }
     constexpr const_reverse_iterator rbegin() const noexcept { return crbegin(); }
     constexpr const_reverse_iterator crbegin() const noexcept
     {
-        return create_const_reverse_iterator(CAPACITY);
+        return create_const_reverse_iterator(MAXIMUM_SIZE);
     }
     constexpr reverse_iterator rend() noexcept
     {
@@ -489,7 +489,7 @@ public:
         return static_cast<std::size_t>(contains(key));
     }
 
-    template <std::size_t CAPACITY_2,
+    template <std::size_t MAXIMUM_SIZE_2,
               class Compare2,
               fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness COMPACTNESS_2,
               template <class /*Would be IsFixedIndexBasedStorage but gcc doesn't like the
@@ -499,10 +499,10 @@ public:
               typename StorageTemplate2,
               fixed_map_customize::FixedMapChecking<K> CheckingType2>
     [[nodiscard]] constexpr bool operator==(
-        const FixedMap<K, V, CAPACITY_2, Compare2, COMPACTNESS_2, StorageTemplate2, CheckingType2>&
+        const FixedMap<K, V, MAXIMUM_SIZE_2, Compare2, COMPACTNESS_2, StorageTemplate2, CheckingType2>&
             other) const
     {
-        if constexpr (CAPACITY == CAPACITY_2)
+        if constexpr (MAXIMUM_SIZE == MAXIMUM_SIZE_2)
         {
             if (this == &other)
             {

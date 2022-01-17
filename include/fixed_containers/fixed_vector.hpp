@@ -28,7 +28,7 @@ concept FixedVectorChecking = requires(std::size_t i,
     T::invalid_argument(error_message, loc);  // ~ std::invalid_argument
 };
 
-template <typename T, std::size_t /*CAPACITY*/>
+template <typename T, std::size_t /*MAXIMUM_SIZE*/>
 struct AbortChecking
 {
     static constexpr auto TYPE_NAME = fixed_containers::type_name<T>();
@@ -127,7 +127,7 @@ private:
 // [WORKAROUND-1] due to destructors: manually do the split with std::conditional_t.
 // FixedVectorBase is only used for avoiding too much duplication for the destructor split
 template <typename T,
-          std::size_t CAPACITY,
+          std::size_t MAXIMUM_SIZE,
           fixed_vector_customize::FixedVectorChecking CheckingType>
 class FixedVectorBase
 {
@@ -145,12 +145,12 @@ class FixedVectorBase
     };
 
     template <IteratorConstness CONSTNESS>
-    using IteratorImpl =
-        RandomAccessIteratorTransformer<typename std::array<OptionalT, CAPACITY>::const_iterator,
-                                        typename std::array<OptionalT, CAPACITY>::iterator,
-                                        Mapper,
-                                        Mapper,
-                                        CONSTNESS>;
+    using IteratorImpl = RandomAccessIteratorTransformer<
+        typename std::array<OptionalT, MAXIMUM_SIZE>::const_iterator,
+        typename std::array<OptionalT, MAXIMUM_SIZE>::iterator,
+        Mapper,
+        Mapper,
+        CONSTNESS>;
 
 public:
     using value_type = T;
@@ -169,7 +169,7 @@ private:
     static constexpr void check_target_size(size_type target_size,
                                             const std_transition::source_location& loc)
     {
-        if (preconditions::test(target_size <= CAPACITY))
+        if (preconditions::test(target_size <= MAXIMUM_SIZE))
         {
             Checking::length_error(target_size, loc);
         }
@@ -177,16 +177,16 @@ private:
 
 protected:  // [WORKAROUND-1] - Needed by the non-trivially-copyable flavor of FixedVector
     std::size_t size_;  // Current size of vector, which can change in contrast to the capacity
-    std::array<OptionalT, CAPACITY> array_;
+    std::array<OptionalT, MAXIMUM_SIZE> array_;
 
 public:
-    static constexpr std::size_t capacity() noexcept { return CAPACITY; }
+    static constexpr std::size_t capacity() noexcept { return MAXIMUM_SIZE; }
     static constexpr std::size_t max_size() noexcept { return capacity(); }
     static constexpr void reserve(const std::size_t new_capacity,
                                   const std_transition::source_location& loc =
                                       std_transition::source_location::current()) noexcept
     {
-        if (preconditions::test(new_capacity <= CAPACITY))
+        if (preconditions::test(new_capacity <= MAXIMUM_SIZE))
         {
             Checking::length_error(new_capacity, loc);
         }
@@ -311,7 +311,7 @@ public:
         const T (&arr)[M],
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
-        static_assert(M <= CAPACITY, "Array bigger than capacity");
+        static_assert(M <= MAXIMUM_SIZE, "Array bigger than capacity");
         check_target_size(size_ + M, loc);
         this->push_back_all_internal(arr + 0, arr + M);
     }
@@ -596,7 +596,7 @@ public:
      */
     [[nodiscard]] constexpr std::size_t size() const noexcept { return size_; }
     [[nodiscard]] constexpr bool empty() const noexcept { return size_ == 0; }
-    [[nodiscard]] constexpr bool full() const noexcept { return size_ >= CAPACITY; }
+    [[nodiscard]] constexpr bool full() const noexcept { return size_ >= MAXIMUM_SIZE; }
 
     /**
      * Equality.
@@ -604,7 +604,7 @@ public:
     template <std::size_t C, fixed_vector_customize::FixedVectorChecking CheckingType2>
     constexpr bool operator==(const FixedVectorBase<T, C, CheckingType2>& other) const
     {
-        if constexpr (CAPACITY == C)
+        if constexpr (MAXIMUM_SIZE == C)
         {
             if (this == &other)
             {
@@ -700,7 +700,7 @@ private:
     {
         if (preconditions::test(!full()))
         {
-            Checking::length_error(CAPACITY + 1, loc);
+            Checking::length_error(MAXIMUM_SIZE + 1, loc);
         }
     }
     constexpr void check_not_empty(const std_transition::source_location& loc) const
@@ -817,15 +817,15 @@ protected:
 namespace fixed_containers::fixed_vector_detail::trivially_copyable
 {
 template <typename T,
-          std::size_t CAPACITY,
+          std::size_t MAXIMUM_SIZE,
           fixed_vector_customize::FixedVectorChecking CheckingType>
-class FixedVector : public fixed_vector_detail::FixedVectorBase<T, CAPACITY, CheckingType>
+class FixedVector : public fixed_vector_detail::FixedVectorBase<T, MAXIMUM_SIZE, CheckingType>
 {
-    using Base = fixed_vector_detail::FixedVectorBase<T, CAPACITY, CheckingType>;
+    using Base = fixed_vector_detail::FixedVectorBase<T, MAXIMUM_SIZE, CheckingType>;
 
 public:
     using Builder =
-        fixed_vector_detail::FixedVectorBuilder<T, FixedVector<T, CAPACITY, CheckingType>>;
+        fixed_vector_detail::FixedVectorBuilder<T, FixedVector<T, MAXIMUM_SIZE, CheckingType>>;
 
     constexpr FixedVector() noexcept
       : Base()
@@ -864,15 +864,15 @@ public:
 namespace fixed_containers::fixed_vector_detail::non_trivially_copyable
 {
 template <typename T,
-          std::size_t CAPACITY,
+          std::size_t MAXIMUM_SIZE,
           fixed_vector_customize::FixedVectorChecking CheckingType>
-class FixedVector : public fixed_vector_detail::FixedVectorBase<T, CAPACITY, CheckingType>
+class FixedVector : public fixed_vector_detail::FixedVectorBase<T, MAXIMUM_SIZE, CheckingType>
 {
-    using Base = fixed_vector_detail::FixedVectorBase<T, CAPACITY, CheckingType>;
+    using Base = fixed_vector_detail::FixedVectorBase<T, MAXIMUM_SIZE, CheckingType>;
 
 public:
     using Builder =
-        fixed_vector_detail::FixedVectorBuilder<T, FixedVector<T, CAPACITY, CheckingType>>;
+        fixed_vector_detail::FixedVectorBuilder<T, FixedVector<T, MAXIMUM_SIZE, CheckingType>>;
 
     constexpr FixedVector() noexcept
       : Base()
@@ -987,11 +987,11 @@ namespace fixed_containers
  *  - no dynamic allocations
  */
 template <typename T,
-          std::size_t CAPACITY,
+          std::size_t MAXIMUM_SIZE,
           fixed_vector_customize::FixedVectorChecking CheckingType =
-              fixed_vector_customize::AbortChecking<T, CAPACITY>>
+              fixed_vector_customize::AbortChecking<T, MAXIMUM_SIZE>>
 using FixedVector = std::conditional_t<
     TriviallyCopyable<T>,
-    fixed_vector_detail::trivially_copyable::FixedVector<T, CAPACITY, CheckingType>,
-    fixed_vector_detail::non_trivially_copyable::FixedVector<T, CAPACITY, CheckingType>>;
+    fixed_vector_detail::trivially_copyable::FixedVector<T, MAXIMUM_SIZE, CheckingType>,
+    fixed_vector_detail::non_trivially_copyable::FixedVector<T, MAXIMUM_SIZE, CheckingType>>;
 }  // end namespace fixed_containers

@@ -37,12 +37,12 @@ static_assert(TriviallyMoveAssignable<ES_1>);
 
 template <class K,
           class V,
-          std::size_t CAPACITY,
+          std::size_t MAXIMUM_SIZE,
           class Compare = std::less<K>,
           RedBlackTreeNodeColorCompactness COMPACTNESS =
               RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR()>
 using FixedRedBlackTreeContiguousStorage =
-    FixedRedBlackTree<K, V, CAPACITY, Compare, COMPACTNESS, FixedIndexBasedContiguousStorage>;
+    FixedRedBlackTree<K, V, MAXIMUM_SIZE, Compare, COMPACTNESS, FixedIndexBasedContiguousStorage>;
 
 template <IsRedBlackTreeNode NodeTypeA, IsRedBlackTreeNode NodeTypeB>
 constexpr bool are_equal_impl(const NodeTypeA& a, const NodeTypeB& b)
@@ -1382,26 +1382,26 @@ TEST(Utilities, FixedRedBlackTreeContiguousStorage_IndexOfEntryGreaterThan)
     ASSERT_EQ(NULL_INDEX, bst.index_of_node_greater_than(13));
 }
 
-template <std::size_t CAPACITY>
-static void consistency_test_helper(const std::array<int, CAPACITY>& insertion_order,
-                                    const std::array<int, CAPACITY>& deletion_order,
-                                    FixedRedBlackTreeContiguousStorage<int, int, CAPACITY>& bst)
+template <std::size_t MAXIMUM_SIZE>
+static void consistency_test_helper(const std::array<int, MAXIMUM_SIZE>& insertion_order,
+                                    const std::array<int, MAXIMUM_SIZE>& deletion_order,
+                                    FixedRedBlackTreeContiguousStorage<int, int, MAXIMUM_SIZE>& bst)
 {
-    static constexpr std::size_t HALF_CAPACITY = CAPACITY / 2;
-    static constexpr std::size_t QUARTER_CAPACITY = CAPACITY / 4;
+    static constexpr std::size_t HALF_MAXIMUM_SIZE = MAXIMUM_SIZE / 2;
+    static constexpr std::size_t QUARTER_MAXIMUM_SIZE = MAXIMUM_SIZE / 4;
 
     // Insert all and verify elements as we go
-    for (std::size_t i = 0; i < CAPACITY; i++)
+    for (std::size_t i = 0; i < MAXIMUM_SIZE; i++)
     {
         ASSERT_TRUE(contains_all_from_to(bst, insertion_order, 0, i));
         bst[insertion_order[i]] = insertion_order[i];
     }
-    ASSERT_TRUE(contains_all_from_to(bst, insertion_order, 0, CAPACITY));
+    ASSERT_TRUE(contains_all_from_to(bst, insertion_order, 0, MAXIMUM_SIZE));
 
     // Remove all and verify elements as we go
-    for (std::size_t i = 0; i < CAPACITY; i++)
+    for (std::size_t i = 0; i < MAXIMUM_SIZE; i++)
     {
-        ASSERT_TRUE(contains_all_from_to(bst, deletion_order, i, CAPACITY));
+        ASSERT_TRUE(contains_all_from_to(bst, deletion_order, i, MAXIMUM_SIZE));
         const int value_to_delete = deletion_order[i];
 
         // Copy the value, as the node might move.
@@ -1423,55 +1423,55 @@ static void consistency_test_helper(const std::array<int, CAPACITY>& insertion_o
     ASSERT_TRUE(bst.empty());
 
     // Mix insertions and deletions
-    for (std::size_t i = 0; i < HALF_CAPACITY; i++)
+    for (std::size_t i = 0; i < HALF_MAXIMUM_SIZE; i++)
     {
         ASSERT_TRUE(contains_all_from_to(bst, insertion_order, 0, i));
         bst[insertion_order[i]] = insertion_order[i];
     }
-    for (std::size_t i = 0; i < QUARTER_CAPACITY; i++)
+    for (std::size_t i = 0; i < QUARTER_MAXIMUM_SIZE; i++)
     {
         ASSERT_TRUE(
-            contains_all_from_to(bst, insertion_order, QUARTER_CAPACITY, QUARTER_CAPACITY + i));
+            contains_all_from_to(bst, insertion_order, QUARTER_MAXIMUM_SIZE, QUARTER_MAXIMUM_SIZE + i));
         bst.delete_node(insertion_order[i]);
     }
-    ASSERT_TRUE(contains_all_from_to(bst, insertion_order, QUARTER_CAPACITY, HALF_CAPACITY));
-    for (std::size_t i = 0; i < QUARTER_CAPACITY; i++)
+    ASSERT_TRUE(contains_all_from_to(bst, insertion_order, QUARTER_MAXIMUM_SIZE, HALF_MAXIMUM_SIZE));
+    for (std::size_t i = 0; i < QUARTER_MAXIMUM_SIZE; i++)
     {
         ASSERT_TRUE(contains_all_from_to(bst, insertion_order, 0, i));
-        ASSERT_TRUE(contains_all_from_to(bst, insertion_order, QUARTER_CAPACITY, HALF_CAPACITY));
+        ASSERT_TRUE(contains_all_from_to(bst, insertion_order, QUARTER_MAXIMUM_SIZE, HALF_MAXIMUM_SIZE));
         bst[insertion_order[i]] = insertion_order[i];
     }
-    ASSERT_TRUE(contains_all_from_to(bst, insertion_order, 0, HALF_CAPACITY));
-    for (std::size_t i = 0; i < HALF_CAPACITY; i++)
+    ASSERT_TRUE(contains_all_from_to(bst, insertion_order, 0, HALF_MAXIMUM_SIZE));
+    for (std::size_t i = 0; i < HALF_MAXIMUM_SIZE; i++)
     {
-        ASSERT_TRUE(contains_all_from_to(bst, insertion_order, i, HALF_CAPACITY));
+        ASSERT_TRUE(contains_all_from_to(bst, insertion_order, i, HALF_MAXIMUM_SIZE));
         bst.delete_node(insertion_order[i]);
     }
 }
 
 TEST(Utilities, FixedRedBlackTreeContiguousStorage_ConsistencyRegressionTest1)
 {
-    static constexpr std::size_t CAPACITY = 8;
+    static constexpr std::size_t MAXIMUM_SIZE = 8;
 
     // Intentionally use the same bst for this entire test. Don't clear()
-    FixedRedBlackTreeContiguousStorage<int, int, CAPACITY> bst{};
+    FixedRedBlackTreeContiguousStorage<int, int, MAXIMUM_SIZE> bst{};
 
-    std::array<int, CAPACITY> insertion_order{2, 4, 3, 6, 1, 5, 0, 7};
-    std::array<int, CAPACITY> deletion_order{3, 4, 1, 2, 6, 0, 5, 7};
+    std::array<int, MAXIMUM_SIZE> insertion_order{2, 4, 3, 6, 1, 5, 0, 7};
+    std::array<int, MAXIMUM_SIZE> deletion_order{3, 4, 1, 2, 6, 0, 5, 7};
 
     consistency_test_helper(insertion_order, deletion_order, bst);
 }
 
 TEST(Utilities, FixedRedBlackTreeContiguousStorage_RandomizedConsistencyTest)
 {
-    static constexpr std::size_t CAPACITY = 8;
+    static constexpr std::size_t MAXIMUM_SIZE = 8;
     // Intentionally use the same bst for this entire test. Don't clear()
-    FixedRedBlackTreeContiguousStorage<int, int, CAPACITY> bst{};
+    FixedRedBlackTreeContiguousStorage<int, int, MAXIMUM_SIZE> bst{};
 
-    std::array<int, CAPACITY> insertion_order{};
-    std::array<int, CAPACITY> deletion_order{};
+    std::array<int, MAXIMUM_SIZE> insertion_order{};
+    std::array<int, MAXIMUM_SIZE> deletion_order{};
 
-    for (std::size_t i = 0; i < CAPACITY; i++)
+    for (std::size_t i = 0; i < MAXIMUM_SIZE; i++)
     {
         insertion_order[i] = static_cast<int>(i);
         deletion_order[i] = static_cast<int>(i);
@@ -1490,17 +1490,17 @@ TEST(Utilities, FixedRedBlackTreeContiguousStorage_RandomizedConsistencyTest)
 
 TEST(Utilities, FixedRedBlackTreeContiguousStorage_TreeMaxHeight)
 {
-    static constexpr std::size_t CAPACITY = 512;
-    FixedRedBlackTreeContiguousStorage<int, int, CAPACITY> bst{};
+    static constexpr std::size_t MAXIMUM_SIZE = 512;
+    FixedRedBlackTreeContiguousStorage<int, int, MAXIMUM_SIZE> bst{};
 
-    std::array<int, CAPACITY> insertion_order{};
-    for (std::size_t i = 0; i < CAPACITY; i++)
+    std::array<int, MAXIMUM_SIZE> insertion_order{};
+    for (std::size_t i = 0; i < MAXIMUM_SIZE; i++)
     {
         insertion_order[i] = static_cast<int>(i);
     }
 
     // Ascending Insertion
-    for (std::size_t i = 0; i < CAPACITY; i++)
+    for (std::size_t i = 0; i < MAXIMUM_SIZE; i++)
     {
         bst[insertion_order[i]] = insertion_order[i];
         ASSERT_LE(find_height(bst), max_height_of_red_black_tree(bst.size()));
@@ -1508,7 +1508,7 @@ TEST(Utilities, FixedRedBlackTreeContiguousStorage_TreeMaxHeight)
 
     // Descending Insertion
     std::reverse(insertion_order.begin(), insertion_order.end());
-    for (std::size_t i = 0; i < CAPACITY; i++)
+    for (std::size_t i = 0; i < MAXIMUM_SIZE; i++)
     {
         bst[insertion_order[i]] = insertion_order[i];
         ASSERT_LE(find_height(bst), max_height_of_red_black_tree(bst.size()));
@@ -1521,7 +1521,7 @@ TEST(Utilities, FixedRedBlackTreeContiguousStorage_TreeMaxHeight)
     for (std::size_t iteration = 0; iteration < ITERATIONS; iteration++)
     {
         std::shuffle(insertion_order.begin(), insertion_order.end(), g);
-        for (std::size_t i = 0; i < CAPACITY; i++)
+        for (std::size_t i = 0; i < MAXIMUM_SIZE; i++)
         {
             bst[insertion_order[i]] = insertion_order[i];
             ASSERT_LE(find_height(bst), max_height_of_red_black_tree(bst.size()));

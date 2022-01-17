@@ -28,7 +28,7 @@ struct EmptyValue
 //
 // This class does something similar, except it embeds the color in the high bits of the indexes.
 // This is because it is unlikely that we are going to need maps up to NodeIndex::max() and we
-// care about values 0 to CAPACITY. Furthermore, NULL_INDEX is at max().
+// care about values 0 to MAXIMUM_SIZE. Furthermore, NULL_INDEX is at max().
 class NodeIndexWithColorEmbeddedInTheMostSignificantBit
 {
     static constexpr std::size_t SHIFT_TO_MOST_SIGNIFICANT_BIT = sizeof(NodeIndex) * 8ULL - 1ULL;

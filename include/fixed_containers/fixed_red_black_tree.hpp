@@ -31,7 +31,7 @@ namespace fixed_containers::fixed_red_black_tree_detail
 // https://www.cs.usfca.edu/~galles/visualization/RedBlack.html
 template <class K,
           class V,
-          std::size_t CAPACITY,
+          std::size_t MAXIMUM_SIZE,
           class Compare = std::less<K>,
           RedBlackTreeNodeColorCompactness COMPACTNESS =
               RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR(),
@@ -46,7 +46,7 @@ private:
     using KeyType = K;
     using ValueType = V;
     static constexpr bool HAS_ASSOCIATED_VALUE = !std::is_same_v<V, EmptyValue>;
-    using TreeStorage = FixedRedBlackTreeStorage<K, V, CAPACITY, COMPACTNESS, StorageTemplate>;
+    using TreeStorage = FixedRedBlackTreeStorage<K, V, MAXIMUM_SIZE, COMPACTNESS, StorageTemplate>;
     using NodeType = typename TreeStorage::NodeType;
     using Ops = FixedRedBlackTreeOps<FixedRedBlackTree>;
     friend Ops;
@@ -736,13 +736,13 @@ private:
 };
 
 template <class K,
-          std::size_t CAPACITY,
+          std::size_t MAXIMUM_SIZE,
           class Compare = std::less<K>,
           RedBlackTreeNodeColorCompactness COMPACTNESS =
               RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR(),
           template <IsFixedIndexBasedStorage, std::size_t> typename StorageTemplate =
               FixedIndexBasedPoolStorage>
 using FixedRedBlackTreeSetStorage =
-    FixedRedBlackTree<K, EmptyValue, CAPACITY, Compare, COMPACTNESS, StorageTemplate>;
+    FixedRedBlackTree<K, EmptyValue, MAXIMUM_SIZE, Compare, COMPACTNESS, StorageTemplate>;
 
 }  // namespace fixed_containers::fixed_red_black_tree_detail

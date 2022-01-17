@@ -20,7 +20,7 @@ namespace fixed_containers
  *  - no recursion
  */
 template <class K,
-          std::size_t CAPACITY,
+          std::size_t MAXIMUM_SIZE,
           class Compare = std::less<K>,
           fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness COMPACTNESS =
               fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR(),
@@ -44,12 +44,12 @@ private:
     using NodeIndexAndParentIndex = fixed_red_black_tree_detail::NodeIndexAndParentIndex;
     static constexpr NodeIndex NULL_INDEX = fixed_red_black_tree_detail::NULL_INDEX;
     using Tree = fixed_red_black_tree_detail::
-        FixedRedBlackTreeSetStorage<K, CAPACITY, Compare, COMPACTNESS, StorageTemplate>;
+        FixedRedBlackTreeSetStorage<K, MAXIMUM_SIZE, Compare, COMPACTNESS, StorageTemplate>;
 
     struct ReferenceProvider
     {
         const Tree* tree_{nullptr};
-        NodeIndex current_index_{CAPACITY};
+        NodeIndex current_index_{MAXIMUM_SIZE};
 
         constexpr void advance() noexcept
         {
@@ -65,7 +65,7 @@ private:
         }
         constexpr void recede() noexcept
         {
-            if (current_index_ == CAPACITY)
+            if (current_index_ == MAXIMUM_SIZE)
             {
                 current_index_ = tree_->index_of_max_at();
             }
@@ -94,11 +94,11 @@ private:
 
     // The tree returns NULL_INDEX when an index is not available.
     // For the purposes of iterators, use NULL_INDEX for rend() and
-    // CAPACITY for end()
+    // MAXIMUM_SIZE for end()
     static constexpr NodeIndex replace_null_index_with_capacity_for_end_iterator(
         const NodeIndex& i) noexcept
     {
-        return i == NULL_INDEX ? CAPACITY : i;
+        return i == NULL_INDEX ? MAXIMUM_SIZE : i;
     }
 
 public:
@@ -110,7 +110,7 @@ public:
     using difference_type = typename Tree::difference_type;
 
 public:
-    static constexpr std::size_t max_size() noexcept { return CAPACITY; }
+    static constexpr std::size_t max_size() noexcept { return MAXIMUM_SIZE; }
 
 private:
     Tree tree_;
@@ -138,13 +138,13 @@ public:
     {
         return create_const_iterator(tree_.index_of_min_at());
     }
-    constexpr const_iterator cend() const noexcept { return create_const_iterator(CAPACITY); }
+    constexpr const_iterator cend() const noexcept { return create_const_iterator(MAXIMUM_SIZE); }
     constexpr const_iterator begin() const noexcept { return cbegin(); }
     constexpr const_iterator end() const noexcept { return cend(); }
 
     constexpr const_reverse_iterator crbegin() const noexcept
     {
-        return create_const_reverse_iterator(CAPACITY);
+        return create_const_reverse_iterator(MAXIMUM_SIZE);
     }
     constexpr const_reverse_iterator crend() const noexcept
     {
@@ -273,7 +273,7 @@ public:
     template <std::size_t C>
     [[nodiscard]] constexpr bool operator==(const FixedSet<K, C>& other) const
     {
-        if constexpr (CAPACITY == C)
+        if constexpr (MAXIMUM_SIZE == C)
         {
             if (this == &other)
             {
