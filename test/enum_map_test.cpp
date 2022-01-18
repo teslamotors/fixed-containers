@@ -1478,7 +1478,7 @@ using EnumMapInstanceCheckTypes =
                    EnumMap<TestEnum1, InstanceCounterNonTrivialAssignment>,
                    EnumMap<TestEnum1, InstanceCounterTrivialAssignment>>;
 
-INSTANTIATE_TYPED_TEST_SUITE_P(Utilities,
+INSTANTIATE_TYPED_TEST_SUITE_P(EnumMap,
                                EnumMapInstanceCheckFixture,
                                EnumMapInstanceCheckTypes,
                                NameProviderForTypeParameterizedTest);

@@ -1874,7 +1874,7 @@ using FixedVectorInstanceCheckTypes =
                    FixedVector<InstanceCounterNonTrivialAssignment, 17>,
                    FixedVector<InstanceCounterTrivialAssignment, 17>>;
 
-INSTANTIATE_TYPED_TEST_SUITE_P(Utilities,
+INSTANTIATE_TYPED_TEST_SUITE_P(FixedVector,
                                FixedVectorInstanceCheckFixture,
                                FixedVectorInstanceCheckTypes,
                                NameProviderForTypeParameterizedTest);

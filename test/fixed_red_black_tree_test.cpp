@@ -166,7 +166,7 @@ std::size_t max_height_of_red_black_tree(const std::size_t size)
 
 }  // namespace
 
-TEST(Utilities, NodeIndexWithColorEmbeddedInTheMostSignificantBitTest)
+TEST(NodeIndexWithColorEmbeddedInTheMostSignificantBit, Basic)
 {
     {
         constexpr auto default_value = []()

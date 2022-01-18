@@ -1276,7 +1276,7 @@ using FixedMapInstanceCheckTypes = testing::Types<
     FixedMap<InstanceCounterNonTrivialAssignment, InstanceCounterNonTrivialAssignment, 17>,
     FixedMap<InstanceCounterTrivialAssignment, InstanceCounterTrivialAssignment, 17>>;
 
-INSTANTIATE_TYPED_TEST_SUITE_P(Utilities,
+INSTANTIATE_TYPED_TEST_SUITE_P(FixedMap,
                                FixedMapInstanceCheckFixture,
                                FixedMapInstanceCheckTypes,
                                NameProviderForTypeParameterizedTest);
