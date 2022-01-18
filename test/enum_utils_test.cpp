@@ -66,7 +66,7 @@ static_assert(rich_enums_detail::has_zero_based_and_sorted_contiguous_ordinal(
 
 static_assert(!has_enum_adapter<std::size_t>);
 
-TEST(Utilities, BuiltinEnumAdapter_Ordinal)
+TEST(BuiltinEnumAdapter, Ordinal)
 {
     {
         using E1 = CustomValuesTestEnum1;
@@ -106,7 +106,7 @@ TEST(Utilities, BuiltinEnumAdapter_Ordinal)
     }
 }
 
-TEST(Utilities, RichEnumAdapter_Ordinal)
+TEST(RichEnumAdapter, Ordinal)
 {
     static_assert(4 == EnumAdapter<TestRichEnum1>::count());
     static_assert(0 == EnumAdapter<TestRichEnum1>::ordinal(TestRichEnum1::C_ONE()));
@@ -115,7 +115,7 @@ TEST(Utilities, RichEnumAdapter_Ordinal)
     static_assert(3 == EnumAdapter<TestRichEnum1>::ordinal(TestRichEnum1::C_FOUR()));
 }
 
-TEST(Utilities, SpecializedEnumAdapter_Ordinal)
+TEST(SpecializedEnumAdapter, Ordinal)
 {
     static_assert(2 == EnumAdapter<NonConformingTestRichEnum1>::count());
     static_assert(0 == EnumAdapter<NonConformingTestRichEnum1>::ordinal(
@@ -124,7 +124,7 @@ TEST(Utilities, SpecializedEnumAdapter_Ordinal)
                            NonConformingTestRichEnum1::NC_TWO()));
 }
 
-TEST(Utilities, BuiltinEnumAdapter_ToSting)
+TEST(BuiltinEnumAdapter, ToSting)
 {
     static_assert(4 == EnumAdapter<CustomValuesTestEnum1>::count());
     static_assert("ONE" ==
@@ -137,7 +137,7 @@ TEST(Utilities, BuiltinEnumAdapter_ToSting)
                   EnumAdapter<CustomValuesTestEnum1>::to_string(CustomValuesTestEnum1::FOUR));
 }
 
-TEST(Utilities, RichEnumAdapter_ToSting)
+TEST(RichEnumAdapter, ToSting)
 {
     static_assert(4 == EnumAdapter<TestRichEnum1>::count());
     static_assert("C_ONE" == EnumAdapter<TestRichEnum1>::to_string(TestRichEnum1::C_ONE()));
@@ -146,7 +146,7 @@ TEST(Utilities, RichEnumAdapter_ToSting)
     static_assert("C_FOUR" == EnumAdapter<TestRichEnum1>::to_string(TestRichEnum1::C_FOUR()));
 }
 
-TEST(Utilities, SpecializedEnumAdapter_ToSting)
+TEST(SpecializedEnumAdapter, ToSting)
 {
     static_assert(2 == EnumAdapter<NonConformingTestRichEnum1>::count());
     static_assert("NC_ONE" == EnumAdapter<NonConformingTestRichEnum1>::to_string(
@@ -155,7 +155,7 @@ TEST(Utilities, SpecializedEnumAdapter_ToSting)
                                   NonConformingTestRichEnum1::NC_TWO()));
 }
 
-TEST(Utilities, RichEnum_ValueOfInt)
+TEST(RichEnum, ValueOfInt)
 {
     constexpr const TestRichEnum1& MY_VALUE = TestRichEnum1::value_of(0).value();
 
@@ -165,7 +165,7 @@ TEST(Utilities, RichEnum_ValueOfInt)
     static_assert(TestRichEnum1::value_of(29) == std::nullopt);
 }
 
-TEST(Utilities, RichEnum_ValueOfName)
+TEST(RichEnum, ValueOfName)
 {
     constexpr const TestRichEnum1& MY_VALUE = TestRichEnum1::value_of("C_ONE").value();
 
@@ -186,13 +186,13 @@ TEST(Utilities, RichEnumBackingEnum)
     static_assert(TestRichEnum1::value_of(static_cast<BE>(29)) == std::nullopt);
 }
 
-TEST(Utilities, RichEnum_UniqueValuesArrays)
+TEST(RichEnum, UniqueValuesArrays)
 {
     static_assert(&TestRichEnum1::values() == &TestRichEnum1::values());
     static_assert(&TestRichEnum2::values() == &TestRichEnum2::values());
 }
 
-TEST(Utilities, RichEnum_HasValue)
+TEST(RichEnum, HasValue)
 {
     constexpr TestRichEnum1 INVALID{};
     static_assert(!INVALID.has_value());
@@ -203,7 +203,7 @@ TEST(Utilities, RichEnum_HasValue)
     static_assert(INVALID != TestRichEnum1::C_FOUR());
 }
 
-TEST(Utilities, RichEnum_BoolNegate)
+TEST(RichEnum, BoolNegate)
 {
     {
         constexpr const TestRichEnumBool& F_VALUE = TestRichEnumBool::FALSE_VALUE();

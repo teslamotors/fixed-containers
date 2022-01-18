@@ -25,7 +25,7 @@ struct IdentityIndexProvider
 
 }  // namespace
 
-TEST(Utilities, IndexRangeIterator_Forward_StartingConditions)
+TEST(IndexRangeIterator, Forward_StartingConditions)
 {
     using ItType = IndexRangeIterator<IdentityIndexProvider,
                                       IdentityIndexProvider,
@@ -68,7 +68,7 @@ TEST(Utilities, IndexRangeIterator_Forward_StartingConditions)
     }
 }
 
-TEST(Utilities, IndexRangePredicateIterator_Forward_StartingConditions)
+TEST(IndexRangePredicateIterator, Forward_StartingConditions)
 {
     using ItType = IndexRangePredicateIterator<EvenValuesOnly,
                                                IdentityIndexProvider,
@@ -113,7 +113,7 @@ TEST(Utilities, IndexRangePredicateIterator_Forward_StartingConditions)
     }
 }
 
-TEST(Utilities, IndexRangeIterator_Forward_EmptyIterator)
+TEST(IndexRangeIterator, Forward_EmptyIterator)
 {
     using ItType = IndexRangePredicateIterator<AlwaysFalsePredicate,
                                                IdentityIndexProvider,
@@ -130,7 +130,7 @@ TEST(Utilities, IndexRangeIterator_Forward_EmptyIterator)
     }
 }
 
-TEST(Utilities, IndexRangeIterator_Reverse_EmptyIterator)
+TEST(IndexRangeIterator, Reverse_EmptyIterator)
 {
     using ItType = IndexRangePredicateIterator<AlwaysFalsePredicate,
                                                IdentityIndexProvider,
@@ -147,7 +147,7 @@ TEST(Utilities, IndexRangeIterator_Reverse_EmptyIterator)
     }
 }
 
-TEST(Utilities, IndexRangeIterator_Reverse_StartingConditions)
+TEST(IndexRangeIterator, Reverse_StartingConditions)
 {
     using ItType = IndexRangeIterator<IdentityIndexProvider,
                                       IdentityIndexProvider,
@@ -172,7 +172,7 @@ TEST(Utilities, IndexRangeIterator_Reverse_StartingConditions)
     }
 }
 
-TEST(Utilities, IndexRangePredicateIterator_Reverse_StartingConditions)
+TEST(IndexRangePredicateIterator, Reverse_StartingConditions)
 {
     using ItType = IndexRangePredicateIterator<EvenValuesOnly,
                                                IdentityIndexProvider,
@@ -198,7 +198,7 @@ TEST(Utilities, IndexRangePredicateIterator_Reverse_StartingConditions)
     }
 }
 
-TEST(Utilities, IndexRangeIterator_ForwardIncrement)
+TEST(IndexRangeIterator, ForwardIncrement)
 {
     using ItType = IndexRangeIterator<IdentityIndexProvider,
                                       IdentityIndexProvider,
@@ -243,7 +243,7 @@ TEST(Utilities, IndexRangeIterator_ForwardIncrement)
     }
 }
 
-TEST(Utilities, IndexRangeIterator_ForwardDecrement)
+TEST(IndexRangeIterator, ForwardDecrement)
 {
     using ItType = IndexRangeIterator<IdentityIndexProvider,
                                       IdentityIndexProvider,
@@ -292,7 +292,7 @@ TEST(Utilities, IndexRangeIterator_ForwardDecrement)
     }
 }
 
-TEST(Utilities, IndexRangeIterator_ReverseIncrement)
+TEST(IndexRangeIterator, ReverseIncrement)
 {
     using ItType = IndexRangeIterator<IdentityIndexProvider,
                                       IdentityIndexProvider,
@@ -338,7 +338,7 @@ TEST(Utilities, IndexRangeIterator_ReverseIncrement)
     }
 }
 
-TEST(Utilities, IndexRangeIterator_ReverseDecrement)
+TEST(IndexRangeIterator, ReverseDecrement)
 {
     using ItType = IndexRangeIterator<IdentityIndexProvider,
                                       IdentityIndexProvider,

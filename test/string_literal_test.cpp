@@ -11,7 +11,7 @@ static_assert(std::is_trivially_copyable_v<StringLiteral>);
 static_assert(!std::is_trivial_v<StringLiteral>);
 static_assert(std::is_standard_layout_v<StringLiteral>);
 
-TEST(Utilities, StringLiteral_DefaultCtor)
+TEST(StringLiteral, DefaultCtor)
 {
     {
         constexpr StringLiteral ZERO;
@@ -23,7 +23,7 @@ TEST(Utilities, StringLiteral_DefaultCtor)
     }
 }
 
-TEST(Utilities, StringLiteral_Ctor)
+TEST(StringLiteral, Ctor)
 {
     static constexpr const char MY_LITERAL[5] = "blah";  // 4 chars + null terminator
 
@@ -38,7 +38,7 @@ TEST(Utilities, StringLiteral_Ctor)
     static_assert(s2.size() == 4);
 }
 
-TEST(Utilities, StringLiteral_CopyandMoveCtor)
+TEST(StringLiteral, CopyandMoveCtor)
 {
     struct MyStruct
     {
@@ -57,7 +57,7 @@ TEST(Utilities, StringLiteral_CopyandMoveCtor)
     static_assert(h.b.as_view() == "bar");
 }
 
-TEST(Utilities, StringLiteral_CStr)
+TEST(StringLiteral, CStr)
 {
     static constexpr const char MY_LITERAL[5] = "blah";  // 4 chars + null terminator
     constexpr StringLiteral s = MY_LITERAL;

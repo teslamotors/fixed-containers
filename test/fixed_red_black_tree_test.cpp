@@ -249,7 +249,7 @@ TEST(Utilities, NodeIndexWithColorEmbeddedInTheMostSignificantBitTest)
     }
 }
 
-TEST(Utilities, FixedRedBlackTreeSetStorage_NoValue)
+TEST(FixedRedBlackTreeSetStorage, NoValue)
 {
     FixedRedBlackTreeSetStorage<int, 10> bst;
 
@@ -296,7 +296,7 @@ TEST(Utilities, FixedRedBlackTreeSetStorage_NoValue)
     }
 }
 
-TEST(Utilities, FixedRedBlackTreeContiguousStorage_InsertionExample1)
+TEST(FixedRedBlackTreeContiguousStorage, InsertionExample1)
 {
     FixedRedBlackTreeContiguousStorage<int, int, 10> bst;
 
@@ -344,7 +344,7 @@ TEST(Utilities, FixedRedBlackTreeContiguousStorage_InsertionExample1)
     }
 }
 
-TEST(Utilities, FixedRedBlackTreeContiguousStorage_InsertionExample2)
+TEST(FixedRedBlackTreeContiguousStorage, InsertionExample2)
 {
     FixedRedBlackTreeContiguousStorage<int, int, 20> bst;
 
@@ -381,7 +381,7 @@ TEST(Utilities, FixedRedBlackTreeContiguousStorage_InsertionExample2)
     }
 }
 
-TEST(Utilities, FixedRedBlackTreeContiguousStorage_Insertion_FocusOnTheRight)
+TEST(FixedRedBlackTreeContiguousStorage, Insertion_FocusOnTheRight)
 {
     FixedRedBlackTreeContiguousStorage<int, int, 20> bst;
 
@@ -545,7 +545,7 @@ TEST(Utilities, FixedRedBlackTreeContiguousStorage_Insertion_FocusOnTheRight)
 }
 
 // This is symmetric to Example3: for every key x do (20 - x) instead
-TEST(Utilities, FixedRedBlackTreeContiguousStorage_Insertion_FocusOnTheLeft)
+TEST(FixedRedBlackTreeContiguousStorage, Insertion_FocusOnTheLeft)
 {
     FixedRedBlackTreeContiguousStorage<int, int, 20> bst;
 
@@ -718,7 +718,7 @@ static FixedRedBlackTreeContiguousStorage<int, int, 7> get_new_swap_test_base_tr
     return bst;
 }
 
-TEST(Utilities, FixedRedBlackTreeContiguousStorage_SwapNodes)
+TEST(FixedRedBlackTreeContiguousStorage, SwapNodes)
 {
     using Ops = FixedRedBlackTreeOps<FixedRedBlackTreeContiguousStorage<int, int, 7>>;
     // Swap non-neighbors #1
@@ -824,7 +824,7 @@ static FixedRedBlackTreeContiguousStorage<int, int, 20> get_new_deletion_test_ba
     return bst;
 }
 
-TEST(Utilities, FixedRedBlackTreeContiguousStorage_Deletion)
+TEST(FixedRedBlackTreeContiguousStorage, Deletion)
 {
     // Base verification
     {
@@ -1148,7 +1148,7 @@ TEST(Utilities, FixedRedBlackTreeContiguousStorage_Deletion)
     }
 }
 
-TEST(Utilities, FixedRedBlackTreeContiguousStorage_Deletion_CornerCases)
+TEST(FixedRedBlackTreeContiguousStorage, Deletion_CornerCases)
 {
     // Delete root as the last element
     {
@@ -1297,7 +1297,7 @@ TEST(Utilities, FixedRedBlackTreeContiguousStorage_Deletion_CornerCases)
     }
 }
 
-TEST(Utilities, FixedRedBlackTreeContiguousStorage_IndexOfMin)
+TEST(FixedRedBlackTreeContiguousStorage, IndexOfMin)
 {
     FixedRedBlackTree<int, int, 10> bst{};
     bst[0] = 10;
@@ -1310,7 +1310,7 @@ TEST(Utilities, FixedRedBlackTreeContiguousStorage_IndexOfMin)
     ASSERT_EQ(1, bst.node_at(bst.index_of_min_at()).key());
 }
 
-TEST(Utilities, FixedRedBlackTreeContiguousStorage_IndexOfMax)
+TEST(FixedRedBlackTreeContiguousStorage, IndexOfMax)
 {
     FixedRedBlackTree<int, int, 10> bst{};
     bst[0] = 10;
@@ -1323,7 +1323,7 @@ TEST(Utilities, FixedRedBlackTreeContiguousStorage_IndexOfMax)
     ASSERT_EQ(3, bst.node_at(bst.index_of_max_at()).key());
 }
 
-TEST(Utilities, FixedRedBlackTreeContiguousStorage_IndexOfSuccessor)
+TEST(FixedRedBlackTreeContiguousStorage, IndexOfSuccessor)
 {
     FixedRedBlackTreeContiguousStorage<int, int, 20> bst{};
     bst[5] = 50;    // Position 0
@@ -1342,7 +1342,7 @@ TEST(Utilities, FixedRedBlackTreeContiguousStorage_IndexOfSuccessor)
     ASSERT_EQ(NULL_INDEX, bst.index_of_successor_at(2));
 }
 
-TEST(Utilities, FixedRedBlackTreeContiguousStorage_IndexOfPredecessor)
+TEST(FixedRedBlackTreeContiguousStorage, IndexOfPredecessor)
 {
     FixedRedBlackTreeContiguousStorage<int, int, 20> bst{};
     bst[5] = 50;    // Position 0
@@ -1361,7 +1361,7 @@ TEST(Utilities, FixedRedBlackTreeContiguousStorage_IndexOfPredecessor)
     ASSERT_EQ(1, bst.index_of_predecessor_at(2));
 }
 
-TEST(Utilities, FixedRedBlackTreeContiguousStorage_IndexOfEntryGreaterThan)
+TEST(FixedRedBlackTreeContiguousStorage, IndexOfEntryGreaterThan)
 {
     FixedRedBlackTreeContiguousStorage<int, int, 20> bst{};
     bst[5] = 50;    // Position 0
@@ -1430,15 +1430,17 @@ static void consistency_test_helper(const std::array<int, MAXIMUM_SIZE>& inserti
     }
     for (std::size_t i = 0; i < QUARTER_MAXIMUM_SIZE; i++)
     {
-        ASSERT_TRUE(
-            contains_all_from_to(bst, insertion_order, QUARTER_MAXIMUM_SIZE, QUARTER_MAXIMUM_SIZE + i));
+        ASSERT_TRUE(contains_all_from_to(
+            bst, insertion_order, QUARTER_MAXIMUM_SIZE, QUARTER_MAXIMUM_SIZE + i));
         bst.delete_node(insertion_order[i]);
     }
-    ASSERT_TRUE(contains_all_from_to(bst, insertion_order, QUARTER_MAXIMUM_SIZE, HALF_MAXIMUM_SIZE));
+    ASSERT_TRUE(
+        contains_all_from_to(bst, insertion_order, QUARTER_MAXIMUM_SIZE, HALF_MAXIMUM_SIZE));
     for (std::size_t i = 0; i < QUARTER_MAXIMUM_SIZE; i++)
     {
         ASSERT_TRUE(contains_all_from_to(bst, insertion_order, 0, i));
-        ASSERT_TRUE(contains_all_from_to(bst, insertion_order, QUARTER_MAXIMUM_SIZE, HALF_MAXIMUM_SIZE));
+        ASSERT_TRUE(
+            contains_all_from_to(bst, insertion_order, QUARTER_MAXIMUM_SIZE, HALF_MAXIMUM_SIZE));
         bst[insertion_order[i]] = insertion_order[i];
     }
     ASSERT_TRUE(contains_all_from_to(bst, insertion_order, 0, HALF_MAXIMUM_SIZE));
@@ -1449,7 +1451,7 @@ static void consistency_test_helper(const std::array<int, MAXIMUM_SIZE>& inserti
     }
 }
 
-TEST(Utilities, FixedRedBlackTreeContiguousStorage_ConsistencyRegressionTest1)
+TEST(FixedRedBlackTreeContiguousStorage, ConsistencyRegressionTest1)
 {
     static constexpr std::size_t MAXIMUM_SIZE = 8;
 
@@ -1462,7 +1464,7 @@ TEST(Utilities, FixedRedBlackTreeContiguousStorage_ConsistencyRegressionTest1)
     consistency_test_helper(insertion_order, deletion_order, bst);
 }
 
-TEST(Utilities, FixedRedBlackTreeContiguousStorage_RandomizedConsistencyTest)
+TEST(FixedRedBlackTreeContiguousStorage, RandomizedConsistencyTest)
 {
     static constexpr std::size_t MAXIMUM_SIZE = 8;
     // Intentionally use the same bst for this entire test. Don't clear()
@@ -1488,7 +1490,7 @@ TEST(Utilities, FixedRedBlackTreeContiguousStorage_RandomizedConsistencyTest)
     }
 }
 
-TEST(Utilities, FixedRedBlackTreeContiguousStorage_TreeMaxHeight)
+TEST(FixedRedBlackTreeContiguousStorage, TreeMaxHeight)
 {
     static constexpr std::size_t MAXIMUM_SIZE = 512;
     FixedRedBlackTreeContiguousStorage<int, int, MAXIMUM_SIZE> bst{};

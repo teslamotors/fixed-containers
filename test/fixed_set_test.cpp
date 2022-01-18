@@ -29,13 +29,13 @@ static_assert(ranges::bidirectional_iterator<ES_1::const_iterator>);
 
 }  // namespace
 
-TEST(Utilities, FixedSet_DefaultCtor)
+TEST(FixedSet, DefaultCtor)
 {
     constexpr FixedSet<int, 10> s1{};
     static_assert(s1.empty());
 }
 
-TEST(Utilities, FixedSet_Initializer)
+TEST(FixedSet, Initializer)
 {
     constexpr FixedSet<int, 10> s1{2, 4};
     static_assert(s1.size() == 2);
@@ -44,14 +44,14 @@ TEST(Utilities, FixedSet_Initializer)
     static_assert(s2.size() == 1);
 }
 
-TEST(Utilities, FixedSet_Find_TransparentComparator)
+TEST(FixedSet, Find_TransparentComparator)
 {
     constexpr FixedSet<MockAComparableToB, 3, std::less<>> s{};
     constexpr MockBComparableToA b{5};
     static_assert(s.find(b) == s.end());
 }
 
-TEST(Utilities, FixedSet_Contains)
+TEST(FixedSet, Contains)
 {
     constexpr FixedSet<int, 10> s1{2, 4};
     static_assert(s1.size() == 2);
@@ -62,7 +62,7 @@ TEST(Utilities, FixedSet_Contains)
     static_assert(s1.contains(4));
 }
 
-TEST(Utilities, FixedSet_Contains_TransparentComparator)
+TEST(FixedSet, Contains_TransparentComparator)
 {
     constexpr FixedSet<MockAComparableToB, 5, std::less<>> s{
         MockAComparableToB{1}, MockAComparableToB{3}, MockAComparableToB{5}};
@@ -70,7 +70,7 @@ TEST(Utilities, FixedSet_Contains_TransparentComparator)
     static_assert(s.contains(b));
 }
 
-TEST(Utilities, FixedSet_Count_TransparentComparator)
+TEST(FixedSet, Count_TransparentComparator)
 {
     constexpr FixedSet<MockAComparableToB, 5, std::less<>> s{
         MockAComparableToB{1}, MockAComparableToB{3}, MockAComparableToB{5}};
@@ -78,13 +78,13 @@ TEST(Utilities, FixedSet_Count_TransparentComparator)
     static_assert(s.count(b) == 1);
 }
 
-TEST(Utilities, FixedSet_MaxSize)
+TEST(FixedSet, MaxSize)
 {
     constexpr FixedSet<int, 10> s1{2, 4};
     static_assert(s1.max_size() == 10);
 }
 
-TEST(Utilities, FixedSet_EmptySizeFull)
+TEST(FixedSet, EmptySizeFull)
 {
     constexpr FixedSet<int, 10> s1{2, 4};
     static_assert(s1.size() == 2);
@@ -103,7 +103,7 @@ TEST(Utilities, FixedSet_EmptySizeFull)
     static_assert(!s4.full());
 }
 
-TEST(Utilities, FixedSet_Insert)
+TEST(FixedSet, Insert)
 {
     constexpr auto s1 = []()
     {
@@ -120,7 +120,7 @@ TEST(Utilities, FixedSet_Insert)
     static_assert(s1.contains(4));
 }
 
-TEST(Utilities, FixedSet_InsertMultipleTimes)
+TEST(FixedSet, InsertMultipleTimes)
 {
     constexpr auto s1 = []()
     {
@@ -155,7 +155,7 @@ TEST(Utilities, FixedSet_InsertMultipleTimes)
     static_assert(s1.contains(4));
 }
 
-TEST(Utilities, FixedSet_InsertInitializer)
+TEST(FixedSet, InsertInitializer)
 {
     constexpr auto s1 = []()
     {
@@ -171,7 +171,7 @@ TEST(Utilities, FixedSet_InsertInitializer)
     static_assert(s1.contains(4));
 }
 
-TEST(Utilities, FixedSet_Insert_Iterators)
+TEST(FixedSet, Insert_Iterators)
 {
     constexpr auto s1 = []()
     {
@@ -193,7 +193,7 @@ TEST(Utilities, FixedSet_Insert_Iterators)
     static_assert(std::is_same_v<decltype(*s_non_const.begin()), const int&>);
 }
 
-TEST(Utilities, FixedSet_Clear)
+TEST(FixedSet, Clear)
 {
     constexpr auto s1 = []()
     {
@@ -205,7 +205,7 @@ TEST(Utilities, FixedSet_Clear)
     static_assert(s1.empty());
 }
 
-TEST(Utilities, FixedSet_Erase)
+TEST(FixedSet, Erase)
 {
     constexpr auto s1 = []()
     {
@@ -224,7 +224,7 @@ TEST(Utilities, FixedSet_Erase)
     static_assert(s1.contains(4));
 }
 
-TEST(Utilities, FixedSet_EraseIterator)
+TEST(FixedSet, EraseIterator)
 {
     constexpr auto s1 = []()
     {
@@ -250,7 +250,7 @@ TEST(Utilities, FixedSet_EraseIterator)
     static_assert(s1.contains(4));
 }
 
-TEST(Utilities, FixedSet_EraseIterator_InvalidIterator)
+TEST(FixedSet, EraseIterator_InvalidIterator)
 {
     FixedSet<int, 10> s{2, 4};
     {
@@ -260,7 +260,7 @@ TEST(Utilities, FixedSet_EraseIterator_InvalidIterator)
     }
 }
 
-TEST(Utilities, FixedSet_EraseRange)
+TEST(FixedSet, EraseRange)
 {
     {
         constexpr auto s1 = []()
@@ -317,7 +317,7 @@ TEST(Utilities, FixedSet_EraseRange)
     }
 }
 
-TEST(Utilities, FixedSet_IteratorBasic)
+TEST(FixedSet, IteratorBasic)
 {
     constexpr FixedSet<int, 10> s1{1, 2, 3, 4};
 
@@ -334,7 +334,7 @@ TEST(Utilities, FixedSet_IteratorBasic)
     static_assert(*std::prev(s1.end(), 4) == 1);
 }
 
-TEST(Utilities, FixedSet_Iterator_OffByOneIssues)
+TEST(FixedSet, Iterator_OffByOneIssues)
 {
     constexpr FixedSet<int, 10> s1{{1, 4}};
 
@@ -347,7 +347,7 @@ TEST(Utilities, FixedSet_Iterator_OffByOneIssues)
     static_assert(*std::prev(s1.end(), 2) == 1);
 }
 
-TEST(Utilities, FixedSet_Iterator_EnsureOrder)
+TEST(FixedSet, Iterator_EnsureOrder)
 {
     constexpr auto s1 = []()
     {
@@ -369,7 +369,7 @@ TEST(Utilities, FixedSet_Iterator_EnsureOrder)
     static_assert(*std::prev(s1.end(), 3) == 1);
 }
 
-TEST(Utilities, FixedSet_ReverseIteratorBasic)
+TEST(FixedSet, ReverseIteratorBasic)
 {
     constexpr FixedSet<int, 10> s1{1, 2, 3, 4};
 
@@ -386,7 +386,7 @@ TEST(Utilities, FixedSet_ReverseIteratorBasic)
     static_assert(*std::prev(s1.rend(), 4) == 4);
 }
 
-TEST(Utilities, FixedSet_Equality)
+TEST(FixedSet, Equality)
 {
     constexpr FixedSet<int, 10> s1{{1, 4}};
     constexpr FixedSet<int, 10> s2{{4, 1}};
@@ -403,7 +403,7 @@ TEST(Utilities, FixedSet_Equality)
     static_assert(s4 != s1);
 }
 
-TEST(Utilities, FixedSet_Ranges)
+TEST(FixedSet, Ranges)
 {
     FixedSet<int, 10> s1{1, 4};
     auto f = s1 | ranges::views::filter([](const auto& v) -> bool { return v == 4; });
@@ -412,7 +412,7 @@ TEST(Utilities, FixedSet_Ranges)
     EXPECT_EQ(4, *f.begin());
 }
 
-TEST(Utilities, FixedSet_SetIntersection)
+TEST(FixedSet, SetIntersection)
 {
     constexpr FixedSet<int, 10> s1 = []()
     {

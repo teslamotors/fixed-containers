@@ -4,7 +4,7 @@
 
 namespace fixed_containers
 {
-TEST(Utilities, PairView_std_get)
+TEST(PairView, std_get)
 {
     {
         std::pair<int, int> s;
@@ -17,7 +17,7 @@ TEST(Utilities, PairView_std_get)
     }
 }
 
-TEST(Utilities, PairView_constness)
+TEST(PairView, constness)
 {
     {
         PairView<int, double> s;

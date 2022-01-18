@@ -46,7 +46,7 @@ static_assert(std::is_trivially_copyable_v<ES_2::reverse_iterator>);
 static_assert(std::is_trivially_copyable_v<ES_2::const_reverse_iterator>);
 }  // namespace
 
-TEST(Utilities, EnumSet_All)
+TEST(EnumSet, All)
 {
     constexpr auto s1 = EnumSet<TestEnum1>::all();
 
@@ -57,7 +57,7 @@ TEST(Utilities, EnumSet_All)
     static_assert(s1.contains(TestEnum1::FOUR));
 }
 
-TEST(Utilities, EnumSet_None)
+TEST(EnumSet, None)
 {
     constexpr auto s1 = EnumSet<TestEnum1>::none();
 
@@ -68,7 +68,7 @@ TEST(Utilities, EnumSet_None)
     static_assert(!s1.contains(TestEnum1::FOUR));
 }
 
-TEST(Utilities, EnumSet_ComplementOf)
+TEST(EnumSet, ComplementOf)
 {
     constexpr EnumSet<TestEnum1> a{TestEnum1::TWO, TestEnum1::FOUR};
     constexpr auto s1 = EnumSet<TestEnum1>::complement_of(a);
@@ -80,14 +80,14 @@ TEST(Utilities, EnumSet_ComplementOf)
     static_assert(!s1.contains(TestEnum1::FOUR));
 }
 
-TEST(Utilities, EnumSet_CopyOf)
+TEST(EnumSet, CopyOf)
 {
     constexpr std::array<TestEnum1, 2> a{TestEnum1::TWO, TestEnum1::FOUR};
     constexpr auto s1 = EnumSet<TestEnum1>::copy_of(a);
     static_assert(s1.size() == 2);
 }
 
-TEST(Utilities, EnumSet_Builder_Insert)
+TEST(EnumSet, Builder_Insert)
 {
     constexpr EnumSet<TestEnum1> a{TestEnum1::TWO, TestEnum1::FOUR};
     constexpr TestEnum1 b = TestEnum1 ::TWO;
@@ -108,7 +108,7 @@ TEST(Utilities, EnumSet_Builder_Insert)
     static_assert(s1.contains(TestEnum1::FOUR));
 }
 
-TEST(Utilities, EnumSet_Builder_FluentSyntaxWithNoCopies)
+TEST(EnumSet, Builder_FluentSyntaxWithNoCopies)
 {
     // Constructing like this to bypass the imposed non-copyability of this enum
     constexpr std::array<NonCopyableRichEnum, 2> a{
@@ -134,7 +134,7 @@ TEST(Utilities, EnumSet_Builder_FluentSyntaxWithNoCopies)
     static_assert(s1.contains(NonCopyableRichEnum::C_FOUR()));
 }
 
-TEST(Utilities, EnumSet_Builder_MultipleOuts)
+TEST(EnumSet, Builder_MultipleOuts)
 {
     constexpr std::array<TestEnum1, 2> a{TestEnum1::TWO, TestEnum1::FOUR};
     constexpr TestEnum1 b = TestEnum1::TWO;
@@ -179,13 +179,13 @@ TEST(Utilities, EnumSet_Builder_MultipleOuts)
     }
 }
 
-TEST(Utilities, EnumSet_DefaultCtor)
+TEST(EnumSet, DefaultCtor)
 {
     constexpr EnumSet<TestEnum1> s1{};
     static_assert(s1.empty());
 }
 
-TEST(Utilities, EnumSet_InitializerCtor)
+TEST(EnumSet, InitializerCtor)
 {
     constexpr EnumSet<TestEnum1> s1{TestEnum1::TWO, TestEnum1::FOUR};
     static_assert(s1.size() == 2);
@@ -194,7 +194,7 @@ TEST(Utilities, EnumSet_InitializerCtor)
     static_assert(s2.size() == 1);
 }
 
-TEST(Utilities, EnumSet_IteratorCtor)
+TEST(EnumSet, IteratorCtor)
 {
     constexpr std::array INPUT = {TestEnum1::TWO, TestEnum1::FOUR};
     constexpr EnumSet<TestEnum1> s1{INPUT.begin(), INPUT.end()};
@@ -206,7 +206,7 @@ TEST(Utilities, EnumSet_IteratorCtor)
     static_assert(s1.contains(TestEnum1::FOUR));
 }
 
-TEST(Utilities, EnumSet_Contains)
+TEST(EnumSet, Contains)
 {
     constexpr EnumSet<TestEnum1> s1{TestEnum1::TWO, TestEnum1::FOUR};
     static_assert(s1.size() == 2);
@@ -217,7 +217,7 @@ TEST(Utilities, EnumSet_Contains)
     static_assert(s1.contains(TestEnum1::FOUR));
 }
 
-TEST(Utilities, EnumSet_MaxSize)
+TEST(EnumSet, MaxSize)
 {
     constexpr EnumSet<TestEnum1> s1{TestEnum1::TWO, TestEnum1::FOUR};
     static_assert(s1.max_size() == 4);
@@ -226,7 +226,7 @@ TEST(Utilities, EnumSet_MaxSize)
     static_assert(s2.max_size() == 4);
 }
 
-TEST(Utilities, EnumSet_EmptyAndSize)
+TEST(EnumSet, EmptyAndSize)
 {
     constexpr EnumSet<TestEnum1> s1{TestEnum1::TWO, TestEnum1::FOUR};
     static_assert(s1.size() == 2);
@@ -237,7 +237,7 @@ TEST(Utilities, EnumSet_EmptyAndSize)
     static_assert(s2.empty());
 }
 
-TEST(Utilities, EnumSet_Insert)
+TEST(EnumSet, Insert)
 {
     constexpr auto s1 = []()
     {
@@ -254,7 +254,7 @@ TEST(Utilities, EnumSet_Insert)
     static_assert(s1.contains(TestEnum1::FOUR));
 }
 
-TEST(Utilities, EnumSet_InsertMultipleTimes)
+TEST(EnumSet, InsertMultipleTimes)
 {
     constexpr auto s1 = []()
     {
@@ -289,7 +289,7 @@ TEST(Utilities, EnumSet_InsertMultipleTimes)
     static_assert(s1.contains(TestEnum1::FOUR));
 }
 
-TEST(Utilities, EnumSet_InsertInitializer)
+TEST(EnumSet, InsertInitializer)
 {
     constexpr auto s1 = []()
     {
@@ -305,7 +305,7 @@ TEST(Utilities, EnumSet_InsertInitializer)
     static_assert(s1.contains(TestEnum1::FOUR));
 }
 
-TEST(Utilities, EnumSet_Insert_Iterators)
+TEST(EnumSet, Insert_Iterators)
 {
     constexpr auto s1 = []()
     {
@@ -327,7 +327,7 @@ TEST(Utilities, EnumSet_Insert_Iterators)
     static_assert(std::is_same_v<decltype(*s_non_const.begin()), const TestEnum1&>);
 }
 
-TEST(Utilities, EnumSet_Clear)
+TEST(EnumSet, Clear)
 {
     constexpr auto s1 = []()
     {
@@ -339,7 +339,7 @@ TEST(Utilities, EnumSet_Clear)
     static_assert(s1.empty());
 }
 
-TEST(Utilities, EnumSet_Erase)
+TEST(EnumSet, Erase)
 {
     constexpr auto s1 = []()
     {
@@ -358,7 +358,7 @@ TEST(Utilities, EnumSet_Erase)
     static_assert(s1.contains(TestEnum1::FOUR));
 }
 
-TEST(Utilities, EnumSet_EraseIterator)
+TEST(EnumSet, EraseIterator)
 {
     constexpr auto s1 = []()
     {
@@ -384,7 +384,7 @@ TEST(Utilities, EnumSet_EraseIterator)
     static_assert(s1.contains(TestEnum1::FOUR));
 }
 
-TEST(Utilities, EnumSet_EraseIterator_InvalidIterator)
+TEST(EnumSet, EraseIterator_InvalidIterator)
 {
     EnumSet<TestEnum1> s{TestEnum1::TWO, TestEnum1::FOUR};
     {
@@ -394,7 +394,7 @@ TEST(Utilities, EnumSet_EraseIterator_InvalidIterator)
     }
 }
 
-TEST(Utilities, EnumSet_EraseRange)
+TEST(EnumSet, EraseRange)
 {
     {
         constexpr auto s1 = []()
@@ -451,7 +451,7 @@ TEST(Utilities, EnumSet_EraseRange)
     }
 }
 
-TEST(Utilities, EnumSet_IteratorBasic)
+TEST(EnumSet, IteratorBasic)
 {
     constexpr EnumSet<TestEnum1> s1{
         TestEnum1::ONE, TestEnum1::TWO, TestEnum1::THREE, TestEnum1::FOUR};
@@ -469,7 +469,7 @@ TEST(Utilities, EnumSet_IteratorBasic)
     static_assert(*std::prev(s1.end(), 4) == TestEnum1::ONE);
 }
 
-TEST(Utilities, EnumSet_Iterator_OffByOneIssues)
+TEST(EnumSet, Iterator_OffByOneIssues)
 {
     constexpr EnumSet<TestEnum1> s1{{TestEnum1::ONE, TestEnum1::FOUR}};
 
@@ -482,7 +482,7 @@ TEST(Utilities, EnumSet_Iterator_OffByOneIssues)
     static_assert(*std::prev(s1.end(), 2) == TestEnum1::ONE);
 }
 
-TEST(Utilities, EnumSet_Iterator_EnsureOrder)
+TEST(EnumSet, Iterator_EnsureOrder)
 {
     constexpr auto s1 = []()
     {
@@ -504,7 +504,7 @@ TEST(Utilities, EnumSet_Iterator_EnsureOrder)
     static_assert(*std::prev(s1.end(), 3) == TestEnum1::ONE);
 }
 
-TEST(Utilities, EnumSet_ReverseIteratorBasic)
+TEST(EnumSet, ReverseIteratorBasic)
 {
     constexpr EnumSet<TestEnum1> s1{
         TestEnum1::ONE, TestEnum1::TWO, TestEnum1::THREE, TestEnum1::FOUR};
@@ -522,7 +522,7 @@ TEST(Utilities, EnumSet_ReverseIteratorBasic)
     static_assert(*std::prev(s1.rend(), 4) == TestEnum1::FOUR);
 }
 
-TEST(Utilities, EnumSet_RichEnum)
+TEST(EnumSet, RichEnum)
 {
     constexpr auto s1 = []()
     {
@@ -536,7 +536,7 @@ TEST(Utilities, EnumSet_RichEnum)
     static_assert(!s1.contains(TestRichEnum1::C_TWO()));
 }
 
-TEST(Utilities, EnumSet_NonConformingRichEnum)
+TEST(EnumSet, NonConformingRichEnum)
 {
     constexpr auto s1 = []()
     {
@@ -550,7 +550,7 @@ TEST(Utilities, EnumSet_NonConformingRichEnum)
     static_assert(!s1.contains(NonConformingTestRichEnum1::NC_TWO()));
 }
 
-TEST(Utilities, EnumSet_Equality)
+TEST(EnumSet, Equality)
 {
     constexpr EnumSet<TestEnum1> s1{{TestEnum1::ONE, TestEnum1::FOUR}};
     constexpr EnumSet<TestEnum1> s2{{TestEnum1::FOUR, TestEnum1::ONE}};
@@ -567,7 +567,7 @@ TEST(Utilities, EnumSet_Equality)
     static_assert(s4 != s1);
 }
 
-TEST(Utilities, EnumSet_Ranges)
+TEST(EnumSet, Ranges)
 {
     EnumSet<TestRichEnum1> s1{TestRichEnum1::C_ONE(), TestRichEnum1::C_FOUR()};
     auto f = s1 | ranges::views::filter([](const auto& v) -> bool
@@ -577,7 +577,7 @@ TEST(Utilities, EnumSet_Ranges)
     EXPECT_EQ(TestRichEnum1::C_FOUR(), *f.begin());
 }
 
-TEST(Utilities, EnumSet_SetIntersection)
+TEST(EnumSet, SetIntersection)
 {
     constexpr EnumSet<TestEnum1> s1 = []()
     {

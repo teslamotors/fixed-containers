@@ -91,7 +91,7 @@ constexpr bool are_equal(const FixedVectorType& vec, const OtherType& other)
 
 }  // namespace
 
-TEST(Utilities, FixedVector_DefaultCtor)
+TEST(FixedVector, DefaultCtor)
 {
     constexpr FixedVector<int, 8> v1{};
     static_assert(v1.empty());
@@ -101,7 +101,7 @@ TEST(Utilities, FixedVector_DefaultCtor)
     static_assert(v2.empty());
 }
 
-TEST(Utilities, FixedVector_FixedVector_DefaultCtorNonDefaultConstructible)
+TEST(FixedVector, FixedVector_DefaultCtorNonDefaultConstructible)
 {
     {
         constexpr FixedVector<MockNonDefaultConstructible, 8> v1{};
@@ -120,7 +120,7 @@ TEST(Utilities, FixedVector_FixedVector_DefaultCtorNonDefaultConstructible)
     }
 }
 
-TEST(Utilities, FixedVector_MockNonTrivialDestructible)
+TEST(FixedVector, MockNonTrivialDestructible)
 {
     {
         std::vector<MockNonTrivialDestructible> stdv{};
@@ -187,7 +187,7 @@ TEST(Utilities, FixedVector_MockNonTrivialDestructible)
     }
 }
 
-TEST(Utilities, FixedVector_MockNonAssignable)
+TEST(FixedVector, MockNonAssignable)
 {
     const MockNonAssignable tt = {5};
 
@@ -204,7 +204,7 @@ TEST(Utilities, FixedVector_MockNonAssignable)
     }
 }
 
-TEST(Utilities, FixedVector_MockNonTriviallyCopyAssignable)
+TEST(FixedVector, MockNonTriviallyCopyAssignable)
 {
     const MockNonTriviallyCopyAssignable tt = {};
 
@@ -223,7 +223,7 @@ TEST(Utilities, FixedVector_MockNonTriviallyCopyAssignable)
     }
 }
 
-TEST(Utilities, FixedVector_MockTriviallyCopyableButNotCopyableOrMoveable)
+TEST(FixedVector, MockTriviallyCopyableButNotCopyableOrMoveable)
 {
     {
         FixedVector<MockTriviallyCopyableButNotCopyableOrMoveable, 5> v1{};
@@ -238,7 +238,7 @@ TEST(Utilities, FixedVector_MockTriviallyCopyableButNotCopyableOrMoveable)
     }
 }
 
-TEST(Utilities, FixedVector_Builder_FluentSyntaxWithNoExtraCopies)
+TEST(FixedVector, Builder_FluentSyntaxWithNoExtraCopies)
 {
     {
         constexpr std::array<int, 2> a{2, 4};
@@ -273,7 +273,7 @@ TEST(Utilities, FixedVector_Builder_FluentSyntaxWithNoExtraCopies)
     }
 }
 
-TEST(Utilities, FixedVector_Builder_MultipleOuts)
+TEST(FixedVector, Builder_MultipleOuts)
 {
     {
         constexpr std::array<int, 2> a{2, 4};
@@ -348,7 +348,7 @@ TEST(Utilities, FixedVector_Builder_MultipleOuts)
     }
 }
 
-TEST(Utilities, FixedVector_Initializer)
+TEST(FixedVector, Initializer)
 {
     constexpr FixedVector<int, 3> v1{77, 99};
     static_assert(v1[0] == 77);
@@ -364,7 +364,7 @@ TEST(Utilities, FixedVector_Initializer)
     EXPECT_TRUE(are_equal(v2, std::array{66, 55}));
 }
 
-TEST(Utilities, FixedVector_CountCtor)
+TEST(FixedVector, CountCtor)
 {
     // Caution: Using braces calls initializer list ctor!
     {
@@ -394,7 +394,7 @@ TEST(Utilities, FixedVector_CountCtor)
     }
 }
 
-TEST(Utilities, FixedVector_InputIteratorCtor)
+TEST(FixedVector, InputIteratorCtor)
 {
     constexpr FixedVector<int, 3> v1{77, 99};
     static_assert(v1[0] == 77);
@@ -407,7 +407,7 @@ TEST(Utilities, FixedVector_InputIteratorCtor)
     static_assert(v2.size() == 2);
 }
 
-TEST(Utilities, FixedVector_PushBack)
+TEST(FixedVector, PushBack)
 {
     constexpr auto v1 = []()
     {
@@ -438,7 +438,7 @@ TEST(Utilities, FixedVector_PushBack)
     static_assert(v3.size() == 1);
 }
 
-TEST(Utilities, FixedVector_EmplaceBack)
+TEST(FixedVector, EmplaceBack)
 {
     {
         constexpr auto v1 = []()
@@ -477,7 +477,7 @@ TEST(Utilities, FixedVector_EmplaceBack)
     }
 }
 
-TEST(Utilities, FixedVector_CapacityAndMaxSize)
+TEST(FixedVector, CapacityAndMaxSize)
 {
     {
         constexpr FixedVector<int, 3> v1{};
@@ -492,7 +492,7 @@ TEST(Utilities, FixedVector_CapacityAndMaxSize)
     }
 }
 
-TEST(Utilities, FixedVector_Reserve)
+TEST(FixedVector, Reserve)
 {
     constexpr auto v1 = []()
     {
@@ -509,13 +509,13 @@ TEST(Utilities, FixedVector_Reserve)
     EXPECT_DEATH(v2.reserve(15), "");
 }
 
-TEST(Utilities, FixedVector_ReserveFailure)
+TEST(FixedVector, ReserveFailure)
 {
     FixedVector<int, 3> v1{};
     EXPECT_DEATH(v1.reserve(15), "");
 }
 
-TEST(Utilities, FixedVector_ExceedCapacity)
+TEST(FixedVector, ExceedCapacity)
 {
     FixedVector<int, 3> v1{};
     v1.push_back_all({0, 1, 2});
@@ -524,7 +524,7 @@ TEST(Utilities, FixedVector_ExceedCapacity)
     EXPECT_DEATH(v1.push_back(value), "");
 }
 
-TEST(Utilities, FixedVector_PushBackAll_CArray)
+TEST(FixedVector, PushBackAll_CArray)
 {
     constexpr auto v1 = []()
     {
@@ -548,14 +548,14 @@ TEST(Utilities, FixedVector_PushBackAll_CArray)
     EXPECT_TRUE(are_equal(v2, std::array{10, 11, 12, 0, 0}));
 }
 
-TEST(Utilities, FixedVector_PushBackAll_CArray_ExceedCapacity)
+TEST(FixedVector, PushBackAll_CArray_ExceedCapacity)
 {
     FixedVector<int, 5> v1{};
     v1.push_back_all({0, 1, 2});
     EXPECT_DEATH(v1.push_back_all({3, 4, 5}), "");
 }
 
-TEST(Utilities, FixedVector_PushBackAll_Iterators)
+TEST(FixedVector, PushBackAll_Iterators)
 {
     constexpr auto v1 = []()
     {
@@ -572,7 +572,7 @@ TEST(Utilities, FixedVector_PushBackAll_Iterators)
     static_assert(v1.capacity() == 11);
 }
 
-TEST(Utilities, FixedVector_PushBackAll_Iterators_ExceedCapacity)
+TEST(FixedVector, PushBackAll_Iterators_ExceedCapacity)
 {
     constexpr std::array<int, 3> array{0, 1, 2};
 
@@ -581,7 +581,7 @@ TEST(Utilities, FixedVector_PushBackAll_Iterators_ExceedCapacity)
     EXPECT_DEATH(v1.push_back_all(array.cbegin(), array.cend()), "");
 }
 
-TEST(Utilities, FixedVector_PushBackAll_InitializerList)
+TEST(FixedVector, PushBackAll_InitializerList)
 {
     {
         constexpr auto v1 = []()
@@ -604,7 +604,7 @@ TEST(Utilities, FixedVector_PushBackAll_InitializerList)
     }
 }
 
-TEST(Utilities, FixedVector_PushBackAll_Span)
+TEST(FixedVector, PushBackAll_Span)
 {
     constexpr auto v1 = []()
     {
@@ -630,7 +630,7 @@ TEST(Utilities, FixedVector_PushBackAll_Span)
     EXPECT_TRUE(are_equal(v2, std::array{11, 22, 33}));
 }
 
-TEST(Utilities, FixedVector_PushBackAll_Span_ExceedCapacity)
+TEST(FixedVector, PushBackAll_Span_ExceedCapacity)
 {
     constexpr std::array<int, 3> array{0, 1, 2};
 
@@ -639,7 +639,7 @@ TEST(Utilities, FixedVector_PushBackAll_Span_ExceedCapacity)
     EXPECT_DEATH(v1.push_back_all(array), "");
 }
 
-TEST(Utilities, FixedVector_Popback)
+TEST(FixedVector, Popback)
 {
     constexpr auto v1 = []()
     {
@@ -660,13 +660,13 @@ TEST(Utilities, FixedVector_Popback)
     EXPECT_TRUE(are_equal(v2, std::array{10, 11}));
 }
 
-TEST(Utilities, FixedVector_PushBackAll_Popback_Empty)
+TEST(FixedVector, PushBackAll_Popback_Empty)
 {
     FixedVector<int, 5> v1{};
     EXPECT_DEATH(v1.pop_back(), "");
 }
 
-TEST(Utilities, FixedVector_Accessor)
+TEST(FixedVector, Accessor)
 {
     {
         constexpr auto v1 = []()
@@ -709,7 +709,7 @@ TEST(Utilities, FixedVector_Accessor)
     }
 }
 
-TEST(Utilities, FixedVector_At)
+TEST(FixedVector, At)
 {
     constexpr auto v1 = []()
     {
@@ -744,7 +744,7 @@ TEST(Utilities, FixedVector_At)
     EXPECT_EQ(v3.at(2), 2);
 }
 
-TEST(Utilities, FixedVector_At_OutOfBounds)
+TEST(FixedVector, At_OutOfBounds)
 {
     auto v2 = FixedVector<int, 11>{0, 1, 2};
     EXPECT_DEATH(v2.at(3) = 901, "");
@@ -755,7 +755,7 @@ TEST(Utilities, FixedVector_At_OutOfBounds)
     EXPECT_DEATH(v3.at(v2.size()), "");
 }
 
-TEST(Utilities, FixedVector_Equality)
+TEST(FixedVector, Equality)
 {
     constexpr auto v1 = []()
     {
@@ -809,7 +809,7 @@ TEST(Utilities, FixedVector_Equality)
     const_span_of_const_ref(v2);
 }
 
-TEST(Utilities, FixedVector_IteratorAssignment)
+TEST(FixedVector, IteratorAssignment)
 {
     FixedVector<int, 8>::iterator it;              // Default construction
     FixedVector<int, 8>::const_iterator const_it;  // Default construction
@@ -817,7 +817,7 @@ TEST(Utilities, FixedVector_IteratorAssignment)
     const_it = it;  // Non-const needs to assignable to const
 }
 
-TEST(Utilities, FixedVector_Iterators)
+TEST(FixedVector, Iterators)
 {
     {
         constexpr FixedVector<int, 3> v1{77, 88, 99};
@@ -885,7 +885,7 @@ TEST(Utilities, FixedVector_Iterators)
     }
 }
 
-TEST(Utilities, FixedVector_ReverseIterators)
+TEST(FixedVector, ReverseIterators)
 {
     {
         constexpr FixedVector<int, 3> v1{77, 88, 99};
@@ -953,7 +953,7 @@ TEST(Utilities, FixedVector_ReverseIterators)
     }
 }
 
-TEST(Utilities, FixedVector_IterationBasic)
+TEST(FixedVector, IterationBasic)
 {
     FixedVector<int, 13> v_expected{};
 
@@ -1014,7 +1014,7 @@ TEST(Utilities, FixedVector_IterationBasic)
     const_span_of_const_ref(v);
 }
 
-TEST(Utilities, FixedVector_Resize)
+TEST(FixedVector, Resize)
 {
     constexpr auto v1 = []()
     {
@@ -1066,7 +1066,7 @@ TEST(Utilities, FixedVector_Resize)
     EXPECT_TRUE(are_equal(v3, std::array<int, 5>{{0, 1, 3, 3, 3}}));
 }
 
-TEST(Utilities, FixedVector_Resize_ExceedCapacity)
+TEST(FixedVector, Resize_ExceedCapacity)
 {
     FixedVector<int, 3> v1{};
     EXPECT_DEATH(v1.resize(6), "");
@@ -1076,7 +1076,7 @@ TEST(Utilities, FixedVector_Resize_ExceedCapacity)
     EXPECT_DEATH(v1.resize(to_size, 5), "");
 }
 
-TEST(Utilities, FixedVector_Empty)
+TEST(FixedVector, Empty)
 {
     constexpr auto v1 = []() { return FixedVector<int, 7>{}; }();
 
@@ -1084,7 +1084,7 @@ TEST(Utilities, FixedVector_Empty)
     static_assert(v1.capacity() == 7);
 }
 
-TEST(Utilities, FixedVector_Full)
+TEST(FixedVector, Full)
 {
     constexpr auto v1 = []()
     {
@@ -1101,7 +1101,7 @@ TEST(Utilities, FixedVector_Full)
     EXPECT_TRUE(v1.full());
 }
 
-TEST(Utilities, FixedVector_Span)
+TEST(FixedVector, Span)
 {
     {
         constexpr auto v1 = []()
@@ -1133,7 +1133,7 @@ TEST(Utilities, FixedVector_Span)
     }
 }
 
-TEST(Utilities, FixedVector_Clear)
+TEST(FixedVector, Clear)
 {
     constexpr auto v1 = []()
     {
@@ -1148,7 +1148,7 @@ TEST(Utilities, FixedVector_Clear)
     static_assert(v1.capacity() == 7);
 }
 
-TEST(Utilities, FixedVector_Emplace)
+TEST(FixedVector, Emplace)
 {
     {
         constexpr auto v1 = []()
@@ -1182,7 +1182,7 @@ TEST(Utilities, FixedVector_Emplace)
     }
 }
 
-TEST(Utilities, FixedVector_AssignValue)
+TEST(FixedVector, AssignValue)
 {
     {
         constexpr auto v1 = []()
@@ -1228,7 +1228,7 @@ TEST(Utilities, FixedVector_AssignValue)
     }
 }
 
-TEST(Utilities, FixedVector_AssignRange)
+TEST(FixedVector, AssignRange)
 {
     {
         constexpr auto v1 = []()
@@ -1259,14 +1259,14 @@ TEST(Utilities, FixedVector_AssignRange)
     }
 }
 
-TEST(Utilities, FixedVector_AssignValue_ExceedsCapacity)
+TEST(FixedVector, AssignValue_ExceedsCapacity)
 {
     FixedVector<int, 3> v1{};
     v1.push_back_all({0, 1, 2});
     EXPECT_DEATH(v1.assign(5, 100), "");
 }
 
-TEST(Utilities, FixedVector_AssignRange_ExceedsCapacity)
+TEST(FixedVector, AssignRange_ExceedsCapacity)
 {
     FixedVector<int, 3> v1{};
     std::array<int, 17> a{300, 300};
@@ -1274,7 +1274,7 @@ TEST(Utilities, FixedVector_AssignRange_ExceedsCapacity)
     EXPECT_DEATH(v1.assign(a.begin(), a.end()), "");
 }
 
-TEST(Utilities, FixedVector_InsertValue)
+TEST(FixedVector, InsertValue)
 {
     {
         constexpr auto v1 = []()
@@ -1331,14 +1331,14 @@ TEST(Utilities, FixedVector_InsertValue)
     }
 }
 
-TEST(Utilities, FixedVector_InsertValue_ExceedsCapacity)
+TEST(FixedVector, InsertValue_ExceedsCapacity)
 {
     FixedVector<int, 4> v1{};
     v1.push_back_all({0, 1, 2, 3});
     EXPECT_DEATH(v1.insert(v1.begin() + 1, 5), "");
 }
 
-TEST(Utilities, FixedVector_InsertRange)
+TEST(FixedVector, InsertRange)
 {
     {
         constexpr auto v1 = []()
@@ -1386,14 +1386,14 @@ TEST(Utilities, FixedVector_InsertRange)
     }
 }
 
-TEST(Utilities, FixedVector_InsertRange_ExceedsCapacity)
+TEST(FixedVector, InsertRange_ExceedsCapacity)
 {
     FixedVector<int, 4> v1{0, 1, 2};
     std::array<int, 2> a{3, 4};
     EXPECT_DEATH(v1.insert(v1.begin() + 1, a.begin(), a.end()), "");
 }
 
-TEST(Utilities, FixedVector_EraseRange)
+TEST(FixedVector, EraseRange)
 {
     constexpr auto v1 = []()
     {
@@ -1416,7 +1416,7 @@ TEST(Utilities, FixedVector_EraseRange)
     EXPECT_TRUE(are_equal(v2, std::array<int, 4>{{2, 5, 0, 3}}));
 }
 
-TEST(Utilities, FixedVector_EraseOne)
+TEST(FixedVector, EraseOne)
 {
     constexpr auto v1 = []()
     {
@@ -1450,7 +1450,7 @@ TEST(Utilities, FixedVector_EraseOne)
     EXPECT_TRUE(are_equal(v2, std::array<int, 3>{{1, 4, 0}}));
 }
 
-TEST(Utilities, FixedVector_Erase_Empty)
+TEST(FixedVector, Erase_Empty)
 {
     {
         FixedVector<int, 3> v1{};
@@ -1471,7 +1471,7 @@ TEST(Utilities, FixedVector_Erase_Empty)
     }
 }
 
-TEST(Utilities, FixedVector_Front)
+TEST(FixedVector, Front)
 {
     constexpr auto v1 = []()
     {
@@ -1494,7 +1494,7 @@ TEST(Utilities, FixedVector_Front)
     EXPECT_EQ(v2_const_ref.front(), 777);  // const variant
 }
 
-TEST(Utilities, FixedVector_Front_EmptyVector)
+TEST(FixedVector, Front_EmptyVector)
 {
     {
         const FixedVector<int, 3> v{};
@@ -1506,7 +1506,7 @@ TEST(Utilities, FixedVector_Front_EmptyVector)
     }
 }
 
-TEST(Utilities, FixedVector_Back)
+TEST(FixedVector, Back)
 {
     constexpr auto v1 = []()
     {
@@ -1529,7 +1529,7 @@ TEST(Utilities, FixedVector_Back)
     EXPECT_EQ(v2_const_ref.back(), 999);  // const variant
 }
 
-TEST(Utilities, FixedVector_Back_EmptyVector)
+TEST(FixedVector, Back_EmptyVector)
 {
     {
         const FixedVector<int, 3> v{};
@@ -1541,7 +1541,7 @@ TEST(Utilities, FixedVector_Back_EmptyVector)
     }
 }
 
-TEST(Utilities, FixedVector_Data)
+TEST(FixedVector, Data)
 {
     {
         constexpr auto v1 = []()
@@ -1573,7 +1573,7 @@ TEST(Utilities, FixedVector_Data)
     }
 }
 
-TEST(Utilities, FixedVector_Ranges)
+TEST(FixedVector, Ranges)
 {
     FixedVector<int, 5> s1{10, 40};
     auto f = s1 | ranges::views::filter([](const auto& v) -> bool { return v == 10; }) |
@@ -1586,7 +1586,7 @@ TEST(Utilities, FixedVector_Ranges)
     EXPECT_EQ(20, first_entry);
 }
 
-TEST(Utilities, FixedVector_NonTriviallyCopyableCopyConstructor)
+TEST(FixedVector, NonTriviallyCopyableCopyConstructor)
 {
     FixedVector<MockNonTrivialInt, 11> v1{};
     v1.emplace_back(1);
@@ -1598,7 +1598,7 @@ TEST(Utilities, FixedVector_NonTriviallyCopyableCopyConstructor)
     EXPECT_TRUE(are_equal(v2, std::array<MockNonTrivialInt, 2>{1, 2}));
 }
 
-TEST(Utilities, FixedVector_NonTriviallyCopyableCopyAssignment)
+TEST(FixedVector, NonTriviallyCopyableCopyAssignment)
 {
     FixedVector<MockNonTrivialInt, 11> v1{};
     v1.emplace_back(1);
@@ -1615,7 +1615,7 @@ TEST(Utilities, FixedVector_NonTriviallyCopyableCopyAssignment)
     EXPECT_TRUE(are_equal(v2, std::array<MockNonTrivialInt, 2>{1, 2}));
 }
 
-TEST(Utilities, FixedVector_NonTriviallyCopyableMoveConstructor)
+TEST(FixedVector, NonTriviallyCopyableMoveConstructor)
 {
     FixedVector<MockNonTrivialInt, 11> v1{};
     v1.emplace_back(1);
@@ -1627,7 +1627,7 @@ TEST(Utilities, FixedVector_NonTriviallyCopyableMoveConstructor)
     EXPECT_TRUE(are_equal(v2, std::array<MockNonTrivialInt, 2>{1, 2}));
 }
 
-TEST(Utilities, FixedVector_NonTriviallyCopyableMoveAssignment)
+TEST(FixedVector, NonTriviallyCopyableMoveAssignment)
 {
     FixedVector<MockNonTrivialInt, 11> v1{};
     v1.emplace_back(1);

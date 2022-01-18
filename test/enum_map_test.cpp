@@ -55,13 +55,13 @@ static_assert(std::is_trivially_copyable_v<ES_2::reverse_iterator>);
 static_assert(std::is_trivially_copyable_v<ES_2::const_reverse_iterator>);
 }  // namespace
 
-TEST(Utilities, EnumMap_DefaultCtor)
+TEST(EnumMap, DefaultCtor)
 {
     constexpr EnumMap<TestEnum1, int> s1{};
     static_assert(s1.empty());
 }
 
-TEST(Utilities, EnumMap_Initializer)
+TEST(EnumMap, Initializer)
 {
     constexpr EnumMap<TestEnum1, int> s1{{TestEnum1::TWO, 20}, {TestEnum1::FOUR, 40}};
     static_assert(s1.size() == 2);
@@ -70,7 +70,7 @@ TEST(Utilities, EnumMap_Initializer)
     static_assert(s2.size() == 1);
 }
 
-TEST(Utilities, EnumMap_Builder_FluentSyntaxWithNoExtraCopies)
+TEST(EnumMap, Builder_FluentSyntaxWithNoExtraCopies)
 {
     constexpr std::array<std::pair<TestRichEnum1, int>, 2> a{
         std::pair{TestRichEnum1::C_THREE(), 33},
@@ -100,7 +100,7 @@ TEST(Utilities, EnumMap_Builder_FluentSyntaxWithNoExtraCopies)
     static_assert(s1.at(TestRichEnum1::C_FOUR()) == 44);
 }
 
-TEST(Utilities, EnumMap_Builder_MultipleOuts)
+TEST(EnumMap, Builder_MultipleOuts)
 {
     constexpr std::array<std::pair<TestEnum1, int>, 2> a{
         std::pair{TestEnum1::THREE, 33},
@@ -153,7 +153,7 @@ TEST(Utilities, EnumMap_Builder_MultipleOuts)
     }
 }
 
-TEST(Utilities, EnumMap_StaticFactory_CreateWithKeys)
+TEST(EnumMap, StaticFactory_CreateWithKeys)
 {
     constexpr FixedVector<TestEnum1, 5> keys = {TestEnum1 ::ONE, TestEnum1 ::FOUR};
 
@@ -169,7 +169,7 @@ TEST(Utilities, EnumMap_StaticFactory_CreateWithKeys)
     static_assert(s1.at(TestEnum1::FOUR) == -17);
 }
 
-TEST(Utilities, EnumMap_CreateWithAllEntries)
+TEST(EnumMap, CreateWithAllEntries)
 {
     constexpr auto s1 = EnumMap<TestEnum1, int>::create_with_all_entries({
         {TestEnum1::ONE, 42},
@@ -211,7 +211,7 @@ TEST(Utilities, EnumMap_CreateWithAllEntries)
     EXPECT_DEATH(get_incomplete_map(), "");
 }
 
-TEST(Utilities, EnumMap_MaxSize)
+TEST(EnumMap, MaxSize)
 {
     constexpr EnumMap<TestEnum1, int> s1{{TestEnum1::TWO, 20}, {TestEnum1::FOUR, 40}};
     static_assert(s1.max_size() == 4);
@@ -220,7 +220,7 @@ TEST(Utilities, EnumMap_MaxSize)
     static_assert(s2.max_size() == 4);
 }
 
-TEST(Utilities, EnumMap_EmptyAndSize)
+TEST(EnumMap, EmptyAndSize)
 {
     constexpr EnumMap<TestEnum1, int> s1{{TestEnum1::TWO, 20}, {TestEnum1::FOUR, 40}};
     static_assert(s1.size() == 2);
@@ -230,7 +230,7 @@ TEST(Utilities, EnumMap_EmptyAndSize)
     static_assert(s2.empty());
 }
 
-TEST(Utilities, EnumMap_OperatorBracket_Constexpr)
+TEST(EnumMap, OperatorBracket_Constexpr)
 {
     constexpr auto s1 = []()
     {
@@ -247,7 +247,7 @@ TEST(Utilities, EnumMap_OperatorBracket_Constexpr)
     static_assert(s1.contains(TestEnum1::FOUR));
 }
 
-TEST(Utilities, EnumMap_OperatorBracket_NonConstexpr)
+TEST(EnumMap, OperatorBracket_NonConstexpr)
 {
     EnumMap<TestEnum1, int> s1{};
     s1[TestEnum1::TWO] = 25;
@@ -283,7 +283,7 @@ struct ConstructionCounter
 int ConstructionCounter::counter = 0;
 }  // namespace
 
-TEST(Utilities, EnumMap_OperatorBracket_EnsureNoUnnecessaryTemporaries)
+TEST(EnumMap, OperatorBracket_EnsureNoUnnecessaryTemporaries)
 {
     EnumMap<TestEnum1, ConstructionCounter> s1{};
     ASSERT_EQ(0, ConstructionCounter::counter);
@@ -298,7 +298,7 @@ TEST(Utilities, EnumMap_OperatorBracket_EnsureNoUnnecessaryTemporaries)
     ASSERT_EQ(4, ConstructionCounter::counter);
 }
 
-TEST(Utilities, EnumMap_Insert)
+TEST(EnumMap, Insert)
 {
     constexpr auto s1 = []()
     {
@@ -315,7 +315,7 @@ TEST(Utilities, EnumMap_Insert)
     static_assert(s1.contains(TestEnum1::FOUR));
 }
 
-TEST(Utilities, EnumMap_InsertMultipleTimes)
+TEST(EnumMap, InsertMultipleTimes)
 {
     constexpr auto s1 = []()
     {
@@ -354,7 +354,7 @@ TEST(Utilities, EnumMap_InsertMultipleTimes)
     static_assert(s1.contains(TestEnum1::FOUR));
 }
 
-TEST(Utilities, EnumMap_InsertIterators)
+TEST(EnumMap, InsertIterators)
 {
     constexpr EnumMap<TestEnum1, int> a{{TestEnum1::TWO, 20}, {TestEnum1::FOUR, 40}};
 
@@ -372,7 +372,7 @@ TEST(Utilities, EnumMap_InsertIterators)
     static_assert(s1.contains(TestEnum1::FOUR));
 }
 
-TEST(Utilities, EnumMap_InsertInitializer)
+TEST(EnumMap, InsertInitializer)
 {
     constexpr auto s1 = []()
     {
@@ -388,7 +388,7 @@ TEST(Utilities, EnumMap_InsertInitializer)
     static_assert(s1.contains(TestEnum1::FOUR));
 }
 
-TEST(Utilities, EnumMap_InsertOrAssign)
+TEST(EnumMap, InsertOrAssign)
 {
     constexpr auto s1 = []()
     {
@@ -429,7 +429,7 @@ TEST(Utilities, EnumMap_InsertOrAssign)
     static_assert(s1.contains(TestEnum1::FOUR));
 }
 
-TEST(Utilities, EnumMap_TryEmplace)
+TEST(EnumMap, TryEmplace)
 {
     EnumMap<TestEnum1, int> s1{};
 
@@ -467,7 +467,7 @@ TEST(Utilities, EnumMap_TryEmplace)
     }
 }
 
-TEST(Utilities, EnumMap_TryEmplace_TypeConversion)
+TEST(EnumMap, TryEmplace_TypeConversion)
 {
     {
         int* raw_ptr = new int;
@@ -481,7 +481,7 @@ TEST(Utilities, EnumMap_TryEmplace_TypeConversion)
     }
 }
 
-TEST(Utilities, EnumMap_Emplace)
+TEST(EnumMap, Emplace)
 {
     EnumMap<TestEnum1, int> s1{};
 
@@ -526,7 +526,7 @@ TEST(Utilities, EnumMap_Emplace)
     }
 }
 
-TEST(Utilities, EnumMap_Clear)
+TEST(EnumMap, Clear)
 {
     constexpr auto s1 = []()
     {
@@ -538,7 +538,7 @@ TEST(Utilities, EnumMap_Clear)
     static_assert(s1.empty());
 }
 
-TEST(Utilities, EnumMap_Erase)
+TEST(EnumMap, Erase)
 {
     constexpr auto s1 = []()
     {
@@ -557,7 +557,7 @@ TEST(Utilities, EnumMap_Erase)
     static_assert(s1.contains(TestEnum1::FOUR));
 }
 
-TEST(Utilities, EnumMap_EraseIterator)
+TEST(EnumMap, EraseIterator)
 {
     constexpr auto s1 = []()
     {
@@ -586,7 +586,7 @@ TEST(Utilities, EnumMap_EraseIterator)
     static_assert(s1.contains(TestEnum1::FOUR));
 }
 
-TEST(Utilities, EnumMap_EraseIterator_InvalidIterator)
+TEST(EnumMap, EraseIterator_InvalidIterator)
 {
     EnumMap<TestEnum1, int> s{{TestEnum1::TWO, 20}, {TestEnum1::FOUR, 40}};
     {
@@ -596,7 +596,7 @@ TEST(Utilities, EnumMap_EraseIterator_InvalidIterator)
     }
 }
 
-TEST(Utilities, EnumMap_EraseRange)
+TEST(EnumMap, EraseRange)
 {
     {
         constexpr auto s1 = []()
@@ -656,7 +656,7 @@ TEST(Utilities, EnumMap_EraseRange)
     }
 }
 
-TEST(Utilities, EnumMap_Iterator_StructuredBinding)
+TEST(EnumMap, Iterator_StructuredBinding)
 {
     constexpr auto s1 = []()
     {
@@ -674,7 +674,7 @@ TEST(Utilities, EnumMap_Iterator_StructuredBinding)
     }
 }
 
-TEST(Utilities, EnumMap_IteratorBasic)
+TEST(EnumMap, IteratorBasic)
 {
     constexpr EnumMap<TestEnum1, int> s1{
         {TestEnum1::ONE, 10}, {TestEnum1::TWO, 20}, {TestEnum1::THREE, 30}, {TestEnum1::FOUR, 40}};
@@ -700,7 +700,7 @@ TEST(Utilities, EnumMap_IteratorBasic)
     static_assert(std::prev(s1.end(), 4)->second() == 10);
 }
 
-TEST(Utilities, EnumMap_IteratorTypes)
+TEST(EnumMap, IteratorTypes)
 {
     constexpr auto s1 = []()
     {
@@ -791,7 +791,7 @@ TEST(Utilities, EnumMap_IteratorTypes)
     }
 }
 
-TEST(Utilities, EnumMap_IteratorMutableValue)
+TEST(EnumMap, IteratorMutableValue)
 {
     constexpr auto s1 = []()
     {
@@ -818,7 +818,7 @@ TEST(Utilities, EnumMap_IteratorMutableValue)
     static_assert(std::prev(s1.end(), 2)->second() == 40);
 }
 
-TEST(Utilities, EnumMap_IteratorComparisonOperator)
+TEST(EnumMap, IteratorComparisonOperator)
 {
     constexpr EnumMap<TestEnum1, int> s1{{{TestEnum1::ONE, 10}, {TestEnum1::FOUR, 40}}};
 
@@ -834,7 +834,7 @@ TEST(Utilities, EnumMap_IteratorComparisonOperator)
     static_assert(std::prev(s1.end(), 2) == s1.begin());
 }
 
-TEST(Utilities, EnumMap_IteratorAssignment)
+TEST(EnumMap, IteratorAssignment)
 {
     constexpr auto s1 = []()
     {
@@ -888,7 +888,7 @@ TEST(Utilities, EnumMap_IteratorAssignment)
     static_assert(s1.size() == 2);
 }
 
-TEST(Utilities, EnumMap_Iterator_OffByOneIssues)
+TEST(EnumMap, Iterator_OffByOneIssues)
 {
     constexpr EnumMap<TestEnum1, int> s1{{{TestEnum1::ONE, 10}, {TestEnum1::FOUR, 40}}};
 
@@ -905,7 +905,7 @@ TEST(Utilities, EnumMap_Iterator_OffByOneIssues)
     static_assert(std::prev(s1.end(), 2)->second() == 10);
 }
 
-TEST(Utilities, EnumMap_Iterator_EnsureOrder)
+TEST(EnumMap, Iterator_EnsureOrder)
 {
     constexpr auto s1 = []()
     {
@@ -933,7 +933,7 @@ TEST(Utilities, EnumMap_Iterator_EnsureOrder)
     static_assert(std::prev(s1.end(), 3)->second() == 10);
 }
 
-TEST(Utilities, EnumMap_ReverseIteratorBasic)
+TEST(EnumMap, ReverseIteratorBasic)
 {
     constexpr EnumMap<TestEnum1, int> s1{
         {TestEnum1::ONE, 10}, {TestEnum1::TWO, 20}, {TestEnum1::THREE, 30}, {TestEnum1::FOUR, 40}};
@@ -959,7 +959,7 @@ TEST(Utilities, EnumMap_ReverseIteratorBasic)
     static_assert(std::prev(s1.rend(), 4)->second() == 40);
 }
 
-TEST(Utilities, EnumMap_Find)
+TEST(EnumMap, Find)
 {
     constexpr EnumMap<TestEnum1, int> s1{{TestEnum1::TWO, 20}, {TestEnum1::FOUR, 40}};
     static_assert(s1.size() == 2);
@@ -973,7 +973,7 @@ TEST(Utilities, EnumMap_Find)
     static_assert(s1.at(TestEnum1::FOUR) == 40);
 }
 
-TEST(Utilities, EnumMap_MutableFind)
+TEST(EnumMap, MutableFind)
 {
     constexpr auto s1 = []()
     {
@@ -989,7 +989,7 @@ TEST(Utilities, EnumMap_MutableFind)
     static_assert(s1.at(TestEnum1::FOUR) == 45);
 }
 
-TEST(Utilities, EnumMap_Contains)
+TEST(EnumMap, Contains)
 {
     constexpr EnumMap<TestEnum1, int> s1{{TestEnum1::TWO, 20}, {TestEnum1::FOUR, 40}};
     static_assert(s1.size() == 2);
@@ -1003,7 +1003,7 @@ TEST(Utilities, EnumMap_Contains)
     static_assert(s1.at(TestEnum1::FOUR) == 40);
 }
 
-TEST(Utilities, EnumMap_Count)
+TEST(EnumMap, Count)
 {
     constexpr EnumMap<TestEnum1, int> s1{{TestEnum1::TWO, 20}, {TestEnum1::FOUR, 40}};
     static_assert(s1.size() == 2);
@@ -1017,7 +1017,7 @@ TEST(Utilities, EnumMap_Count)
     static_assert(s1.at(TestEnum1::FOUR) == 40);
 }
 
-TEST(Utilities, EnumMap_RichEnum)
+TEST(EnumMap, RichEnum)
 {
     constexpr auto s1 = []()
     {
@@ -1031,7 +1031,7 @@ TEST(Utilities, EnumMap_RichEnum)
     static_assert(!s1.contains(TestRichEnum1::C_TWO()));
 }
 
-TEST(Utilities, EnumMap_NonConformingRichEnum)
+TEST(EnumMap, NonConformingRichEnum)
 {
     constexpr auto s1 = []()
     {
@@ -1045,7 +1045,7 @@ TEST(Utilities, EnumMap_NonConformingRichEnum)
     static_assert(!s1.contains(NonConformingTestRichEnum1::NC_TWO()));
 }
 
-TEST(Utilities, EnumMap_Equality)
+TEST(EnumMap, Equality)
 {
     {
         constexpr EnumMap<TestEnum1, int> s1{{TestEnum1::ONE, 10}, {TestEnum1::FOUR, 40}};
@@ -1074,7 +1074,7 @@ TEST(Utilities, EnumMap_Equality)
     }
 }
 
-TEST(Utilities, EnumMap_Ranges)
+TEST(EnumMap, Ranges)
 {
     EnumMap<TestRichEnum1, int> s1{{TestRichEnum1::C_ONE(), 10}, {TestRichEnum1::C_FOUR(), 40}};
     auto f = s1 | ranges::views::filter([](const auto& v) -> bool { return v.second() == 10; });
@@ -1084,7 +1084,7 @@ TEST(Utilities, EnumMap_Ranges)
     EXPECT_EQ(10, first_entry);
 }
 
-TEST(Utilities, EnumMap_NonDefaultConstructible)
+TEST(EnumMap, NonDefaultConstructible)
 {
     {
         constexpr EnumMap<TestEnum1, MockNonDefaultConstructible> s1{};
@@ -1097,7 +1097,7 @@ TEST(Utilities, EnumMap_NonDefaultConstructible)
     }
 }
 
-TEST(Utilities, EnumMap_MoveableButNotCopyable)
+TEST(EnumMap, MoveableButNotCopyable)
 {
     {
         EnumMap<TestEnum1, MockMoveableButNotCopyable> s{};
@@ -1105,7 +1105,7 @@ TEST(Utilities, EnumMap_MoveableButNotCopyable)
     }
 }
 
-TEST(Utilities, EnumMap_NonAssignable)
+TEST(EnumMap, NonAssignable)
 {
     {
         EnumMap<TestEnum1, MockNonAssignable> s{};
