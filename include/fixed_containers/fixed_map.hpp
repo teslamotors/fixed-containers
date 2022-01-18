@@ -356,7 +356,7 @@ public:
     }
 
     template <class... Args>
-    /*not-constexpr*/ std::pair<iterator, bool> try_emplace(const K& key, Args&&... args) noexcept
+    constexpr std::pair<iterator, bool> try_emplace(const K& key, Args&&... args) noexcept
     {
         NodeIndexAndParentIndex np = tree_.index_of_node_with_parent(key);
         if (tree_.contains_at(np.i))
@@ -368,7 +368,7 @@ public:
         return {create_iterator(np.i), true};
     }
     template <class... Args>
-    /*not-constexpr*/ std::pair<iterator, bool> try_emplace(K&& key, Args&&... args) noexcept
+    constexpr std::pair<iterator, bool> try_emplace(K&& key, Args&&... args) noexcept
     {
         NodeIndexAndParentIndex np = tree_.index_of_node_with_parent(key);
         if (tree_.contains_at(np.i))
@@ -381,7 +381,7 @@ public:
     }
 
     template <class... Args>
-    /*not-constexpr*/ std::pair<iterator, bool> emplace(Args&&... args) noexcept
+    constexpr std::pair<iterator, bool> emplace(Args&&... args) noexcept
     {
         std::pair<K, V> as_pair{std::forward<Args>(args)...};
         return try_emplace(std::move(as_pair.first), std::move(as_pair.second));

@@ -385,7 +385,7 @@ public:
     }
 
     template <class... Args>
-    /*not-constexpr*/ std::pair<iterator, bool> try_emplace(const K& key, Args&&... args) noexcept
+    constexpr std::pair<iterator, bool> try_emplace(const K& key, Args&&... args) noexcept
     {
         const std::size_t ordinal = EnumAdapterType::ordinal(key);
         if (array_set_[ordinal])
@@ -400,7 +400,7 @@ public:
     }
 
     template <class... Args>
-    /*not-constexpr*/ std::pair<iterator, bool> emplace(Args&&... args) noexcept
+    constexpr std::pair<iterator, bool> emplace(Args&&... args) noexcept
     {
         std::pair<K, V> as_pair{std::forward<Args>(args)...};
         return try_emplace(as_pair.first, std::move(as_pair.second));

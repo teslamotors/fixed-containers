@@ -269,34 +269,50 @@ TEST(FixedMap, InsertOrAssign)
 
 TEST(FixedMap, TryEmplace)
 {
-    FixedMap<int, int, 10> s1{};
-
     {
-        auto [it, was_inserted] = s1.try_emplace(2, 20);
+        constexpr FixedMap<int, int, 10> s = []()
+        {
+            FixedMap<int, int, 10> s1{};
+            s1.try_emplace(2, 20);
+            const int key = 2;
+            s1.try_emplace(key, 209999999);
+            return s1;
+        }();
 
-        ASSERT_EQ(1, s1.size());
-        ASSERT_TRUE(!s1.contains(1));
-        ASSERT_TRUE(s1.contains(2));
-        ASSERT_TRUE(!s1.contains(3));
-        ASSERT_TRUE(!s1.contains(4));
-        ASSERT_EQ(20, s1.at(2));
-        ASSERT_TRUE(was_inserted);
-        ASSERT_EQ(2, it->first());
-        ASSERT_EQ(20, it->second());
+        static_assert(consteval_compare::equal<1, s.size()>);
+        static_assert(s.contains(2));
     }
 
     {
-        const int key = 2;
-        auto [it, was_inserted] = s1.try_emplace(key, 209999999);
-        ASSERT_EQ(1, s1.size());
-        ASSERT_TRUE(!s1.contains(1));
-        ASSERT_TRUE(s1.contains(2));
-        ASSERT_TRUE(!s1.contains(3));
-        ASSERT_TRUE(!s1.contains(4));
-        ASSERT_EQ(20, s1.at(2));
-        ASSERT_FALSE(was_inserted);
-        ASSERT_EQ(2, it->first());
-        ASSERT_EQ(20, it->second());
+        FixedMap<int, int, 10> s1{};
+
+        {
+            auto [it, was_inserted] = s1.try_emplace(2, 20);
+
+            ASSERT_EQ(1, s1.size());
+            ASSERT_TRUE(!s1.contains(1));
+            ASSERT_TRUE(s1.contains(2));
+            ASSERT_TRUE(!s1.contains(3));
+            ASSERT_TRUE(!s1.contains(4));
+            ASSERT_EQ(20, s1.at(2));
+            ASSERT_TRUE(was_inserted);
+            ASSERT_EQ(2, it->first());
+            ASSERT_EQ(20, it->second());
+        }
+
+        {
+            const int key = 2;
+            auto [it, was_inserted] = s1.try_emplace(key, 209999999);
+            ASSERT_EQ(1, s1.size());
+            ASSERT_TRUE(!s1.contains(1));
+            ASSERT_TRUE(s1.contains(2));
+            ASSERT_TRUE(!s1.contains(3));
+            ASSERT_TRUE(!s1.contains(4));
+            ASSERT_EQ(20, s1.at(2));
+            ASSERT_FALSE(was_inserted);
+            ASSERT_EQ(2, it->first());
+            ASSERT_EQ(20, it->second());
+        }
     }
 }
 
@@ -316,38 +332,54 @@ TEST(FixedMap, TryEmplace_TypeConversion)
 
 TEST(FixedMap, Emplace)
 {
-    FixedMap<int, int, 10> s1{};
-
     {
-        auto [it, was_inserted] = s1.emplace(2, 20);
+        constexpr FixedMap<int, int, 10> s = []()
+        {
+            FixedMap<int, int, 10> s1{};
+            s1.emplace(2, 20);
+            const int key = 2;
+            s1.emplace(key, 209999999);
+            return s1;
+        }();
 
-        ASSERT_EQ(1, s1.size());
-        ASSERT_TRUE(!s1.contains(1));
-        ASSERT_TRUE(s1.contains(2));
-        ASSERT_TRUE(!s1.contains(3));
-        ASSERT_TRUE(!s1.contains(4));
-        ASSERT_EQ(20, s1.at(2));
-        ASSERT_TRUE(was_inserted);
-        ASSERT_EQ(2, it->first());
-        ASSERT_EQ(20, it->second());
+        static_assert(consteval_compare::equal<1, s.size()>);
+        static_assert(s.contains(2));
     }
 
     {
-        auto [it, was_inserted] = s1.emplace(2, 209999999);
-        ASSERT_EQ(1, s1.size());
-        ASSERT_TRUE(!s1.contains(1));
-        ASSERT_TRUE(s1.contains(2));
-        ASSERT_TRUE(!s1.contains(3));
-        ASSERT_TRUE(!s1.contains(4));
-        ASSERT_EQ(20, s1.at(2));
-        ASSERT_FALSE(was_inserted);
-        ASSERT_EQ(2, it->first());
-        ASSERT_EQ(20, it->second());
-    }
+        FixedMap<int, int, 10> s1{};
 
-    {
-        FixedMap<int, MockMoveableButNotCopyable, 5> s2{};
-        s2.emplace(1, MockMoveableButNotCopyable{});
+        {
+            auto [it, was_inserted] = s1.emplace(2, 20);
+
+            ASSERT_EQ(1, s1.size());
+            ASSERT_TRUE(!s1.contains(1));
+            ASSERT_TRUE(s1.contains(2));
+            ASSERT_TRUE(!s1.contains(3));
+            ASSERT_TRUE(!s1.contains(4));
+            ASSERT_EQ(20, s1.at(2));
+            ASSERT_TRUE(was_inserted);
+            ASSERT_EQ(2, it->first());
+            ASSERT_EQ(20, it->second());
+        }
+
+        {
+            auto [it, was_inserted] = s1.emplace(2, 209999999);
+            ASSERT_EQ(1, s1.size());
+            ASSERT_TRUE(!s1.contains(1));
+            ASSERT_TRUE(s1.contains(2));
+            ASSERT_TRUE(!s1.contains(3));
+            ASSERT_TRUE(!s1.contains(4));
+            ASSERT_EQ(20, s1.at(2));
+            ASSERT_FALSE(was_inserted);
+            ASSERT_EQ(2, it->first());
+            ASSERT_EQ(20, it->second());
+        }
+
+        {
+            FixedMap<int, MockMoveableButNotCopyable, 5> s2{};
+            s2.emplace(1, MockMoveableButNotCopyable{});
+        }
     }
 }
 
