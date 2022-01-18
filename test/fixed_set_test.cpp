@@ -120,6 +120,27 @@ TEST(FixedSet, Insert)
     static_assert(s1.contains(4));
 }
 
+TEST(FixedSet, Insert_ExceedsCapacity)
+{
+    {
+        FixedSet<int, 2> s1{};
+        s1.insert(2);
+        s1.insert(4);
+        s1.insert(4);
+        s1.insert(4);
+        EXPECT_DEATH(s1.insert(6), "");
+    }
+    {
+        FixedSet<int, 2> s1{};
+        s1.insert(2);
+        s1.insert(4);
+        s1.insert(4);
+        s1.insert(4);
+        int key = 6;
+        EXPECT_DEATH(s1.insert(key), "");
+    }
+}
+
 TEST(FixedSet, InsertMultipleTimes)
 {
     constexpr auto s1 = []()

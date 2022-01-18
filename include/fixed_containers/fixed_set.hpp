@@ -154,10 +154,12 @@ public:
     }
 
     constexpr FixedSet(std::initializer_list<value_type> list,
-                       const Compare& comparator = {}) noexcept
+                       const Compare& comparator = {},
+                       const std_transition::source_location& loc =
+                           std_transition::source_location::current()) noexcept
       : FixedSet{comparator}
     {
-        this->insert(list);
+        this->insert(list, loc);
     }
 
 public:
@@ -186,46 +188,67 @@ public:
 
     constexpr void clear() noexcept { tree_.clear(); }
 
-    constexpr std::pair<const_iterator, bool> insert(const K& value) noexcept
+    constexpr std::pair<const_iterator, bool> insert(
+        const K& value,
+        const std_transition::source_location& loc =
+            std_transition::source_location::current()) noexcept
     {
         NodeIndexAndParentIndex np = tree_.index_of_node_with_parent(value);
         if (tree_.contains_at(np.i))
         {
             return {create_const_iterator(np.i), false};
         }
+
+        check_not_full(loc);
         tree_.insert_new_at(np, value);
         return {create_const_iterator(np.i), true};
     }
-    constexpr std::pair<const_iterator, bool> insert(K&& value) noexcept
+    constexpr std::pair<const_iterator, bool> insert(
+        K&& value,
+        const std_transition::source_location& loc =
+            std_transition::source_location::current()) noexcept
     {
         NodeIndexAndParentIndex np = tree_.index_of_node_with_parent(value);
         if (tree_.contains_at(np.i))
         {
             return {create_const_iterator(np.i), false};
         }
+
+        check_not_full(loc);
         tree_.insert_new_at(np, std::move(value));
         return {create_const_iterator(np.i), true};
     }
-    constexpr const_iterator insert(const_iterator /*hint*/, const K& key) noexcept
+    constexpr const_iterator insert(const_iterator /*hint*/,
+                                    const K& key,
+                                    const std_transition::source_location& loc =
+                                        std_transition::source_location::current()) noexcept
     {
-        return insert(key).first;
+        return insert(key, loc).first;
     }
-    constexpr const_iterator insert(const_iterator /*hint*/, K&& key) noexcept
+    constexpr const_iterator insert(const_iterator /*hint*/,
+                                    K&& key,
+                                    const std_transition::source_location& loc =
+                                        std_transition::source_location::current()) noexcept
     {
-        return insert(std::move(key)).first;
+        return insert(std::move(key), loc).first;
     }
 
     template <InputIterator InputIt>
-    constexpr void insert(InputIt first, InputIt last) noexcept
+    constexpr void insert(InputIt first,
+                          InputIt last,
+                          const std_transition::source_location& loc =
+                              std_transition::source_location::current()) noexcept
     {
         for (; first != last; ++first)
         {
-            this->insert(*first);
+            this->insert(*first, loc);
         }
     }
-    constexpr void insert(std::initializer_list<value_type> list) noexcept
+    constexpr void insert(std::initializer_list<value_type> list,
+                          const std_transition::source_location& loc =
+                              std_transition::source_location::current()) noexcept
     {
-        this->insert(list.begin(), list.end());
+        this->insert(list.begin(), list.end(), loc);
     }
 
     constexpr const_iterator erase(const_iterator pos) noexcept
@@ -326,6 +349,14 @@ private:
         const NodeIndex& start_index) const noexcept
     {
         return const_reverse_iterator{ReferenceProvider{&tree_, start_index}};
+    }
+
+    constexpr void check_not_full(const std_transition::source_location& loc) const
+    {
+        if (preconditions::test(!full()))
+        {
+            CheckingType::length_error(MAXIMUM_SIZE + 1, loc);
+        }
     }
 };
 }  // namespace fixed_containers
