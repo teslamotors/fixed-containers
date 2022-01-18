@@ -3,10 +3,35 @@
 #include "fixed_containers/bidirectional_iterator.hpp"
 #include "fixed_containers/fixed_red_black_tree.hpp"
 #include "fixed_containers/preconditions.hpp"
+#include "fixed_containers/source_location.hpp"
 
 #include <algorithm>
 #include <cstddef>
 #include <functional>
+
+namespace fixed_containers::fixed_set_customize
+{
+template <class T, class K>
+concept FixedSetChecking = requires(K key,
+                                    std::size_t size,
+                                    const std_transition::source_location& loc)
+{
+    T::length_error(size, loc);  // ~ std::length_error
+};
+
+template <class K, std::size_t MAXIMUM_SIZE>
+struct AbortChecking
+{
+    static constexpr auto KEY_TYPE_NAME = fixed_containers::type_name<K>();
+
+    [[noreturn]] static void length_error(const std::size_t /*target_capacity*/,
+                                          const std_transition::source_location& /*loc*/)
+    {
+        std::abort();
+    }
+};
+
+}  // namespace fixed_containers::fixed_set_customize
 
 namespace fixed_containers
 {
@@ -28,7 +53,9 @@ template <class K,
                              here. clang accepts it */
                     ,
                     std::size_t>
-          typename StorageTemplate = FixedIndexBasedPoolStorage>
+          typename StorageTemplate = FixedIndexBasedPoolStorage,
+          fixed_set_customize::FixedSetChecking<K> CheckingType =
+              fixed_set_customize::AbortChecking<K, MAXIMUM_SIZE>>
 class FixedSet
 {
 public:

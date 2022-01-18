@@ -127,6 +127,7 @@ cc_library(
     deps = [
         ":bidirectional_iterator",
         ":fixed_red_black_tree",
+        ":source_location",
     ],
     copts = ["-std=c++20"],
 )
