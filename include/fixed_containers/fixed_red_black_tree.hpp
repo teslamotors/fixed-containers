@@ -80,8 +80,7 @@ public:
 
     constexpr void clear() noexcept
     {
-        root_index_ = NULL_INDEX;
-        tree_storage_.clear();
+        delete_range_and_return_successor(index_of_min_at(), NULL_INDEX);
     }
 
     constexpr void insert_node(const K& key) noexcept
@@ -540,7 +539,8 @@ private:
         // If there is only one node
         if (size() == 1)
         {
-            clear();
+            tree_storage_.delete_at_and_return_repositioned_index(i);
+            root_index_ = NULL_INDEX;
             return {NULL_INDEX, NULL_INDEX};
         }
 
