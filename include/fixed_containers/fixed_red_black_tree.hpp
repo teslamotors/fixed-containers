@@ -267,7 +267,7 @@ public:
 
     [[nodiscard]] constexpr bool contains_at(const NodeIndex& i) const noexcept
     {
-        return tree_storage_.contains_at(i);
+        return i != NULL_INDEX;
     }
 
     [[nodiscard]] constexpr NodeIndex index_of_min_at(const NodeIndex& root_index) const noexcept

@@ -85,11 +85,6 @@ public:
     [[nodiscard]] constexpr bool empty() const noexcept { return storage_.empty(); }
     [[nodiscard]] constexpr bool full() const noexcept { return storage_.full(); }
 
-    [[nodiscard]] constexpr bool contains_at(const NodeIndex& i) const
-    {
-        return i != NULL_INDEX && storage_.contains_at(i);
-    }
-
     constexpr RedBlackTreeNodeView<const FixedRedBlackTreeStorage> at(const NodeIndex& i) const
     {
         return {this, i};

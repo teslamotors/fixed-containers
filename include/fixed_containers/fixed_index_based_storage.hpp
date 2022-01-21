@@ -33,7 +33,6 @@ concept IsFixedIndexBasedStorage = requires(const StorageType& a,
     typename StorageType::size_type;
     typename StorageType::difference_type;
 
-    a.contains_at(i);
     a.at(i);
     b.at(i);
     b.clear();
@@ -80,11 +79,6 @@ public:
     [[nodiscard]] constexpr bool empty() const noexcept { return available_indexes_stack_.full(); }
     [[nodiscard]] constexpr bool full() const noexcept { return available_indexes_stack_.empty(); }
 
-    [[nodiscard]] constexpr bool contains_at(const std::size_t i) const noexcept
-    {
-        return nodes_[i].has_value();
-    }
-
     constexpr T& at(const std::size_t i) noexcept { return nodes_[i].value(); }
     constexpr const T& at(const std::size_t i) const noexcept { return nodes_[i].value(); }
 
@@ -110,7 +104,6 @@ private:
     constexpr void set_new_at(const std::size_t& i, Args&&... args) noexcept requires
         TriviallyMoveAssignable<T> && TriviallyDestructible<T>
     {
-        assert(!contains_at(i));
         if (std::is_constant_evaluated())
         {
             // Converting assignment is not constexpr at this time
@@ -124,7 +117,6 @@ private:
     template <class... Args>
     /*not-constexpr*/ void set_new_at(const std::size_t& i, Args&&... args) noexcept
     {
-        assert(!contains_at(i));
         set_new_at_impl(i, std::forward<Args>(args)...);
     }
 
@@ -185,11 +177,6 @@ public:
     [[nodiscard]] constexpr std::size_t size() const noexcept { return nodes_.size(); }
     [[nodiscard]] constexpr bool empty() const noexcept { return nodes_.empty(); }
     [[nodiscard]] constexpr bool full() const noexcept { return nodes_.full(); }
-
-    [[nodiscard]] constexpr bool contains_at(const std::size_t i) const noexcept
-    {
-        return i < nodes_.size();
-    }
 
     constexpr T& at(const std::size_t i) noexcept { return nodes_.at(i); }
     constexpr const T& at(const std::size_t i) const noexcept { return nodes_.at(i); }
