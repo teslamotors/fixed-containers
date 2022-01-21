@@ -322,6 +322,17 @@ cc_test(
 )
 
 cc_test(
+    name = "fixed_map_perf_test",
+    srcs = ["test/fixed_map_perf_test.cpp"],
+    deps = [
+        ":consteval_compare",
+        ":fixed_map",
+        "@com_google_googletest//:gtest_main",
+    ],
+    copts = ["-std=c++20"],
+)
+
+cc_test(
     name = "fixed_map_test",
     srcs = ["test/fixed_map_test.cpp"],
     deps = [
