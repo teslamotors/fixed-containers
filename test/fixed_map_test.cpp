@@ -1093,7 +1093,7 @@ static_assert(NotTriviallyMoveAssignable<FixedMapOfInstanceCounterTrivial>);
 static_assert(!TriviallyDestructible<FixedMapOfInstanceCounterTrivial>);
 
 static_assert(FixedMapOfInstanceCounterNonTrivial::const_iterator{} ==
-                      FixedMapOfInstanceCounterNonTrivial::const_iterator{});
+              FixedMapOfInstanceCounterNonTrivial::const_iterator{});
 
 template <typename T>
 struct FixedMapInstanceCheckFixture : public ::testing::Test
@@ -1284,6 +1284,40 @@ TYPED_TEST_P(FixedMapInstanceCheckFixture, FixedMap_InstanceCheck)
         ASSERT_EQ(0, v1.size());
         ASSERT_EQ(0, InstanceCounterType::counter);
     }
+
+    ASSERT_EQ(0, InstanceCounterType::counter);
+    v1[InstanceCounterType{1}] = InstanceCounterType{1};
+    v1[InstanceCounterType{2}] = InstanceCounterType{2};
+    ASSERT_EQ(4, InstanceCounterType::counter);
+
+    {  // IMPORTANT SCOPE, don't remove.
+        MapOfInstanceCounterType v2{v1};
+        ASSERT_EQ(8, InstanceCounterType::counter);
+    }
+    ASSERT_EQ(4, InstanceCounterType::counter);
+
+    {  // IMPORTANT SCOPE, don't remove.
+        MapOfInstanceCounterType v2 = v1;
+        ASSERT_EQ(8, InstanceCounterType::counter);
+        v1 = v2;
+        ASSERT_EQ(8, InstanceCounterType::counter);
+    }
+    ASSERT_EQ(4, InstanceCounterType::counter);
+
+    {  // IMPORTANT SCOPE, don't remove.
+        MapOfInstanceCounterType v2{std::move(v1)};
+        ASSERT_EQ(4, InstanceCounterType::counter);
+    }
+    ASSERT_EQ(0, InstanceCounterType::counter);
+    v1[InstanceCounterType{1}] = InstanceCounterType{1};
+    v1[InstanceCounterType{2}] = InstanceCounterType{2};
+    ASSERT_EQ(4, InstanceCounterType::counter);
+
+    {  // IMPORTANT SCOPE, don't remove.
+        MapOfInstanceCounterType v2 = std::move(v1);
+        ASSERT_EQ(4, InstanceCounterType::counter);
+    }
+    ASSERT_EQ(0, InstanceCounterType::counter);
 
     // Lookup
     {
