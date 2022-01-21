@@ -223,15 +223,6 @@ cc_library(
 )
 
 cc_library(
-    name = "mock_testing_types",
-    hdrs = ["test/mock_testing_types.hpp"],
-    deps = [":concepts"],
-    strip_include_prefix = "/test",
-    copts = ["-std=c++20"],
-    visibility = ["//visibility:private"],
-)
-
-cc_library(
     name = "enums_test_common",
     hdrs = ["test/enums_test_common.hpp"],
     deps = [
@@ -241,6 +232,15 @@ cc_library(
     ],
     copts = ["-std=c++20"],
     strip_include_prefix = "/test",
+    visibility = ["//visibility:private"],
+)
+
+cc_library(
+    name = "mock_testing_types",
+    hdrs = ["test/mock_testing_types.hpp"],
+    deps = [":concepts"],
+    strip_include_prefix = "/test",
+    copts = ["-std=c++20"],
     visibility = ["//visibility:private"],
 )
 
