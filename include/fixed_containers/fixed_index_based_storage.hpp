@@ -3,28 +3,15 @@
 #include "fixed_containers/consteval_compare.hpp"
 #include "fixed_containers/constexpr_support.hpp"
 #include "fixed_containers/fixed_vector.hpp"
+#include "fixed_containers/optional_storage.hpp"
 
 #include <array>
 #include <cassert>
 #include <cstddef>
-#include <optional>
 #include <type_traits>
 
 namespace fixed_containers
 {
-#if defined(__clang__) || defined(__GNUC__)
-// WORKAROUND-1: Verification that the layout assumptions are correct
-static_assert(consteval_compare::equal<sizeof(std::optional<int>), sizeof(std::pair<int, bool>)>);
-static_assert(
-    []
-    {
-        // The layout we expect is T first, bool second.
-        std::optional<int> t{1};
-        return static_cast<void*>(&t) == static_cast<void*>(&t.value());
-    }(),
-    "std::optional's layout is not as expected");
-#endif
-
 template <class StorageType>
 concept IsFixedIndexBasedStorage = requires(const StorageType& a,
                                             StorageType& b,
@@ -45,12 +32,15 @@ concept IsFixedIndexBasedStorage = requires(const StorageType& a,
 template <class T, std::size_t MAXIMUM_SIZE>
 class FixedIndexBasedPoolStorage
 {
+    using OptionalT = detail::OptionalStorage<T>;
+    using OptionalArrayT = std::array<OptionalT, MAXIMUM_SIZE>;
+
 public:
-    using size_type = typename std::array<std::optional<T>, MAXIMUM_SIZE>::size_type;
-    using difference_type = typename std::array<std::optional<T>, MAXIMUM_SIZE>::difference_type;
+    using size_type = typename OptionalArrayT::size_type;
+    using difference_type = typename OptionalArrayT::difference_type;
 
 private:
-    std::array<std::optional<T>, MAXIMUM_SIZE> nodes_{};
+    OptionalArrayT nodes_{};
     FixedVector<std::size_t, MAXIMUM_SIZE> available_indexes_stack_{};
 
 public:
@@ -60,7 +50,6 @@ public:
     {
         for (std::size_t i = 0; i < MAXIMUM_SIZE; i++)
         {
-            reset_at(i);
             available_indexes_stack_.push_back(MAXIMUM_SIZE - i - 1);
         }
     }
@@ -72,8 +61,8 @@ public:
     [[nodiscard]] constexpr bool empty() const noexcept { return available_indexes_stack_.full(); }
     [[nodiscard]] constexpr bool full() const noexcept { return available_indexes_stack_.empty(); }
 
-    constexpr T& at(const std::size_t i) noexcept { return nodes_[i].value(); }
-    constexpr const T& at(const std::size_t i) const noexcept { return nodes_[i].value(); }
+    constexpr T& at(const std::size_t i) noexcept { return nodes_[i].value; }
+    constexpr const T& at(const std::size_t i) const noexcept { return nodes_[i].value; }
 
     template <class... Args>
     constexpr std::size_t emplace_and_return_index(Args&&... args)
@@ -81,67 +70,42 @@ public:
         assert(!available_indexes_stack_.empty());
         const std::size_t i = available_indexes_stack_.back();
         available_indexes_stack_.pop_back();
-        set_new_at(i, std::forward<Args>(args)...);
+        emplace_at(i, std::forward<Args>(args)...);
         return i;
     }
 
     constexpr std::size_t delete_at_and_return_repositioned_index(const std::size_t i) noexcept
     {
-        reset_at(i);
+        destroy_at(i);
         available_indexes_stack_.push_back(i);
         return i;
     }
 
 private:
     template <class... Args>
-    constexpr void set_new_at(const std::size_t& i, Args&&... args) noexcept requires
+    constexpr void emplace_at(const std::size_t& i, Args&&... args) noexcept requires
         TriviallyMoveAssignable<T> && TriviallyDestructible<T>
     {
         if (std::is_constant_evaluated())
         {
-            // Converting assignment is not constexpr at this time
-            nodes_[i] = std::optional<T>{T(std::forward<Args>(args)...)};
+            nodes_[i] = T(std::forward<Args>(args)...);
         }
         else
         {
-            set_new_at_impl(i, std::forward<Args>(args)...);
+            new (&nodes_[i]) T(std::forward<Args>(args)...);
         }
     }
     template <class... Args>
-    /*not-constexpr*/ void set_new_at(const std::size_t& i, Args&&... args) noexcept
+    /*not-constexpr*/ void emplace_at(const std::size_t& i, Args&&... args) noexcept
     {
-        set_new_at_impl(i, std::forward<Args>(args)...);
+        new (&nodes_[i]) T(std::forward<Args>(args)...);
     }
 
-    template <class... Args>
-    void set_new_at_impl(const std::size_t& i, Args&&... args) noexcept
+    constexpr void destroy_at(std::size_t) requires TriviallyDestructible<T> {}
+    constexpr void destroy_at(std::size_t i) requires NotTriviallyDestructible<T>
     {
-#if defined(__clang__) || defined(__GNUC__)
-        // std::optional<> has constraints for emplace(), but incomplete types will fail them and
-        // cause a compiler error.
-        // WORKAROUND-1: manually do what emplace() does.
-        auto* cast = reinterpret_cast<std::pair<T, bool>*>(&nodes_[i]);
-        new (&cast->first) T(std::forward<Args>(args)...);
-        cast->second = true;
-#elif defined(_MSC_VER)
-        nodes_[i].emplace(std::forward<Args>(args)...);
-#endif
+        nodes_[i].value.~T();
     }
-
-    constexpr void reset_at(const std::size_t i) noexcept requires TriviallyMoveAssignable<T> &&
-        TriviallyDestructible<T>
-    {
-        if (std::is_constant_evaluated())
-        {
-            // std::optional.reset() is not constexpr at this time
-            nodes_[i] = std::optional<T>{};
-        }
-        else
-        {
-            nodes_[i].reset();
-        }
-    }
-    /*not-constexpr*/ void reset_at(const std::size_t i) noexcept { nodes_[i].reset(); }
 };
 
 // This allocator keeps entries contiguous in memory - no gaps.

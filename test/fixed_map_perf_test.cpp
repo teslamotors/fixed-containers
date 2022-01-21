@@ -21,6 +21,6 @@ using A = FixedMap<int, V, CAP>;
 using B = CompactContiguousFixedMap<int, V, CAP>;
 // The reference boost-based fixed_map (with an array-backed pool-allocator) was at 51000
 // at the time of writing.
-static_assert(consteval_compare::equal<53064, sizeof(A)>);
+static_assert(consteval_compare::equal<52024, sizeof(A)>);
 static_assert(consteval_compare::equal<50984, sizeof(B)>);
 }  // namespace fixed_containers

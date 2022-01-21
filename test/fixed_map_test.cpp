@@ -1088,8 +1088,8 @@ using InstanceCounterTrivialAssignment =
 
 using FixedMapOfInstanceCounterTrivial =
     FixedMap<InstanceCounterTrivialAssignment, InstanceCounterTrivialAssignment, 5>;
-static_assert(NotTriviallyCopyAssignable<FixedMapOfInstanceCounterTrivial>);
-static_assert(NotTriviallyMoveAssignable<FixedMapOfInstanceCounterTrivial>);
+static_assert(TriviallyCopyAssignable<FixedMapOfInstanceCounterTrivial>);
+static_assert(TriviallyMoveAssignable<FixedMapOfInstanceCounterTrivial>);
 static_assert(!TriviallyDestructible<FixedMapOfInstanceCounterTrivial>);
 
 static_assert(FixedMapOfInstanceCounterNonTrivial::const_iterator{} ==

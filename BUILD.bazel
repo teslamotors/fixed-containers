@@ -86,6 +86,7 @@ cc_library(
         ":consteval_compare",
         ":constexpr_support",
         ":fixed_vector",
+        ":optional_storage",
     ],
     copts = ["-std=c++20"],
 )
