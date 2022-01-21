@@ -35,7 +35,6 @@ concept IsFixedIndexBasedStorage = requires(const StorageType& a,
 
     a.at(i);
     b.at(i);
-    b.clear();
     a.size();
     a.empty();
     a.full();
@@ -59,12 +58,6 @@ public:
       : nodes_{}
       , available_indexes_stack_{}
     {
-        clear();
-    }
-
-    constexpr void clear()
-    {
-        available_indexes_stack_.clear();
         for (std::size_t i = 0; i < MAXIMUM_SIZE; i++)
         {
             reset_at(i);
@@ -171,8 +164,6 @@ public:
       : nodes_{}
     {
     }
-
-    constexpr void clear() noexcept { nodes_.clear(); }
 
     [[nodiscard]] constexpr std::size_t size() const noexcept { return nodes_.size(); }
     [[nodiscard]] constexpr bool empty() const noexcept { return nodes_.empty(); }

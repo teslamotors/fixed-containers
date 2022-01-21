@@ -79,8 +79,6 @@ public:
     {
     }
 
-    constexpr void clear() noexcept { storage_.clear(); }
-
     [[nodiscard]] constexpr std::size_t size() const noexcept { return storage_.size(); }
     [[nodiscard]] constexpr bool empty() const noexcept { return storage_.empty(); }
     [[nodiscard]] constexpr bool full() const noexcept { return storage_.full(); }
