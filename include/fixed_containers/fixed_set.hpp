@@ -71,7 +71,7 @@ private:
     using NodeIndexAndParentIndex = fixed_red_black_tree_detail::NodeIndexAndParentIndex;
     static constexpr NodeIndex NULL_INDEX = fixed_red_black_tree_detail::NULL_INDEX;
     using Tree = fixed_red_black_tree_detail::
-        FixedRedBlackTreeSetStorage<K, MAXIMUM_SIZE, Compare, COMPACTNESS, StorageTemplate>;
+        FixedRedBlackTreeSet<K, MAXIMUM_SIZE, Compare, COMPACTNESS, StorageTemplate>;
 
     struct ReferenceProvider
     {

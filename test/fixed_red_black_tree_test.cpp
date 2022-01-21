@@ -249,9 +249,9 @@ TEST(NodeIndexWithColorEmbeddedInTheMostSignificantBit, Basic)
     }
 }
 
-TEST(FixedRedBlackTreeSetStorage, NoValue)
+TEST(FixedRedBlackTreeSet, NoValue)
 {
-    FixedRedBlackTreeSetStorage<int, 10> bst;
+    FixedRedBlackTreeSet<int, 10> bst;
 
     {
         bst.insert_node(15);  // Position 0

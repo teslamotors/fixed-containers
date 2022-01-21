@@ -742,7 +742,7 @@ template <class K,
               RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR(),
           template <IsFixedIndexBasedStorage, std::size_t> typename StorageTemplate =
               FixedIndexBasedPoolStorage>
-using FixedRedBlackTreeSetStorage =
+using FixedRedBlackTreeSet =
     FixedRedBlackTree<K, EmptyValue, MAXIMUM_SIZE, Compare, COMPACTNESS, StorageTemplate>;
 
 }  // namespace fixed_containers::fixed_red_black_tree_detail
