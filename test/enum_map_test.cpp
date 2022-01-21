@@ -1,6 +1,7 @@
 #include "fixed_containers/enum_map.hpp"
 
 #include "enums_test_common.hpp"
+#include "instance_counter.hpp"
 #include "mock_testing_types.hpp"
 #include "test_utilities_common.hpp"
 
@@ -1149,86 +1150,28 @@ TEST(EnumMap, NonAssignable)
 
 namespace
 {
-struct InstanceCounterNonTrivialAssignment
+struct EnumMapInstanceCounterUniquenessToken
 {
-    static int counter;
-    using Self = InstanceCounterNonTrivialAssignment;
-
-    int value;
-
-    explicit InstanceCounterNonTrivialAssignment(int value_in_ctor = 0)
-      : value{value_in_ctor}
-    {
-        counter++;
-    }
-    InstanceCounterNonTrivialAssignment(const Self& other)
-      : value{other.value}
-    {
-        counter++;
-    }
-    InstanceCounterNonTrivialAssignment(Self&& other) noexcept
-      : value{other.value}
-    {
-        counter++;
-    }
-    InstanceCounterNonTrivialAssignment& operator=(const Self& other)
-    {
-        value = other.value;
-        return *this;
-    }
-    InstanceCounterNonTrivialAssignment& operator=(Self&& other) noexcept
-    {
-        value = other.value;
-        return *this;
-    }
-    ~InstanceCounterNonTrivialAssignment() { counter--; }
 };
-int InstanceCounterNonTrivialAssignment::counter = 0;
 
-static_assert(!TriviallyCopyAssignable<EnumMap<TestEnum1, InstanceCounterNonTrivialAssignment>>);
-static_assert(!TriviallyCopyAssignable<InstanceCounterNonTrivialAssignment>);
-static_assert(!TriviallyMoveAssignable<EnumMap<TestEnum1, InstanceCounterNonTrivialAssignment>>);
-static_assert(!TriviallyMoveAssignable<InstanceCounterNonTrivialAssignment>);
-static_assert(!TriviallyDestructible<EnumMap<TestEnum1, InstanceCounterNonTrivialAssignment>>);
-static_assert(!TriviallyDestructible<InstanceCounterNonTrivialAssignment>);
+using InstanceCounterNonTrivialAssignment =
+    instance_counter::InstanceCounterNonTrivialAssignment<EnumMapInstanceCounterUniquenessToken>;
 
-struct InstanceCounterTrivialAssignment
-{
-    static int counter;
-    using Self = InstanceCounterTrivialAssignment;
+using EnumMapOfInstanceCounterNonTrivial = EnumMap<TestEnum1, InstanceCounterNonTrivialAssignment>;
+static_assert(!TriviallyCopyAssignable<EnumMapOfInstanceCounterNonTrivial>);
+static_assert(!TriviallyMoveAssignable<EnumMapOfInstanceCounterNonTrivial>);
+static_assert(!TriviallyDestructible<EnumMapOfInstanceCounterNonTrivial>);
 
-    int value;
+using InstanceCounterTrivialAssignment =
+    instance_counter::InstanceCounterTrivialAssignment<EnumMapInstanceCounterUniquenessToken>;
 
-    explicit InstanceCounterTrivialAssignment(int value_in_ctor = 0)
-      : value{value_in_ctor}
-    {
-        counter++;
-    }
-    InstanceCounterTrivialAssignment(const Self& other)
-      : value{other.value}
-    {
-        counter++;
-    }
-    InstanceCounterTrivialAssignment(Self&& other) noexcept
-      : value{other.value}
-    {
-        counter++;
-    }
-    InstanceCounterTrivialAssignment& operator=(const Self&) = default;
-    InstanceCounterTrivialAssignment& operator=(Self&&) noexcept = default;
-    ~InstanceCounterTrivialAssignment() { counter--; }
-};
-int InstanceCounterTrivialAssignment::counter = 0;
+using EnumMapOfInstanceCounterTrivial = EnumMap<TestEnum1, InstanceCounterTrivialAssignment>;
+static_assert(TriviallyCopyAssignable<EnumMapOfInstanceCounterTrivial>);
+static_assert(TriviallyMoveAssignable<EnumMapOfInstanceCounterTrivial>);
+static_assert(!TriviallyDestructible<EnumMapOfInstanceCounterTrivial>);
 
-static_assert(TriviallyCopyAssignable<EnumMap<TestEnum1, InstanceCounterTrivialAssignment>>);
-static_assert(TriviallyCopyAssignable<InstanceCounterTrivialAssignment>);
-static_assert(TriviallyMoveAssignable<EnumMap<TestEnum1, InstanceCounterTrivialAssignment>>);
-static_assert(TriviallyMoveAssignable<InstanceCounterTrivialAssignment>);
-static_assert(!TriviallyDestructible<EnumMap<TestEnum1, InstanceCounterTrivialAssignment>>);
-static_assert(!TriviallyDestructible<InstanceCounterTrivialAssignment>);
-
-static_assert(EnumMap<TestEnum1, InstanceCounterNonTrivialAssignment>::const_iterator{} ==
-              EnumMap<TestEnum1, InstanceCounterNonTrivialAssignment>::const_iterator{});
+static_assert(EnumMapOfInstanceCounterNonTrivial::const_iterator{} ==
+              EnumMapOfInstanceCounterNonTrivial::const_iterator{});
 
 template <typename T>
 struct EnumMapInstanceCheckFixture : public ::testing::Test

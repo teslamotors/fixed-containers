@@ -236,6 +236,15 @@ cc_library(
 )
 
 cc_library(
+    name = "instance_counter",
+    hdrs = ["test/instance_counter.hpp"],
+    deps = [":concepts"],
+    strip_include_prefix = "/test",
+    copts = ["-std=c++20"],
+    visibility = ["//visibility:private"],
+)
+
+cc_library(
     name = "mock_testing_types",
     hdrs = ["test/mock_testing_types.hpp"],
     deps = [":concepts"],
@@ -275,6 +284,7 @@ cc_test(
         ":enum_map",
         ":fixed_vector",
         ":enums_test_common",
+        ":instance_counter",
         ":mock_testing_types",
         ":test_utilities_common",
         "@com_google_googletest//:gtest",
@@ -318,6 +328,7 @@ cc_test(
         ":concepts",
         ":consteval_compare",
         ":fixed_map",
+        ":instance_counter",
         ":mock_testing_types",
         ":test_utilities_common",
         "@com_google_googletest//:gtest",
@@ -361,6 +372,7 @@ cc_test(
     srcs = ["test/fixed_vector_test.cpp"],
     deps = [
         ":fixed_vector",
+        ":instance_counter",
         ":mock_testing_types",
         ":test_utilities_common",
         "@com_github_ericniebler_range-v3//:range-v3",

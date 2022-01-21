@@ -1,5 +1,6 @@
 #include "fixed_containers/fixed_map.hpp"
 
+#include "instance_counter.hpp"
 #include "mock_testing_types.hpp"
 #include "test_utilities_common.hpp"
 
@@ -1069,102 +1070,30 @@ TEST(FixedMap, NonAssignable)
 
 namespace
 {
-struct InstanceCounterNonTrivialAssignment
+struct FixedMapInstanceCounterUniquenessToken
 {
-    static int counter;
-    using Self = InstanceCounterNonTrivialAssignment;
-
-    int value;
-
-    explicit InstanceCounterNonTrivialAssignment(int value_in_ctor = 0)
-      : value{value_in_ctor}
-    {
-        counter++;
-    }
-    InstanceCounterNonTrivialAssignment(const Self& other)
-      : value{other.value}
-    {
-        counter++;
-    }
-    InstanceCounterNonTrivialAssignment(Self&& other) noexcept
-      : value{other.value}
-    {
-        counter++;
-    }
-    InstanceCounterNonTrivialAssignment& operator=(const Self& other)
-    {
-        value = other.value;
-        return *this;
-    }
-    InstanceCounterNonTrivialAssignment& operator=(Self&& other) noexcept
-    {
-        value = other.value;
-        return *this;
-    }
-    ~InstanceCounterNonTrivialAssignment() { counter--; }
-
-    bool operator<(const Self& other) const { return value < other.value; }
 };
-int InstanceCounterNonTrivialAssignment::counter = 0;
 
-static_assert(
-    !TriviallyCopyAssignable<
-        FixedMap<InstanceCounterNonTrivialAssignment, InstanceCounterNonTrivialAssignment, 5>>);
-static_assert(!TriviallyCopyAssignable<InstanceCounterNonTrivialAssignment>);
-static_assert(
-    !TriviallyMoveAssignable<
-        FixedMap<InstanceCounterNonTrivialAssignment, InstanceCounterNonTrivialAssignment, 5>>);
-static_assert(!TriviallyMoveAssignable<InstanceCounterNonTrivialAssignment>);
-static_assert(
-    !TriviallyDestructible<
-        FixedMap<InstanceCounterNonTrivialAssignment, InstanceCounterNonTrivialAssignment, 5>>);
-static_assert(!TriviallyDestructible<InstanceCounterNonTrivialAssignment>);
+using InstanceCounterNonTrivialAssignment =
+    instance_counter::InstanceCounterNonTrivialAssignment<FixedMapInstanceCounterUniquenessToken>;
 
-struct InstanceCounterTrivialAssignment
-{
-    static int counter;
-    using Self = InstanceCounterTrivialAssignment;
+using FixedMapOfInstanceCounterNonTrivial =
+    FixedMap<InstanceCounterNonTrivialAssignment, InstanceCounterNonTrivialAssignment, 5>;
+static_assert(!TriviallyCopyAssignable<FixedMapOfInstanceCounterNonTrivial>);
+static_assert(!TriviallyMoveAssignable<FixedMapOfInstanceCounterNonTrivial>);
+static_assert(!TriviallyDestructible<FixedMapOfInstanceCounterNonTrivial>);
 
-    int value;
+using InstanceCounterTrivialAssignment =
+    instance_counter::InstanceCounterTrivialAssignment<FixedMapInstanceCounterUniquenessToken>;
 
-    explicit InstanceCounterTrivialAssignment(int value_in_ctor = 0)
-      : value{value_in_ctor}
-    {
-        counter++;
-    }
-    InstanceCounterTrivialAssignment(const Self& other)
-      : value{other.value}
-    {
-        counter++;
-    }
-    InstanceCounterTrivialAssignment(Self&& other) noexcept
-      : value{other.value}
-    {
-        counter++;
-    }
-    InstanceCounterTrivialAssignment& operator=(const Self&) = default;
-    InstanceCounterTrivialAssignment& operator=(Self&&) noexcept = default;
-    ~InstanceCounterTrivialAssignment() { counter--; }
+using FixedMapOfInstanceCounterTrivial =
+    FixedMap<InstanceCounterTrivialAssignment, InstanceCounterTrivialAssignment, 5>;
+static_assert(NotTriviallyCopyAssignable<FixedMapOfInstanceCounterTrivial>);
+static_assert(NotTriviallyMoveAssignable<FixedMapOfInstanceCounterTrivial>);
+static_assert(!TriviallyDestructible<FixedMapOfInstanceCounterTrivial>);
 
-    bool operator<(const Self& other) const { return value < other.value; }
-};
-int InstanceCounterTrivialAssignment::counter = 0;
-
-static_assert(NotTriviallyCopyAssignable<
-              FixedMap<InstanceCounterTrivialAssignment, InstanceCounterTrivialAssignment, 5>>);
-static_assert(TriviallyCopyAssignable<InstanceCounterTrivialAssignment>);
-static_assert(NotTriviallyMoveAssignable<
-              FixedMap<InstanceCounterTrivialAssignment, InstanceCounterTrivialAssignment, 5>>);
-static_assert(TriviallyMoveAssignable<InstanceCounterTrivialAssignment>);
-static_assert(!TriviallyDestructible<
-              FixedMap<InstanceCounterTrivialAssignment, InstanceCounterTrivialAssignment, 5>>);
-static_assert(!TriviallyDestructible<InstanceCounterTrivialAssignment>);
-
-static_assert(FixedMap<InstanceCounterNonTrivialAssignment,
-                       InstanceCounterNonTrivialAssignment,
-                       17>::const_iterator{} == FixedMap<InstanceCounterNonTrivialAssignment,
-                                                         InstanceCounterNonTrivialAssignment,
-                                                         17>::const_iterator{});
+static_assert(FixedMapOfInstanceCounterNonTrivial::const_iterator{} ==
+                      FixedMapOfInstanceCounterNonTrivial::const_iterator{});
 
 template <typename T>
 struct FixedMapInstanceCheckFixture : public ::testing::Test

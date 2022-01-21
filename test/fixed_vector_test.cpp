@@ -1,5 +1,6 @@
 #include "fixed_containers/fixed_vector.hpp"
 
+#include "instance_counter.hpp"
 #include "mock_testing_types.hpp"
 #include "test_utilities_common.hpp"
 
@@ -1646,47 +1647,25 @@ TEST(FixedVector, NonTriviallyCopyableMoveAssignment)
 
 namespace
 {
-struct InstanceCounterNonTrivialAssignment
+struct FixedVectorInstanceCounterUniquenessToken
 {
-    static int counter;
-    using Self = InstanceCounterNonTrivialAssignment;
-
-    InstanceCounterNonTrivialAssignment() { counter++; }
-    InstanceCounterNonTrivialAssignment(const Self&) { counter++; }
-    InstanceCounterNonTrivialAssignment(Self&&) noexcept { counter++; }
-    InstanceCounterNonTrivialAssignment& operator=(const Self&) { return *this; }
-    InstanceCounterNonTrivialAssignment& operator=(Self&&) noexcept { return *this; }
-    ~InstanceCounterNonTrivialAssignment() { counter--; }
 };
-int InstanceCounterNonTrivialAssignment::counter = 0;
 
-static_assert(!TriviallyCopyAssignable<FixedVector<InstanceCounterNonTrivialAssignment, 5>>);
-static_assert(!TriviallyCopyAssignable<InstanceCounterNonTrivialAssignment>);
-static_assert(!TriviallyMoveAssignable<FixedVector<InstanceCounterNonTrivialAssignment, 5>>);
-static_assert(!TriviallyMoveAssignable<InstanceCounterNonTrivialAssignment>);
-static_assert(!TriviallyDestructible<FixedVector<InstanceCounterNonTrivialAssignment, 5>>);
-static_assert(!TriviallyDestructible<InstanceCounterNonTrivialAssignment>);
+using InstanceCounterNonTrivialAssignment = instance_counter::InstanceCounterNonTrivialAssignment<
+    FixedVectorInstanceCounterUniquenessToken>;
 
-struct InstanceCounterTrivialAssignment
-{
-    static int counter;
-    using Self = InstanceCounterTrivialAssignment;
+using FixedVectorOfInstanceCounterNonTrivial = FixedVector<InstanceCounterNonTrivialAssignment, 5>;
+static_assert(!TriviallyCopyAssignable<FixedVectorOfInstanceCounterNonTrivial>);
+static_assert(!TriviallyMoveAssignable<FixedVectorOfInstanceCounterNonTrivial>);
+static_assert(!TriviallyDestructible<FixedVectorOfInstanceCounterNonTrivial>);
 
-    InstanceCounterTrivialAssignment() { counter++; }
-    InstanceCounterTrivialAssignment(const Self&) { counter++; }
-    InstanceCounterTrivialAssignment(Self&&) noexcept { counter++; }
-    InstanceCounterTrivialAssignment& operator=(const Self&) = default;
-    InstanceCounterTrivialAssignment& operator=(Self&&) noexcept = default;
-    ~InstanceCounterTrivialAssignment() { counter--; }
-};
-int InstanceCounterTrivialAssignment::counter = 0;
+using InstanceCounterTrivialAssignment =
+    instance_counter::InstanceCounterTrivialAssignment<FixedVectorInstanceCounterUniquenessToken>;
 
-static_assert(TriviallyCopyAssignable<FixedVector<InstanceCounterTrivialAssignment, 5>>);
-static_assert(TriviallyCopyAssignable<InstanceCounterTrivialAssignment>);
-static_assert(TriviallyMoveAssignable<FixedVector<InstanceCounterTrivialAssignment, 5>>);
-static_assert(TriviallyMoveAssignable<InstanceCounterTrivialAssignment>);
-static_assert(!TriviallyDestructible<FixedVector<InstanceCounterTrivialAssignment, 5>>);
-static_assert(!TriviallyDestructible<InstanceCounterTrivialAssignment>);
+using FixedVectorOfInstanceCounterTrivial = FixedVector<InstanceCounterTrivialAssignment, 5>;
+static_assert(TriviallyCopyAssignable<FixedVectorOfInstanceCounterTrivial>);
+static_assert(TriviallyMoveAssignable<FixedVectorOfInstanceCounterTrivial>);
+static_assert(!TriviallyDestructible<FixedVectorOfInstanceCounterTrivial>);
 
 template <typename T>
 struct FixedVectorInstanceCheckFixture : public ::testing::Test
