@@ -41,7 +41,7 @@ More examples can be found [here](test/enums_test_common.hpp).
 - Add the `include/` folder to your includes
 - Get the dependencies. For example, with [vcpkg](https://github.com/Microsoft/vcpkg):
 ```
-vcpkg install magic-enum ms-gsl range-v3 gtest
+vcpkg install magic-enum range-v3 gtest
 ```
 
 ### bazel

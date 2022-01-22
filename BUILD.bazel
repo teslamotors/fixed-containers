@@ -376,7 +376,6 @@ cc_test(
         ":mock_testing_types",
         ":test_utilities_common",
         "@com_github_ericniebler_range-v3//:range-v3",
-        "@com_microsoft_gsl//:gsl",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],

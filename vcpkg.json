@@ -3,7 +3,6 @@
   "version-string": "0.0.0",
   "dependencies": [
     "magic-enum",
-    "ms-gsl",
     "range-v3",
     "gtest"
   ]

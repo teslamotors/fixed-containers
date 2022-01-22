@@ -4,21 +4,6 @@ load("//:fixed_containers_deps.bzl", "fixed_containers_deps")
 fixed_containers_deps()
 
 http_archive(
-    name = "com_microsoft_gsl",
-    urls = ["https://github.com/microsoft/GSL/archive/v3.1.0.tar.gz"],
-    strip_prefix = "GSL-3.1.0",
-    sha256 = "d3234d7f94cea4389e3ca70619b82e8fb4c2f33bb3a070799f1e18eef500a083",
-    build_file_content = """
-cc_library(
-    name = "gsl",
-    hdrs = glob(["include/gsl/*"]),
-    includes = ["include"],
-    visibility = ["//visibility:public"],
-)
-""",
-)
-
-http_archive(
     name = "com_google_googletest",
     urls = ["https://github.com/google/googletest/archive/16f637fbf4ffc3f7a01fa4eceb7906634565242f.tar.gz"],
     strip_prefix = "googletest-16f637fbf4ffc3f7a01fa4eceb7906634565242f",
