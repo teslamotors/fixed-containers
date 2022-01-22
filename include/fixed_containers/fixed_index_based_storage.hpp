@@ -3,7 +3,7 @@
 #include "fixed_containers/consteval_compare.hpp"
 #include "fixed_containers/constexpr_support.hpp"
 #include "fixed_containers/fixed_vector.hpp"
-#include "fixed_containers/optional_storage.hpp"
+#include "fixed_containers/index_or_value_storage.hpp"
 
 #include <array>
 #include <cassert>
@@ -32,52 +32,54 @@ concept IsFixedIndexBasedStorage = requires(const StorageType& a,
 template <class T, std::size_t MAXIMUM_SIZE>
 class FixedIndexBasedPoolStorage
 {
-    using OptionalT = detail::OptionalStorage<T>;
-    using OptionalArrayT = std::array<OptionalT, MAXIMUM_SIZE>;
+    using IndexOrValueT = index_or_value_storage_detail::IndexOrValueStorage<T>;
+    using IndexOrValueArray = std::array<IndexOrValueT, MAXIMUM_SIZE>;
 
 public:
-    using size_type = typename OptionalArrayT::size_type;
-    using difference_type = typename OptionalArrayT::difference_type;
+    using size_type = typename IndexOrValueArray::size_type;
+    using difference_type = typename IndexOrValueArray::difference_type;
 
 private:
-    OptionalArrayT nodes_{};
-    FixedVector<std::size_t, MAXIMUM_SIZE> available_indexes_stack_{};
+    IndexOrValueArray array_;
+    std::size_t next_index_;
+    std::size_t size_;
 
 public:
     constexpr FixedIndexBasedPoolStorage() noexcept
-      : nodes_{}
-      , available_indexes_stack_{}
+      : array_{}
+      , next_index_{}
+      , size_{}
     {
         for (std::size_t i = 0; i < MAXIMUM_SIZE; i++)
         {
-            available_indexes_stack_.push_back(MAXIMUM_SIZE - i - 1);
+            array_[i].index = i + 1;
         }
     }
 
-    [[nodiscard]] constexpr std::size_t size() const noexcept
-    {
-        return MAXIMUM_SIZE - available_indexes_stack_.size();
-    }
-    [[nodiscard]] constexpr bool empty() const noexcept { return available_indexes_stack_.full(); }
-    [[nodiscard]] constexpr bool full() const noexcept { return available_indexes_stack_.empty(); }
+    [[nodiscard]] constexpr std::size_t size() const noexcept { return size_; }
+    [[nodiscard]] constexpr bool empty() const noexcept { return size_ == 0; }
+    [[nodiscard]] constexpr bool full() const noexcept { return size_ == MAXIMUM_SIZE; }
 
-    constexpr T& at(const std::size_t i) noexcept { return nodes_[i].value; }
-    constexpr const T& at(const std::size_t i) const noexcept { return nodes_[i].value; }
+    constexpr T& at(const std::size_t i) noexcept { return array_[i].value; }
+    constexpr const T& at(const std::size_t i) const noexcept { return array_[i].value; }
 
     template <class... Args>
     constexpr std::size_t emplace_and_return_index(Args&&... args)
     {
-        assert(!available_indexes_stack_.empty());
-        const std::size_t i = available_indexes_stack_.back();
-        available_indexes_stack_.pop_back();
+        assert(!full());
+        const std::size_t i = next_index_;
+        next_index_ = array_[next_index_].index;
         emplace_at(i, std::forward<Args>(args)...);
+        size_++;
         return i;
     }
 
     constexpr std::size_t delete_at_and_return_repositioned_index(const std::size_t i) noexcept
     {
         destroy_at(i);
-        available_indexes_stack_.push_back(i);
+        array_[i].index = next_index_;
+        next_index_ = i;
+        size_--;
         return i;
     }
 
@@ -88,23 +90,23 @@ private:
     {
         if (std::is_constant_evaluated())
         {
-            nodes_[i] = T(std::forward<Args>(args)...);
+            array_[i] = T(std::forward<Args>(args)...);
         }
         else
         {
-            new (&nodes_[i]) T(std::forward<Args>(args)...);
+            new (&array_[i]) T(std::forward<Args>(args)...);
         }
     }
     template <class... Args>
     /*not-constexpr*/ void emplace_at(const std::size_t& i, Args&&... args) noexcept
     {
-        new (&nodes_[i]) T(std::forward<Args>(args)...);
+        new (&array_[i]) T(std::forward<Args>(args)...);
     }
 
     constexpr void destroy_at(std::size_t) requires TriviallyDestructible<T> {}
     constexpr void destroy_at(std::size_t i) requires NotTriviallyDestructible<T>
     {
-        nodes_[i].value.~T();
+        array_[i].value.~T();
     }
 };
 

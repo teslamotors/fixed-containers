@@ -86,7 +86,7 @@ cc_library(
         ":consteval_compare",
         ":constexpr_support",
         ":fixed_vector",
-        ":optional_storage",
+        ":index_or_value_storage",
     ],
     copts = ["-std=c++20"],
 )
@@ -145,6 +145,16 @@ cc_library(
         ":source_location",
         ":string_literal",
         ":type_name",
+    ],
+    copts = ["-std=c++20"],
+)
+
+cc_library(
+    name = "index_or_value_storage",
+    hdrs = ["include/fixed_containers/index_or_value_storage.hpp"],
+    includes = ["include"],
+    deps = [
+        ":concepts"
     ],
     copts = ["-std=c++20"],
 )
