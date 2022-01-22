@@ -22,8 +22,6 @@ concept IsFixedIndexBasedStorage = requires(const StorageType& a,
 
     a.at(i);
     b.at(i);
-    a.size();
-    a.empty();
     a.full();
     b.emplace_and_return_index();
     b.delete_at_and_return_repositioned_index(i);
@@ -42,13 +40,11 @@ public:
 private:
     IndexOrValueArray array_;
     std::size_t next_index_;
-    std::size_t size_;
 
 public:
     constexpr FixedIndexBasedPoolStorage() noexcept
       : array_{}
       , next_index_{}
-      , size_{}
     {
         for (std::size_t i = 0; i < MAXIMUM_SIZE; i++)
         {
@@ -56,9 +52,7 @@ public:
         }
     }
 
-    [[nodiscard]] constexpr std::size_t size() const noexcept { return size_; }
-    [[nodiscard]] constexpr bool empty() const noexcept { return size_ == 0; }
-    [[nodiscard]] constexpr bool full() const noexcept { return size_ == MAXIMUM_SIZE; }
+    [[nodiscard]] constexpr bool full() const noexcept { return next_index_ == MAXIMUM_SIZE; }
 
     constexpr T& at(const std::size_t i) noexcept { return array_[i].value; }
     constexpr const T& at(const std::size_t i) const noexcept { return array_[i].value; }
@@ -70,7 +64,6 @@ public:
         const std::size_t i = next_index_;
         next_index_ = array_[next_index_].index;
         emplace_at(i, std::forward<Args>(args)...);
-        size_++;
         return i;
     }
 
@@ -79,7 +72,6 @@ public:
         destroy_at(i);
         array_[i].index = next_index_;
         next_index_ = i;
-        size_--;
         return i;
     }
 
@@ -131,8 +123,6 @@ public:
     {
     }
 
-    [[nodiscard]] constexpr std::size_t size() const noexcept { return nodes_.size(); }
-    [[nodiscard]] constexpr bool empty() const noexcept { return nodes_.empty(); }
     [[nodiscard]] constexpr bool full() const noexcept { return nodes_.full(); }
 
     constexpr T& at(const std::size_t i) noexcept { return nodes_.at(i); }
@@ -142,14 +132,14 @@ public:
     constexpr std::size_t emplace_and_return_index(Args&&... args)
     {
         nodes_.emplace_back(std::forward<Args>(args)...);
-        return size() - 1;
+        return nodes_.size() - 1;
     }
 
     constexpr std::size_t delete_at_and_return_repositioned_index(const std::size_t i) noexcept
     {
         constexpr_support::destroy_and_place_move(nodes_.at(i), std::move(nodes_.back()));
         nodes_.pop_back();
-        return size();
+        return nodes_.size();
     }
 };
 

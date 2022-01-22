@@ -57,6 +57,7 @@ public:
 protected:  // [WORKAROUND-1]
     TreeStorage tree_storage_;
     NodeIndex root_index_;
+    NodeIndex size_;
     Compare comparator_{};
 
 public:
@@ -68,14 +69,15 @@ public:
     explicit constexpr FixedRedBlackTreeBase(const Compare& comparator) noexcept
       : tree_storage_{}
       , root_index_{NULL_INDEX}
+      , size_{}
       , comparator_{comparator}
     {
     }
 
 public:
-    [[nodiscard]] constexpr std::size_t size() const noexcept { return tree_storage_.size(); }
-    [[nodiscard]] constexpr bool empty() const noexcept { return tree_storage_.empty(); }
-    [[nodiscard]] constexpr bool full() const noexcept { return tree_storage_.full(); }
+    [[nodiscard]] constexpr std::size_t size() const noexcept { return size_; }
+    [[nodiscard]] constexpr bool empty() const noexcept { return size_ == 0; }
+    [[nodiscard]] constexpr bool full() const noexcept { return size_ == MAXIMUM_SIZE; }
 
     constexpr void clear() noexcept
     {
@@ -120,6 +122,7 @@ public:
     constexpr void insert_new_at(NodeIndexAndParentIndex& np, Args&&... args) noexcept
     {
         assert(!contains_at(np.i));
+        size_++;
         np.i = tree_storage_.emplace_and_return_index(std::forward<Args>(args)...);
 
         RedBlackTreeNodeView node_i = tree_storage_.at(np.i);
@@ -540,9 +543,11 @@ private:
         {
             tree_storage_.delete_at_and_return_repositioned_index(i);
             root_index_ = NULL_INDEX;
+            size_ = 0;
             return {NULL_INDEX, NULL_INDEX};
         }
 
+        size_--;
         const NodeIndex index_to_delete = i;
         const NodeIndex successor_index = index_of_successor_at(index_to_delete);
 
