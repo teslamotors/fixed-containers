@@ -35,15 +35,6 @@ static_assert(StandardLayout<ES_1>);
 static_assert(TriviallyCopyAssignable<ES_1>);
 static_assert(TriviallyMoveAssignable<ES_1>);
 
-template <class K,
-          class V,
-          std::size_t MAXIMUM_SIZE,
-          class Compare = std::less<K>,
-          RedBlackTreeNodeColorCompactness COMPACTNESS =
-              RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR()>
-using FixedRedBlackTreeContiguousStorage =
-    FixedRedBlackTree<K, V, MAXIMUM_SIZE, Compare, COMPACTNESS, FixedIndexBasedContiguousStorage>;
-
 template <IsRedBlackTreeNode NodeTypeA, IsRedBlackTreeNode NodeTypeB>
 constexpr bool are_equal_impl(const NodeTypeA& a, const NodeTypeB& b)
 {
@@ -296,9 +287,9 @@ TEST(FixedRedBlackTreeSet, NoValue)
     }
 }
 
-TEST(FixedRedBlackTreeContiguousStorage, InsertionExample1)
+TEST(FixedRedBlackTree, InsertionExample1)
 {
-    FixedRedBlackTreeContiguousStorage<int, int, 10> bst;
+    FixedRedBlackTree<int, int, 10> bst;
 
     {
         bst[15] = 150;  // Position 0
@@ -344,9 +335,9 @@ TEST(FixedRedBlackTreeContiguousStorage, InsertionExample1)
     }
 }
 
-TEST(FixedRedBlackTreeContiguousStorage, InsertionExample2)
+TEST(FixedRedBlackTree, InsertionExample2)
 {
-    FixedRedBlackTreeContiguousStorage<int, int, 20> bst;
+    FixedRedBlackTree<int, int, 20> bst;
 
     {
         bst[8] = 80;    // Position 0
@@ -381,9 +372,9 @@ TEST(FixedRedBlackTreeContiguousStorage, InsertionExample2)
     }
 }
 
-TEST(FixedRedBlackTreeContiguousStorage, Insertion_FocusOnTheRight)
+TEST(FixedRedBlackTree, Insertion_FocusOnTheRight)
 {
-    FixedRedBlackTreeContiguousStorage<int, int, 20> bst;
+    FixedRedBlackTree<int, int, 20> bst;
 
     // Starting State
     {
@@ -545,9 +536,9 @@ TEST(FixedRedBlackTreeContiguousStorage, Insertion_FocusOnTheRight)
 }
 
 // This is symmetric to Example3: for every key x do (20 - x) instead
-TEST(FixedRedBlackTreeContiguousStorage, Insertion_FocusOnTheLeft)
+TEST(FixedRedBlackTree, Insertion_FocusOnTheLeft)
 {
-    FixedRedBlackTreeContiguousStorage<int, int, 20> bst;
+    FixedRedBlackTree<int, int, 20> bst;
 
     // Starting State
     {
@@ -709,18 +700,18 @@ TEST(FixedRedBlackTreeContiguousStorage, Insertion_FocusOnTheLeft)
     }
 }
 
-static FixedRedBlackTreeContiguousStorage<int, int, 7> get_new_swap_test_base_tree()
+static FixedRedBlackTree<int, int, 7> get_new_swap_test_base_tree()
 {
-    FixedRedBlackTreeContiguousStorage<int, int, 7> bst{};
+    FixedRedBlackTree<int, int, 7> bst{};
     bst[17] = 170;  // Position 0
     bst[19] = 190;  // Position 1
     bst[15] = 150;  // Position 2
     return bst;
 }
 
-TEST(FixedRedBlackTreeContiguousStorage, SwapNodes)
+TEST(FixedRedBlackTree, SwapNodes)
 {
-    using Ops = FixedRedBlackTreeOps<FixedRedBlackTreeContiguousStorage<int, int, 7>>;
+    using Ops = FixedRedBlackTreeOps<FixedRedBlackTree<int, int, 7>>;
     // Swap non-neighbors #1
     {
         /*
@@ -810,9 +801,9 @@ TEST(FixedRedBlackTreeContiguousStorage, SwapNodes)
     }
 }
 
-static FixedRedBlackTreeContiguousStorage<int, int, 20> get_new_deletion_test_base_tree()
+static FixedRedBlackTree<int, int, 20> get_new_deletion_test_base_tree()
 {
-    FixedRedBlackTreeContiguousStorage<int, int, 20> bst{};
+    FixedRedBlackTree<int, int, 20> bst{};
     bst[3] = 30;    // Position 0
     bst[1] = 10;    // Position 1
     bst[5] = 50;    // Position 2
@@ -824,7 +815,7 @@ static FixedRedBlackTreeContiguousStorage<int, int, 20> get_new_deletion_test_ba
     return bst;
 }
 
-TEST(FixedRedBlackTreeContiguousStorage, Deletion)
+TEST(FixedRedBlackTree, Deletion)
 {
     // Base verification
     {
@@ -906,13 +897,13 @@ TEST(FixedRedBlackTreeContiguousStorage, Deletion)
          */
         auto bst = get_new_deletion_test_base_tree();
         //        bst[3] = 30;    // Position 0
-        //        bst[1] = 10;    // Position 1 - Replaced with last entry
+        //        bst[1] = 10;    // Position 1 - Deleted
         //        bst[5] = 50;    // Position 2
         //        bst[7] = 70;    // Position 3
         //        bst[6] = 60;    // Position 4
         //        bst[8] = 80;    // Position 5
         //        bst[9] = 90;    // Position 6
-        //        bst[10] = 100;  // Position 7 - Moved into deleted spot
+        //        bst[10] = 100;  // Position 7
         bst.delete_node(1);
         ASSERT_EQ(7, bst.size());
 
@@ -928,12 +919,12 @@ TEST(FixedRedBlackTreeContiguousStorage, Deletion)
 
         ASSERT_EQ(3, find_height(bst));
         ASSERT_TRUE(are_equal({3, 30, 4, NULL_INDEX, 2, BLACK}, bst.node_at(0)));
-        ASSERT_TRUE(are_equal({10, 100, 6, NULL_INDEX, NULL_INDEX, RED}, bst.node_at(1)));
         ASSERT_TRUE(are_equal({5, 50, 0, NULL_INDEX, NULL_INDEX, RED}, bst.node_at(2)));
         ASSERT_TRUE(are_equal({7, 70, 5, NULL_INDEX, NULL_INDEX, BLACK}, bst.node_at(3)));
         ASSERT_TRUE(are_equal({6, 60, NULL_INDEX, 0, 5, BLACK}, bst.node_at(4)));
         ASSERT_TRUE(are_equal({8, 80, 4, 3, 6, RED}, bst.node_at(5)));
-        ASSERT_TRUE(are_equal({9, 90, 5, NULL_INDEX, 1, BLACK}, bst.node_at(6)));
+        ASSERT_TRUE(are_equal({9, 90, 5, NULL_INDEX, 7, BLACK}, bst.node_at(6)));
+        ASSERT_TRUE(are_equal({10, 100, 6, NULL_INDEX, NULL_INDEX, RED}, bst.node_at(7)));
     }
 
     // non-last entry, no children, is a right child
@@ -950,12 +941,12 @@ TEST(FixedRedBlackTreeContiguousStorage, Deletion)
         auto bst = get_new_deletion_test_base_tree();
         //        bst[3] = 30;    // Position 0
         //        bst[1] = 10;    // Position 1
-        //        bst[5] = 50;    // Position 2 - Replaced with last entry
+        //        bst[5] = 50;    // Position 2 - Deleted
         //        bst[7] = 70;    // Position 3
         //        bst[6] = 60;    // Position 4
         //        bst[8] = 80;    // Position 5
         //        bst[9] = 90;    // Position 6
-        //        bst[10] = 100;  // Position 7 - Moved into deleted spot
+        //        bst[10] = 100;  // Position 7
         bst.delete_node(5);
         ASSERT_EQ(7, bst.size());
 
@@ -972,11 +963,11 @@ TEST(FixedRedBlackTreeContiguousStorage, Deletion)
         ASSERT_EQ(3, find_height(bst));
         ASSERT_TRUE(are_equal({3, 30, 4, 1, NULL_INDEX, BLACK}, bst.node_at(0)));
         ASSERT_TRUE(are_equal({1, 10, 0, NULL_INDEX, NULL_INDEX, RED}, bst.node_at(1)));
-        ASSERT_TRUE(are_equal({10, 100, 6, NULL_INDEX, NULL_INDEX, RED}, bst.node_at(2)));
         ASSERT_TRUE(are_equal({7, 70, 5, NULL_INDEX, NULL_INDEX, BLACK}, bst.node_at(3)));
         ASSERT_TRUE(are_equal({6, 60, NULL_INDEX, 0, 5, BLACK}, bst.node_at(4)));
         ASSERT_TRUE(are_equal({8, 80, 4, 3, 6, RED}, bst.node_at(5)));
-        ASSERT_TRUE(are_equal({9, 90, 5, NULL_INDEX, 2, BLACK}, bst.node_at(6)));
+        ASSERT_TRUE(are_equal({9, 90, 5, NULL_INDEX, 7, BLACK}, bst.node_at(6)));
+        ASSERT_TRUE(are_equal({10, 100, 6, NULL_INDEX, NULL_INDEX, RED}, bst.node_at(7)));
     }
 
     // only has right child
@@ -997,8 +988,8 @@ TEST(FixedRedBlackTreeContiguousStorage, Deletion)
         //        bst[7] = 70;    // Position 3
         //        bst[6] = 60;    // Position 4
         //        bst[8] = 80;    // Position 5
-        //        bst[9] = 90;    // Position 6 - Replaced with last entry
-        //        bst[10] = 100;  // Position 7 - Moved into deleted spot
+        //        bst[9] = 90;    // Position 6 - Deleted
+        //        bst[10] = 100;  // Position 7
         bst.delete_node(9);
         ASSERT_EQ(7, bst.size());
 
@@ -1016,8 +1007,8 @@ TEST(FixedRedBlackTreeContiguousStorage, Deletion)
         ASSERT_TRUE(are_equal({5, 50, 0, NULL_INDEX, NULL_INDEX, BLACK}, bst.node_at(2)));
         ASSERT_TRUE(are_equal({7, 70, 5, NULL_INDEX, NULL_INDEX, BLACK}, bst.node_at(3)));
         ASSERT_TRUE(are_equal({6, 60, NULL_INDEX, 0, 5, BLACK}, bst.node_at(4)));
-        ASSERT_TRUE(are_equal({8, 80, 4, 3, 6, RED}, bst.node_at(5)));
-        ASSERT_TRUE(are_equal({10, 100, 5, NULL_INDEX, NULL_INDEX, BLACK}, bst.node_at(6)));
+        ASSERT_TRUE(are_equal({8, 80, 4, 3, 7, RED}, bst.node_at(5)));
+        ASSERT_TRUE(are_equal({10, 100, 5, NULL_INDEX, NULL_INDEX, BLACK}, bst.node_at(7)));
     }
 
     // Only has left child
@@ -1033,14 +1024,14 @@ TEST(FixedRedBlackTreeContiguousStorage, Deletion)
          */
         auto bst = get_new_deletion_test_base_tree();
         //        bst[3] = 30;    // Position 0
-        //        bst[1] = 10;    // Position 1 - Replaced with last entry
+        //        bst[1] = 10;    // Position 1 - Deleted
         //        bst[5] = 50;    // Position 2
         //        bst[7] = 70;    // Position 3
         //        bst[6] = 60;    // Position 4
         //        bst[8] = 80;    // Position 5
         //        bst[9] = 90;    // Position 6
         //        bst[10] = 100;  // Position 7
-        bst[0] = 42;  // Position 8 - Moved into deleted spot
+        bst[0] = 42;  // Position 8
         bst.delete_node(1);
         ASSERT_EQ(8, bst.size());
 
@@ -1055,14 +1046,14 @@ TEST(FixedRedBlackTreeContiguousStorage, Deletion)
          */
 
         ASSERT_EQ(3, find_height(bst));
-        ASSERT_TRUE(are_equal({3, 30, 4, 1, 2, RED}, bst.node_at(0)));
-        ASSERT_TRUE(are_equal({0, 42, 0, NULL_INDEX, NULL_INDEX, BLACK}, bst.node_at(1)));
+        ASSERT_TRUE(are_equal({3, 30, 4, 8, 2, RED}, bst.node_at(0)));
         ASSERT_TRUE(are_equal({5, 50, 0, NULL_INDEX, NULL_INDEX, BLACK}, bst.node_at(2)));
         ASSERT_TRUE(are_equal({7, 70, 5, NULL_INDEX, NULL_INDEX, BLACK}, bst.node_at(3)));
         ASSERT_TRUE(are_equal({6, 60, NULL_INDEX, 0, 5, BLACK}, bst.node_at(4)));
         ASSERT_TRUE(are_equal({8, 80, 4, 3, 6, RED}, bst.node_at(5)));
         ASSERT_TRUE(are_equal({9, 90, 5, NULL_INDEX, 7, BLACK}, bst.node_at(6)));
         ASSERT_TRUE(are_equal({10, 100, 6, NULL_INDEX, NULL_INDEX, RED}, bst.node_at(7)));
+        ASSERT_TRUE(are_equal({0, 42, 0, NULL_INDEX, NULL_INDEX, BLACK}, bst.node_at(8)));
     }
 
     // Two children and is not the root
@@ -1082,9 +1073,9 @@ TEST(FixedRedBlackTreeContiguousStorage, Deletion)
         //        bst[5] = 50;    // Position 2
         //        bst[7] = 70;    // Position 3
         //        bst[6] = 60;    // Position 4
-        //        bst[8] = 80;    // Position 5 - Replaced with last entry
+        //        bst[8] = 80;    // Position 5 - Deleted
         //        bst[9] = 90;    // Position 6
-        //        bst[10] = 100;  // Position 7 - Moved into deleted spot
+        //        bst[10] = 100;  // Position 7
         bst.delete_node(8);
         ASSERT_EQ(7, bst.size());
 
@@ -1102,8 +1093,8 @@ TEST(FixedRedBlackTreeContiguousStorage, Deletion)
         ASSERT_TRUE(are_equal({5, 50, 0, NULL_INDEX, NULL_INDEX, BLACK}, bst.node_at(2)));
         ASSERT_TRUE(are_equal({7, 70, 6, NULL_INDEX, NULL_INDEX, BLACK}, bst.node_at(3)));
         ASSERT_TRUE(are_equal({6, 60, NULL_INDEX, 0, 6, BLACK}, bst.node_at(4)));
-        ASSERT_TRUE(are_equal({10, 100, 6, NULL_INDEX, NULL_INDEX, BLACK}, bst.node_at(5)));
-        ASSERT_TRUE(are_equal({9, 90, 4, 3, 5, RED}, bst.node_at(6)));
+        ASSERT_TRUE(are_equal({9, 90, 4, 3, 7, RED}, bst.node_at(6)));
+        ASSERT_TRUE(are_equal({10, 100, 6, NULL_INDEX, NULL_INDEX, BLACK}, bst.node_at(7)));
     }
 
     // Two children and is the root
@@ -1122,10 +1113,10 @@ TEST(FixedRedBlackTreeContiguousStorage, Deletion)
         //        bst[1] = 10;    // Position 1
         //        bst[5] = 50;    // Position 2
         //        bst[7] = 70;    // Position 3
-        //        bst[6] = 60;    // Position 4 - Replaced with last entry
+        //        bst[6] = 60;    // Position 4 - Deleted
         //        bst[8] = 80;    // Position 5
         //        bst[9] = 90;    // Position 6
-        //        bst[10] = 100;  // Position 7 - Moved into deleted spot
+        //        bst[10] = 100;  // Position 7
         bst.delete_node(6);
         ASSERT_EQ(7, bst.size());
 
@@ -1142,17 +1133,17 @@ TEST(FixedRedBlackTreeContiguousStorage, Deletion)
         ASSERT_TRUE(are_equal({1, 10, 0, NULL_INDEX, NULL_INDEX, BLACK}, bst.node_at(1)));
         ASSERT_TRUE(are_equal({5, 50, 0, NULL_INDEX, NULL_INDEX, BLACK}, bst.node_at(2)));
         ASSERT_TRUE(are_equal({7, 70, NULL_INDEX, 0, 6, BLACK}, bst.node_at(3)));
-        ASSERT_TRUE(are_equal({10, 100, 6, NULL_INDEX, NULL_INDEX, BLACK}, bst.node_at(4)));
         ASSERT_TRUE(are_equal({8, 80, 6, NULL_INDEX, NULL_INDEX, BLACK}, bst.node_at(5)));
-        ASSERT_TRUE(are_equal({9, 90, 3, 5, 4, RED}, bst.node_at(6)));
+        ASSERT_TRUE(are_equal({9, 90, 3, 5, 7, RED}, bst.node_at(6)));
+        ASSERT_TRUE(are_equal({10, 100, 6, NULL_INDEX, NULL_INDEX, BLACK}, bst.node_at(7)));
     }
 }
 
-TEST(FixedRedBlackTreeContiguousStorage, Deletion_CornerCases)
+TEST(FixedRedBlackTree, Deletion_CornerCases)
 {
     // Delete root as the last element
     {
-        FixedRedBlackTreeContiguousStorage<int, int, 20> bst{};
+        FixedRedBlackTree<int, int, 20> bst{};
         ASSERT_EQ(0, bst.size());
         ASSERT_EQ(NULL_INDEX, bst.root_index());
         bst[5] = 50;  // Position 0
@@ -1172,7 +1163,7 @@ TEST(FixedRedBlackTreeContiguousStorage, Deletion_CornerCases)
 
     // Delete root while it only has a left child
     {
-        FixedRedBlackTreeContiguousStorage<int, int, 20> bst{};
+        FixedRedBlackTree<int, int, 20> bst{};
         bst[5] = 50;  // Position 0
         bst[1] = 10;  // Position 1
         ASSERT_EQ(2, bst.size());
@@ -1190,13 +1181,13 @@ TEST(FixedRedBlackTreeContiguousStorage, Deletion_CornerCases)
         bst.delete_node(5);
         ASSERT_EQ(1, bst.size());
         ASSERT_EQ(0, find_height(bst));
-        ASSERT_EQ(0, bst.root_index());
-        ASSERT_TRUE(are_equal({1, 10, NULL_INDEX, NULL_INDEX, NULL_INDEX, BLACK}, bst.node_at(0)));
+        ASSERT_EQ(1, bst.root_index());
+        ASSERT_TRUE(are_equal({1, 10, NULL_INDEX, NULL_INDEX, NULL_INDEX, BLACK}, bst.node_at(1)));
     }
 
     // Delete root while it only has a right child
     {
-        FixedRedBlackTreeContiguousStorage<int, int, 20> bst{};
+        FixedRedBlackTree<int, int, 20> bst{};
         bst[5] = 50;  // Position 0
         bst[9] = 90;  // Position 1
         ASSERT_EQ(2, bst.size());
@@ -1214,13 +1205,13 @@ TEST(FixedRedBlackTreeContiguousStorage, Deletion_CornerCases)
         bst.delete_node(5);
         ASSERT_EQ(1, bst.size());
         ASSERT_EQ(0, find_height(bst));
-        ASSERT_EQ(0, bst.root_index());
-        ASSERT_TRUE(are_equal({9, 90, NULL_INDEX, NULL_INDEX, NULL_INDEX, BLACK}, bst.node_at(0)));
+        ASSERT_EQ(1, bst.root_index());
+        ASSERT_TRUE(are_equal({9, 90, NULL_INDEX, NULL_INDEX, NULL_INDEX, BLACK}, bst.node_at(1)));
     }
 
     // Delete root that is not in position 0 of the array while it only has a left child
     {
-        FixedRedBlackTreeContiguousStorage<int, int, 20> bst{};
+        FixedRedBlackTree<int, int, 20> bst{};
         bst[5] = 50;  // Position 0
         bst[3] = 30;  // Position 1
         bst[1] = 10;  // Position 2
@@ -1240,8 +1231,8 @@ TEST(FixedRedBlackTreeContiguousStorage, Deletion_CornerCases)
         ASSERT_EQ(2, bst.size());
         ASSERT_EQ(1, find_height(bst));
         ASSERT_EQ(1, bst.root_index());
-        ASSERT_TRUE(are_equal({1, 10, 1, NULL_INDEX, NULL_INDEX, RED}, bst.node_at(0)));
-        ASSERT_TRUE(are_equal({3, 30, NULL_INDEX, 0, NULL_INDEX, BLACK}, bst.node_at(1)));
+        ASSERT_TRUE(are_equal({3, 30, NULL_INDEX, 2, NULL_INDEX, BLACK}, bst.node_at(1)));
+        ASSERT_TRUE(are_equal({1, 10, 1, NULL_INDEX, NULL_INDEX, RED}, bst.node_at(2)));
 
         /*
          *               3B
@@ -1252,13 +1243,13 @@ TEST(FixedRedBlackTreeContiguousStorage, Deletion_CornerCases)
         bst.delete_node(3);
         ASSERT_EQ(1, bst.size());
         ASSERT_EQ(0, find_height(bst));
-        ASSERT_EQ(0, bst.root_index());
-        ASSERT_TRUE(are_equal({1, 10, NULL_INDEX, NULL_INDEX, NULL_INDEX, BLACK}, bst.node_at(0)));
+        ASSERT_EQ(2, bst.root_index());
+        ASSERT_TRUE(are_equal({1, 10, NULL_INDEX, NULL_INDEX, NULL_INDEX, BLACK}, bst.node_at(2)));
     }
 
     // Delete root that is not in position 0 of the array while it only has a right child
     {
-        FixedRedBlackTreeContiguousStorage<int, int, 20> bst{};
+        FixedRedBlackTree<int, int, 20> bst{};
         bst[5] = 50;    // Position 0
         bst[9] = 90;    // Position 1
         bst[13] = 130;  // Position 2
@@ -1279,8 +1270,8 @@ TEST(FixedRedBlackTreeContiguousStorage, Deletion_CornerCases)
         ASSERT_EQ(2, bst.size());
         ASSERT_EQ(1, find_height(bst));
         ASSERT_EQ(1, bst.root_index());
-        ASSERT_TRUE(are_equal({13, 130, 1, NULL_INDEX, NULL_INDEX, RED}, bst.node_at(0)));
-        ASSERT_TRUE(are_equal({9, 90, NULL_INDEX, NULL_INDEX, 0, BLACK}, bst.node_at(1)));
+        ASSERT_TRUE(are_equal({9, 90, NULL_INDEX, NULL_INDEX, 2, BLACK}, bst.node_at(1)));
+        ASSERT_TRUE(are_equal({13, 130, 1, NULL_INDEX, NULL_INDEX, RED}, bst.node_at(2)));
 
         /*
          *               9B
@@ -1291,13 +1282,13 @@ TEST(FixedRedBlackTreeContiguousStorage, Deletion_CornerCases)
         bst.delete_node(9);
         ASSERT_EQ(1, bst.size());
         ASSERT_EQ(0, find_height(bst));
-        ASSERT_EQ(0, bst.root_index());
+        ASSERT_EQ(2, bst.root_index());
         ASSERT_TRUE(
-            are_equal({13, 130, NULL_INDEX, NULL_INDEX, NULL_INDEX, BLACK}, bst.node_at(0)));
+            are_equal({13, 130, NULL_INDEX, NULL_INDEX, NULL_INDEX, BLACK}, bst.node_at(2)));
     }
 }
 
-TEST(FixedRedBlackTreeContiguousStorage, IndexOfMin)
+TEST(FixedRedBlackTree, IndexOfMin)
 {
     FixedRedBlackTree<int, int, 10> bst{};
     bst[0] = 10;
@@ -1310,7 +1301,7 @@ TEST(FixedRedBlackTreeContiguousStorage, IndexOfMin)
     ASSERT_EQ(1, bst.node_at(bst.index_of_min_at()).key());
 }
 
-TEST(FixedRedBlackTreeContiguousStorage, IndexOfMax)
+TEST(FixedRedBlackTree, IndexOfMax)
 {
     FixedRedBlackTree<int, int, 10> bst{};
     bst[0] = 10;
@@ -1323,9 +1314,9 @@ TEST(FixedRedBlackTreeContiguousStorage, IndexOfMax)
     ASSERT_EQ(3, bst.node_at(bst.index_of_max_at()).key());
 }
 
-TEST(FixedRedBlackTreeContiguousStorage, IndexOfSuccessor)
+TEST(FixedRedBlackTree, IndexOfSuccessor)
 {
-    FixedRedBlackTreeContiguousStorage<int, int, 20> bst{};
+    FixedRedBlackTree<int, int, 20> bst{};
     bst[5] = 50;    // Position 0
     bst[9] = 90;    // Position 1
     bst[13] = 130;  // Position 2
@@ -1342,9 +1333,9 @@ TEST(FixedRedBlackTreeContiguousStorage, IndexOfSuccessor)
     ASSERT_EQ(NULL_INDEX, bst.index_of_successor_at(2));
 }
 
-TEST(FixedRedBlackTreeContiguousStorage, IndexOfPredecessor)
+TEST(FixedRedBlackTree, IndexOfPredecessor)
 {
-    FixedRedBlackTreeContiguousStorage<int, int, 20> bst{};
+    FixedRedBlackTree<int, int, 20> bst{};
     bst[5] = 50;    // Position 0
     bst[9] = 90;    // Position 1
     bst[13] = 130;  // Position 2
@@ -1361,9 +1352,9 @@ TEST(FixedRedBlackTreeContiguousStorage, IndexOfPredecessor)
     ASSERT_EQ(1, bst.index_of_predecessor_at(2));
 }
 
-TEST(FixedRedBlackTreeContiguousStorage, IndexOfEntryGreaterThan)
+TEST(FixedRedBlackTree, IndexOfEntryGreaterThan)
 {
-    FixedRedBlackTreeContiguousStorage<int, int, 20> bst{};
+    FixedRedBlackTree<int, int, 20> bst{};
     bst[5] = 50;    // Position 0
     bst[9] = 90;    // Position 1
     bst[13] = 130;  // Position 2
@@ -1385,7 +1376,7 @@ TEST(FixedRedBlackTreeContiguousStorage, IndexOfEntryGreaterThan)
 template <std::size_t MAXIMUM_SIZE>
 static void consistency_test_helper(const std::array<int, MAXIMUM_SIZE>& insertion_order,
                                     const std::array<int, MAXIMUM_SIZE>& deletion_order,
-                                    FixedRedBlackTreeContiguousStorage<int, int, MAXIMUM_SIZE>& bst)
+                                    FixedRedBlackTree<int, int, MAXIMUM_SIZE>& bst)
 {
     static constexpr std::size_t HALF_MAXIMUM_SIZE = MAXIMUM_SIZE / 2;
     static constexpr std::size_t QUARTER_MAXIMUM_SIZE = MAXIMUM_SIZE / 4;
@@ -1451,12 +1442,12 @@ static void consistency_test_helper(const std::array<int, MAXIMUM_SIZE>& inserti
     }
 }
 
-TEST(FixedRedBlackTreeContiguousStorage, ConsistencyRegressionTest1)
+TEST(FixedRedBlackTree, ConsistencyRegressionTest1)
 {
     static constexpr std::size_t MAXIMUM_SIZE = 8;
 
     // Intentionally use the same bst for this entire test. Don't clear()
-    FixedRedBlackTreeContiguousStorage<int, int, MAXIMUM_SIZE> bst{};
+    FixedRedBlackTree<int, int, MAXIMUM_SIZE> bst{};
 
     std::array<int, MAXIMUM_SIZE> insertion_order{2, 4, 3, 6, 1, 5, 0, 7};
     std::array<int, MAXIMUM_SIZE> deletion_order{3, 4, 1, 2, 6, 0, 5, 7};
@@ -1464,11 +1455,11 @@ TEST(FixedRedBlackTreeContiguousStorage, ConsistencyRegressionTest1)
     consistency_test_helper(insertion_order, deletion_order, bst);
 }
 
-TEST(FixedRedBlackTreeContiguousStorage, RandomizedConsistencyTest)
+TEST(FixedRedBlackTree, RandomizedConsistencyTest)
 {
     static constexpr std::size_t MAXIMUM_SIZE = 8;
     // Intentionally use the same bst for this entire test. Don't clear()
-    FixedRedBlackTreeContiguousStorage<int, int, MAXIMUM_SIZE> bst{};
+    FixedRedBlackTree<int, int, MAXIMUM_SIZE> bst{};
 
     std::array<int, MAXIMUM_SIZE> insertion_order{};
     std::array<int, MAXIMUM_SIZE> deletion_order{};
@@ -1490,10 +1481,10 @@ TEST(FixedRedBlackTreeContiguousStorage, RandomizedConsistencyTest)
     }
 }
 
-TEST(FixedRedBlackTreeContiguousStorage, TreeMaxHeight)
+TEST(FixedRedBlackTree, TreeMaxHeight)
 {
     static constexpr std::size_t MAXIMUM_SIZE = 512;
-    FixedRedBlackTreeContiguousStorage<int, int, MAXIMUM_SIZE> bst{};
+    FixedRedBlackTree<int, int, MAXIMUM_SIZE> bst{};
 
     std::array<int, MAXIMUM_SIZE> insertion_order{};
     for (std::size_t i = 0; i < MAXIMUM_SIZE; i++)
