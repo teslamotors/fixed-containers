@@ -3,6 +3,7 @@ build --per_file_copt external/.*@-g0,-O3,-fno-sanitize=all,-fexceptions
 build:clang --per_file_copt external/.*@-Wno-everything,-ftrivial-auto-var-init=uninitialized
 build --copt -Werror
 build --copt -fno-exceptions
+build --copt -ftemplate-backtrace-limit=0
 build:clang --copt -ftrivial-auto-var-init=pattern
 
 ### DIAGNOSTICS

@@ -19,7 +19,7 @@ if(MSVC)
     SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /wd4804 /wd4018")  # due to magic-enum, mixed arithmetic
     SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /wd4530")  # due to ostream, exception handler
 else()
-    SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Werror -fno-exceptions")
+    SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Werror -fno-exceptions -ftemplate-backtrace-limit=0")
 endif()
 
 if(${USING_CLANG})
