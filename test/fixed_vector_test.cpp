@@ -6,7 +6,6 @@
 
 #include "fixed_containers/concepts.hpp"
 
-#include <gsl/span>
 #include <gtest/gtest.h>
 #include <range/v3/iterator/concepts.hpp>
 #include <range/v3/range/conversion.hpp>
@@ -14,6 +13,8 @@
 #include <range/v3/view/transform.hpp>
 
 #include <array>
+#include <span>
+#include <vector>
 
 namespace fixed_containers
 {
@@ -29,6 +30,9 @@ static_assert(StandardLayout<VecType>);
 
 static_assert(ranges::random_access_iterator<VecType::iterator>);
 static_assert(ranges::random_access_iterator<VecType::const_iterator>);
+
+static_assert(std::ranges::contiguous_range<VecType>);
+static_assert(std::ranges::contiguous_range<std::array<int, 5>>);
 }  // namespace trivially_copyable_vector
 
 namespace trivially_copyable_but_not_copyable_or_moveable_vector
@@ -53,8 +57,8 @@ static_assert(StandardLayout<VecType>);
 }  // namespace trivially_copyable_but_not_copyable_or_moveable_vector
 
 void const_ref(const int&) {}
-void const_span_ref(const gsl::span<int>&) {}
-void const_span_of_const_ref(const gsl::span<const int>&) {}
+void const_span_ref(const std::span<int>&) {}
+void const_span_of_const_ref(const std::span<const int>&) {}
 
 struct ComplexStruct
 {
@@ -1112,7 +1116,7 @@ TEST(FixedVector, Span)
             return v;
         }();
 
-        gsl::span<const int> as_span{v1};
+        std::span<const int> as_span{v1};
         ASSERT_EQ(3, as_span.size());
         ASSERT_EQ(0, as_span[0]);
         ASSERT_EQ(1, as_span[1]);
@@ -1126,11 +1130,17 @@ TEST(FixedVector, Span)
             return v;
         }();
 
-        gsl::span<const int> as_span{v1};
+        std::span<const int> as_span{v1};
         ASSERT_EQ(3, as_span.size());
         ASSERT_EQ(0, as_span[0]);
         ASSERT_EQ(1, as_span[1]);
         ASSERT_EQ(2, as_span[2]);
+    }
+
+    {
+        std::vector<int> v1{};
+        std::span<const int> as_span_const{v1};
+        std::span<int> as_span_non_cost{v1};
     }
 }
 
