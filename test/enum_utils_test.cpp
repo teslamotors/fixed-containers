@@ -124,7 +124,7 @@ TEST(SpecializedEnumAdapter, Ordinal)
                            NonConformingTestRichEnum1::NC_TWO()));
 }
 
-TEST(BuiltinEnumAdapter, ToSting)
+TEST(BuiltinEnumAdapter, ToString)
 {
     static_assert(4 == EnumAdapter<CustomValuesTestEnum1>::count());
     static_assert("ONE" ==
@@ -137,7 +137,7 @@ TEST(BuiltinEnumAdapter, ToSting)
                   EnumAdapter<CustomValuesTestEnum1>::to_string(CustomValuesTestEnum1::FOUR));
 }
 
-TEST(RichEnumAdapter, ToSting)
+TEST(RichEnumAdapter, ToString)
 {
     static_assert(4 == EnumAdapter<TestRichEnum1>::count());
     static_assert("C_ONE" == EnumAdapter<TestRichEnum1>::to_string(TestRichEnum1::C_ONE()));
@@ -146,7 +146,7 @@ TEST(RichEnumAdapter, ToSting)
     static_assert("C_FOUR" == EnumAdapter<TestRichEnum1>::to_string(TestRichEnum1::C_FOUR()));
 }
 
-TEST(SpecializedEnumAdapter, ToSting)
+TEST(SpecializedEnumAdapter, ToString)
 {
     static_assert(2 == EnumAdapter<NonConformingTestRichEnum1>::count());
     static_assert("NC_ONE" == EnumAdapter<NonConformingTestRichEnum1>::to_string(
