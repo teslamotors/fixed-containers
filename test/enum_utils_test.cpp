@@ -217,4 +217,43 @@ TEST(RichEnum, BoolNegate)
     }
 }
 
+template <TestRichEnum1 /*MY_ENUM*/>
+struct RichEnumConstantsCanBeUsedAsATemplateParameter
+{
+};
+
+template <TestRichEnum1 /*MY_ENUM*/>
+static constexpr void rich_enum_constants_can_be_used_as_a_template_parameter()
+{
+}
+
+TEST(RichEnum, UsageAsTemplateParameter)
+{
+    rich_enum_constants_can_be_used_as_a_template_parameter<TestRichEnum1::C_TWO()>();
+    RichEnumConstantsCanBeUsedAsATemplateParameter<TestRichEnum1::C_TWO()> my_struct{};
+    static_cast<void>(my_struct);
+}
+
+TEST(RichEnum, UsageInSwitchCase)
+{
+    constexpr const TestRichEnum1& my_value = TestRichEnum1::C_TWO();
+
+    constexpr int result = [&]()
+    {
+        switch (my_value)
+        {
+        case TestRichEnum1::C_ONE():
+            return 11;
+        case TestRichEnum1::C_TWO():
+            return 22;
+        case TestRichEnum1::C_THREE():
+            return 33;
+        case TestRichEnum1::C_FOUR():
+            return 44;
+        }
+    }();
+
+    static_assert(22 == result);
+}
+
 }  // namespace fixed_containers::rich_enums
