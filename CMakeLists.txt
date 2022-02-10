@@ -82,6 +82,8 @@ endmacro()
 
 add_executable(concepts_test test/concepts_test.cpp)
 add_test_dependencies(concepts_test)
+add_executable(enum_array_test test/enum_array_test.cpp)
+add_test_dependencies(enum_array_test)
 add_executable(enum_map_test test/enum_map_test.cpp)
 add_test_dependencies(enum_map_test)
 add_executable(enum_set_test test/enum_set_test.cpp)
