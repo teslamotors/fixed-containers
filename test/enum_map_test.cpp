@@ -56,7 +56,7 @@ static_assert(std::is_trivially_copyable_v<ES_2::reverse_iterator>);
 static_assert(std::is_trivially_copyable_v<ES_2::const_reverse_iterator>);
 }  // namespace
 
-TEST(EnumMap, DefaultCtor)
+TEST(EnumMap, DefaultConstructor)
 {
     constexpr EnumMap<TestEnum1, int> s1{};
     static_assert(s1.empty());

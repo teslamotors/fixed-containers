@@ -179,13 +179,13 @@ TEST(EnumSet, Builder_MultipleOuts)
     }
 }
 
-TEST(EnumSet, DefaultCtor)
+TEST(EnumSet, DefaultConstructor)
 {
     constexpr EnumSet<TestEnum1> s1{};
     static_assert(s1.empty());
 }
 
-TEST(EnumSet, InitializerCtor)
+TEST(EnumSet, InitializerConstructor)
 {
     constexpr EnumSet<TestEnum1> s1{TestEnum1::TWO, TestEnum1::FOUR};
     static_assert(s1.size() == 2);
@@ -194,7 +194,7 @@ TEST(EnumSet, InitializerCtor)
     static_assert(s2.size() == 1);
 }
 
-TEST(EnumSet, IteratorCtor)
+TEST(EnumSet, IteratorConstructor)
 {
     constexpr std::array INPUT = {TestEnum1::TWO, TestEnum1::FOUR};
     constexpr EnumSet<TestEnum1> s1{INPUT.begin(), INPUT.end()};

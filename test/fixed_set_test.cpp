@@ -29,7 +29,7 @@ static_assert(ranges::bidirectional_iterator<ES_1::const_iterator>);
 
 }  // namespace
 
-TEST(FixedSet, DefaultCtor)
+TEST(FixedSet, DefaultConstructor)
 {
     constexpr FixedSet<int, 10> s1{};
     static_assert(s1.empty());

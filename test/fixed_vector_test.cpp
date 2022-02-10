@@ -96,7 +96,7 @@ constexpr bool are_equal(const FixedVectorType& vec, const OtherType& other)
 
 }  // namespace
 
-TEST(FixedVector, DefaultCtor)
+TEST(FixedVector, DefaultConstructor)
 {
     constexpr FixedVector<int, 8> v1{};
     static_assert(v1.empty());
@@ -106,7 +106,7 @@ TEST(FixedVector, DefaultCtor)
     static_assert(v2.empty());
 }
 
-TEST(FixedVector, DefaultCtorNonDefaultConstructible)
+TEST(FixedVector, DefaultConstructorNonDefaultConstructible)
 {
     {
         constexpr FixedVector<MockNonDefaultConstructible, 8> v1{};
@@ -369,7 +369,7 @@ TEST(FixedVector, Initializer)
     EXPECT_TRUE(are_equal(v2, std::array{66, 55}));
 }
 
-TEST(FixedVector, CountCtor)
+TEST(FixedVector, CountConstructor)
 {
     // Caution: Using braces calls initializer list ctor!
     {
@@ -399,7 +399,7 @@ TEST(FixedVector, CountCtor)
     }
 }
 
-TEST(FixedVector, InputIteratorCtor)
+TEST(FixedVector, InputIteratorConstructor)
 {
     constexpr FixedVector<int, 3> v1{77, 99};
     static_assert(v1[0] == 77);

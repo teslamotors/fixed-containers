@@ -31,7 +31,7 @@ static_assert(ranges::bidirectional_iterator<ES_1::const_iterator>);
 
 }  // namespace
 
-TEST(FixedMap, DefaultCtor)
+TEST(FixedMap, DefaultConstructor)
 {
     constexpr FixedMap<int, int, 10> s1{};
     static_assert(s1.empty());
