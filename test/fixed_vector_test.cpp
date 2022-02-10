@@ -106,7 +106,7 @@ TEST(FixedVector, DefaultCtor)
     static_assert(v2.empty());
 }
 
-TEST(FixedVector, FixedVector_DefaultCtorNonDefaultConstructible)
+TEST(FixedVector, DefaultCtorNonDefaultConstructible)
 {
     {
         constexpr FixedVector<MockNonDefaultConstructible, 8> v1{};
