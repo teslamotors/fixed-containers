@@ -73,6 +73,11 @@ enum class TestEnum1
     FOUR,
 };
 
+enum class EnumWithNoConstants
+{
+
+};
+
 namespace detail
 {
 enum class TestRichEnum1BackingEnum
