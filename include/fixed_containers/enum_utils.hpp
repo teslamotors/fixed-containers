@@ -92,18 +92,25 @@ struct RichEnumAdapterOrdinalFunctor
     constexpr std::size_t operator()(const K& key) const { return T::ordinal(key); }
 };
 
-template <class ValuesArray, class OrdinalProvider>
-constexpr bool has_zero_based_and_sorted_contiguous_ordinal(const ValuesArray& values_array,
-                                                            const OrdinalProvider& ordinal)
+template <class Func>
+constexpr bool is_zero_based_contiguous_and_sorted(const std::size_t size, const Func& func)
 {
-    for (std::size_t i = 0; i < values_array.size(); i++)
+    for (std::size_t i = 0; i < size; i++)
     {
-        if (ordinal(values_array[i]) != i)
+        if (func(i) != i)
         {
             return false;
         }
     }
     return true;
+}
+
+template <class ValuesArray, class OrdinalProvider>
+constexpr bool has_zero_based_and_sorted_contiguous_ordinal(const ValuesArray& values_array,
+                                                            const OrdinalProvider& ordinal)
+{
+    return is_zero_based_contiguous_and_sorted(
+        values_array.size(), [&](const std::size_t i) { return ordinal(values_array[i]); });
 }
 
 template <is_enum T>

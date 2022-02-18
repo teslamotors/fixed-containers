@@ -1,5 +1,6 @@
 #pragma once
 
+#include "fixed_containers/concepts.hpp"
 #include "fixed_containers/enum_utils.hpp"
 
 #include <array>
@@ -29,6 +30,33 @@ public:
     using const_reverse_iterator = typename ValueArrayType::const_reverse_iterator;
 
 private:
+    template <std::size_t M>
+    struct PairOrdinalComparator
+    {
+        const std::pair<const L, T> (&list_)[M];
+
+        constexpr std::size_t operator()(const std::size_t i) const
+        {
+            return EnumAdapterType::ordinal(list_[i].first);
+        }
+    };
+
+private:
+    template <std::size_t M, std::size_t... Is>
+    [[nodiscard]] static constexpr ValueArrayType initializer_pair_list_to_value_array_impl(
+        const std::pair<const L, T> (&list)[M], std::index_sequence<Is...>)
+    {
+        return ValueArrayType{list[Is].second...};
+    }
+
+    template <std::size_t M>
+    [[nodiscard]] static constexpr ValueArrayType initializer_pair_list_to_value_array(
+        const std::pair<const L, T> (&list)[M])
+    {
+        return initializer_pair_list_to_value_array_impl(list, std::make_index_sequence<M>{});
+    }
+
+private:
     ValueArrayType values_;
 
 public:
@@ -37,14 +65,28 @@ public:
     {
     }
 
-    constexpr EnumArray(std::initializer_list<std::pair<const L, T>> list) noexcept
-      : EnumArray()
+    constexpr EnumArray(std::initializer_list<std::pair<const L, T>> list) noexcept requires
+        DefaultConstructible<T> : EnumArray()
     {
         for (const auto& [label, value] : list)
         {
             const std::size_t ordinal = EnumAdapterType::ordinal(label);
             values_.at(ordinal) = value;
         }
+    }
+
+    // NonDefaultConstructible types must provide all entries (like in std::array).
+    // This constructor is "strict" in the sense that it requires all key-values pairs to be
+    // specified and also in the proper order. This allows verifying that all entries are present
+    // and facilitates placement in the right ordinal without requiring extra stack space or needing
+    // to sort.
+    template <std::size_t M>
+    requires(M == ENUM_COUNT)  // Template parameter M is used to avoid -Wzero-length-array
+        constexpr EnumArray(const std::pair<const L, T> (&list)[M]) noexcept requires
+        NotDefaultConstructible<T> : values_(initializer_pair_list_to_value_array(list))
+    {
+        assert(fixed_containers::rich_enums_detail::is_zero_based_contiguous_and_sorted(
+            ENUM_COUNT, PairOrdinalComparator<ENUM_COUNT>{list}));
     }
 
 public:

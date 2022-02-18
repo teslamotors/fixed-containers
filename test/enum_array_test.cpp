@@ -1,6 +1,7 @@
 #include "fixed_containers/enum_array.hpp"
 
 #include "enums_test_common.hpp"
+#include "mock_testing_types.hpp"
 
 #include "fixed_containers/consteval_compare.hpp"
 
@@ -21,7 +22,7 @@ static_assert(std::is_trivially_copyable_v<EnumArray<TestEnum1, int>>);
 TEST(EnumArray, DefaultConstructorDefaultInitialization)
 {
     {
-        constexpr EnumArray<TestEnum1, int> s1{};
+        constexpr EnumArray<TestEnum1, int> s1;  // No braces.
         static_assert(consteval_compare::equal<4, s1.max_size()>);
         static_assert(consteval_compare::equal<0, s1.at(TestEnum1::ONE)>);
         static_assert(consteval_compare::equal<0, s1.at(TestEnum1::TWO)>);
@@ -62,6 +63,19 @@ TEST(EnumArray, AggregateInitialization)
     static_assert(consteval_compare::equal<10, s1.at(TestEnum1::ONE)>);
     static_assert(consteval_compare::equal<20, s1.at(TestEnum1::TWO)>);
     static_assert(consteval_compare::equal<30, s1.at(TestEnum1::THREE)>);
+    static_assert(consteval_compare::equal<40, s1.at(TestEnum1::FOUR)>);
+}
+
+TEST(EnumArray, AggregateInitialization_Partial)
+{
+    constexpr EnumArray<TestEnum1, int> s1{
+        {TestEnum1::FOUR, 40},
+        {TestEnum1::ONE, 10},
+    };
+    static_assert(consteval_compare::equal<4, s1.max_size()>);
+    static_assert(consteval_compare::equal<10, s1.at(TestEnum1::ONE)>);
+    static_assert(consteval_compare::equal<0, s1.at(TestEnum1::TWO)>);
+    static_assert(consteval_compare::equal<0, s1.at(TestEnum1::THREE)>);
     static_assert(consteval_compare::equal<40, s1.at(TestEnum1::FOUR)>);
 }
 
@@ -332,4 +346,42 @@ TEST(EnumArray, Comparison)
     }
 }
 
+TEST(EnumArray, NonDefaultConstructible)
+{
+    {
+        constexpr EnumArray<TestEnum1, MockNonDefaultConstructible> s1{{
+            {TestEnum1::ONE, 10},
+            {TestEnum1::TWO, 20},
+            {TestEnum1::THREE, 30},
+            {TestEnum1::FOUR, 40},
+        }};
+        static_assert(!s1.empty());
+    }
+
+    {
+        EnumArray<TestEnum1, MockNonDefaultConstructible> s2{{
+            {TestEnum1::ONE, 10},
+            {TestEnum1::TWO, 20},
+            {TestEnum1::THREE, 30},
+            {TestEnum1::FOUR, 40},
+        }};
+        s2[TestEnum1::ONE] = 31;
+    }
+}
+
+TEST(EnumArray, MoveableButNotCopyable)
+{
+    {
+        EnumArray<TestEnum1, MockMoveableButNotCopyable> s{};
+        s[TestEnum1::TWO] = MockMoveableButNotCopyable{};
+    }
+}
+
+TEST(EnumArray, NonAssignable)
+{
+    {
+        EnumArray<TestEnum1, MockNonAssignable> s{};
+        s[TestEnum1::TWO];
+    }
+}
 }  // namespace fixed_containers::enum_array_detail
