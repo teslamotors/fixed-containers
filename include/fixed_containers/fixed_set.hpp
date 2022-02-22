@@ -320,10 +320,20 @@ public:
         return static_cast<std::size_t>(contains(key));
     }
 
-    template <std::size_t C>
-    [[nodiscard]] constexpr bool operator==(const FixedSet<K, C>& other) const
+    template <std::size_t MAXIMUM_SIZE_2,
+              class Compare2,
+              fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness COMPACTNESS_2,
+              template <class /*Would be IsFixedIndexBasedStorage but gcc doesn't like the
+                                 constraints here. clang accepts it */
+                        ,
+                        std::size_t>
+              typename StorageTemplate2,
+              fixed_set_customize::FixedSetChecking<K> CheckingType2>
+    [[nodiscard]] constexpr bool operator==(
+        const FixedSet<K, MAXIMUM_SIZE_2, Compare2, COMPACTNESS_2, StorageTemplate2, CheckingType2>&
+            other) const
     {
-        if constexpr (MAXIMUM_SIZE == C)
+        if constexpr (MAXIMUM_SIZE == MAXIMUM_SIZE_2)
         {
             if (this == &other)
             {
