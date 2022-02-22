@@ -2,7 +2,6 @@
 
 #include "fixed_containers/concepts.hpp"
 
-#include <atomic>
 #include <type_traits>
 
 namespace fixed_containers
@@ -130,7 +129,20 @@ struct MockMoveableButNotCopyable
 };
 
 // std::atomic<int> is an example of this
-using MockTriviallyCopyableButNotCopyableOrMoveable = std::atomic<int>;
+struct MockTriviallyCopyableButNotCopyableOrMoveable
+{
+    MockTriviallyCopyableButNotCopyableOrMoveable() = default;
+
+    constexpr MockTriviallyCopyableButNotCopyableOrMoveable(
+        const MockTriviallyCopyableButNotCopyableOrMoveable& other) noexcept = delete;
+    constexpr MockTriviallyCopyableButNotCopyableOrMoveable(
+        MockTriviallyCopyableButNotCopyableOrMoveable&& other) noexcept = delete;
+
+    constexpr MockTriviallyCopyableButNotCopyableOrMoveable& operator=(
+        const MockTriviallyCopyableButNotCopyableOrMoveable& other) noexcept = delete;
+    constexpr MockTriviallyCopyableButNotCopyableOrMoveable& operator=(
+        MockTriviallyCopyableButNotCopyableOrMoveable&& other) noexcept = delete;
+};
 
 #if defined(__clang__) || defined(__GNUC__)
 static_assert(TriviallyCopyable<MockTriviallyCopyableButNotCopyableOrMoveable>);
