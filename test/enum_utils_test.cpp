@@ -236,11 +236,9 @@ TEST(RichEnum, UsageAsTemplateParameter)
 
 TEST(RichEnum, UsageInSwitchCase)
 {
-    constexpr const TestRichEnum1& my_value = TestRichEnum1::C_TWO();
-
-    constexpr int result = [&]()
+    constexpr int result = [](const TestRichEnum1& val)
     {
-        switch (my_value)
+        switch (val)
         {
         case TestRichEnum1::C_ONE():
             return 11;
@@ -251,7 +249,7 @@ TEST(RichEnum, UsageInSwitchCase)
         case TestRichEnum1::C_FOUR():
             return 44;
         }
-    }();
+    }(TestRichEnum1::C_TWO());
 
     static_assert(22 == result);
 }
