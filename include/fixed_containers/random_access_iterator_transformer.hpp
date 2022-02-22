@@ -57,7 +57,8 @@ public:
     using iterator = Self;
     using element_type = value_type;  // Needed for contiguous iterators
     using iterator_category = typename std::iterator_traits<IteratorType>::iterator_category;
-    using iterator_concept = typename std::iterator_traits<IteratorType>::iterator_concept;
+    using iterator_concept = typename IteratorConceptHelper<IteratorType>::iterator_concept;
+
     static_assert(std::same_as<iterator_category, std::random_access_iterator_tag> ||
                   std::same_as<iterator_category, std::contiguous_iterator_tag>);
     static_assert(std::same_as<iterator_concept, std::random_access_iterator_tag> ||
