@@ -81,7 +81,7 @@ public:
 
     constexpr FixedVectorBuilder& push_back_all(std::initializer_list<T> list) & noexcept
     {
-        vector_.push_back_all(list);
+        push_back_all(list.begin(), list.end());
         return *this;
     }
     constexpr FixedVectorBuilder&& push_back_all(std::initializer_list<T> list) && noexcept
@@ -92,7 +92,7 @@ public:
     template <InputIterator InputIt>
     constexpr FixedVectorBuilder& push_back_all(InputIt first, InputIt last) & noexcept
     {
-        vector_.push_back_all(first, last);
+        vector_.insert(vector_.end(), first, last);
         return *this;
     }
     template <InputIterator InputIt>
@@ -104,7 +104,7 @@ public:
     template <class Container>
     constexpr FixedVectorBuilder& push_back_all(const Container& container) & noexcept
     {
-        vector_.push_back_all(container.cbegin(), container.cend());
+        push_back_all(container.cbegin(), container.cend());
         return *this;
     }
     template <class Container>
@@ -199,14 +199,6 @@ public:
     {
     }
 
-    constexpr FixedVectorBase(std::initializer_list<T> list,
-                              const std_transition::source_location& loc =
-                                  std_transition::source_location::current()) noexcept
-      : FixedVectorBase()
-    {
-        push_back_all(list, loc);
-    }
-
     constexpr FixedVectorBase(std::size_t count,
                               const T& value,
                               const std_transition::source_location& loc =
@@ -219,6 +211,13 @@ public:
         {
             place_at(i, value);
         }
+    }
+
+    constexpr FixedVectorBase(std::initializer_list<T> list,
+                              const std_transition::source_location& loc =
+                                  std_transition::source_location::current()) noexcept
+      : FixedVectorBase(list.begin(), list.end(), loc)
+    {
     }
 
     constexpr explicit FixedVectorBase(std::size_t count,
@@ -235,7 +234,7 @@ public:
                                   std_transition::source_location::current()) noexcept
       : FixedVectorBase()
     {
-        push_back_all(first, last, loc);
+        insert(end(), first, last, loc);
     }
 
     /**
@@ -300,44 +299,6 @@ public:
         emplace_at(size_, std::forward<Args>(args)...);
         size_++;
         return this->back();
-    }
-
-    /**
-     * Appends the given element values to the end of the container.
-     * Calling push_back on a full container is undefined.
-     */
-    template <std::size_t M>
-    constexpr void push_back_all(
-        const T (&arr)[M],
-        const std_transition::source_location& loc = std_transition::source_location::current())
-    {
-        static_assert(M <= MAXIMUM_SIZE, "Array bigger than max size");
-        check_target_size(size_ + M, loc);
-        this->push_back_all_internal(arr + 0, arr + M);
-    }
-    template <InputIterator InputIt>
-    constexpr void push_back_all(
-        InputIt first,
-        InputIt last,
-        const std_transition::source_location& loc = std_transition::source_location::current())
-    {
-        check_target_size(size_ + static_cast<size_type>(std::distance(first, last)), loc);
-        this->push_back_all_internal(first, last);
-    }
-    template <class Container>
-    constexpr void push_back_all(
-        const Container& sp,
-        const std_transition::source_location& loc = std_transition::source_location::current())
-    {
-        check_target_size(size_ + sp.size(), loc);
-        this->push_back_all_internal(sp.begin(), sp.end());
-    }
-    constexpr void push_back_all(
-        std::initializer_list<T> list,
-        const std_transition::source_location& loc = std_transition::source_location::current())
-    {
-        check_target_size(size_ + list.size(), loc);
-        this->push_back_all_internal(list.begin(), list.end());
     }
 
     /**
@@ -431,7 +392,7 @@ public:
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
         this->clear();
-        this->push_back_all(first, last, loc);
+        this->insert(end(), first, last, loc);
     }
 
     /**
@@ -665,15 +626,6 @@ private:
     {
         place_at(size_, std::move(v));
         size_++;
-    }
-
-    template <InputIterator InputIt>
-    constexpr void push_back_all_internal(InputIt first, InputIt last)
-    {
-        for (; first != last; ++first)
-        {
-            this->push_back_internal(*first);
-        }
     }
 
     constexpr iterator create_iterator(const std::size_t start_index) noexcept

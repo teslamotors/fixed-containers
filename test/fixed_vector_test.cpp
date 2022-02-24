@@ -430,17 +430,13 @@ TEST(FixedVector, PushBack)
     static_assert(v1.size() == 3);
     static_assert(v1.capacity() == 11);
 
-    FixedVector<int, 17> v2{};
-    v2.push_back_all(std::array<int, 3>{10, 11, 12});
-    EXPECT_TRUE(are_equal(v2, std::array{10, 11, 12}));
-
-    constexpr auto v3 = []()
+    constexpr auto v2 = []()
     {
         FixedVector<MockNonTrivialCopyConstructible, 5> aaa{};
         aaa.push_back(MockNonTrivialCopyConstructible{});
         return aaa;
     }();
-    static_assert(v3.size() == 1);
+    static_assert(v2.size() == 1);
 }
 
 TEST(FixedVector, EmplaceBack)
@@ -522,134 +518,17 @@ TEST(FixedVector, ReserveFailure)
 
 TEST(FixedVector, ExceedCapacity)
 {
-    FixedVector<int, 3> v1{};
-    v1.push_back_all({0, 1, 2});
+    FixedVector<int, 3> v1{0, 1, 2};
     EXPECT_DEATH(v1.push_back(3), "");
     const int value = 1;
     EXPECT_DEATH(v1.push_back(value), "");
-}
-
-TEST(FixedVector, PushBackAll_CArray)
-{
-    constexpr auto v1 = []()
-    {
-        constexpr int arr[5] = {0, 1, 2};
-        FixedVector<int, 11> v{};
-        v.push_back_all(arr);
-        return v;
-    }();
-
-    static_assert(v1[0] == 0);
-    static_assert(v1[1] == 1);
-    static_assert(v1[2] == 2);
-    static_assert(v1[3] == 0);
-    static_assert(v1[4] == 0);
-    static_assert(v1.size() == 5);
-    static_assert(v1.capacity() == 11);
-
-    int arr[5] = {10, 11, 12};
-    FixedVector<int, 11> v2{};
-    v2.push_back_all(arr);
-    EXPECT_TRUE(are_equal(v2, std::array{10, 11, 12, 0, 0}));
-}
-
-TEST(FixedVector, PushBackAll_CArray_ExceedCapacity)
-{
-    FixedVector<int, 5> v1{};
-    v1.push_back_all({0, 1, 2});
-    EXPECT_DEATH(v1.push_back_all({3, 4, 5}), "");
-}
-
-TEST(FixedVector, PushBackAll_Iterators)
-{
-    constexpr auto v1 = []()
-    {
-        constexpr std::array<int, 3> array{0, 1, 2};
-        FixedVector<int, 11> v{};
-        v.push_back_all(array.cbegin(), array.cend());
-        return v;
-    }();
-
-    static_assert(v1[0] == 0);
-    static_assert(v1[1] == 1);
-    static_assert(v1[2] == 2);
-    static_assert(v1.size() == 3);
-    static_assert(v1.capacity() == 11);
-}
-
-TEST(FixedVector, PushBackAll_Iterators_ExceedCapacity)
-{
-    constexpr std::array<int, 3> array{0, 1, 2};
-
-    FixedVector<int, 5> v1{};
-    v1.push_back_all({0, 1, 2});
-    EXPECT_DEATH(v1.push_back_all(array.cbegin(), array.cend()), "");
-}
-
-TEST(FixedVector, PushBackAll_InitializerList)
-{
-    {
-        constexpr auto v1 = []()
-        {
-            FixedVector<int, 11> v{};
-            v.push_back_all({0, 1, 2});
-            return v;
-        }();
-
-        static_assert(v1[0] == 0);
-        static_assert(v1[1] == 1);
-        static_assert(v1[2] == 2);
-        static_assert(v1.size() == 3);
-        static_assert(v1.capacity() == 11);
-    }
-
-    {
-        FixedVector<MockNonAssignable, 11> v2{};
-        v2.push_back_all({{}, {}, {}});  // Should compile
-    }
-}
-
-TEST(FixedVector, PushBackAll_Span)
-{
-    constexpr auto v1 = []()
-    {
-        constexpr std::array<int, 3> a{0, 1, 2};
-        FixedVector<int, 11> v{};
-        v.push_back_all(a);
-        v.push_back_all(a);
-        return v;
-    }();
-
-    static_assert(v1[0] == 0);
-    static_assert(v1[1] == 1);
-    static_assert(v1[2] == 2);
-    static_assert(v1[3] == 0);
-    static_assert(v1[4] == 1);
-    static_assert(v1[5] == 2);
-    static_assert(v1.size() == 6);
-    static_assert(v1.capacity() == 11);
-
-    FixedVector<int, 13> v2{};
-    std::array<int, 3> std_v{11, 22, 33};
-    v2.push_back_all(std_v);
-    EXPECT_TRUE(are_equal(v2, std::array{11, 22, 33}));
-}
-
-TEST(FixedVector, PushBackAll_Span_ExceedCapacity)
-{
-    constexpr std::array<int, 3> array{0, 1, 2};
-
-    FixedVector<int, 5> v1{};
-    v1.push_back_all({0, 1, 2});
-    EXPECT_DEATH(v1.push_back_all(array), "");
 }
 
 TEST(FixedVector, Popback)
 {
     constexpr auto v1 = []()
     {
-        FixedVector<int, 11> v{};
-        v.push_back_all({0, 1, 2});
+        FixedVector<int, 11> v{0, 1, 2};
         v.pop_back();
         return v;
     }();
@@ -659,8 +538,7 @@ TEST(FixedVector, Popback)
     static_assert(v1.size() == 2);
     static_assert(v1.capacity() == 11);
 
-    FixedVector<int, 17> v2{};
-    v2.push_back_all({10, 11, 12});
+    FixedVector<int, 17> v2{10, 11, 12};
     v2.pop_back();
     EXPECT_TRUE(are_equal(v2, std::array{10, 11}));
 }
@@ -764,35 +642,30 @@ TEST(FixedVector, Equality)
 {
     constexpr auto v1 = []()
     {
-        FixedVector<int, 12> v{};
-        v.push_back_all({0, 1, 2});
+        FixedVector<int, 12> v{0, 1, 2};
         return v;
     }();
 
     constexpr auto v2 = []() {  // Capacity difference should not affect equality
-        FixedVector<int, 11> v{};
-        v.push_back_all({0, 1, 2});
+        FixedVector<int, 11> v{0, 1, 2};
         return v;
     }();
 
     constexpr auto v3 = []()
     {
-        FixedVector<int, 12> v{};
-        v.push_back_all({0, 101, 2});
+        FixedVector<int, 12> v{0, 101, 2};
         return v;
     }();
 
     constexpr auto v4 = []()
     {
-        FixedVector<int, 12> v{};
-        v.push_back_all({0, 1});
+        FixedVector<int, 12> v{0, 1};
         return v;
     }();
 
     constexpr auto v5 = []()
     {
-        FixedVector<int, 12> v{};
-        v.push_back_all({0, 1, 2, 3, 4, 5});
+        FixedVector<int, 12> v{0, 1, 2, 3, 4, 5};
         return v;
     }();
 
@@ -978,14 +851,13 @@ TEST(FixedVector, IterationBasic)
     }
     EXPECT_EQ(ctr, 4);
 
-    v_expected.clear();
-    v_expected.push_back_all({0, 1, 2, 3});
+    v_expected = {0, 1, 2, 3};
     EXPECT_TRUE((v == v_expected));
 
     v.push_back(4);
     v.push_back(5);
 
-    v_expected.clear().push_back_all({0, 1, 2, 3, 4, 5});
+    v_expected = {0, 1, 2, 3, 4, 5};
     EXPECT_TRUE((v == v_expected));
 
     ctr = 0;
@@ -1001,8 +873,7 @@ TEST(FixedVector, IterationBasic)
     v.erase(v.begin() + 3);
     v.erase(v.begin() + 1);
 
-    v_expected.clear();
-    v_expected.push_back_all({0, 2, 4});
+    v_expected = {0, 2, 4};
     EXPECT_TRUE((v == v_expected));
 
     ctr = 0;
@@ -1023,8 +894,7 @@ TEST(FixedVector, Resize)
 {
     constexpr auto v1 = []()
     {
-        FixedVector<int, 7> v{};
-        v.push_back_all({0, 1, 2});
+        FixedVector<int, 7> v{0, 1, 2};
         v.resize(6);
         v[4] = 100;
         return v;
@@ -1041,8 +911,7 @@ TEST(FixedVector, Resize)
 
     constexpr auto v2 = []()
     {
-        FixedVector<int, 7> v{};
-        v.push_back_all({0, 1, 2});
+        FixedVector<int, 7> v{0, 1, 2};
         v.resize(7, 300);
         v[4] = -100;
         v.resize(5, 500);
@@ -1057,8 +926,7 @@ TEST(FixedVector, Resize)
     static_assert(v2.size() == 5);
     static_assert(v2.capacity() == 7);
 
-    FixedVector<int, 8> v3{};
-    v3.push_back_all({0, 1, 2, 3});
+    FixedVector<int, 8> v3{0, 1, 2, 3};
     v3.resize(6);
 
     EXPECT_TRUE(are_equal(v3, std::array<int, 6>{{0, 1, 2, 3, 0, 0}}));
@@ -1111,8 +979,7 @@ TEST(FixedVector, Span)
     {
         constexpr auto v1 = []()
         {
-            FixedVector<int, 7> v{};
-            v.push_back_all({0, 1, 2});
+            FixedVector<int, 7> v{0, 1, 2};
             return v;
         }();
 
@@ -1125,8 +992,7 @@ TEST(FixedVector, Span)
     {
         auto v1 = []()
         {
-            FixedVector<int, 7> v{};
-            v.push_back_all({0, 1, 2});
+            FixedVector<int, 7> v{0, 1, 2};
             return v;
         }();
 
@@ -1148,8 +1014,7 @@ TEST(FixedVector, Clear)
 {
     constexpr auto v1 = []()
     {
-        FixedVector<int, 7> v{};
-        v.push_back_all({0, 1, 2});
+        FixedVector<int, 7> v{0, 1, 2};
         v.assign(5, 100);
         v.clear();
         return v;
@@ -1198,8 +1063,7 @@ TEST(FixedVector, AssignValue)
     {
         constexpr auto v1 = []()
         {
-            FixedVector<int, 7> v{};
-            v.push_back_all({0, 1, 2});
+            FixedVector<int, 7> v{0, 1, 2};
             v.assign(5, 100);
             return v;
         }();
@@ -1212,8 +1076,7 @@ TEST(FixedVector, AssignValue)
     {
         constexpr auto v2 = []()
         {
-            FixedVector<int, 7> v{};
-            v.push_back_all({0, 1, 2});
+            FixedVector<int, 7> v{0, 1, 2};
             v.assign(5, 100);
             v.assign(2, 300);
             return v;
@@ -1227,8 +1090,7 @@ TEST(FixedVector, AssignValue)
     {
         auto v3 = []()
         {
-            FixedVector<int, 7> v{};
-            v.push_back_all({0, 1, 2});
+            FixedVector<int, 7> v{0, 1, 2};
             v.assign(5, 100);
             v.assign(2, 300);
             return v;
@@ -1245,8 +1107,7 @@ TEST(FixedVector, AssignRange)
         constexpr auto v1 = []()
         {
             std::array<int, 2> a{300, 300};
-            FixedVector<int, 7> v{};
-            v.push_back_all({0, 1, 2});
+            FixedVector<int, 7> v{0, 1, 2};
             v.assign(a.begin(), a.end());
             return v;
         }();
@@ -1259,8 +1120,7 @@ TEST(FixedVector, AssignRange)
         auto v2 = []()
         {
             std::array<int, 2> a{300, 300};
-            FixedVector<int, 7> v{};
-            v.push_back_all({0, 1, 2});
+            FixedVector<int, 7> v{0, 1, 2};
             v.assign(a.begin(), a.end());
             return v;
         }();
@@ -1272,16 +1132,14 @@ TEST(FixedVector, AssignRange)
 
 TEST(FixedVector, AssignValue_ExceedsCapacity)
 {
-    FixedVector<int, 3> v1{};
-    v1.push_back_all({0, 1, 2});
+    FixedVector<int, 3> v1{0, 1, 2};
     EXPECT_DEATH(v1.assign(5, 100), "");
 }
 
 TEST(FixedVector, AssignRange_ExceedsCapacity)
 {
-    FixedVector<int, 3> v1{};
+    FixedVector<int, 3> v1{0, 1, 2};
     std::array<int, 17> a{300, 300};
-    v1.push_back_all({0, 1, 2});
     EXPECT_DEATH(v1.assign(a.begin(), a.end()), "");
 }
 
@@ -1290,8 +1148,7 @@ TEST(FixedVector, InsertValue)
     {
         constexpr auto v1 = []()
         {
-            FixedVector<int, 7> v{};
-            v.push_back_all({0, 1, 2, 3});
+            FixedVector<int, 7> v{0, 1, 2, 3};
             v.insert(v.begin(), 100);
             const int value = 500;
             v.insert(v.begin() + 2, value);
@@ -1306,8 +1163,7 @@ TEST(FixedVector, InsertValue)
         // For off-by-one issues, make the capacity just fit
         constexpr auto v2 = []()
         {
-            FixedVector<int, 5> v{};
-            v.push_back_all({0, 1, 2});
+            FixedVector<int, 5> v{0, 1, 2};
             v.insert(v.begin(), 100);
             const int value = 500;
             v.insert(v.begin() + 2, value);
@@ -1344,8 +1200,7 @@ TEST(FixedVector, InsertValue)
 
 TEST(FixedVector, InsertValue_ExceedsCapacity)
 {
-    FixedVector<int, 4> v1{};
-    v1.push_back_all({0, 1, 2, 3});
+    FixedVector<int, 4> v1{0, 1, 2, 3};
     EXPECT_DEATH(v1.insert(v1.begin() + 1, 5), "");
 }
 
@@ -1408,8 +1263,7 @@ TEST(FixedVector, EraseRange)
 {
     constexpr auto v1 = []()
     {
-        FixedVector<int, 8> v{};
-        v.push_back_all({0, 1, 2, 3, 4, 5});
+        FixedVector<int, 8> v{0, 1, 2, 3, 4, 5};
         v.erase(v.cbegin() + 2, v.begin() + 4);
         return v;
     }();
@@ -1418,8 +1272,7 @@ TEST(FixedVector, EraseRange)
     static_assert(v1.size() == 4);
     static_assert(v1.capacity() == 8);
 
-    FixedVector<int, 8> v2{};
-    v2.push_back_all({2, 1, 4, 5, 0, 3});
+    FixedVector<int, 8> v2{2, 1, 4, 5, 0, 3};
 
     auto it = v2.erase(v2.begin() + 1, v2.cbegin() + 3);
     EXPECT_EQ(it, v2.begin() + 1);
@@ -1431,8 +1284,7 @@ TEST(FixedVector, EraseOne)
 {
     constexpr auto v1 = []()
     {
-        FixedVector<int, 8> v{};
-        v.push_back_all({0, 1, 2, 3, 4, 5});
+        FixedVector<int, 8> v{0, 1, 2, 3, 4, 5};
         v.erase(v.cbegin());
         v.erase(v.begin() + 2);
         return v;
@@ -1442,8 +1294,7 @@ TEST(FixedVector, EraseOne)
     static_assert(v1.size() == 4);
     static_assert(v1.capacity() == 8);
 
-    FixedVector<int, 8> v2{};
-    v2.push_back_all({2, 1, 4, 5, 0, 3});
+    FixedVector<int, 8> v2{2, 1, 4, 5, 0, 3};
 
     auto it = v2.erase(v2.begin());
     EXPECT_EQ(it, v2.begin());
@@ -1486,8 +1337,7 @@ TEST(FixedVector, Front)
 {
     constexpr auto v1 = []()
     {
-        FixedVector<int, 8> v{};
-        v.push_back_all({99, 1, 2});
+        FixedVector<int, 8> v{99, 1, 2};
         return v;
     }();
 
@@ -1496,8 +1346,7 @@ TEST(FixedVector, Front)
     static_assert(v1.size() == 3);
     static_assert(v1.capacity() == 8);
 
-    FixedVector<int, 8> v2{};
-    v2.push_back_all({100, 101, 102});
+    FixedVector<int, 8> v2{100, 101, 102};
     const auto& v2_const_ref = v2;
 
     EXPECT_EQ(v2.front(), 100);  // non-const variant
@@ -1521,8 +1370,7 @@ TEST(FixedVector, Back)
 {
     constexpr auto v1 = []()
     {
-        FixedVector<int, 8> v{};
-        v.push_back_all({0, 1, 77});
+        FixedVector<int, 8> v{0, 1, 77};
         return v;
     }();
 
@@ -1531,8 +1379,7 @@ TEST(FixedVector, Back)
     static_assert(v1.size() == 3);
     static_assert(v1.capacity() == 8);
 
-    FixedVector<int, 8> v2{};
-    v2.push_back_all({100, 101, 102});
+    FixedVector<int, 8> v2{100, 101, 102};
     const auto& v2_const_ref = v2;
 
     EXPECT_EQ(v2.back(), 102);  // non-const variant
@@ -1557,8 +1404,7 @@ TEST(FixedVector, Data)
     {
         constexpr auto v1 = []()
         {
-            FixedVector<int, 8> v{};
-            v.push_back_all({0, 1, 2});
+            FixedVector<int, 8> v{0, 1, 2};
             return v;
         }();
 
@@ -1572,8 +1418,7 @@ TEST(FixedVector, Data)
     }
 
     {
-        FixedVector<int, 8> v2{};
-        v2.push_back_all({100, 101, 102});
+        FixedVector<int, 8> v2{100, 101, 102};
         const auto& v2_const_ref = v2;
 
         EXPECT_EQ(v2.data()[1], 101);  // non-const variant
