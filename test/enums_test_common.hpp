@@ -88,21 +88,21 @@ enum class TestRichEnum1BackingEnum
     C_FOUR,
 };
 
+// If we have data to associate with each enum constant, we can put them in a map here, then provide
+// them with rich enum member functions.
 struct TestRichEnum1Data
 {
     std::size_t value;
+    double double_value;
 };
 
-struct TestRichEnum1Values
-{
-    using BE = TestRichEnum1BackingEnum;
-    static constexpr auto VALUES = EnumMap<BE, TestRichEnum1Data>::create_with_all_entries({
-        {BE::C_ONE, {1}},
-        {BE::C_TWO, {2}},
-        {BE::C_THREE, {3}},
-        {BE::C_FOUR, {4}},
+inline constexpr auto TEST_RICH_ENUM_1_DATA =
+    EnumMap<TestRichEnum1BackingEnum, TestRichEnum1Data>::create_with_all_entries({
+        {TestRichEnum1BackingEnum::C_ONE, {1, 1.0}},
+        {TestRichEnum1BackingEnum::C_TWO, {2, 2.0}},
+        {TestRichEnum1BackingEnum::C_THREE, {3, 3.0}},
+        {TestRichEnum1BackingEnum::C_FOUR, {4, 4.0}},
     });
-};
 
 }  // namespace detail
 
@@ -118,6 +118,17 @@ public:
     FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(TestRichEnum1, C_TWO)
     FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(TestRichEnum1, C_THREE)
     FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(TestRichEnum1, C_FOUR)
+
+public:
+    // Provide associated data with member functions.
+    [[nodiscard]] constexpr std::size_t value() const
+    {
+        return detail::TEST_RICH_ENUM_1_DATA.at(backing_enum()).value;
+    }
+    [[nodiscard]] constexpr double double_value() const
+    {
+        return detail::TEST_RICH_ENUM_1_DATA.at(backing_enum()).double_value;
+    }
 };
 
 constexpr const std::array<TestRichEnum1, TestRichEnum1::count()>& TestRichEnum1::values()
