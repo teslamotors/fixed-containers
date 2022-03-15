@@ -159,7 +159,7 @@ ctest -C Debug
 
 ### bazel
 #### clang
-1) Build
+1) Build separately (optional)
 ```
 CC=clang++-13 bazel build --config=clang ...
 ```
@@ -168,7 +168,7 @@ CC=clang++-13 bazel build --config=clang ...
 CC=clang++-13 bazel test --config=clang :all_tests
 ```
 #### gcc
-1) Build
+1) Build separately (optional)
 ```
 CC=g++-11 bazel build ...
 ```
