@@ -136,59 +136,6 @@ constexpr const std::array<TestRichEnum1, TestRichEnum1::count()>& TestRichEnum1
     return SkeletalRichEnumValues<TestRichEnum1>::VALUES;
 }
 
-namespace detail
-{
-enum class TestRichEnum2BackingEnum
-{
-    C_ONE,
-    C_TWO,
-    C_THREE,
-    C_FOUR,
-};
-
-struct TestRichEnum2Data
-{
-    std::size_t value;
-};
-
-struct TestRichEnum2Values
-{
-    using BE = TestRichEnum2BackingEnum;
-    static constexpr auto VALUES = EnumMap<BE, TestRichEnum2Data>::create_with_all_entries({
-        {BE::C_ONE, {1}},
-        {BE::C_TWO, {2}},
-        {BE::C_THREE, {3}},
-        {BE::C_FOUR, {4}},
-    });
-};
-
-}  // namespace detail
-
-class TestRichEnum2
-  : public NonDefaultConstructibleSkeletalRichEnum<TestRichEnum2,
-                                                   detail::TestRichEnum2BackingEnum,
-                                                   detail::TestRichEnum2Values>
-{
-    friend SkeletalRichEnum::ValuesFriend;
-    using NonDefaultConstructibleSkeletalRichEnum::NonDefaultConstructibleSkeletalRichEnum;
-
-public:
-    static constexpr const std::array<TestRichEnum2, count()>& values();
-
-    FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(TestRichEnum2, C_ONE)
-    FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(TestRichEnum2, C_TWO)
-    FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(TestRichEnum2, C_THREE)
-    FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(TestRichEnum2, C_FOUR)
-
-public:
-    constexpr std::size_t value() const { return enum_data().value; }
-};
-
-constexpr const std::array<TestRichEnum2, TestRichEnum2::count()>& TestRichEnum2::values()
-{
-    return SkeletalRichEnumValues<TestRichEnum2>::VALUES;
-}
-
 // This class does not have ordinal() and count()
 // Instead it has differently named functions
 class NonConformingTestRichEnum1

@@ -213,26 +213,6 @@ static constexpr std::optional<std::reference_wrapper<const RichEnum>> value_of(
     return std::nullopt;
 }
 
-struct EmptyEnumData
-{
-};
-
-struct EnumValuesWithoutData
-{
-    struct VoidValues
-    {
-        struct value_type
-        {
-            using second_type = EmptyEnumData;
-        };
-    };
-
-    static constexpr VoidValues VALUES{};
-};
-
-template <class EnumValues>
-using EnumDataType = typename decltype(EnumValues::VALUES)::value_type::second_type;
-
 template <class T>
 class StructuralTypeOptional
 {
@@ -329,26 +309,13 @@ template <class RichEnumType>
 class SkeletalRichEnumValues
 {
     using BackingEnumType = typename RichEnumType::BackingEnum;
-    using EnumValuesType = typename RichEnumType::EnumValues;
-    using EnumData = typename RichEnumType::EnumData;
 
     template <std::size_t N, std::size_t... I>
     static constexpr std::array<RichEnumType, N> wrap_array_impl(
         const std::array<BackingEnumType, N>& input, std::index_sequence<I...>) noexcept
-        requires(std::is_empty_v<EnumData>)
     {
         return {
             RichEnumType{input[I]}...,
-        };
-    }
-
-    template <std::size_t N, std::size_t... I>
-    static constexpr std::array<RichEnumType, N> wrap_array_impl(
-        const std::array<BackingEnumType, N>& input, std::index_sequence<I...>) noexcept
-        requires(!std::is_empty_v<EnumData>)
-    {
-        return {
-            RichEnumType{input[I], EnumValuesType::VALUES.at(input[I])}...,
         };
     }
 
@@ -367,17 +334,13 @@ class SkeletalRichEnumValues
 
 // Does not use magic_enum but doesn't provide full functionality, so users are responsible for
 // providing it.
-template <class RichEnumType,
-          class BackingEnumType,
-          class EnumValuesType = rich_enums_detail::EnumValuesWithoutData>
+template <class RichEnumType, class BackingEnumType>
 class SkeletalRichEnumLite
 {
 public:
     using BackingEnum = BackingEnumType;
 
 protected:
-    using EnumData = rich_enums_detail::EnumDataType<EnumValuesType>;
-    using EnumValues = EnumValuesType;
     using ValuesFriend = SkeletalRichEnumValues<RichEnumType>;
 
 public:
@@ -406,8 +369,6 @@ private:
 
 public:  // Public so this type is a structural type and can thus be used in template parameters
     rich_enums_detail::StructuralTypeOptional<BackingEnum> PRIVATE_backing_enum_;
-    EnumData PRIVATE_enum_data_;  // Data is stored here and not in the child classes, to maintain
-    // standard layout
 
 protected:
     // Default constructor for supporting sentinel value semantics (e.g. INVALID) without a
@@ -417,17 +378,7 @@ protected:
     constexpr SkeletalRichEnumLite() noexcept = default;
 
     constexpr SkeletalRichEnumLite(const BackingEnum& backing_enum) noexcept
-        requires(std::is_empty_v<EnumData>)
       : PRIVATE_backing_enum_{backing_enum}
-      , PRIVATE_enum_data_{}
-    {
-    }
-
-    constexpr SkeletalRichEnumLite(const BackingEnum& backing_enum,
-                                   const EnumData& enum_data) noexcept
-        requires(!std::is_empty_v<EnumData>)
-      : PRIVATE_backing_enum_{backing_enum}
-      , PRIVATE_enum_data_{enum_data}
     {
     }
 
@@ -455,32 +406,23 @@ public:
 protected:
     // Intentionally non-virtual. Polymorphism breaks standard layout.
     constexpr ~SkeletalRichEnumLite() noexcept = default;
-
-    constexpr const EnumData& enum_data() const requires(!std::is_empty_v<EnumData>)
-    {
-        return PRIVATE_enum_data_;
-    }
 };
 
-template <class RichEnumType, class BackingEnumType, class EnumValuesType>
-constexpr void SkeletalRichEnumLite<RichEnumType, BackingEnumType, EnumValuesType>::assertions()
+template <class RichEnumType, class BackingEnumType>
+constexpr void SkeletalRichEnumLite<RichEnumType, BackingEnumType>::assertions()
 {
     static_assert(is_rich_enum<RichEnumType>);
 }
 
-template <class RichEnumType,
-          class BackingEnumType,
-          class EnumValuesType = rich_enums_detail::EnumValuesWithoutData>
-class SkeletalRichEnum : public SkeletalRichEnumLite<RichEnumType, BackingEnumType, EnumValuesType>
+template <class RichEnumType, class BackingEnumType>
+class SkeletalRichEnum : public SkeletalRichEnumLite<RichEnumType, BackingEnumType>
 {
-    using Base = SkeletalRichEnumLite<RichEnumType, BackingEnumType, EnumValuesType>;
+    using Base = SkeletalRichEnumLite<RichEnumType, BackingEnumType>;
 
 public:
     using BackingEnum = BackingEnumType;
 
 protected:
-    using EnumData = rich_enums_detail::EnumDataType<EnumValuesType>;
-    using EnumValues = EnumValuesType;
     using ValuesFriend = SkeletalRichEnumValues<RichEnumType>;
 
 public:
@@ -499,14 +441,7 @@ protected:
     constexpr SkeletalRichEnum() noexcept = default;
 
     constexpr SkeletalRichEnum(const BackingEnum& backing_enum) noexcept
-        requires(std::is_empty_v<EnumData>)
       : Base{backing_enum}
-    {
-    }
-
-    constexpr SkeletalRichEnum(const BackingEnum& backing_enum, const EnumData& enum_data) noexcept
-        requires(!std::is_empty_v<EnumData>)
-      : Base{backing_enum, enum_data}
     {
     }
 
@@ -541,40 +476,28 @@ protected:
     constexpr ~SkeletalRichEnum() noexcept = default;
 };
 
-template <class RichEnumType, class BackingEnumType, class EnumValuesType>
-constexpr void SkeletalRichEnum<RichEnumType, BackingEnumType, EnumValuesType>::assertions()
+template <class RichEnumType, class BackingEnumType>
+constexpr void SkeletalRichEnum<RichEnumType, BackingEnumType>::assertions()
 {
     static_assert(is_rich_enum<RichEnumType>);
 }
 
-template <class RichEnumType,
-          class BackingEnumType,
-          class EnumValuesType = rich_enums_detail::EnumValuesWithoutData>
+template <class RichEnumType, class BackingEnumType>
 class NonDefaultConstructibleSkeletalRichEnum
-  : public SkeletalRichEnum<RichEnumType, BackingEnumType, EnumValuesType>
+  : public SkeletalRichEnum<RichEnumType, BackingEnumType>
 {
-    using BaseClass = SkeletalRichEnum<RichEnumType, BackingEnumType, EnumValuesType>;
+    using BaseClass = SkeletalRichEnum<RichEnumType, BackingEnumType>;
 
 public:
     using BackingEnum = typename BaseClass::BackingEnum;
 
 protected:
-    using EnumData = typename BaseClass::EnumData;
-    using EnumValues = typename BaseClass::EnumValues;
     using ValuesFriend = typename BaseClass::ValuesFriend;
 
     constexpr NonDefaultConstructibleSkeletalRichEnum() noexcept = delete;
 
     constexpr NonDefaultConstructibleSkeletalRichEnum(const BackingEnum& backing_enum) noexcept
-        requires(std::is_empty_v<EnumData>)
       : BaseClass{backing_enum}
-    {
-    }
-
-    constexpr NonDefaultConstructibleSkeletalRichEnum(const BackingEnum& backing_enum,
-                                                      const EnumData& enum_data) noexcept
-        requires(!std::is_empty_v<EnumData>)
-      : BaseClass{backing_enum, enum_data}
     {
     }
 };

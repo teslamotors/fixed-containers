@@ -69,14 +69,14 @@ static_assert(rich_enums_detail::has_zero_based_and_sorted_contiguous_ordinal(
 static_assert(!has_enum_adapter<std::size_t>);
 
 static_assert(consteval_compare::equal<4, sizeof(detail::TestRichEnum1BackingEnum)>);
-static_assert(consteval_compare::equal<12, sizeof(TestRichEnum1)>);
+static_assert(consteval_compare::equal<8, sizeof(TestRichEnum1)>);
 static_assert(
-    consteval_compare::equal<sizeof(TestRichEnum1), sizeof(detail::TestRichEnum1BackingEnum) + 8>);
+    consteval_compare::equal<sizeof(TestRichEnum1), sizeof(detail::TestRichEnum1BackingEnum) + 4>);
 
 static_assert(consteval_compare::equal<1, sizeof(detail::TestRichEnumBoolBackingEnum)>);
-static_assert(consteval_compare::equal<3, sizeof(TestRichEnumBool)>);
+static_assert(consteval_compare::equal<2, sizeof(TestRichEnumBool)>);
 static_assert(consteval_compare::equal<sizeof(TestRichEnumBool),
-                                       sizeof(detail::TestRichEnumBoolBackingEnum) + 2>);
+                                       sizeof(detail::TestRichEnumBoolBackingEnum) + 1>);
 
 TEST(BuiltinEnumAdapter, Ordinal)
 {
@@ -201,7 +201,6 @@ TEST(RichEnum, BackingEnum)
 TEST(RichEnum, UniqueValuesArrays)
 {
     static_assert(&TestRichEnum1::values() == &TestRichEnum1::values());
-    static_assert(&TestRichEnum2::values() == &TestRichEnum2::values());
 }
 
 TEST(RichEnum, HasValue)
