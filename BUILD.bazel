@@ -349,6 +349,7 @@ cc_test(
     name = "enum_utils_test",
     srcs = ["test/enum_utils_test.cpp"],
     deps = [
+        ":consteval_compare",
         ":enum_utils",
         ":enums_test_common",
         "@com_google_googletest//:gtest",

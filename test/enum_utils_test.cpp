@@ -2,6 +2,8 @@
 
 #include "enums_test_common.hpp"
 
+#include "fixed_containers/consteval_compare.hpp"
+
 #include <gtest/gtest.h>
 
 #include <cstddef>
@@ -65,6 +67,16 @@ static_assert(rich_enums_detail::has_zero_based_and_sorted_contiguous_ordinal(
     [](const NonConformingTestRichEnum1& key) { return key.index(); }));
 
 static_assert(!has_enum_adapter<std::size_t>);
+
+static_assert(consteval_compare::equal<4, sizeof(detail::TestRichEnum1BackingEnum)>);
+static_assert(consteval_compare::equal<12, sizeof(TestRichEnum1)>);
+static_assert(
+    consteval_compare::equal<sizeof(TestRichEnum1), sizeof(detail::TestRichEnum1BackingEnum) + 8>);
+
+static_assert(consteval_compare::equal<1, sizeof(detail::TestRichEnumBoolBackingEnum)>);
+static_assert(consteval_compare::equal<3, sizeof(TestRichEnumBool)>);
+static_assert(consteval_compare::equal<sizeof(TestRichEnumBool),
+                                       sizeof(detail::TestRichEnumBoolBackingEnum) + 2>);
 
 TEST(BuiltinEnumAdapter, Ordinal)
 {

@@ -80,7 +80,7 @@ enum class EnumWithNoConstants
 
 namespace detail
 {
-enum class TestRichEnum1BackingEnum
+enum class TestRichEnum1BackingEnum : std::uint32_t
 {
     C_ONE,
     C_TWO,
