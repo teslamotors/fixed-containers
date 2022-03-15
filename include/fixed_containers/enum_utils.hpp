@@ -234,39 +234,38 @@ public:
     using UnderlyingType = T;
 
 public:  // Public so this type is a structural type and can thus be used in template parameters
-    T PRIVATE_value_;
-    bool PRIVATE_has_value_;
+    T val;
+    bool has_val;
 
 public:
     constexpr StructuralTypeOptional() noexcept
-      : PRIVATE_value_{}
-      , PRIVATE_has_value_{false}
+      : val{}
+      , has_val{false}
     {
     }
     constexpr StructuralTypeOptional(const T& value) noexcept
-      : PRIVATE_value_{value}
-      , PRIVATE_has_value_{true}
+      : val{value}
+      , has_val{true}
     {
     }
 
 public:
     [[nodiscard]] constexpr bool operator==(const StructuralTypeOptional<T>& other) const noexcept
     {
-        if (!PRIVATE_has_value_ && !other.PRIVATE_has_value_)
+        if (!has_val && !other.has_val)
         {
             return true;
         }
 
-        return PRIVATE_has_value_ && other.PRIVATE_has_value_ &&
-               PRIVATE_value_ == other.PRIVATE_value_;
+        return has_val && other.has_val && val == other.val;
     }
 
-    [[nodiscard]] constexpr bool has_value() const { return PRIVATE_has_value_; }
+    [[nodiscard]] constexpr bool has_value() const { return has_val; }
 
     [[nodiscard]] constexpr const T& value() const
     {
         assert(has_value());
-        return PRIVATE_value_;
+        return val;
     }
 };
 
@@ -281,15 +280,15 @@ private:
         static_cast<T>(std::numeric_limits<std::underlying_type_t<T>>::max());
 
 public:  // Public so this type is a structural type and can thus be used in template parameters
-    T PRIVATE_value_;
+    T val;
 
 public:
     constexpr CompactRichEnumStorage() noexcept
-      : PRIVATE_value_{NO_VALUE_SENTINEL}
+      : val{NO_VALUE_SENTINEL}
     {
     }
     constexpr CompactRichEnumStorage(const T& value) noexcept
-      : PRIVATE_value_{value}
+      : val{value}
     {
         assert(value != NO_VALUE_SENTINEL);  // Value reserved for internal usage
     }
@@ -297,15 +296,15 @@ public:
 public:
     [[nodiscard]] constexpr bool operator==(const CompactRichEnumStorage<T>& other) const noexcept
     {
-        return PRIVATE_value_ == other.PRIVATE_value_;
+        return val == other.val;
     }
 
-    [[nodiscard]] constexpr bool has_value() const { return PRIVATE_value_ != NO_VALUE_SENTINEL; }
+    [[nodiscard]] constexpr bool has_value() const { return val != NO_VALUE_SENTINEL; }
 
     [[nodiscard]] constexpr const T& value() const
     {
         assert(has_value());
-        return PRIVATE_value_;
+        return val;
     }
 };
 
@@ -432,7 +431,7 @@ private:
     static constexpr void assertions();
 
 public:  // Public so this type is a structural type and can thus be used in template parameters
-    rich_enums_detail::RichEnumStorage<BackingEnum> PRIVATE_backing_enum_;
+    rich_enums_detail::RichEnumStorage<BackingEnum> detail_backing_enum;
 
 protected:
     // Default constructor for supporting sentinel value semantics (e.g. INVALID) without a
@@ -442,7 +441,7 @@ protected:
     constexpr SkeletalRichEnumLite() noexcept = default;
 
     constexpr SkeletalRichEnumLite(const BackingEnum& backing_enum) noexcept
-      : PRIVATE_backing_enum_{backing_enum}
+      : detail_backing_enum{backing_enum}
     {
     }
 
@@ -452,19 +451,19 @@ public:
     constexpr SkeletalRichEnumLite& operator=(const SkeletalRichEnumLite&) noexcept = default;
     constexpr SkeletalRichEnumLite& operator=(SkeletalRichEnumLite&&) noexcept = default;
 
-    constexpr const BackingEnum& backing_enum() const { return PRIVATE_backing_enum_.value(); }
-    constexpr operator BackingEnum() const { return PRIVATE_backing_enum_.value(); }
+    constexpr const BackingEnum& backing_enum() const { return detail_backing_enum.value(); }
+    constexpr operator BackingEnum() const { return detail_backing_enum.value(); }
 
     constexpr bool operator==(const SkeletalRichEnumLite& other) const
     {
-        return this->PRIVATE_backing_enum_ == other.PRIVATE_backing_enum_;
+        return this->detail_backing_enum == other.detail_backing_enum;
     }
 
-    [[nodiscard]] constexpr bool has_value() const { return PRIVATE_backing_enum_.has_value(); }
+    [[nodiscard]] constexpr bool has_value() const { return detail_backing_enum.has_value(); }
 
     [[nodiscard]] constexpr std::size_t ordinal() const
     {
-        return static_cast<std::size_t>(this->PRIVATE_backing_enum_.value());
+        return static_cast<std::size_t>(this->detail_backing_enum.value());
     }
 
 protected:
@@ -530,7 +529,7 @@ public:
     {
         if (this->has_value())
         {
-            return magic_enum::enum_name(this->PRIVATE_backing_enum_.value());
+            return magic_enum::enum_name(this->detail_backing_enum.value());
         }
         return INVALID_TO_STRING;
     }
