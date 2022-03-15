@@ -214,8 +214,25 @@ static constexpr std::optional<std::reference_wrapper<const RichEnum>> value_of(
 }
 
 template <class T>
+concept IsRichEnumStorage = requires(const T& const_s, const T& const_s2)
+{
+    typename T::UnderlyingType;
+    const_s == const_s2;
+
+    {
+        const_s.has_value()
+        } -> std::same_as<bool>;
+    {
+        const_s.value()
+        } -> std::same_as<const typename T::UnderlyingType&>;
+};
+
+template <class T>
 class StructuralTypeOptional
 {
+public:
+    using UnderlyingType = T;
+
 public:  // Public so this type is a structural type and can thus be used in template parameters
     T PRIVATE_value_;
     bool PRIVATE_has_value_;
@@ -244,13 +261,60 @@ public:
                PRIVATE_value_ == other.PRIVATE_value_;
     }
 
+    [[nodiscard]] constexpr bool has_value() const { return PRIVATE_has_value_; }
+
     [[nodiscard]] constexpr const T& value() const
     {
-        assert(PRIVATE_has_value_);
+        assert(has_value());
         return PRIVATE_value_;
     }
-    [[nodiscard]] constexpr const bool& has_value() const { return PRIVATE_has_value_; }
 };
+
+template <is_enum T>
+class CompactRichEnumStorage
+{
+public:
+    using UnderlyingType = T;
+
+private:
+    static constexpr T NO_VALUE_SENTINEL =
+        static_cast<T>(std::numeric_limits<std::underlying_type_t<T>>::max());
+
+public:  // Public so this type is a structural type and can thus be used in template parameters
+    T PRIVATE_value_;
+
+public:
+    constexpr CompactRichEnumStorage() noexcept
+      : PRIVATE_value_{NO_VALUE_SENTINEL}
+    {
+    }
+    constexpr CompactRichEnumStorage(const T& value) noexcept
+      : PRIVATE_value_{value}
+    {
+        assert(value != NO_VALUE_SENTINEL);  // Value reserved for internal usage
+    }
+
+public:
+    [[nodiscard]] constexpr bool operator==(const CompactRichEnumStorage<T>& other) const noexcept
+    {
+        return PRIVATE_value_ == other.PRIVATE_value_;
+    }
+
+    [[nodiscard]] constexpr bool has_value() const { return PRIVATE_value_ != NO_VALUE_SENTINEL; }
+
+    [[nodiscard]] constexpr const T& value() const
+    {
+        assert(has_value());
+        return PRIVATE_value_;
+    }
+};
+
+// If the underlying type is bool, there are only two values, so we can't spare the max value that
+// compact storage requires.
+template <is_enum T>
+using RichEnumStorage = std::conditional_t<std::is_same_v<std::underlying_type_t<T>, bool>,
+                                           StructuralTypeOptional<T>,
+                                           CompactRichEnumStorage<T>>;
 
 }  // namespace fixed_containers::rich_enums_detail
 
@@ -368,7 +432,7 @@ private:
     static constexpr void assertions();
 
 public:  // Public so this type is a structural type and can thus be used in template parameters
-    rich_enums_detail::StructuralTypeOptional<BackingEnum> PRIVATE_backing_enum_;
+    rich_enums_detail::RichEnumStorage<BackingEnum> PRIVATE_backing_enum_;
 
 protected:
     // Default constructor for supporting sentinel value semantics (e.g. INVALID) without a

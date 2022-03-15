@@ -9,6 +9,30 @@
 #include <cstddef>
 #include <type_traits>
 
+namespace fixed_containers::rich_enums_detail
+{
+using TestRichEnum1BackingEnum = rich_enums::detail::TestRichEnum1BackingEnum;
+using TestRichEnumBoolBackingEnum = rich_enums::detail::TestRichEnumBoolBackingEnum;
+
+static_assert(IsRichEnumStorage<RichEnumStorage<TestRichEnum1BackingEnum>>);
+static_assert(IsRichEnumStorage<RichEnumStorage<TestRichEnumBoolBackingEnum>>);
+
+TEST(RichEnum, DirectFieldAccess)
+{
+    static_assert(consteval_compare::equal<
+                  rich_enums::TestRichEnum1::C_ONE().PRIVATE_backing_enum_.PRIVATE_value_,
+                  TestRichEnum1BackingEnum::C_ONE>);
+}
+
+TEST(RichEnum, DirectFieldAccessBool)
+{
+    static_assert(consteval_compare::equal<
+                  rich_enums::TestRichEnumBool::TRUE_VALUE().PRIVATE_backing_enum_.PRIVATE_value_,
+                  TestRichEnumBoolBackingEnum::TRUE_VALUE>);
+}
+
+}  // namespace fixed_containers::rich_enums_detail
+
 namespace fixed_containers::rich_enums
 {
 enum class CustomValuesTestEnum1
@@ -69,9 +93,9 @@ static_assert(rich_enums_detail::has_zero_based_and_sorted_contiguous_ordinal(
 static_assert(!has_enum_adapter<std::size_t>);
 
 static_assert(consteval_compare::equal<4, sizeof(detail::TestRichEnum1BackingEnum)>);
-static_assert(consteval_compare::equal<8, sizeof(TestRichEnum1)>);
+static_assert(consteval_compare::equal<4, sizeof(TestRichEnum1)>);
 static_assert(
-    consteval_compare::equal<sizeof(TestRichEnum1), sizeof(detail::TestRichEnum1BackingEnum) + 4>);
+    consteval_compare::equal<sizeof(TestRichEnum1), sizeof(detail::TestRichEnum1BackingEnum)>);
 
 static_assert(consteval_compare::equal<1, sizeof(detail::TestRichEnumBoolBackingEnum)>);
 static_assert(consteval_compare::equal<2, sizeof(TestRichEnumBool)>);
