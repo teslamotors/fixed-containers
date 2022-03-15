@@ -400,9 +400,9 @@ public:
     }
 
 private:
-    static constexpr void assertions();
-
     static constexpr std::string_view INVALID_TO_STRING = "INVALID";
+
+    static constexpr void assertions();
 
 public:  // Public so this type is a structural type and can thus be used in template parameters
     rich_enums_detail::StructuralTypeOptional<BackingEnum> PRIVATE_backing_enum_;
