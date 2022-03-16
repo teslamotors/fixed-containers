@@ -428,8 +428,6 @@ public:
 private:
     static constexpr std::string_view INVALID_TO_STRING = "INVALID";
 
-    static constexpr void assertions();
-
 public:  // Public so this type is a structural type and can thus be used in template parameters
     rich_enums_detail::RichEnumStorage<BackingEnum> detail_backing_enum;
 
@@ -472,12 +470,6 @@ protected:
 };
 
 template <class RichEnumType, class BackingEnumType>
-constexpr void SkeletalRichEnumLite<RichEnumType, BackingEnumType>::assertions()
-{
-    static_assert(is_rich_enum<RichEnumType>);
-}
-
-template <class RichEnumType, class BackingEnumType>
 class SkeletalRichEnum : public SkeletalRichEnumLite<RichEnumType, BackingEnumType>
 {
     using Base = SkeletalRichEnumLite<RichEnumType, BackingEnumType>;
@@ -492,8 +484,6 @@ public:
     static constexpr std::size_t count() { return magic_enum::enum_count<BackingEnumType>(); }
 
 private:
-    static constexpr void assertions();
-
     static constexpr std::string_view INVALID_TO_STRING = "INVALID";
 
 protected:
@@ -538,12 +528,6 @@ protected:
     // Intentionally non-virtual. Polymorphism breaks standard layout.
     constexpr ~SkeletalRichEnum() noexcept = default;
 };
-
-template <class RichEnumType, class BackingEnumType>
-constexpr void SkeletalRichEnum<RichEnumType, BackingEnumType>::assertions()
-{
-    static_assert(is_rich_enum<RichEnumType>);
-}
 
 template <class RichEnumType, class BackingEnumType>
 class NonDefaultConstructibleSkeletalRichEnum
