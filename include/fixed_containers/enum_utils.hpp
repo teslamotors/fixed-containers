@@ -243,7 +243,7 @@ public:
       , has_val{false}
     {
     }
-    constexpr StructuralTypeOptional(const T& value) noexcept
+    explicit constexpr StructuralTypeOptional(const T& value) noexcept
       : val{value}
       , has_val{true}
     {
@@ -287,7 +287,7 @@ public:
       : val{NO_VALUE_SENTINEL}
     {
     }
-    constexpr CompactRichEnumStorage(const T& value) noexcept
+    explicit constexpr CompactRichEnumStorage(const T& value) noexcept
       : val{value}
     {
         assert(value != NO_VALUE_SENTINEL);  // Value reserved for internal usage
@@ -438,7 +438,7 @@ protected:
     // Note that child-classes don't have to provide a default constructor.
     constexpr SkeletalRichEnumLite() noexcept = default;
 
-    constexpr SkeletalRichEnumLite(const BackingEnum& backing_enum) noexcept
+    /*implicit*/ constexpr SkeletalRichEnumLite(const BackingEnum& backing_enum) noexcept
       : detail_backing_enum{backing_enum}
     {
     }
@@ -450,7 +450,7 @@ public:
     constexpr SkeletalRichEnumLite& operator=(SkeletalRichEnumLite&&) noexcept = default;
 
     constexpr const BackingEnum& backing_enum() const { return detail_backing_enum.value(); }
-    constexpr operator BackingEnum() const { return detail_backing_enum.value(); }
+    /*implicit*/ constexpr operator BackingEnum() const { return detail_backing_enum.value(); }
 
     constexpr bool operator==(const SkeletalRichEnumLite& other) const
     {
@@ -493,7 +493,7 @@ protected:
     // Note that child-classes don't have to provide a default constructor.
     constexpr SkeletalRichEnum() noexcept = default;
 
-    constexpr SkeletalRichEnum(const BackingEnum& backing_enum) noexcept
+    /*implicit*/ constexpr SkeletalRichEnum(const BackingEnum& backing_enum) noexcept
       : Base{backing_enum}
     {
     }
@@ -545,7 +545,8 @@ public:
     constexpr NonDefaultConstructibleSkeletalRichEnum() noexcept = delete;
 
 protected:
-    constexpr NonDefaultConstructibleSkeletalRichEnum(const BackingEnum& backing_enum) noexcept
+    /*implicit*/ constexpr NonDefaultConstructibleSkeletalRichEnum(
+        const BackingEnum& backing_enum) noexcept
       : BaseClass{backing_enum}
     {
     }
