@@ -541,8 +541,10 @@ public:
 protected:
     using ValuesFriend = typename BaseClass::ValuesFriend;
 
+public:
     constexpr NonDefaultConstructibleSkeletalRichEnum() noexcept = delete;
 
+protected:
     constexpr NonDefaultConstructibleSkeletalRichEnum(const BackingEnum& backing_enum) noexcept
       : BaseClass{backing_enum}
     {
