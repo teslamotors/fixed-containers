@@ -168,7 +168,7 @@ constexpr std::optional<std::reference_wrapper<const RichEnum>> value_of(std::si
 }
 
 template <class RichEnum>
-static constexpr std::optional<std::reference_wrapper<const RichEnum>> value_of(
+constexpr std::optional<std::reference_wrapper<const RichEnum>> value_of(
     const std::string_view& name)
 {
     for (const RichEnum& v : RichEnum::values())
@@ -183,7 +183,7 @@ static constexpr std::optional<std::reference_wrapper<const RichEnum>> value_of(
 }
 
 template <class RichEnum, class BackingEnum>
-static constexpr std::optional<std::reference_wrapper<const RichEnum>> value_of(
+constexpr std::optional<std::reference_wrapper<const RichEnum>> value_of(
     const BackingEnum& backing_enum)
 {
     const auto& rich_enum_values = RichEnum::values();
