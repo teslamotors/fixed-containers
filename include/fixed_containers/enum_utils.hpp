@@ -533,13 +533,13 @@ template <class RichEnumType, class BackingEnumType>
 class NonDefaultConstructibleSkeletalRichEnum
   : public SkeletalRichEnum<RichEnumType, BackingEnumType>
 {
-    using BaseClass = SkeletalRichEnum<RichEnumType, BackingEnumType>;
+    using Base = SkeletalRichEnum<RichEnumType, BackingEnumType>;
 
 public:
-    using BackingEnum = typename BaseClass::BackingEnum;
+    using BackingEnum = typename Base::BackingEnum;
 
 protected:
-    using ValuesFriend = typename BaseClass::ValuesFriend;
+    using ValuesFriend = typename Base::ValuesFriend;
 
 public:
     constexpr NonDefaultConstructibleSkeletalRichEnum() noexcept = delete;
@@ -547,7 +547,7 @@ public:
 protected:
     /*implicit*/ constexpr NonDefaultConstructibleSkeletalRichEnum(
         const BackingEnum& backing_enum) noexcept
-      : BaseClass{backing_enum}
+      : Base{backing_enum}
     {
     }
 };
