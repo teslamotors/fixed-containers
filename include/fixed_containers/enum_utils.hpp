@@ -213,6 +213,19 @@ constexpr std::optional<std::reference_wrapper<const RichEnum>> value_of(
     return std::nullopt;
 }
 
+struct EmptyEnumData
+{
+};
+
+template <is_enum T>
+struct NoInfusedDataProvider
+{
+    using EnumType = T;
+    using DataType = EmptyEnumData;
+
+    static constexpr DataType get(const EnumType& /*e*/) { return {}; }
+};
+
 template <class T>
 concept IsRichEnumStorage = requires(const T& const_s, const T& const_s2)
 {
@@ -315,6 +328,42 @@ using RichEnumStorage = std::conditional_t<std::is_same_v<std::underlying_type_t
                                            StructuralTypeOptional<T>,
                                            CompactRichEnumStorage<T>>;
 
+template <class RichEnumType, class BackingEnumType, class InfusedDataProvider>
+class SkeletalRichEnumStorageBase
+{
+    using InfusedData = typename InfusedDataProvider::DataType;
+
+public:  // Public so this type is a structural type and can thus be used in template parameters
+    rich_enums_detail::RichEnumStorage<BackingEnumType> detail_backing_enum;
+    // Data is stored here and not in the child classes, to maintain standard layout
+    InfusedData detail_enum_data;
+
+    constexpr SkeletalRichEnumStorageBase() noexcept = default;
+
+    constexpr SkeletalRichEnumStorageBase(const BackingEnumType& backing_enum,
+                                          const InfusedData& enum_data) noexcept
+      : detail_backing_enum{backing_enum}
+      , detail_enum_data{enum_data}
+    {
+    }
+};
+
+template <class RichEnumType, class BackingEnumType>
+class SkeletalRichEnumStorageBase<RichEnumType,
+                                  BackingEnumType,
+                                  NoInfusedDataProvider<BackingEnumType>>
+{
+public:  // Public so this type is a structural type and can thus be used in template parameters
+    rich_enums_detail::RichEnumStorage<BackingEnumType> detail_backing_enum;
+
+    constexpr SkeletalRichEnumStorageBase() noexcept = default;
+
+    /*implicit*/ constexpr SkeletalRichEnumStorageBase(const BackingEnumType& backing_enum) noexcept
+      : detail_backing_enum{backing_enum}
+    {
+    }
+};
+
 }  // namespace fixed_containers::rich_enums_detail
 
 // MACRO to reduce four lines into one and avoid bugs from potential discrepancy between the
@@ -368,17 +417,41 @@ struct EnumAdapter<T> : public rich_enums_detail::RichEnumAdapter<T>
 template <class T>
 concept has_enum_adapter = is_enum_adapter<EnumAdapter<T>>;
 
+template <class T>
+concept IsInfusedDataProvider = requires(const T& provider, const typename T::EnumType& e)
+{
+    typename T::EnumType;
+    typename T::DataType;
+
+    {
+        T::get(e)
+        } -> std::convertible_to<typename T::DataType>;
+};
+
 template <class RichEnumType>
 class SkeletalRichEnumValues
 {
     using BackingEnumType = typename RichEnumType::BackingEnum;
+    using InfusedDataProvider = typename RichEnumType::InfusedDataProvider;
+    using InfusedData = typename InfusedDataProvider::DataType;
 
     template <std::size_t N, std::size_t... I>
     static constexpr std::array<RichEnumType, N> wrap_array_impl(
         const std::array<BackingEnumType, N>& input, std::index_sequence<I...>) noexcept
+        requires(std::is_empty_v<InfusedData>)
     {
         return {
             RichEnumType{input[I]}...,
+        };
+    }
+
+    template <std::size_t N, std::size_t... I>
+    static constexpr std::array<RichEnumType, N> wrap_array_impl(
+        const std::array<BackingEnumType, N>& input, std::index_sequence<I...>) noexcept
+        requires(!std::is_empty_v<InfusedData>)
+    {
+        return {
+            RichEnumType{input[I], InfusedDataProvider::get(input[I])}...,
         };
     }
 
@@ -397,14 +470,24 @@ class SkeletalRichEnumValues
 
 // Does not use magic_enum but doesn't provide full functionality, so users are responsible for
 // providing it.
-template <class RichEnumType, class BackingEnumType>
+template <class RichEnumType,
+          class BackingEnumType,
+          IsInfusedDataProvider InfusedDataProviderType =
+              rich_enums_detail::NoInfusedDataProvider<BackingEnumType>>
 class SkeletalRichEnumLite
+  : public rich_enums_detail::
+        SkeletalRichEnumStorageBase<RichEnumType, BackingEnumType, InfusedDataProviderType>
 {
+    using Base = rich_enums_detail::
+        SkeletalRichEnumStorageBase<RichEnumType, BackingEnumType, InfusedDataProviderType>;
+
 public:
     using BackingEnum = BackingEnumType;
 
 protected:
     using ValuesFriend = SkeletalRichEnumValues<RichEnumType>;
+    using InfusedDataProvider = InfusedDataProviderType;
+    using InfusedData = typename InfusedDataProvider::DataType;
 
 public:
     static constexpr std::optional<std::reference_wrapper<const RichEnumType>> value_of(
@@ -428,9 +511,6 @@ public:
 private:
     static constexpr std::string_view INVALID_TO_STRING = "INVALID";
 
-public:  // Public so this type is a structural type and can thus be used in template parameters
-    rich_enums_detail::RichEnumStorage<BackingEnum> detail_backing_enum;
-
 protected:
     // Default constructor for supporting sentinel value semantics (e.g. INVALID) without a
     // dedicated enum constant. Does not exclude child-classes from using their own INVALID enum
@@ -439,7 +519,15 @@ protected:
     constexpr SkeletalRichEnumLite() noexcept = default;
 
     /*implicit*/ constexpr SkeletalRichEnumLite(const BackingEnum& backing_enum) noexcept
-      : detail_backing_enum{backing_enum}
+        requires(std::is_empty_v<InfusedData>)
+      : Base{backing_enum}
+    {
+    }
+
+    constexpr SkeletalRichEnumLite(const BackingEnum& backing_enum,
+                                   const InfusedData& enum_data) noexcept
+        requires(!std::is_empty_v<InfusedData>)
+      : Base{backing_enum, enum_data}
     {
     }
 
@@ -449,15 +537,18 @@ public:
     constexpr SkeletalRichEnumLite& operator=(const SkeletalRichEnumLite&) noexcept = default;
     constexpr SkeletalRichEnumLite& operator=(SkeletalRichEnumLite&&) noexcept = default;
 
-    constexpr const BackingEnum& backing_enum() const { return detail_backing_enum.value(); }
-    /*implicit*/ constexpr operator BackingEnum() const { return detail_backing_enum.value(); }
+    constexpr const BackingEnum& backing_enum() const { return this->detail_backing_enum.value(); }
+    /*implicit*/ constexpr operator BackingEnum() const
+    {
+        return this->detail_backing_enum.value();
+    }
 
     constexpr bool operator==(const SkeletalRichEnumLite& other) const
     {
         return this->detail_backing_enum == other.detail_backing_enum;
     }
 
-    [[nodiscard]] constexpr bool has_value() const { return detail_backing_enum.has_value(); }
+    [[nodiscard]] constexpr bool has_value() const { return this->detail_backing_enum.has_value(); }
 
     [[nodiscard]] constexpr std::size_t ordinal() const
     {
@@ -467,18 +558,29 @@ public:
 protected:
     // Intentionally non-virtual. Polymorphism breaks standard layout.
     constexpr ~SkeletalRichEnumLite() noexcept = default;
+
+    constexpr const InfusedData& enum_data() const requires(!std::is_empty_v<InfusedData>)
+    {
+        return this->detail_enum_data;
+    }
 };
 
-template <class RichEnumType, class BackingEnumType>
-class SkeletalRichEnum : public SkeletalRichEnumLite<RichEnumType, BackingEnumType>
+template <class RichEnumType,
+          class BackingEnumType,
+          IsInfusedDataProvider InfusedDataProviderType =
+              rich_enums_detail::NoInfusedDataProvider<BackingEnumType>>
+class SkeletalRichEnum
+  : public SkeletalRichEnumLite<RichEnumType, BackingEnumType, InfusedDataProviderType>
 {
-    using Base = SkeletalRichEnumLite<RichEnumType, BackingEnumType>;
+    using Base = SkeletalRichEnumLite<RichEnumType, BackingEnumType, InfusedDataProviderType>;
 
 public:
     using BackingEnum = BackingEnumType;
 
 protected:
     using ValuesFriend = SkeletalRichEnumValues<RichEnumType>;
+    using InfusedDataProvider = InfusedDataProviderType;
+    using InfusedData = typename InfusedDataProvider::DataType;
 
 public:
     static constexpr std::size_t count() { return magic_enum::enum_count<BackingEnumType>(); }
@@ -494,7 +596,15 @@ protected:
     constexpr SkeletalRichEnum() noexcept = default;
 
     /*implicit*/ constexpr SkeletalRichEnum(const BackingEnum& backing_enum) noexcept
+        requires(std::is_empty_v<InfusedData>)
       : Base{backing_enum}
+    {
+    }
+
+    constexpr SkeletalRichEnum(const BackingEnum& backing_enum,
+                               const InfusedData& enum_data) noexcept
+        requires(!std::is_empty_v<InfusedData>)
+      : Base{backing_enum, enum_data}
     {
     }
 
@@ -529,25 +639,37 @@ protected:
     constexpr ~SkeletalRichEnum() noexcept = default;
 };
 
-template <class RichEnumType, class BackingEnumType>
+template <class RichEnumType,
+          class BackingEnumType,
+          IsInfusedDataProvider InfusedDataProviderType =
+              rich_enums_detail::NoInfusedDataProvider<BackingEnumType>>
 class NonDefaultConstructibleSkeletalRichEnum
-  : public SkeletalRichEnum<RichEnumType, BackingEnumType>
+  : public SkeletalRichEnum<RichEnumType, BackingEnumType, InfusedDataProviderType>
 {
-    using Base = SkeletalRichEnum<RichEnumType, BackingEnumType>;
+    using Base = SkeletalRichEnum<RichEnumType, BackingEnumType, InfusedDataProviderType>;
 
 public:
     using BackingEnum = typename Base::BackingEnum;
 
 protected:
     using ValuesFriend = typename Base::ValuesFriend;
+    using InfusedDataProvider = InfusedDataProviderType;
+    using InfusedData = typename InfusedDataProvider::DataType;
 
 public:
     constexpr NonDefaultConstructibleSkeletalRichEnum() noexcept = delete;
 
 protected:
     /*implicit*/ constexpr NonDefaultConstructibleSkeletalRichEnum(
-        const BackingEnum& backing_enum) noexcept
+        const BackingEnum& backing_enum) noexcept requires(std::is_empty_v<InfusedData>)
       : Base{backing_enum}
+    {
+    }
+
+    constexpr NonDefaultConstructibleSkeletalRichEnum(const BackingEnum& backing_enum,
+                                                      const InfusedData& enum_data) noexcept
+        requires(!std::is_empty_v<InfusedData>)
+      : Base{backing_enum, enum_data}
     {
     }
 };

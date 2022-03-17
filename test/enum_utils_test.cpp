@@ -11,6 +11,9 @@
 
 namespace fixed_containers::rich_enums_detail
 {
+static_assert(rich_enums::IsInfusedDataProvider<
+              NoInfusedDataProvider<rich_enums::detail::TestRichEnum1BackingEnum>>);
+
 using TestRichEnum1BackingEnum = rich_enums::detail::TestRichEnum1BackingEnum;
 using TestRichEnumBoolBackingEnum = rich_enums::detail::TestRichEnumBoolBackingEnum;
 
@@ -225,6 +228,7 @@ TEST(RichEnum, BackingEnum)
 TEST(RichEnum, UniqueValuesArrays)
 {
     static_assert(&TestRichEnum1::values() == &TestRichEnum1::values());
+    static_assert(&TestRichEnum2::values() == &TestRichEnum2::values());
 }
 
 TEST(RichEnum, HasValue)
