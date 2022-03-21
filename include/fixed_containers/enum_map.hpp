@@ -166,7 +166,7 @@ private:
 
         constexpr void update_to_index(const std::size_t i) noexcept
         {
-            current_ = ConstOrMutablePairView{&ENUM_VALUES[i], &(*values_)[i].value};
+            current_ = ConstOrMutablePairView{&ENUM_VALUES[i], &((*values_)[i].get())};
         }
 
         constexpr const_reference get() const noexcept requires IS_CONST { return current_; }

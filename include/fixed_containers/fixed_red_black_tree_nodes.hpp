@@ -3,6 +3,7 @@
 #include "fixed_containers/concepts.hpp"
 #include "fixed_containers/enum_utils.hpp"
 #include "fixed_containers/fixed_red_black_tree_types.hpp"
+#include "fixed_containers/optional_storage.hpp"
 
 #include <utility>
 
@@ -187,24 +188,24 @@ public:
     static constexpr bool HAS_ASSOCIATED_VALUE = true;
 
 private:
-    K key_;
-    V value_;
+    optional_storage_detail::OptionalStorage<K> key_;
+    optional_storage_detail::OptionalStorage<V> value_;
     NodeIndexWithColorEmbeddedInTheMostSignificantBit parent_index_and_color_{};
     NodeIndex left_index_ = NULL_INDEX;
     NodeIndex right_index_ = NULL_INDEX;
 
 public:
     template <class K0>
-    constexpr CompactRedBlackTreeNode(K0&& k) noexcept
-      : key_(std::forward<K0>(k))
-      , value_()
+    constexpr CompactRedBlackTreeNode(K0&& k, std::in_place_t) noexcept
+      : key_(std::in_place, std::forward<K0>(k))
+      , value_(std::in_place)
     {
     }
 
     template <class K0, class V0>
     constexpr CompactRedBlackTreeNode(K0&& k, V0&& v) noexcept
-      : key_(std::forward<K0>(k))
-      , value_(std::forward<V0>(v))
+      : key_(std::in_place, std::forward<K0>(k))
+      , value_(std::in_place, std::forward<V0>(v))
     {
     }
 
@@ -215,18 +216,18 @@ public:
                                       const NodeIndex& l,
                                       const NodeIndex& r,
                                       const Color& c) noexcept
-      : key_(std::forward<K0>(k))
-      , value_(std::forward<V0>(v))
+      : key_(std::in_place, std::forward<K0>(k))
+      , value_(std::in_place, std::forward<V0>(v))
       , parent_index_and_color_{p, c}
       , left_index_{l}
       , right_index_{r}
     {
     }
 
-    [[nodiscard]] constexpr const K& key() const { return key_; }
-    constexpr K& key() { return key_; }
-    [[nodiscard]] constexpr const V& value() const { return value_; }
-    constexpr V& value() { return value_; }
+    [[nodiscard]] constexpr const K& key() const { return key_.value; }
+    constexpr K& key() { return key_.value; }
+    [[nodiscard]] constexpr const V& value() const { return value_.value; }
+    constexpr V& value() { return value_.value; }
 
     [[nodiscard]] constexpr NodeIndex parent_index() const
     {
@@ -250,7 +251,7 @@ public:
     static constexpr bool HAS_ASSOCIATED_VALUE = true;
 
 private:
-    K key_;
+    optional_storage_detail::OptionalStorage<K> key_;
     NodeIndexWithColorEmbeddedInTheMostSignificantBit parent_index_and_color_{};
     NodeIndex left_index_ = NULL_INDEX;
     NodeIndex right_index_ = NULL_INDEX;
@@ -271,8 +272,8 @@ public:
     {
     }
 
-    [[nodiscard]] constexpr const K& key() const { return key_; }
-    constexpr K& key() { return key_; }
+    [[nodiscard]] constexpr const K& key() const { return key_.value; }
+    constexpr K& key() { return key_.value; }
 
     [[nodiscard]] constexpr NodeIndex parent_index() const
     {

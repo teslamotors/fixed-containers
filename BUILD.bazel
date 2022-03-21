@@ -135,6 +135,7 @@ cc_library(
     deps = [
         ":concepts",
         ":fixed_index_based_storage",
+        ":optional_storage",
     ],
     copts = ["-std=c++20"],
 )

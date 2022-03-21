@@ -264,7 +264,7 @@ public:
 
         // Cannot capture real source_location for operator[]
         check_not_full(std_transition::source_location::current());
-        tree_.insert_new_at(np, key);
+        tree_.insert_new_at(np, key, std::in_place);
         return tree_.node_at(np.i).value();
     }
     constexpr V& operator[](K&& key) noexcept
@@ -277,7 +277,7 @@ public:
 
         // Cannot capture real source_location for operator[]
         check_not_full(std_transition::source_location::current());
-        tree_.insert_new_at(np, std::move(key));
+        tree_.insert_new_at(np, std::move(key), std::in_place);
         return tree_.node_at(np.i).value();
     }
 

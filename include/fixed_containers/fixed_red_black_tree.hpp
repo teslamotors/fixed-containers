@@ -98,13 +98,13 @@ public:
     constexpr V& operator[](const K& key) noexcept requires HAS_ASSOCIATED_VALUE
     {
         NodeIndexAndParentIndex np = index_of_node_with_parent(key);
-        insert_if_not_present_at(np, key);
+        insert_if_not_present_at(np, key, std::in_place);
         return tree_storage_.value(np.i);
     }
     constexpr V& operator[](K&& key) noexcept requires HAS_ASSOCIATED_VALUE
     {
         NodeIndexAndParentIndex np = index_of_node_with_parent(key);
-        insert_if_not_present_at(np, std::move(key));
+        insert_if_not_present_at(np, std::move(key), std::in_place);
         return tree_storage_.value(np.i);
     }
 
