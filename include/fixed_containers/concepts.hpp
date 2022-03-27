@@ -91,6 +91,11 @@ concept TriviallyDestructible = std::is_trivially_destructible_v<T>;
 template <class T>
 concept NotTriviallyDestructible = not TriviallyDestructible<T>;
 
+template <class T>
+concept IsReference = std::is_reference_v<T>;
+template <class T>
+concept IsNotReference = not IsReference<T>;
+
 // NOTE: this doesn't exactly match https://en.cppreference.com/w/cpp/iterator/input_iterator
 template <class Iterator>
 concept InputIterator =
