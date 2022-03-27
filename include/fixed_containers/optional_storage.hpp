@@ -5,7 +5,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace fixed_containers::detail
+namespace fixed_containers::optional_storage_detail
 {
 struct OptionalStorageDummyT
 {
@@ -14,7 +14,7 @@ struct OptionalStorageDummyT
 template <class T>
 union OptionalStorage
 {
-    detail::OptionalStorageDummyT dummy;
+    OptionalStorageDummyT dummy;
     T value;
     // clang-format off
     constexpr OptionalStorage() noexcept : dummy{} { }
@@ -57,7 +57,7 @@ union OptionalStorage
 template <TriviallyCopyable T>
 union OptionalStorage<T>
 {
-    detail::OptionalStorageDummyT dummy;
+    OptionalStorageDummyT dummy;
     T value;
     // clang-format off
     constexpr OptionalStorage() noexcept : dummy{} { }
@@ -70,4 +70,4 @@ union OptionalStorage<T>
     constexpr OptionalStorage& operator=(OptionalStorage&&) noexcept = default;
     constexpr ~OptionalStorage() noexcept = default;
 };
-}  // namespace fixed_containers::detail
+}  // namespace fixed_containers::optional_storage_detail

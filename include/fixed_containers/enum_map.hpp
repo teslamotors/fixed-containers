@@ -127,7 +127,7 @@ protected:  // [WORKAROUND-1] - Needed by the non-trivially-copyable flavor of E
     using EnumAdapterType = rich_enums::EnumAdapter<K>;
     static constexpr std::size_t ENUM_COUNT = EnumAdapterType::count();
     using KeyArrayType = std::array<K, ENUM_COUNT>;
-    using ValueArrayType = std::array<detail::OptionalStorage<V>, ENUM_COUNT>;
+    using ValueArrayType = std::array<optional_storage_detail::OptionalStorage<V>, ENUM_COUNT>;
     static constexpr const KeyArrayType& ENUM_VALUES = EnumAdapterType::values();
 
 private:

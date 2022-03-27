@@ -132,7 +132,7 @@ template <typename T,
           fixed_vector_customize::FixedVectorChecking CheckingType>
 class FixedVectorBase
 {
-    using OptionalT = detail::OptionalStorage<T>;
+    using OptionalT = optional_storage_detail::OptionalStorage<T>;
     static_assert(IsNotReference<T>, "References are not allowed");
     static_assert(consteval_compare::equal<sizeof(OptionalT), sizeof(T)>);
     using Checking = CheckingType;
