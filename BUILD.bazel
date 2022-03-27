@@ -157,6 +157,7 @@ cc_library(
     includes = ["include"],
     deps = [
         ":concepts",
+        ":consteval_compare",
         ":optional_storage",
         ":preconditions",
         ":random_access_iterator_transformer",

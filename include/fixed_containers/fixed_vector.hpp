@@ -1,6 +1,7 @@
 #pragma once
 
 #include "fixed_containers/concepts.hpp"
+#include "fixed_containers/consteval_compare.hpp"
 #include "fixed_containers/optional_storage.hpp"
 #include "fixed_containers/preconditions.hpp"
 #include "fixed_containers/random_access_iterator_transformer.hpp"
@@ -132,7 +133,7 @@ template <typename T,
 class FixedVectorBase
 {
     using OptionalT = detail::OptionalStorage<T>;
-    static_assert(sizeof(OptionalT) == sizeof(T));
+    static_assert(consteval_compare::equal<sizeof(OptionalT), sizeof(T)>);
     using Checking = CheckingType;
 
     struct Mapper
