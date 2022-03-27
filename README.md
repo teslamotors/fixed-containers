@@ -178,4 +178,10 @@ CC=g++-11 bazel build ...
 CC=g++-11 bazel test :all_tests
 ```
 
+## Tested Compilers
+
+- Clang  13
+- GCC 11
+- MSVC++ 14.29 / Visual Studio 2019
+
 ## Licensed under the [MIT License](LICENSE)
