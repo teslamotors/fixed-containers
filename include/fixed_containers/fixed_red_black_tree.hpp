@@ -818,13 +818,14 @@ public:
              i = other.index_of_successor_at(i))
         {
             const auto node = other.tree_storage_.at(i);
+            NodeIndexAndParentIndex np = this->index_of_node_with_parent(node.key());
             if constexpr (Base::HAS_ASSOCIATED_VALUE)
             {
-                (*this)[node.key()] = node.value();
+                this->insert_if_not_present_at(np, node.key(), node.value());
             }
             else
             {
-                insert_node(node.key());
+                this->insert_if_not_present_at(np, node.key());
             }
         }
     }
@@ -835,13 +836,14 @@ public:
              i = other.index_of_successor_at(i))
         {
             auto node = other.tree_storage_.at(i);
+            NodeIndexAndParentIndex np = this->index_of_node_with_parent(node.key());
             if constexpr (Base::HAS_ASSOCIATED_VALUE)
             {
-                (*this)[std::move(node.key())] = std::move(node.value());
+                this->insert_if_not_present_at(np, std::move(node.key()), std::move(node.value()));
             }
             else
             {
-                insert_node(std::move(node.key()));
+                this->insert_if_not_present_at(np, std::move(node.key()));
             }
         }
         // Clear the moved-out-of-map. This is consistent with both std::map
@@ -860,13 +862,14 @@ public:
              i = other.index_of_successor_at(i))
         {
             const auto node = other.tree_storage_.at(i);
+            NodeIndexAndParentIndex np = this->index_of_node_with_parent(node.key());
             if constexpr (Base::HAS_ASSOCIATED_VALUE)
             {
-                (*this)[node.key()] = node.value();
+                this->insert_if_not_present_at(np, node.key(), node.value());
             }
             else
             {
-                insert_node(node.key());
+                this->insert_if_not_present_at(np, node.key());
             }
         }
         return *this;
@@ -883,13 +886,14 @@ public:
              i = other.index_of_successor_at(i))
         {
             auto node = other.tree_storage_.at(i);
+            NodeIndexAndParentIndex np = this->index_of_node_with_parent(node.key());
             if constexpr (Base::HAS_ASSOCIATED_VALUE)
             {
-                (*this)[std::move(node.key())] = std::move(node.value());
+                this->insert_if_not_present_at(np, std::move(node.key()), std::move(node.value()));
             }
             else
             {
-                insert_node(std::move(node.key()));
+                this->insert_if_not_present_at(np, std::move(node.key()));
             }
         }
         // The trivial assignment operator does not `other.clear()`, so don't do it here either for
