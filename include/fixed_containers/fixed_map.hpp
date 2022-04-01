@@ -447,12 +447,32 @@ public:
         tree_.insert_new_at(np, std::move(key), std::forward<Args>(args)...);
         return {create_iterator(np.i), true};
     }
+    template <class... Args>
+    constexpr std::pair<iterator, bool> try_emplace(const_iterator /*hint*/,
+                                                    const K& key,
+                                                    Args&&... args) noexcept
+    {
+        return try_emplace(key, std::forward<Args>(args)...);
+    }
+    template <class... Args>
+    constexpr std::pair<iterator, bool> try_emplace(const_iterator /*hint*/,
+                                                    K&& key,
+                                                    Args&&... args) noexcept
+    {
+        return try_emplace(std::move(key), std::forward<Args>(args)...);
+    }
 
     template <class... Args>
     constexpr std::pair<iterator, bool> emplace(Args&&... args) noexcept
     {
         std::pair<K, V> as_pair{std::forward<Args>(args)...};
         return try_emplace(std::move(as_pair.first), std::move(as_pair.second));
+    }
+    template <class... Args>
+    constexpr std::pair<iterator, bool> emplace_hint(const_iterator /*hint*/,
+                                                     Args&&... args) noexcept
+    {
+        return emplace(std::forward<Args>(args)...);
     }
 
     constexpr iterator erase(const_iterator pos) noexcept

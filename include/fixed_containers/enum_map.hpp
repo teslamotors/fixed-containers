@@ -399,12 +399,25 @@ public:
         constexpr_support::emplace(values_[ordinal], std::in_place, std::forward<Args>(args)...);
         return {create_iterator(ordinal), true};
     }
+    template <class... Args>
+    constexpr std::pair<iterator, bool> try_emplace(const_iterator /*hint*/,
+                                                    const K& key,
+                                                    Args&&... args) noexcept
+    {
+        return try_emplace(key, std::forward<Args>(args)...);
+    }
 
     template <class... Args>
     constexpr std::pair<iterator, bool> emplace(Args&&... args) noexcept
     {
         std::pair<K, V> as_pair{std::forward<Args>(args)...};
         return try_emplace(as_pair.first, std::move(as_pair.second));
+    }
+    template <class... Args>
+    constexpr std::pair<iterator, bool> emplace_hint(const_iterator /*hint*/,
+                                                     Args&&... args) noexcept
+    {
+        return emplace(std::forward<Args>(args)...);
     }
 
     constexpr iterator erase(const_iterator pos) noexcept
