@@ -414,7 +414,7 @@ public:
         // Do the move
         for (std::size_t i = 0; i < entry_count_to_move; ++i)
         {
-            place_at(write_start + i, std::move(array_[read_start + i]));
+            place_at(write_start + i, std::move(array_[read_start + i].value));
             destroy_at(read_start + i);
         }
 
@@ -601,7 +601,7 @@ private:
 
         for (std::size_t i = 0; i < value_count_to_move; i++)
         {
-            place_at(write_end - i, std::move(array_[read_end - i]));
+            place_at(write_end - i, std::move(array_[read_end - i].value));
             destroy_at(read_end - i);
         }
 
@@ -768,16 +768,6 @@ protected:
         new (&array_[i]) OptionalT(std::move(v));
     }
 
-    constexpr void place_at(const std::size_t i, const OptionalT& opt_v)
-    {
-        place_at(i, opt_v.value);
-    }
-
-    constexpr void place_at(const std::size_t i, OptionalT&& opt_v)
-    {
-        place_at(i, std::move(opt_v.value));
-    }
-
     template <class... Args>
     constexpr void emplace_at(const std::size_t i, Args&&... args) requires
         TriviallyMoveAssignable<T> && TriviallyDestructible<T>
@@ -907,7 +897,7 @@ public:
         this->size_ = other.size();
         for (std::size_t i = 0; i < this->size_; i++)
         {
-            this->place_at(i, other.array_[i]);
+            this->place_at(i, other.array_[i].value);
         }
     }
     constexpr FixedVector(FixedVector&& other) noexcept
@@ -916,7 +906,7 @@ public:
         this->size_ = other.size();
         for (std::size_t i = 0; i < this->size_; i++)
         {
-            this->place_at(i, std::move(other.array_[i]));
+            this->place_at(i, std::move(other.array_[i].value));
         }
         // Clear the moved-out-of-vector. This is consistent with both std::vector
         // as well as the trivial move constructor of this class.
@@ -933,7 +923,7 @@ public:
         this->size_ = other.size_;
         for (std::size_t i = 0; i < this->size_; i++)
         {
-            this->place_at(i, other.array_[i]);
+            this->place_at(i, other.array_[i].value);
         }
         return *this;
     }
@@ -948,7 +938,7 @@ public:
         this->size_ = other.size_;
         for (std::size_t i = 0; i < this->size_; i++)
         {
-            this->place_at(i, std::move(other.array_[i]));
+            this->place_at(i, std::move(other.array_[i].value));
         }
         // The trivial assignment operator does not `other.clear()`, so don't do it here either for
         // consistency across FixedVectors. std::vector<T> does clear it, so behavior is different.
