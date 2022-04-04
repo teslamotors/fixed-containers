@@ -739,7 +739,7 @@ protected:
     {
         if (std::is_constant_evaluated())
         {
-            this->array_[i] = v;
+            this->array_[i] = OptionalT(v);
         }
         else
         {
@@ -756,7 +756,7 @@ protected:
     {
         if (std::is_constant_evaluated())
         {
-            this->array_[i] = std::move(v);
+            this->array_[i] = OptionalT(std::move(v));
         }
         else
         {

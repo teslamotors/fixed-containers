@@ -127,7 +127,8 @@ protected:  // [WORKAROUND-1] - Needed by the non-trivially-copyable flavor of E
     using EnumAdapterType = rich_enums::EnumAdapter<K>;
     static constexpr std::size_t ENUM_COUNT = EnumAdapterType::count();
     using KeyArrayType = std::array<K, ENUM_COUNT>;
-    using ValueArrayType = std::array<optional_storage_detail::OptionalStorage<V>, ENUM_COUNT>;
+    using OptionalV = optional_storage_detail::OptionalStorage<V>;
+    using ValueArrayType = std::array<OptionalV, ENUM_COUNT>;
     static constexpr const KeyArrayType& ENUM_VALUES = EnumAdapterType::values();
 
 private:
@@ -374,7 +375,7 @@ public:
             size_++;
             array_set_[ordinal] = true;
         }
-        values_[ordinal] = std::forward<M>(obj);
+        values_[ordinal] = OptionalV(std::forward<M>(obj));
         return {create_iterator(ordinal), is_insertion};
     }
     template <class M>
