@@ -768,26 +768,14 @@ protected:
         new (&array_[i]) OptionalT(std::move(v));
     }
 
-    /*not-constexpr*/ void place_at(const std::size_t i, const OptionalT& opt_v)
+    constexpr void place_at(const std::size_t i, const OptionalT& opt_v)
     {
-        new (&array_[i]) OptionalT(opt_v);
+        place_at(i, opt_v.value);
     }
 
-    constexpr void place_at(const std::size_t i, OptionalT&& opt_v) requires
-        TriviallyMoveAssignable<T> && TriviallyDestructible<T>
+    constexpr void place_at(const std::size_t i, OptionalT&& opt_v)
     {
-        if (std::is_constant_evaluated())
-        {
-            this->array_[i] = std::move(opt_v);
-        }
-        else
-        {
-            new (&array_[i]) OptionalT(std::move(opt_v));
-        }
-    }
-    /*not-constexpr*/ void place_at(std::size_t i, OptionalT&& opt_v)
-    {
-        new (&array_[i]) OptionalT(std::move(opt_v));
+        place_at(i, std::move(opt_v.value));
     }
 
     template <class... Args>
