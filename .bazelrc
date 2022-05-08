@@ -5,6 +5,7 @@ build --copt -Werror
 build --copt -fno-exceptions
 build --copt -ftemplate-backtrace-limit=0
 build:clang --copt -ftrivial-auto-var-init=pattern
+#build:clang --copt -stdlib=libc++
 
 ### DIAGNOSTICS
 build:clang  --copt -Weverything
