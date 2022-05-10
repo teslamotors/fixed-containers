@@ -80,6 +80,8 @@ macro(add_test_dependencies TEST_TARGET)
     add_test(NAME ${TEST_TARGET} COMMAND ${TEST_TARGET})
 endmacro()
 
+add_executable(comparison_chain_test test/comparison_chain_test.cpp)
+add_test_dependencies(comparison_chain_test)
 add_executable(concepts_test test/concepts_test.cpp)
 add_test_dependencies(concepts_test)
 add_executable(enum_array_test test/enum_array_test.cpp)
