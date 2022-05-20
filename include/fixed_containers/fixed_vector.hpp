@@ -774,17 +774,17 @@ protected:
     {
         if (std::is_constant_evaluated())
         {
-            this->array_[i] = T(std::forward<Args>(args)...);
+            this->array_[i] = OptionalT(std::in_place, std::forward<Args>(args)...);
         }
         else
         {
-            new (&array_[i]) T(std::forward<Args>(args)...);
+            new (&array_[i]) OptionalT(std::in_place, std::forward<Args>(args)...);
         }
     }
     template <class... Args>
     /*not-constexpr*/ void emplace_at(std::size_t i, Args&&... args)
     {
-        new (&array_[i]) T(std::forward<Args>(args)...);
+        new (&array_[i]) OptionalT(std::in_place, std::forward<Args>(args)...);
     }
 };
 }  // namespace fixed_containers::fixed_vector_detail

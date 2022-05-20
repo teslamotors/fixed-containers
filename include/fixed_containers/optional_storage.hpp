@@ -14,12 +14,14 @@ struct OptionalStorageDummyT
 template <class T>
 union OptionalStorage
 {
-    OptionalStorageDummyT dummy;
+    OptionalStorageDummyT dummy_generic;
     T value;
     // clang-format off
-    constexpr OptionalStorage() noexcept : dummy{} { }
+    constexpr OptionalStorage() noexcept : dummy_generic{} { }
     constexpr OptionalStorage(const T& v) : value{v} { }
     constexpr OptionalStorage(T&& v) : value{std::move(v)} { }
+    template <class... Args>
+    constexpr OptionalStorage(std::in_place_t, Args&&... args) : value(std::forward<Args>(args)...) { }
 
     constexpr OptionalStorage(const OptionalStorage&) requires TriviallyCopyConstructible<T> = default;
     constexpr OptionalStorage(OptionalStorage&&) noexcept requires TriviallyMoveConstructible<T> = default;
@@ -57,17 +59,21 @@ union OptionalStorage
 template <TriviallyCopyable T>
 union OptionalStorage<T>
 {
-    OptionalStorageDummyT dummy;
+    OptionalStorageDummyT dummy_trivially_copyable;
     T value;
     // clang-format off
-    constexpr OptionalStorage() noexcept : dummy{} { }
+    constexpr OptionalStorage() noexcept : dummy_trivially_copyable{} { }
     constexpr OptionalStorage(const T& v) : value{v} { }
     constexpr OptionalStorage(T&& v) : value{std::move(v)} { }
+    template <class... Args>
+    constexpr OptionalStorage(std::in_place_t, Args&&... args) : value(std::forward<Args>(args)...) { }
+
     // clang-format on
     constexpr OptionalStorage(const OptionalStorage&) = default;
     constexpr OptionalStorage(OptionalStorage&&) noexcept = default;
     constexpr OptionalStorage& operator=(const OptionalStorage&) = default;
     constexpr OptionalStorage& operator=(OptionalStorage&&) noexcept = default;
     constexpr ~OptionalStorage() noexcept = default;
+
 };
 }  // namespace fixed_containers::optional_storage_detail

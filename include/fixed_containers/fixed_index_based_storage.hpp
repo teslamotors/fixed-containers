@@ -82,17 +82,17 @@ private:
     {
         if (std::is_constant_evaluated())
         {
-            array_[i] = T(std::forward<Args>(args)...);
+            array_[i] = IndexOrValueT(std::in_place, std::forward<Args>(args)...);
         }
         else
         {
-            new (&array_[i]) T(std::forward<Args>(args)...);
+            new (&array_[i]) IndexOrValueT(std::in_place, std::forward<Args>(args)...);
         }
     }
     template <class... Args>
     /*not-constexpr*/ void emplace_at(const std::size_t& i, Args&&... args) noexcept
     {
-        new (&array_[i]) T(std::forward<Args>(args)...);
+        new (&array_[i]) IndexOrValueT(std::in_place, std::forward<Args>(args)...);
     }
 
     constexpr void destroy_at(std::size_t) requires TriviallyDestructible<T> {}
