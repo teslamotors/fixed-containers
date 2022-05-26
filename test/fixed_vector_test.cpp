@@ -399,7 +399,7 @@ TEST(FixedVector, CountConstructor)
     }
 }
 
-TEST(FixedVector, InputIteratorConstructor)
+TEST(FixedVector, IteratorConstructor)
 {
     constexpr FixedVector<int, 3> v1{77, 99};
     static_assert(v1[0] == 77);
@@ -410,6 +410,14 @@ TEST(FixedVector, InputIteratorConstructor)
     static_assert(v2[0] == 77);
     static_assert(v2[1] == 99);
     static_assert(v2.size() == 2);
+}
+
+TEST(FixedVector, InputIteratorConstructor)
+{
+    MockIntStream stream{3};
+    FixedVector<int, 14> v{stream.begin(), stream.end()};
+    ASSERT_EQ(3, v.size());
+    EXPECT_TRUE(are_equal(v, std::array{3, 2, 1}));
 }
 
 TEST(FixedVector, PushBack)
@@ -1204,7 +1212,7 @@ TEST(FixedVector, InsertValue_ExceedsCapacity)
     EXPECT_DEATH(v1.insert(v1.begin() + 1, 5), "");
 }
 
-TEST(FixedVector, InsertRange)
+TEST(FixedVector, InsertIterator)
 {
     {
         constexpr auto v1 = []()
@@ -1241,6 +1249,23 @@ TEST(FixedVector, InsertRange)
         EXPECT_TRUE(are_equal(v, std::array<int, 6>{0, 1, 100, 500, 2, 3}));
         EXPECT_EQ(it, v.begin() + 2);
     }
+}
+
+TEST(FixedVector, InsertInputIterator)
+{
+    MockIntStream stream{3};
+    FixedVector<int, 14> v{10, 20, 30, 40};
+    auto it = v.insert(v.begin() + 2, stream.begin(), stream.end());
+    ASSERT_EQ(7, v.size());
+    EXPECT_TRUE(are_equal(v, std::array{10, 20, 3, 2, 1, 30, 40}));
+    EXPECT_EQ(it, v.begin() + 2);
+}
+
+TEST(FixedVector, InsertInputIterator_ExceedsCapacity)
+{
+    MockIntStream stream{3};
+    FixedVector<int, 6> v{10, 20, 30, 40};
+    EXPECT_DEATH(v.insert(v.begin() + 2, stream.begin(), stream.end()), "");
 }
 
 TEST(FixedVector, InsertRange_ExceedsCapacity)

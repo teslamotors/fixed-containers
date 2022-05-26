@@ -2,6 +2,7 @@
 
 #include "fixed_containers/concepts.hpp"
 
+#include <cassert>
 #include <type_traits>
 
 namespace fixed_containers
@@ -212,6 +213,74 @@ struct MockAComparableToB
     {
         return value <=> other.value;
     }
+};
+
+class MockIntStream
+{
+    class MockInputIterator
+    {
+    public:
+        using reference = const int&;
+        using value_type = const int;
+        using pointer = const int*;
+        using iterator = MockInputIterator;
+        using iterator_category = std::input_iterator_tag;
+        using difference_type = std::ptrdiff_t;
+
+    private:
+        std::optional<int*> remaining_;
+
+    public:
+        constexpr MockInputIterator() noexcept
+          : remaining_{}
+        {
+        }
+
+        explicit constexpr MockInputIterator(int& remaining) noexcept
+          : remaining_(&remaining)
+        {
+        }
+
+        constexpr reference operator*() const noexcept { return *remaining_.value(); }
+
+        constexpr pointer operator->() const noexcept { return remaining_.value(); }
+
+        constexpr MockInputIterator& operator++() noexcept
+        {
+            assert(remaining_.has_value());
+            auto& r = *remaining_.value();
+            assert(r > 0);
+            r--;
+            if (r == 0)
+            {
+                remaining_.reset();
+            }
+            return *this;
+        }
+
+        constexpr MockInputIterator operator++(int) & noexcept
+        {
+            MockInputIterator copy{*this};
+            operator++();
+            return copy;
+        }
+
+        constexpr bool operator==(const MockInputIterator& other) const noexcept = default;
+    };
+
+private:
+     int remaining_;
+
+public:
+    explicit constexpr MockIntStream(const int stream_size)
+      : remaining_{stream_size}
+    {
+    }
+
+public:
+    constexpr MockInputIterator begin() { return MockInputIterator{remaining_}; }
+
+    constexpr MockInputIterator end() { return MockInputIterator{}; }
 };
 
 }  // namespace fixed_containers

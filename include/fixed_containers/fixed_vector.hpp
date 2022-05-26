@@ -344,15 +344,8 @@ public:
         InputIt last,
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
-        const auto entry_count_to_add = static_cast<std::size_t>(std::distance(first, last));
-        check_target_size(size_ + entry_count_to_add, loc);
-        const std::size_t write_index = this->advance_all_after_iterator_by_n(it, entry_count_to_add);
-
-        for (std::size_t i = write_index; first != last; ++first, ++i)
-        {
-            place_at(i, *first);
-        }
-        return begin() + static_cast<difference_type>(write_index);
+        return insert_internal(
+            typename std::iterator_traits<InputIt>::iterator_category{}, it, first, last, loc);
     }
 
     /**
@@ -625,6 +618,57 @@ private:
     {
         place_at(size_, std::move(v));
         size_++;
+    }
+
+    template <InputIterator InputIt>
+    constexpr iterator insert_internal(std::forward_iterator_tag,
+                                       const_iterator it,
+                                       InputIt first,
+                                       InputIt last,
+                                       const std_transition::source_location& loc)
+    {
+        const auto entry_count_to_add = static_cast<std::size_t>(std::distance(first, last));
+        check_target_size(size_ + entry_count_to_add, loc);
+        const std::size_t write_index = this->advance_all_after_iterator_by_n(it, entry_count_to_add);
+
+        for (std::size_t i = write_index; first != last; ++first, i++)
+        {
+            place_at(i, *first);
+        }
+        return begin() + static_cast<difference_type>(write_index);
+    }
+
+    template <InputIterator InputIt>
+    constexpr iterator insert_internal(std::input_iterator_tag,
+                                       const_iterator it,
+                                       InputIt first,
+                                       InputIt last,
+                                       const std_transition::source_location& loc)
+    {
+        // Place everything at the end of the vector
+        std::size_t new_size = size_;
+        for (; first != last && new_size < max_size(); ++first, ++new_size)
+        {
+            place_at(new_size, *first);
+        }
+
+        if (first != last) // Reached capacity
+        {
+            // Count excess elements
+            for (; first != last; ++first)
+            {
+                new_size++;
+            }
+
+            Checking::length_error(new_size, loc);
+        }
+
+        // Rotate into the correct places
+        const std::size_t write_index = this->index_of(it);
+        std::rotate(create_iterator(write_index), create_iterator(size_), create_iterator(new_size));
+        size_ = new_size;
+
+        return begin() + static_cast<difference_type>(write_index);
     }
 
     constexpr iterator create_iterator(const std::size_t start_index) noexcept
