@@ -1234,22 +1234,6 @@ TEST(FixedVector, InsertRange)
         static_assert(v2.capacity() == 5);
     }
 
-    {
-        FixedVector<int, 8> v3{};
-        v3.insert(v3.begin(), 0);
-        EXPECT_TRUE(are_equal(v3, std::array<int, 1>{{0}}));
-        v3.insert(v3.begin(), 1);
-        EXPECT_TRUE(are_equal(v3, std::array<int, 2>{{1, 0}}));
-        v3.insert(v3.begin(), 2);
-        EXPECT_TRUE(are_equal(v3, std::array<int, 3>{{2, 1, 0}}));
-        const int value = 3;
-        v3.insert(v3.end(), value);
-        EXPECT_TRUE(are_equal(v3, std::array<int, 4>{{2, 1, 0, 3}}));
-        v3.insert(v3.begin() + 2, 4);
-        EXPECT_TRUE(are_equal(v3, std::array<int, 5>{{2, 1, 4, 0, 3}}));
-        v3.insert(v3.begin() + 3, 5);
-        EXPECT_TRUE(are_equal(v3, std::array<int, 6>{{2, 1, 4, 5, 0, 3}}));
-    }
 }
 
 TEST(FixedVector, InsertRange_ExceedsCapacity)
