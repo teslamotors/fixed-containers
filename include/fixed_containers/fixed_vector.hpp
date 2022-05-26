@@ -346,12 +346,11 @@ public:
     {
         const auto entry_count_to_add = static_cast<std::size_t>(std::distance(first, last));
         check_target_size(size_ + entry_count_to_add, loc);
-        std::size_t write_index = this->advance_all_after_iterator_by_n(it, entry_count_to_add);
+        const std::size_t write_index = this->advance_all_after_iterator_by_n(it, entry_count_to_add);
 
-        for (; first != last; ++first)
+        for (std::size_t i = write_index; first != last; ++first, ++i)
         {
-            place_at(write_index, *first);
-            write_index++;
+            place_at(i, *first);
         }
         return begin() + static_cast<difference_type>(write_index);
     }

@@ -1234,6 +1234,13 @@ TEST(FixedVector, InsertRange)
         static_assert(v2.capacity() == 5);
     }
 
+    {
+        std::array<int, 2> a{100, 500};
+        FixedVector<int, 7> v{0, 1, 2, 3};
+        auto it = v.insert(v.begin() + 2, a.begin(), a.end());
+        EXPECT_TRUE(are_equal(v, std::array<int, 6>{0, 1, 100, 500, 2, 3}));
+        EXPECT_EQ(it, v.begin() + 2);
+    }
 }
 
 TEST(FixedVector, InsertRange_ExceedsCapacity)
