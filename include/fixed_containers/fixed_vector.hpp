@@ -349,6 +349,14 @@ public:
         return insert_internal(
             typename std::iterator_traits<InputIt>::iterator_category{}, it, first, last, loc);
     }
+    constexpr iterator insert(
+        const_iterator it,
+        std::initializer_list<T> ilist,
+        const std_transition::source_location& loc = std_transition::source_location::current())
+    {
+        return insert_internal(
+            std::random_access_iterator_tag{}, it, ilist.begin(), ilist.end(), loc);
+    }
 
     /**
      * Emplace element at the iterator-specified location in the container.
@@ -387,6 +395,14 @@ public:
     {
         this->clear();
         this->insert(end(), first, last, loc);
+    }
+
+    constexpr void assign(
+        std::initializer_list<T> ilist,
+        const std_transition::source_location& loc = std_transition::source_location::current())
+    {
+        this->clear();
+        this->insert(end(), ilist, loc);
     }
 
     /**
@@ -631,7 +647,8 @@ private:
     {
         const auto entry_count_to_add = static_cast<std::size_t>(std::distance(first, last));
         check_target_size(size_ + entry_count_to_add, loc);
-        const std::size_t write_index = this->advance_all_after_iterator_by_n(it, entry_count_to_add);
+        const std::size_t write_index =
+            this->advance_all_after_iterator_by_n(it, entry_count_to_add);
 
         for (std::size_t i = write_index; first != last; ++first, i++)
         {
@@ -654,7 +671,7 @@ private:
             place_at(new_size, *first);
         }
 
-        if (first != last) // Reached capacity
+        if (first != last)  // Reached capacity
         {
             // Count excess elements
             for (; first != last; ++first)
@@ -667,7 +684,8 @@ private:
 
         // Rotate into the correct places
         const std::size_t write_index = this->index_of(it);
-        std::rotate(create_iterator(write_index), create_iterator(size_), create_iterator(new_size));
+        std::rotate(
+            create_iterator(write_index), create_iterator(size_), create_iterator(new_size));
         size_ = new_size;
 
         return begin() + static_cast<difference_type>(write_index);

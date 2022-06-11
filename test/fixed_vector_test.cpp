@@ -1151,6 +1151,33 @@ TEST(FixedVector, AssignRange_ExceedsCapacity)
     EXPECT_DEATH(v1.assign(a.begin(), a.end()), "");
 }
 
+TEST(FixedVector, AssignInitializerList)
+{
+    {
+        constexpr auto v1 = []()
+        {
+            FixedVector<int, 7> v{0, 1, 2};
+            v.assign({300, 300});
+            return v;
+        }();
+
+        static_assert(are_equal(v1, std::array<int, 2>{300, 300}));
+        static_assert(v1.size() == 2);
+        static_assert(v1.capacity() == 7);
+    }
+    {
+        auto v2 = []()
+        {
+            FixedVector<int, 7> v{0, 1, 2};
+            v.assign({300, 300});
+            return v;
+        }();
+
+        EXPECT_TRUE(are_equal(v2, std::array<int, 2>{300, 300}));
+        EXPECT_EQ(2, v2.size());
+    }
+}
+
 TEST(FixedVector, InsertValue)
 {
     {
@@ -1273,6 +1300,30 @@ TEST(FixedVector, InsertRange_ExceedsCapacity)
     FixedVector<int, 4> v1{0, 1, 2};
     std::array<int, 2> a{3, 4};
     EXPECT_DEATH(v1.insert(v1.begin() + 1, a.begin(), a.end()), "");
+}
+
+TEST(FixedVector, InsertInitializerList)
+{
+    {
+        // For off-by-one issues, make the capacity just fit
+        constexpr auto v1 = []()
+        {
+            FixedVector<int, 5> v{0, 1, 2};
+            v.insert(v.begin() + 2, {100, 500});
+            return v;
+        }();
+
+        static_assert(are_equal(v1, std::array<int, 5>{0, 1, 100, 500, 2}));
+        static_assert(v1.size() == 5);
+        static_assert(v1.capacity() == 5);
+    }
+
+    {
+        FixedVector<int, 7> v{0, 1, 2, 3};
+        auto it = v.insert(v.begin() + 2, {100, 500});
+        EXPECT_TRUE(are_equal(v, std::array<int, 6>{0, 1, 100, 500, 2, 3}));
+        EXPECT_EQ(it, v.begin() + 2);
+    }
 }
 
 TEST(FixedVector, EraseRange)
