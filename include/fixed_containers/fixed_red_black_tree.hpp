@@ -1,5 +1,6 @@
 #pragma once
 
+#include "fixed_containers/concepts.hpp"
 #include "fixed_containers/fixed_index_based_storage.hpp"
 #include "fixed_containers/fixed_red_black_tree_ops.hpp"
 #include "fixed_containers/fixed_red_black_tree_storage.hpp"
@@ -240,9 +241,31 @@ public:
         return index_of_node_with_parent(key).i;
     }
 
-    [[nodiscard]] constexpr NodeIndex index_of_node_greater_than(const K& key) const noexcept
+    [[nodiscard]] constexpr NodeIndex index_of_node_lower(
+        const NodeIndexAndParentIndex& np) const noexcept
     {
-        NodeIndexAndParentIndex np = index_of_node_with_parent(key);
+        // If they key is present, find the predecessor
+        if (contains_at(np.i))
+        {
+            return index_of_predecessor_at(np.i);
+        }
+
+        // If it would have been the right child, the parent is the closest lesser value
+        if (!np.is_left_child)
+        {
+            return np.parent;
+        }
+
+        // If it would have been the left child, the parent is the closest greater value
+        return index_of_predecessor_at(np.parent);
+    }
+    [[nodiscard]] constexpr NodeIndex index_of_node_lower(const Strict<K> auto& key) const noexcept
+    {
+        return index_of_node_lower(index_of_node_with_parent(key));
+    }
+    [[nodiscard]] constexpr NodeIndex index_of_node_higher(
+        const NodeIndexAndParentIndex& np) const noexcept
+    {
         // If they key is present, find the successor
         if (contains_at(np.i))
         {
@@ -257,6 +280,39 @@ public:
 
         // If it would have been the right child, the parent is the closest lesser value
         return index_of_successor_at(np.parent);
+    }
+    [[nodiscard]] constexpr NodeIndex index_of_node_higher(const Strict<K> auto& key) const noexcept
+    {
+        return index_of_node_higher(index_of_node_with_parent(key));
+    }
+    [[nodiscard]] constexpr NodeIndex index_of_node_floor(
+        const NodeIndexAndParentIndex& np) const noexcept
+    {
+        if (contains_at(np.i))
+        {
+            return np.i;
+        }
+
+        return index_of_node_lower(np);
+    }
+    [[nodiscard]] constexpr NodeIndex index_of_node_floor(const Strict<K> auto& key) const noexcept
+    {
+        return index_of_node_floor(index_of_node_with_parent(key));
+    }
+    [[nodiscard]] constexpr NodeIndex index_of_node_ceiling(
+        const NodeIndexAndParentIndex& np) const noexcept
+    {
+        if (contains_at(np.i))
+        {
+            return np.i;
+        }
+
+        return index_of_node_higher(np);
+    }
+    [[nodiscard]] constexpr NodeIndex index_of_node_ceiling(
+        const Strict<K> auto& key) const noexcept
+    {
+        return index_of_node_ceiling(index_of_node_with_parent(key));
     }
 
     template <class K0>

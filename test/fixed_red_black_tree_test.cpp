@@ -1352,7 +1352,7 @@ TEST(FixedRedBlackTree, IndexOfPredecessor)
     ASSERT_EQ(1, bst.index_of_predecessor_at(2));
 }
 
-TEST(FixedRedBlackTree, IndexOfEntryGreaterThan)
+TEST(FixedRedBlackTree, IndexOfEntryLower)
 {
     FixedRedBlackTree<int, int, 20> bst{};
     bst[5] = 50;    // Position 0
@@ -1366,11 +1366,82 @@ TEST(FixedRedBlackTree, IndexOfEntryGreaterThan)
      *           5R     13R
      */
 
-    ASSERT_EQ(0, bst.index_of_node_greater_than(4));
-    ASSERT_EQ(1, bst.index_of_node_greater_than(5));
-    ASSERT_EQ(1, bst.index_of_node_greater_than(7));
-    ASSERT_EQ(2, bst.index_of_node_greater_than(9));
-    ASSERT_EQ(NULL_INDEX, bst.index_of_node_greater_than(13));
+    ASSERT_EQ(NULL_INDEX, bst.index_of_node_lower(4));
+    ASSERT_EQ(NULL_INDEX, bst.index_of_node_lower(5));
+    ASSERT_EQ(0, bst.index_of_node_lower(7));
+    ASSERT_EQ(0, bst.index_of_node_lower(9));
+    ASSERT_EQ(1, bst.index_of_node_lower(12));
+    ASSERT_EQ(1, bst.index_of_node_lower(13));
+    ASSERT_EQ(2, bst.index_of_node_lower(14));
+}
+
+TEST(FixedRedBlackTree, IndexOfEntryHigher)
+{
+    FixedRedBlackTree<int, int, 20> bst{};
+    bst[5] = 50;    // Position 0
+    bst[9] = 90;    // Position 1
+    bst[13] = 130;  // Position 2
+    ASSERT_EQ(3, bst.size());
+
+    /*
+     *               9B
+     *             /   \
+     *           5R     13R
+     */
+
+    ASSERT_EQ(0, bst.index_of_node_higher(4));
+    ASSERT_EQ(1, bst.index_of_node_higher(5));
+    ASSERT_EQ(1, bst.index_of_node_higher(7));
+    ASSERT_EQ(2, bst.index_of_node_higher(9));
+    ASSERT_EQ(2, bst.index_of_node_higher(12));
+    ASSERT_EQ(NULL_INDEX, bst.index_of_node_higher(13));
+    ASSERT_EQ(NULL_INDEX, bst.index_of_node_higher(14));
+}
+
+TEST(FixedRedBlackTree, IndexOfEntryFloor)
+{
+    FixedRedBlackTree<int, int, 20> bst{};
+    bst[5] = 50;    // Position 0
+    bst[9] = 90;    // Position 1
+    bst[13] = 130;  // Position 2
+    ASSERT_EQ(3, bst.size());
+
+    /*
+     *               9B
+     *             /   \
+     *           5R     13R
+     */
+
+    ASSERT_EQ(NULL_INDEX, bst.index_of_node_lower(4));
+    ASSERT_EQ(0, bst.index_of_node_floor(5));
+    ASSERT_EQ(0, bst.index_of_node_floor(7));
+    ASSERT_EQ(1, bst.index_of_node_floor(9));
+    ASSERT_EQ(1, bst.index_of_node_floor(12));
+    ASSERT_EQ(2, bst.index_of_node_floor(13));
+    ASSERT_EQ(2, bst.index_of_node_floor(14));
+}
+
+TEST(FixedRedBlackTree, IndexOfEntryCeiling)
+{
+    FixedRedBlackTree<int, int, 20> bst{};
+    bst[5] = 50;    // Position 0
+    bst[9] = 90;    // Position 1
+    bst[13] = 130;  // Position 2
+    ASSERT_EQ(3, bst.size());
+
+    /*
+     *               9B
+     *             /   \
+     *           5R     13R
+     */
+
+    ASSERT_EQ(0, bst.index_of_node_ceiling(4));
+    ASSERT_EQ(0, bst.index_of_node_ceiling(5));
+    ASSERT_EQ(1, bst.index_of_node_ceiling(7));
+    ASSERT_EQ(1, bst.index_of_node_ceiling(9));
+    ASSERT_EQ(2, bst.index_of_node_ceiling(12));
+    ASSERT_EQ(2, bst.index_of_node_ceiling(13));
+    ASSERT_EQ(NULL_INDEX, bst.index_of_node_ceiling(14));
 }
 
 template <std::size_t MAXIMUM_SIZE>
@@ -1399,7 +1470,7 @@ static void consistency_test_helper(const std::array<int, MAXIMUM_SIZE>& inserti
         const int expected_successor_value = [&]()
         {
             // gt will be invalid after the deletion, so hide it with scope
-            const NodeIndex gt = bst.index_of_node_greater_than(value_to_delete);
+            const NodeIndex gt = bst.index_of_node_higher(value_to_delete);
             return bst.contains_at(gt) ? bst.node_at(gt).value() : 0;
         }();
 
