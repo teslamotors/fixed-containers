@@ -204,11 +204,19 @@ struct MockAComparableToB
 {
     int value;
 
+    constexpr bool operator==(const MockAComparableToB& other) const
+    {
+        return value == other.value;
+    }
     constexpr std::strong_ordering operator<=>(const MockAComparableToB& other) const
     {
         return value <=> other.value;
     }
 
+    constexpr bool operator==(const MockBComparableToA& other) const
+    {
+        return value == other.value;
+    }
     constexpr std::strong_ordering operator<=>(const MockBComparableToA& other) const
     {
         return value <=> other.value;
@@ -269,7 +277,7 @@ class MockIntStream
     };
 
 private:
-     int remaining_;
+    int remaining_;
 
 public:
     explicit constexpr MockIntStream(const int stream_size)
