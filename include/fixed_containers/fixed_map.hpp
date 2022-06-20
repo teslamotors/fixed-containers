@@ -577,6 +577,78 @@ public:
         return static_cast<std::size_t>(contains(key));
     }
 
+    [[nodiscard]] constexpr iterator lower_bound(const K& key) noexcept
+    {
+        return create_iterator(tree_.index_of_node_ceiling(key));
+    }
+    [[nodiscard]] constexpr const_iterator lower_bound(const K& key) const noexcept
+    {
+        return create_const_iterator(tree_.index_of_node_ceiling(key));
+    }
+    template <class K0>
+    [[nodiscard]] constexpr iterator lower_bound(const K0& key) noexcept requires
+        IsTransparent<Compare>
+    {
+        const NodeIndexAndParentIndex np = tree_.index_of_node_with_parent(key);
+        return create_iterator(tree_.index_of_node_ceiling(np));
+    }
+    template <class K0>
+    [[nodiscard]] constexpr const_iterator lower_bound(const K0& key) const noexcept requires
+        IsTransparent<Compare>
+    {
+        const NodeIndexAndParentIndex np = tree_.index_of_node_with_parent(key);
+        return create_const_iterator(tree_.index_of_node_ceiling(np));
+    }
+
+    [[nodiscard]] constexpr iterator upper_bound(const K& key) noexcept
+    {
+        return create_iterator(tree_.index_of_node_higher(key));
+    }
+    [[nodiscard]] constexpr const_iterator upper_bound(const K& key) const noexcept
+    {
+        return create_const_iterator(tree_.index_of_node_higher(key));
+    }
+    template <class K0>
+    [[nodiscard]] constexpr iterator upper_bound(const K0& key) noexcept requires
+        IsTransparent<Compare>
+    {
+        const NodeIndexAndParentIndex np = tree_.index_of_node_with_parent(key);
+        return create_iterator(tree_.index_of_node_higher(np));
+    }
+    template <class K0>
+    [[nodiscard]] constexpr const_iterator upper_bound(const K0& key) const noexcept requires
+        IsTransparent<Compare>
+    {
+        const NodeIndexAndParentIndex np = tree_.index_of_node_with_parent(key);
+        return create_const_iterator(tree_.index_of_node_higher(np));
+    }
+
+    [[nodiscard]] constexpr std::pair<iterator, iterator> equal_range(const K& key) noexcept
+    {
+        const NodeIndexAndParentIndex np = tree_.index_of_node_with_parent(key);
+        return equal_range_impl(np);
+    }
+    [[nodiscard]] constexpr std::pair<const_iterator, const_iterator> equal_range(
+        const K& key) const noexcept
+    {
+        const NodeIndexAndParentIndex np = tree_.index_of_node_with_parent(key);
+        return equal_range_impl(np);
+    }
+    template <class K0>
+    [[nodiscard]] constexpr std::pair<iterator, iterator> equal_range(
+        const K0& key) noexcept requires IsTransparent<Compare>
+    {
+        const NodeIndexAndParentIndex np = tree_.index_of_node_with_parent(key);
+        return equal_range_impl(np);
+    }
+    template <class K0>
+    [[nodiscard]] constexpr std::pair<const_iterator, const_iterator> equal_range(
+        const K0& key) const noexcept requires IsTransparent<Compare>
+    {
+        const NodeIndexAndParentIndex np = tree_.index_of_node_with_parent(key);
+        return equal_range_impl(np);
+    }
+
     template <std::size_t MAXIMUM_SIZE_2,
               class Compare2,
               fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness COMPACTNESS_2,
@@ -640,6 +712,21 @@ private:
         {
             CheckingType::length_error(MAXIMUM_SIZE + 1, loc);
         }
+    }
+
+    [[nodiscard]] constexpr std::pair<iterator, iterator> equal_range_impl(
+        const NodeIndexAndParentIndex& np) noexcept
+    {
+        const NodeIndex l = tree_.index_of_node_ceiling(np);
+        const NodeIndex r = tree_.contains_at(np.i) ? tree_.index_of_successor_at(l) : l;
+        return {create_iterator(l), create_iterator(r)};
+    }
+    [[nodiscard]] constexpr std::pair<const_iterator, const_iterator> equal_range_impl(
+        const NodeIndexAndParentIndex& np) const noexcept
+    {
+        const NodeIndex l = tree_.index_of_node_ceiling(np);
+        const NodeIndex r = tree_.contains_at(np.i) ? tree_.index_of_successor_at(l) : l;
+        return {create_const_iterator(l), create_const_iterator(r)};
     }
 };
 }  // namespace fixed_containers

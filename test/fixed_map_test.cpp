@@ -997,6 +997,76 @@ TEST(FixedMap, Count_TransparentComparator)
     static_assert(s.count(b) == 1);
 }
 
+TEST(FixedMap, LowerBound)
+{
+    constexpr FixedMap<int, int, 10> s1{{2, 20}, {4, 40}};
+    static_assert(s1.size() == 2);
+
+    static_assert(s1.lower_bound(1)->first() == 2);
+    static_assert(s1.lower_bound(2)->first() == 2);
+    static_assert(s1.lower_bound(3)->first() == 4);
+    static_assert(s1.lower_bound(4)->first() == 4);
+    static_assert(s1.lower_bound(5) == s1.cend());
+}
+
+TEST(FixedMap, LowerBound_TransparentComparator)
+{
+    constexpr FixedMap<MockAComparableToB, int, 5, std::less<>> s{
+        {MockAComparableToB{1}, 10}, {MockAComparableToB{3}, 30}, {MockAComparableToB{5}, 50}};
+    constexpr MockBComparableToA b{3};
+    static_assert(s.lower_bound(b)->first() == MockAComparableToB{3});
+}
+
+TEST(FixedMap, UpperBound)
+{
+    constexpr FixedMap<int, int, 10> s1{{2, 20}, {4, 40}};
+    static_assert(s1.size() == 2);
+
+    static_assert(s1.upper_bound(1)->first() == 2);
+    static_assert(s1.upper_bound(2)->first() == 4);
+    static_assert(s1.upper_bound(3)->first() == 4);
+    static_assert(s1.upper_bound(4) == s1.cend());
+    static_assert(s1.upper_bound(5) == s1.cend());
+}
+
+TEST(FixedMap, UpperBound_TransparentComparator)
+{
+    constexpr FixedMap<MockAComparableToB, int, 5, std::less<>> s{
+        {MockAComparableToB{1}, 10}, {MockAComparableToB{3}, 30}, {MockAComparableToB{5}, 50}};
+    constexpr MockBComparableToA b{3};
+    static_assert(s.upper_bound(b)->first() == MockAComparableToB{5});
+}
+
+TEST(FixedMap, EqualRange)
+{
+    constexpr FixedMap<int, int, 10> s1{{2, 20}, {4, 40}};
+    static_assert(s1.size() == 2);
+
+    static_assert(s1.equal_range(1).first == s1.lower_bound(1));
+    static_assert(s1.equal_range(1).second == s1.upper_bound(1));
+
+    static_assert(s1.equal_range(2).first == s1.lower_bound(2));
+    static_assert(s1.equal_range(2).second == s1.upper_bound(2));
+
+    static_assert(s1.equal_range(3).first == s1.lower_bound(3));
+    static_assert(s1.equal_range(3).second == s1.upper_bound(3));
+
+    static_assert(s1.equal_range(4).first == s1.lower_bound(4));
+    static_assert(s1.equal_range(4).second == s1.upper_bound(4));
+
+    static_assert(s1.equal_range(5).first == s1.lower_bound(5));
+    static_assert(s1.equal_range(5).second == s1.upper_bound(5));
+}
+
+TEST(FixedMap, EqualRange_TransparentComparator)
+{
+    constexpr FixedMap<MockAComparableToB, int, 5, std::less<>> s{
+        {MockAComparableToB{1}, 10}, {MockAComparableToB{3}, 30}, {MockAComparableToB{5}, 50}};
+    constexpr MockBComparableToA b{3};
+    static_assert(s.equal_range(b).first == s.lower_bound(b));
+    static_assert(s.equal_range(b).second == s.upper_bound(b));
+}
+
 TEST(FixedMap, Equality)
 {
     {

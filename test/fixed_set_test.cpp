@@ -78,6 +78,76 @@ TEST(FixedSet, Count_TransparentComparator)
     static_assert(s.count(b) == 1);
 }
 
+TEST(FixedSet, LowerBound)
+{
+    constexpr FixedSet<int, 10> s1{2, 4};
+    static_assert(s1.size() == 2);
+
+    static_assert(*s1.lower_bound(1) == 2);
+    static_assert(*s1.lower_bound(2) == 2);
+    static_assert(*s1.lower_bound(3) == 4);
+    static_assert(*s1.lower_bound(4) == 4);
+    static_assert(s1.lower_bound(5) == s1.cend());
+}
+
+TEST(FixedSet, LowerBound_TransparentComparator)
+{
+    constexpr FixedSet<MockAComparableToB, 5, std::less<>> s{
+        MockAComparableToB{1}, MockAComparableToB{3}, MockAComparableToB{5}};
+    constexpr MockBComparableToA b{3};
+    static_assert(*s.lower_bound(b) == MockAComparableToB{3});
+}
+
+TEST(FixedSet, UpperBound)
+{
+    constexpr FixedSet<int, 10> s1{2, 4};
+    static_assert(s1.size() == 2);
+
+    static_assert(*s1.upper_bound(1) == 2);
+    static_assert(*s1.upper_bound(2) == 4);
+    static_assert(*s1.upper_bound(3) == 4);
+    static_assert(s1.upper_bound(4) == s1.cend());
+    static_assert(s1.upper_bound(5) == s1.cend());
+}
+
+TEST(FixedSet, UpperBound_TransparentComparator)
+{
+    constexpr FixedSet<MockAComparableToB, 5, std::less<>> s{
+        MockAComparableToB{1}, MockAComparableToB{3}, MockAComparableToB{5}};
+    constexpr MockBComparableToA b{3};
+    static_assert(*s.upper_bound(b) == MockAComparableToB{5});
+}
+
+TEST(FixedSet, EqualRange)
+{
+    constexpr FixedSet<int, 10> s1{2, 4};
+    static_assert(s1.size() == 2);
+
+    static_assert(s1.equal_range(1).first == s1.lower_bound(1));
+    static_assert(s1.equal_range(1).second == s1.upper_bound(1));
+
+    static_assert(s1.equal_range(2).first == s1.lower_bound(2));
+    static_assert(s1.equal_range(2).second == s1.upper_bound(2));
+
+    static_assert(s1.equal_range(3).first == s1.lower_bound(3));
+    static_assert(s1.equal_range(3).second == s1.upper_bound(3));
+
+    static_assert(s1.equal_range(4).first == s1.lower_bound(4));
+    static_assert(s1.equal_range(4).second == s1.upper_bound(4));
+
+    static_assert(s1.equal_range(5).first == s1.lower_bound(5));
+    static_assert(s1.equal_range(5).second == s1.upper_bound(5));
+}
+
+TEST(FixedSet, EqualRange_TransparentComparator)
+{
+    constexpr FixedSet<MockAComparableToB, 5, std::less<>> s{
+        MockAComparableToB{1}, MockAComparableToB{3}, MockAComparableToB{5}};
+    constexpr MockBComparableToA b{3};
+    static_assert(s.equal_range(b).first == s.lower_bound(b));
+    static_assert(s.equal_range(b).second == s.upper_bound(b));
+}
+
 TEST(FixedSet, MaxSize)
 {
     constexpr FixedSet<int, 10> s1{2, 4};
