@@ -58,8 +58,14 @@ jobs:
 
       - name: Build
         run: cmake --build build --config Debug -j4
-
-      - name: Test and coverage
+        
+      - name: Test
         working-directory: ./build
         run: |
-          OpenCppCoverage.exe --export_type cobertura:coverage.xml --cover_children -- ctest --build-config Debug
+          ctest --build-config Debug
+
+      # TODO: add test and coverage for windows
+      #- name: Test and coverage
+      #  working-directory: ./build
+      #  run: |
+      #    OpenCppCoverage.exe --export_type cobertura:coverage.xml --cover_children -- ctest --build-config Debug

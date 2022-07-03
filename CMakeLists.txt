@@ -91,7 +91,7 @@ target_link_libraries(fixed_containers INTERFACE magic_enum::magic_enum)
 target_link_libraries(fixed_containers INTERFACE range-v3)
 
 
-# @TODO: split library in components like in bazel
+# TODO: split library in components like in bazel
 #add_library(fixed_containers_bidirectional_iterator INTERFACE include/fixed_containers/bidirectional_iterator.hpp)
 #add_library(fixed_containers::bidirectional_iterator ALIAS fixed_containers_bidirectional_iterator)
 #target_include_directories(fixed_containers_bidirectional_iterator INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
