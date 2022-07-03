@@ -1,0 +1,121 @@
+# For most projects, this workflow file will not need changing; you simply need
+# to commit it to your repository.
+#
+# You may wish to alter this file to override the set of languages analyzed,
+# or to provide custom queries or build logic.
+#
+# ******** NOTE ********
+# We have attempted to detect the languages in your repository. Please check
+# the `language` matrix defined below to confirm you have the correct set of
+# supported CodeQL languages.
+#
+name: "CodeQL"
+
+on:
+  push:
+    branches: [ main, develop, feature/ci ]
+  pull_request:
+    # The branches below must be a subset of the branches above
+    branches: [ main, develop ]
+  schedule:
+    - cron: '38 0 * * 5'
+
+env:
+  # Conan cache environment variables
+  CONAN_SYSREQUIRES_MODE: enabled
+  CONAN_USER_HOME: "${{ github.workspace }}/conan-cache"
+  CONAN_USER_HOME_SHORT: "${{ github.workspace }}/conan-cache/short"
+  CPM_SOURCE_CACHE: "${{ github.workspace }}/cpm_modules"
+
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'cpp' ]
+        # CodeQL supports [ 'cpp', 'csharp', 'go', 'java', 'javascript', 'python', 'ruby' ]
+        # Learn more about CodeQL language support at https://git.io/codeql-language-support
+        compiler:
+          # you can specify the version after `-` like "llvm-13.0.0".
+          - gcc-11
+        generator:
+          - "Ninja"
+        build_type:
+          - Debug
+        developer_mode:
+          - OFF
+
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: true
+    - name: Update vcpkg
+      run: |
+        git submodule add https://github.com/Microsoft/vcpkg.git vcpkg
+        git submodule update --remote --recursive
+        git submodule foreach git pull origin master
+        ./vcpkg/bootstrap-vcpkg.sh
+
+    - name: Setup Cache
+      uses: actions/cache@v2
+      with:
+        key: ${{ runner.os }}-${{ github.workflow }}-${{ env.BUILD_TYPE }}-${{ hashFiles('**/CMakeLists.txt') }}-${{ hashFiles('./vcpkg.json')}}
+        restore-keys: |
+          ${{ runner.os }}-${{ env.BUILD_TYPE }}-
+        path: |
+          ./vcpkg
+          ~/vcpkg
+          ./build/vcpkg_installed
+          ${{ env.HOME }}/.cache/vcpkg/archives
+          ${{ env.XDG_CACHE_HOME }}/vcpkg/archives
+          ${{ env.LOCALAPPDATA }}\vcpkg\archives
+          ${{ env.APPDATA }}\vcpkg\archives
+          "**/cpm_modules"
+
+    - name: Setup Cpp
+      uses: aminya/setup-cpp@v1
+      with:
+        compiler: ${{ matrix.compiler }}
+        vcvarsall: false
+        cmake: true
+        ninja: true
+        conan: false
+        vcpkg: false
+        ccache: true
+        clangtidy: false
+        cppcheck: false
+        gcovr: false
+        opencppcoverage: false
+
+      # make sure coverage is only enabled for Debug builds, since it sets -O0 to make sure coverage
+      # has meaningful results
+    - name: Configure CMake
+      run: |
+        cmake -S . -B ./build -G "${{matrix.generator}}" -DCMAKE_BUILD_TYPE:STRING=${{matrix.build_type}} -DCMAKE_TOOLCHAIN_FILE=./vcpkg/scripts/buildsystems/vcpkg.cmake
+
+    # Initializes the CodeQL tools for scanning.
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v2
+      with:
+        languages: ${{ matrix.language }}
+        # If you wish to specify custom queries, you can do so here or in a config file.
+        # By default, queries listed here will override any specified in a config file.
+        # Prefix the list here with "+" to use these queries and those in the config file.
+        # queries: ./path/to/local/query, your-org/your-repo/queries@main
+
+
+    - name: Build
+      # Execute the build.  You can specify a specific target with "--target <NAME>"
+      run: |
+        cmake --build ./build --config ${{matrix.build_type}}
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v2

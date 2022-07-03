@@ -1,0 +1,59 @@
+name: MacOS
+
+on:
+  pull_request:
+  release:
+    types: [published]
+  push:
+    tags:
+    branches:
+      - main
+      - develop
+      - feature/ci
+
+
+env:
+  CTEST_OUTPUT_ON_FAILURE: 1
+  CPM_SOURCE_CACHE: ${{ github.workspace }}/cpm_modules
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Update vcpkg
+        run: |
+          git submodule add https://github.com/Microsoft/vcpkg.git vcpkg
+          git submodule update --remote --recursive
+          git submodule foreach git pull origin master
+          ./vcpkg/bootstrap-vcpkg.sh
+
+      - name: Setup Cache
+        uses: actions/cache@v2
+        with:
+          key: ${{ runner.os }}-${{ github.workflow }}-${{ env.BUILD_TYPE }}-${{ hashFiles('**/CMakeLists.txt') }}-${{ hashFiles('./vcpkg.json')}}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.BUILD_TYPE }}-
+          path: |
+            ./vcpkg
+            ~/vcpkg
+            ./build/vcpkg_installed
+            ${{ env.HOME }}/.cache/vcpkg/archives
+            ${{ env.XDG_CACHE_HOME }}/vcpkg/archives
+            ${{ env.LOCALAPPDATA }}\vcpkg\archives
+            ${{ env.APPDATA }}\vcpkg\archives
+            "**/cpm_modules"
+
+      - name: Configure CMake
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE=./vcpkg/scripts/buildsystems/vcpkg.cmake
+
+      - name: Build
+        run: cmake --build build -j4
+
+      - name: Test
+        working-directory: ./build
+        run: |
+          ctest --build-config Debug

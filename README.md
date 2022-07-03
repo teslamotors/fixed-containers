@@ -1,5 +1,12 @@
 # C++ Fixed Containers
 
+[![Actions Status](https://github.com/abeimler/fixed-containers/workflows/MacOS/badge.svg)](https://github.com/abeimler/fixed-containers/actions)
+[![Actions Status](https://github.com/abeimler/fixed-containers/workflows/Windows/badge.svg)](https://github.com/abeimler/fixed-containers/actions)
+[![Actions Status](https://github.com/abeimler/fixed-containers/workflows/Ubuntu/badge.svg)](https://github.com/abeimler/fixed-containers/actions)
+[![CodeQL](https://github.com/abeimler/ecs_benchmark/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/abeimler/fixed-containers/actions/workflows/codeql-analysis.yml)
+![License](https://img.shields.io/github/license/abeimler/fixed-containers)
+![Standard](https://img.shields.io/badge/c%2B%2B-20-blue)
+
 Header-only C++20 library that provides containers with the following properties:
 
 * Fixed-capacity, declared at compile-time
