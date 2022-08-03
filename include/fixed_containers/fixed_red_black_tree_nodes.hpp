@@ -98,21 +98,6 @@ public:
     constexpr DefaultRedBlackTreeNode(K&& k, V&& v) noexcept : key_(std::move(k)), value_(std::move(v)) {}
     // clang-format on
 
-    template <class K0, class V0>
-    constexpr DefaultRedBlackTreeNode(K0&& k,
-                                      V0&& v,
-                                      const NodeIndex& p,
-                                      const NodeIndex& l,
-                                      const NodeIndex& r,
-                                      const Color& c) noexcept
-      : key_(std::forward<K0>(k))
-      , value_(std::forward<V0>(v))
-      , parent_index_{p}
-      , left_index_{l}
-      , right_index_{r}
-      , color_{c}
-    {
-    }
 
     [[nodiscard]] constexpr const K& key() const { return key_; }
     constexpr K& key() { return key_; }
@@ -149,17 +134,6 @@ public:
     explicit constexpr DefaultRedBlackTreeNode(const K& k) noexcept : key_(k) {}
     explicit constexpr DefaultRedBlackTreeNode(K&& k) noexcept : key_(std::move(k)) {}
     // clang-format on
-
-    template <class K0>
-    constexpr DefaultRedBlackTreeNode(
-        K0&& k, const NodeIndex& p, const NodeIndex& l, const NodeIndex& r, const Color& c) noexcept
-      : key_(std::forward<K0>(k))
-      , parent_index_{p}
-      , left_index_{l}
-      , right_index_{r}
-      , color_{c}
-    {
-    }
 
     [[nodiscard]] constexpr const K& key() const { return key_; }
     constexpr K& key() { return key_; }
@@ -208,20 +182,6 @@ public:
     {
     }
 
-    template <class K0, class V0>
-    constexpr CompactRedBlackTreeNode(K0&& k,
-                                      V0&& v,
-                                      const NodeIndex& p,
-                                      const NodeIndex& l,
-                                      const NodeIndex& r,
-                                      const Color& c) noexcept
-      : key_(std::forward<K0>(k))
-      , value_(std::forward<V0>(v))
-      , parent_index_and_color_{p, c}
-      , left_index_{l}
-      , right_index_{r}
-    {
-    }
 
     [[nodiscard]] constexpr const K& key() const { return key_; }
     constexpr K& key() { return key_; }
@@ -260,16 +220,6 @@ public:
     explicit constexpr CompactRedBlackTreeNode(const K& k) noexcept : key_(k) {}
     explicit constexpr CompactRedBlackTreeNode(K&& k) noexcept : key_(std::move(k)) {}
     // clang-format on
-
-    template <class K0>
-    constexpr CompactRedBlackTreeNode(
-        K0&& k, const NodeIndex& p, const NodeIndex& l, const NodeIndex& r, const Color& c) noexcept
-      : key_(std::forward<K0>(k))
-      , parent_index_and_color_{p, c}
-      , left_index_{l}
-      , right_index_{r}
-    {
-    }
 
     [[nodiscard]] constexpr const K& key() const { return key_; }
     constexpr K& key() { return key_; }
