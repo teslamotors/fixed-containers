@@ -1,5 +1,7 @@
 #include "fixed_containers/fixed_red_black_tree.hpp"
 
+#include "mock_testing_types.hpp"
+
 #include "fixed_containers/concepts.hpp"
 #include "fixed_containers/consteval_compare.hpp"
 
@@ -258,6 +260,108 @@ TEST(NodeIndexWithColorEmbeddedInTheMostSignificantBit, Basic)
 
         NodeIndexWithColorEmbeddedInTheMostSignificantBit ret{};
         EXPECT_DEATH(ret.set_index(MAX_INDEX + 1), "");
+    }
+}
+
+TEST(DefaultRedBlackTreeNode, Construction)
+{
+    // Without Value
+    {
+        constexpr DefaultRedBlackTreeNode<int> a1{5};
+        static_assert(consteval_compare::equal<5, a1.key()>);
+        static_assert(consteval_compare::equal<NULL_INDEX, a1.parent_index()>);
+        static_assert(consteval_compare::equal<NULL_INDEX, a1.left_index()>);
+        static_assert(consteval_compare::equal<NULL_INDEX, a1.right_index()>);
+    }
+    {
+        constexpr int key = 5;
+        constexpr DefaultRedBlackTreeNode<int> a1{key};
+        static_assert(consteval_compare::equal<key, a1.key()>);
+        static_assert(consteval_compare::equal<NULL_INDEX, a1.parent_index()>);
+        static_assert(consteval_compare::equal<NULL_INDEX, a1.left_index()>);
+        static_assert(consteval_compare::equal<NULL_INDEX, a1.right_index()>);
+    }
+
+    // With Value
+    {
+        constexpr DefaultRedBlackTreeNode<int, int> a1{5, 15};
+        static_assert(consteval_compare::equal<5, a1.key()>);
+        static_assert(consteval_compare::equal<15, a1.value()>);
+        static_assert(consteval_compare::equal<NULL_INDEX, a1.parent_index()>);
+        static_assert(consteval_compare::equal<NULL_INDEX, a1.left_index()>);
+        static_assert(consteval_compare::equal<NULL_INDEX, a1.right_index()>);
+    }
+    {
+        constexpr int key = 5;
+        constexpr DefaultRedBlackTreeNode<int, int> a1{key, 15};
+        static_assert(consteval_compare::equal<key, a1.key()>);
+        static_assert(consteval_compare::equal<15, a1.value()>);
+        static_assert(consteval_compare::equal<NULL_INDEX, a1.parent_index()>);
+        static_assert(consteval_compare::equal<NULL_INDEX, a1.left_index()>);
+        static_assert(consteval_compare::equal<NULL_INDEX, a1.right_index()>);
+    }
+    {
+        constexpr DefaultRedBlackTreeNode<int, TypeWithMultipleConstructorParameters> a1{
+            5,
+            /*ImplicitlyConvertibleFromInt*/ 100,
+            ExplicitlyConvertibleFromInt{200}};
+        static_assert(consteval_compare::equal<5, a1.key()>);
+        static_assert(consteval_compare::equal<100, a1.value().implicit_int.value>);
+        static_assert(consteval_compare::equal<200, a1.value().explicit_int.value>);
+        static_assert(consteval_compare::equal<NULL_INDEX, a1.parent_index()>);
+        static_assert(consteval_compare::equal<NULL_INDEX, a1.left_index()>);
+        static_assert(consteval_compare::equal<NULL_INDEX, a1.right_index()>);
+    }
+}
+
+TEST(CompactRedBlackTreeNode, Construction)
+{
+    // Without Value
+    {
+        constexpr CompactRedBlackTreeNode<int> a1{5};
+        static_assert(consteval_compare::equal<5, a1.key()>);
+        static_assert(consteval_compare::equal<NULL_INDEX, a1.parent_index()>);
+        static_assert(consteval_compare::equal<NULL_INDEX, a1.left_index()>);
+        static_assert(consteval_compare::equal<NULL_INDEX, a1.right_index()>);
+    }
+    {
+        constexpr int key = 5;
+        constexpr CompactRedBlackTreeNode<int> a1{key};
+        static_assert(consteval_compare::equal<key, a1.key()>);
+        static_assert(consteval_compare::equal<NULL_INDEX, a1.parent_index()>);
+        static_assert(consteval_compare::equal<NULL_INDEX, a1.left_index()>);
+        static_assert(consteval_compare::equal<NULL_INDEX, a1.right_index()>);
+    }
+
+    // With Value
+    {
+        constexpr CompactRedBlackTreeNode<int, int> a1{5, 15};
+        static_assert(consteval_compare::equal<5, a1.key()>);
+        static_assert(consteval_compare::equal<15, a1.value()>);
+        static_assert(consteval_compare::equal<NULL_INDEX, a1.parent_index()>);
+        static_assert(consteval_compare::equal<NULL_INDEX, a1.left_index()>);
+        static_assert(consteval_compare::equal<NULL_INDEX, a1.right_index()>);
+    }
+    {
+        constexpr int key = 5;
+        constexpr CompactRedBlackTreeNode<int, int> a1{key, 15};
+        static_assert(consteval_compare::equal<key, a1.key()>);
+        static_assert(consteval_compare::equal<15, a1.value()>);
+        static_assert(consteval_compare::equal<NULL_INDEX, a1.parent_index()>);
+        static_assert(consteval_compare::equal<NULL_INDEX, a1.left_index()>);
+        static_assert(consteval_compare::equal<NULL_INDEX, a1.right_index()>);
+    }
+    {
+        constexpr CompactRedBlackTreeNode<int, TypeWithMultipleConstructorParameters> a1{
+            5,
+            /*ImplicitlyConvertibleFromInt*/ 100,
+            ExplicitlyConvertibleFromInt{200}};
+        static_assert(consteval_compare::equal<5, a1.key()>);
+        static_assert(consteval_compare::equal<100, a1.value().implicit_int.value>);
+        static_assert(consteval_compare::equal<200, a1.value().explicit_int.value>);
+        static_assert(consteval_compare::equal<NULL_INDEX, a1.parent_index()>);
+        static_assert(consteval_compare::equal<NULL_INDEX, a1.left_index()>);
+        static_assert(consteval_compare::equal<NULL_INDEX, a1.right_index()>);
     }
 }
 

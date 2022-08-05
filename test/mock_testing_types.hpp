@@ -291,4 +291,37 @@ public:
     constexpr MockInputIterator end() { return MockInputIterator{}; }
 };
 
+struct ImplicitlyConvertibleFromInt
+{
+    int value;
+
+    /*implicit*/ constexpr ImplicitlyConvertibleFromInt(int v)
+      : value{v}
+    {
+    }
+};
+
+struct ExplicitlyConvertibleFromInt
+{
+    int value;
+
+    explicit constexpr ExplicitlyConvertibleFromInt(int v)
+      : value{v}
+    {
+    }
+};
+
+struct TypeWithMultipleConstructorParameters
+{
+    ImplicitlyConvertibleFromInt implicit_int;
+    ExplicitlyConvertibleFromInt explicit_int;
+
+    constexpr TypeWithMultipleConstructorParameters(ImplicitlyConvertibleFromInt a0,
+                                                    ExplicitlyConvertibleFromInt b0)
+      : implicit_int{a0}
+      , explicit_int{b0}
+    {
+    }
+};
+
 }  // namespace fixed_containers

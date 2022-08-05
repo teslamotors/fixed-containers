@@ -412,6 +412,7 @@ cc_test(
         ":concepts",
         ":consteval_compare",
         ":fixed_red_black_tree",
+        ":mock_testing_types",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
