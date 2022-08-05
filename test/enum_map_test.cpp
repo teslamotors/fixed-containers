@@ -482,6 +482,16 @@ TEST(EnumMap, TryEmplace)
             s2.emplace(TestEnum1::ONE, MockMoveableButNotCopyable{});
         }
     }
+
+    {
+        EnumMap<TestEnum1, TypeWithMultipleConstructorParameters> s1{};
+        s1.try_emplace(
+            TestEnum1::ONE, /*ImplicitlyConvertibleFromInt*/ 2, ExplicitlyConvertibleFromInt{3});
+
+        std::map<TestEnum1, TypeWithMultipleConstructorParameters> s2{};
+        s2.try_emplace(
+            TestEnum1::ONE, /*ImplicitlyConvertibleFromInt*/ 2, ExplicitlyConvertibleFromInt{3});
+    }
 }
 
 TEST(EnumMap, TryEmplace_TypeConversion)

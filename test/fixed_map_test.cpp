@@ -378,6 +378,14 @@ TEST(FixedMap, TryEmplace)
             ASSERT_EQ(20, it->second());
         }
     }
+
+    {
+        FixedMap<std::size_t, TypeWithMultipleConstructorParameters, 10> s1{};
+        s1.try_emplace(1ULL, /*ImplicitlyConvertibleFromInt*/ 2, ExplicitlyConvertibleFromInt{3});
+
+        std::map<std::size_t, TypeWithMultipleConstructorParameters> s2{};
+        s2.try_emplace(1ULL, /*ImplicitlyConvertibleFromInt*/ 2, ExplicitlyConvertibleFromInt{3});
+    }
 }
 
 TEST(FixedMap, TryEmplace_ExceedsCapacity)
