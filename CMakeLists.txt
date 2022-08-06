@@ -82,7 +82,7 @@ add_library(project_warnings INTERFACE)
 target_compile_options(project_warnings INTERFACE ${DIAGNOSTIC_FLAGS})
 
 
-find_package(magic_enum CONFIG)
+find_package(magic_enum CONFIG REQUIRED)
 find_package(range-v3 CONFIG)
 add_library(fixed_containers INTERFACE)
 add_library(fixed_containers::fixed_containers ALIAS fixed_containers)
