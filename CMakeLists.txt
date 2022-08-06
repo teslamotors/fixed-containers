@@ -83,12 +83,11 @@ target_compile_options(project_warnings INTERFACE ${DIAGNOSTIC_FLAGS})
 
 
 find_package(magic_enum CONFIG REQUIRED)
-find_package(range-v3 CONFIG)
+
 add_library(fixed_containers INTERFACE)
 add_library(fixed_containers::fixed_containers ALIAS fixed_containers)
 target_include_directories(fixed_containers INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
 target_link_libraries(fixed_containers INTERFACE magic_enum::magic_enum)
-target_link_libraries(fixed_containers INTERFACE range-v3)
 
 
 # TODO: split library in components like in bazel
@@ -111,8 +110,11 @@ if(BUILD_TESTS)
     endif()
     enable_testing()
 
+    find_package(range-v3 CONFIG)
     find_package(GTest CONFIG REQUIRED)
+
     macro(add_test_dependencies TEST_TARGET)
+        target_link_libraries(${TEST_TARGET} range-v3)
         target_link_libraries(${TEST_TARGET} GTest::gtest GTest::gtest_main)
         target_link_libraries(${TEST_TARGET} fixed_containers project_options project_warnings)
         add_test(NAME ${TEST_TARGET} COMMAND ${TEST_TARGET})
