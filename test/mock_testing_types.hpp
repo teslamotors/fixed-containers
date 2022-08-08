@@ -3,6 +3,7 @@
 #include "fixed_containers/concepts.hpp"
 
 #include <cassert>
+#include <compare>
 #include <type_traits>
 
 namespace fixed_containers
