@@ -110,7 +110,7 @@ if(BUILD_TESTS)
     endif()
     enable_testing()
 
-    find_package(range-v3 CONFIG)
+    find_package(range-v3 CONFIG REQUIRED)
     find_package(GTest CONFIG REQUIRED)
 
     macro(add_test_dependencies TEST_TARGET)
