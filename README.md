@@ -2,11 +2,10 @@
 
 ![License](https://img.shields.io/github/license/teslamotors/fixed-containers)
 ![Standard](https://img.shields.io/badge/c%2B%2B-20-blue)
-[![Actions Status](https://github.com/teslamotors/fixed-containers/workflows/Ubuntu/badge.svg)](https://github.com/teslamotors/fixed-containers/actions)
-[![Actions Status](https://github.com/teslamotors/fixed-containers/workflows/Windows/badge.svg)](https://github.com/teslamotors/fixed-containers/actions)
-[![Actions Status](https://github.com/teslamotors/fixed-containers/workflows/MacOS/badge.svg)](https://github.com/teslamotors/fixed-containers/actions)
+[![Ubuntu](https://github.com/teslamotors/fixed-containers/actions/workflows/ubuntu.yml/badge.svg)](https://github.com/teslamotors/fixed-containers/actions/workflows/ubuntu.yml)
+[![Ubuntu (clang)](https://github.com/teslamotors/fixed-containers/actions/workflows/ubuntu-clang.yml/badge.svg)](https://github.com/teslamotors/fixed-containers/actions/workflows/ubuntu-clang.yml)
+[![Windows](https://github.com/teslamotors/fixed-containers/actions/workflows/windows.yml/badge.svg)](https://github.com/teslamotors/fixed-containers/actions/workflows/windows.yml)
 [![CodeQL](https://github.com/teslamotors/fixed-containers/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/teslamotors/fixed-containers/actions/workflows/codeql-analysis.yml)
-
 
 Header-only C++20 library that provides containers with the following properties:
 
