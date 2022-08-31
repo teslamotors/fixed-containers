@@ -232,6 +232,14 @@ cc_library(
 )
 
 cc_library(
+    name = "reference_storage",
+    hdrs = ["include/fixed_containers/reference_storage.hpp"],
+    includes = ["include"],
+    deps = [":concepts"],
+    copts = ["-std=c++20"],
+)
+
+cc_library(
     name = "source_location",
     hdrs = ["include/fixed_containers/source_location.hpp"],
     includes = ["include"],
@@ -249,6 +257,17 @@ cc_library(
     name = "type_name",
     hdrs = ["include/fixed_containers/type_name.hpp"],
     includes = ["include"],
+    copts = ["-std=c++20"],
+)
+
+cc_library(
+    name = "value_or_reference_storage",
+    hdrs = ["include/fixed_containers/value_or_reference_storage.hpp"],
+    includes = ["include"],
+    deps = [
+        ":concepts",
+        ":reference_storage",
+    ],
     copts = ["-std=c++20"],
 )
 
