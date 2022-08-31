@@ -25,9 +25,12 @@ namespace fixed_containers
  * A notable use of PairView is for maps that don't store a `std::pair<const K, V>` and thus are
  * unable to return a live pointer to it (e.g. in iterators).
  */
-template <class K, class V>
+template <class First, class Second>
 class PairView
 {
+    using K = std::remove_reference_t<First>;
+    using V = std::remove_reference_t<Second>;
+
     K* first_;
     V* second_;
 

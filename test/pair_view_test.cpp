@@ -74,4 +74,17 @@ TEST(PairView, constness)
     }
 }
 
+TEST(PairView, References)
+{
+    static constexpr int a = 5;
+    static constexpr double b = 3.0;
+
+    static constexpr const int& ar = a;
+    static constexpr const double& br = b;
+
+    constexpr PairView<const int&, const double&> p1{&ar,&br};
+
+    static_assert(5 == p1.first());
+}
+
 }  // namespace fixed_containers
