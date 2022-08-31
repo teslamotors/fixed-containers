@@ -1146,6 +1146,75 @@ TEST(FixedMap, NonAssignable)
     }
 }
 
+static constexpr int INT_VALUE_10 = 10;
+static constexpr int INT_VALUE_20 = 20;
+static constexpr int INT_VALUE_30 = 30;
+
+TEST(FixedMap, ConstRef)
+{
+    {
+        std::map<int, const int&> s{{1, INT_VALUE_10}};
+        s.insert({2, INT_VALUE_20});
+        s.emplace(3, INT_VALUE_30);
+        s.erase(3);
+
+        auto s_copy = s;
+        s = s_copy;
+        s = std::move(s_copy);
+
+        ASSERT_TRUE(s.contains(1));
+        ASSERT_TRUE(s.contains(2));
+        ASSERT_TRUE(!s.contains(3));
+        ASSERT_TRUE(!s.contains(4));
+
+        ASSERT_EQ(INT_VALUE_10, s.at(1));
+    }
+
+    {
+        FixedMap<int, const int&, 10> s{{1, INT_VALUE_10}};
+        s.insert({2, INT_VALUE_20});
+        s.emplace(3, INT_VALUE_30);
+        s.erase(3);
+
+        auto s_copy = s;
+        s = s_copy;
+        s = std::move(s_copy);
+
+        ASSERT_TRUE(s.contains(1));
+        ASSERT_TRUE(s.contains(2));
+        ASSERT_TRUE(!s.contains(3));
+        ASSERT_TRUE(!s.contains(4));
+
+        ASSERT_EQ(INT_VALUE_10, s.at(1));
+    }
+
+    {
+        constexpr FixedMap<double, const int&, 10> s1 = []()
+        {
+            FixedMap<double, const int&, 10> s{{1.0, INT_VALUE_10}};
+            s.insert({2, INT_VALUE_20});
+            s.emplace(3, INT_VALUE_30);
+            s.erase(3);
+
+            auto s_copy = s;
+            s = s_copy;
+            s = std::move(s_copy);
+
+            return s;
+        }();
+
+        static_assert(s1.contains(1));
+        static_assert(s1.contains(2));
+        static_assert(!s1.contains(3));
+        static_assert(!s1.contains(4));
+
+        static_assert(s1.at(1) == INT_VALUE_10);
+    }
+
+    static_assert(NotTriviallyCopyable<const int&>);
+    static_assert(NotTriviallyCopyable<FixedMap<int, const int&, 5>>);
+}
+
 namespace
 {
 struct FixedMapInstanceCounterUniquenessToken

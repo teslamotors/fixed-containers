@@ -166,7 +166,7 @@ private:
 
         constexpr void update_to_index(const std::size_t i) noexcept
         {
-            current_ = ConstOrMutablePairView{&ENUM_VALUES[i], &(*values_)[i].value};
+            current_ = ConstOrMutablePairView{&ENUM_VALUES[i], &((*values_)[i].get())};
         }
 
         constexpr const_reference get() const noexcept requires IS_CONST { return current_; }
@@ -263,7 +263,7 @@ public:
         {
             CheckingType::out_of_range(key, size(), loc);
         }
-        return values_[ordinal].value;
+        return values_[ordinal].get();
     }
     [[nodiscard]] constexpr const V& at(
         const K& key,
@@ -275,7 +275,7 @@ public:
         {
             CheckingType::out_of_range(key, size(), loc);
         }
-        return values_[ordinal].value;
+        return values_[ordinal].get();
     }
     constexpr V& operator[](const K& key) noexcept
     {

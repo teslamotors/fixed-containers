@@ -3,6 +3,7 @@
 #include "fixed_containers/concepts.hpp"
 #include "fixed_containers/enum_utils.hpp"
 #include "fixed_containers/fixed_red_black_tree_types.hpp"
+#include "fixed_containers/value_or_reference_storage.hpp"
 
 #include <utility>
 
@@ -170,7 +171,7 @@ public:
 
 private:
     K key_;
-    V value_;
+    value_or_reference_storage_detail::ValueOrReferenceStorage<V> value_;
     NodeIndexWithColorEmbeddedInTheMostSignificantBit parent_index_and_color_{};
     NodeIndex left_index_ = NULL_INDEX;
     NodeIndex right_index_ = NULL_INDEX;
@@ -192,8 +193,8 @@ public:
 
     [[nodiscard]] constexpr const K& key() const { return key_; }
     constexpr K& key() { return key_; }
-    [[nodiscard]] constexpr const V& value() const { return value_; }
-    constexpr V& value() { return value_; }
+    [[nodiscard]] constexpr const V& value() const { return value_.get(); }
+    constexpr V& value() { return value_.get(); }
 
     [[nodiscard]] constexpr NodeIndex parent_index() const
     {

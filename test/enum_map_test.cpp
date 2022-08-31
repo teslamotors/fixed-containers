@@ -1158,6 +1158,75 @@ TEST(EnumMap, NonAssignable)
     }
 }
 
+static constexpr int INT_VALUE_10 = 10;
+static constexpr int INT_VALUE_20 = 20;
+static constexpr int INT_VALUE_30 = 30;
+
+TEST(EnumMap, ConstRef)
+{
+    {
+        std::map<TestEnum1, const int&> s{{TestEnum1::ONE, INT_VALUE_10}};
+        s.insert({TestEnum1::TWO, INT_VALUE_20});
+        s.emplace(TestEnum1::THREE, INT_VALUE_30);
+        s.erase(TestEnum1::THREE);
+
+        auto s_copy = s;
+        s = s_copy;
+        s = std::move(s_copy);
+
+        ASSERT_TRUE(s.contains(TestEnum1::ONE));
+        ASSERT_TRUE(s.contains(TestEnum1::TWO));
+        ASSERT_TRUE(!s.contains(TestEnum1::THREE));
+        ASSERT_TRUE(!s.contains(TestEnum1::FOUR));
+
+        ASSERT_EQ(INT_VALUE_10, s.at(TestEnum1::ONE));
+    }
+
+    {
+        EnumMap<TestEnum1, const int&> s{{TestEnum1::ONE, INT_VALUE_10}};
+        s.insert({TestEnum1::TWO, INT_VALUE_20});
+        s.emplace(TestEnum1::THREE, INT_VALUE_30);
+        s.erase(TestEnum1::THREE);
+
+        auto s_copy = s;
+        s = s_copy;
+        s = std::move(s_copy);
+
+        ASSERT_TRUE(s.contains(TestEnum1::ONE));
+        ASSERT_TRUE(s.contains(TestEnum1::TWO));
+        ASSERT_TRUE(!s.contains(TestEnum1::THREE));
+        ASSERT_TRUE(!s.contains(TestEnum1::FOUR));
+
+        ASSERT_EQ(INT_VALUE_10, s.at(TestEnum1::ONE));
+    }
+
+    {
+        constexpr EnumMap<TestEnum1, const int&> s1 = []()
+        {
+            EnumMap<TestEnum1, const int&> s{{TestEnum1::ONE, INT_VALUE_10}};
+            s.insert({TestEnum1::TWO, INT_VALUE_20});
+            s.emplace(TestEnum1::THREE, INT_VALUE_30);
+            s.erase(TestEnum1::THREE);
+
+            auto s_copy = s;
+            s = s_copy;
+            s = std::move(s_copy);
+
+            return s;
+        }();
+
+        static_assert(s1.contains(TestEnum1::ONE));
+        static_assert(s1.contains(TestEnum1::TWO));
+        static_assert(!s1.contains(TestEnum1::THREE));
+        static_assert(!s1.contains(TestEnum1::FOUR));
+
+        static_assert(s1.at(TestEnum1::ONE) == INT_VALUE_10);
+    }
+
+    static_assert(NotTriviallyCopyable<const int&>);
+    static_assert(NotTriviallyCopyable<EnumMap<TestEnum1, const int&>>);
+}
+
 namespace
 {
 struct EnumMapInstanceCounterUniquenessToken
