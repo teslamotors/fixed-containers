@@ -1,6 +1,7 @@
 #pragma once
 
 #include "fixed_containers/concepts.hpp"
+#include "fixed_containers/reference_storage.hpp"
 
 #include <type_traits>
 #include <utility>
@@ -45,6 +46,9 @@ union OptionalStorage
     // CAUTION: Users must manually call the destructor of T as they are the ones that keep
     // track of which member is active.
     constexpr ~OptionalStorage() noexcept {}
+
+    constexpr const T& get() const { return value; }
+    constexpr T& get() { return value; }
 };
 
 // OptionalStorage<T> should carry the properties of T. For example, if T fulfils
@@ -74,5 +78,29 @@ union OptionalStorage<T>
     constexpr OptionalStorage& operator=(const OptionalStorage&) = default;
     constexpr OptionalStorage& operator=(OptionalStorage&&) noexcept = default;
     constexpr ~OptionalStorage() noexcept = default;
+
+    constexpr const T& get() const { return value; }
+    constexpr T& get() { return value; }
+};
+
+template <IsReference T>
+union OptionalStorage<T>
+{
+    OptionalStorageDummyT dummy_ref;
+    reference_storage_detail::ReferenceStorage<T> value;
+    // clang-format off
+    constexpr OptionalStorage() noexcept : dummy_ref{} { }
+    constexpr OptionalStorage(T v) : value{v} { }
+    constexpr OptionalStorage(std::in_place_t, T v) : value(v) { }
+
+    // clang-format on
+    constexpr OptionalStorage(const OptionalStorage&) = default;
+    constexpr OptionalStorage(OptionalStorage&&) noexcept = default;
+    constexpr OptionalStorage& operator=(const OptionalStorage&) = default;
+    constexpr OptionalStorage& operator=(OptionalStorage&&) noexcept = default;
+    constexpr ~OptionalStorage() noexcept = default;
+
+    constexpr const T& get() const { return value.get(); }
+    constexpr T& get() { return value.get(); }
 };
 }  // namespace fixed_containers::optional_storage_detail

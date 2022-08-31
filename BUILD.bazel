@@ -203,7 +203,10 @@ cc_library(
     name = "optional_storage",
     hdrs = ["include/fixed_containers/optional_storage.hpp"],
     includes = ["include"],
-    deps = [":concepts"],
+    deps = [
+        ":concepts",
+        ":reference_storage",
+    ],
     copts = ["-std=c++20"],
 )
 
