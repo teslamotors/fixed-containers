@@ -54,6 +54,10 @@ static_assert(std::is_trivially_copyable_v<ES_2::const_iterator>);
 static_assert(std::is_trivially_copyable_v<ES_2::iterator>);
 static_assert(std::is_trivially_copyable_v<ES_2::reverse_iterator>);
 static_assert(std::is_trivially_copyable_v<ES_2::const_reverse_iterator>);
+
+using STD_MAP_INT_INT = std::map<int, int>;
+static_assert(ranges::bidirectional_iterator<STD_MAP_INT_INT::iterator>);
+static_assert(ranges::bidirectional_iterator<STD_MAP_INT_INT::const_iterator>);
 }  // namespace
 
 TEST(EnumMap, DefaultConstructor)
@@ -974,6 +978,21 @@ TEST(EnumMap, Iterator_EnsureOrder)
     static_assert(std::prev(s1.end(), 2)->second() == 30);
     static_assert(std::prev(s1.end(), 3)->first() == TestEnum1::ONE);
     static_assert(std::prev(s1.end(), 3)->second() == 10);
+}
+
+TEST(EnumMap, DereferencedIteratorAssignability)
+{
+    {
+        using DereferencedIt = std::map<int, int>::iterator::value_type;
+        static_assert(NotMoveAssignable<DereferencedIt>);
+        static_assert(NotCopyAssignable<DereferencedIt>);
+    }
+
+    {
+        using DereferencedIt = EnumMap<TestEnum1, int>::iterator::value_type;
+        static_assert(NotMoveAssignable<DereferencedIt>);
+        static_assert(NotCopyAssignable<DereferencedIt>);
+    }
 }
 
 TEST(EnumMap, ReverseIteratorBasic)

@@ -30,6 +30,8 @@ class PairView
 {
     using K = std::remove_reference_t<First>;
     using V = std::remove_reference_t<Second>;
+    static constexpr bool ALLOW_PUBLIC_ASSIGNMENT =
+        not std::is_const_v<K> && not std::is_const_v<V>;
 
     K* first_;
     V* second_;
@@ -41,6 +43,22 @@ public:
     {
     }
 
+    // If either K, V is const, make the type non-assignable.
+    // The iterator type of std::map dereferences to a non-MoveAssignable type
+    // (std::pair<const K, V>), so PairView's operators are deleted to match that behavior. This
+    // will cause algorithms like std::remove to fail to compile for fixed_container maps as it does
+    // for std::map. See https://en.cppreference.com/w/cpp/algorithm/remove#Notes for more info.
+    constexpr PairView& operator=(const PairView&) requires ALLOW_PUBLIC_ASSIGNMENT = default;
+    constexpr PairView& operator=(PairView&&) noexcept requires ALLOW_PUBLIC_ASSIGNMENT = default;
+
+    constexpr PairView(const PairView&) = default;
+    constexpr PairView(PairView&&) noexcept = default;
+
+protected:
+    constexpr PairView& operator=(const PairView&) = default;
+    constexpr PairView& operator=(PairView&&) noexcept = default;
+
+public:
     constexpr PairView(K* first, V* second)
       : first_(first)
       , second_(second)
@@ -149,3 +167,23 @@ template <std::size_t N, class Tp1, class Tp2>
 }
 
 }  // namespace std
+
+namespace fixed_containers::pair_view_detail
+{
+// Implementations need to re-assign the underlying pointers even when const, so use a child class
+// that always allows assignment while also being bindable to PairView.
+// This also allows iterators to remain trivially_copyable, whereas the alternative of customizing
+// assignment operators so that PairView is non-assignable and map iterators are assignable does
+// not.
+template <class First, class Second>
+class AssignablePairView : public PairView<First, Second>
+{
+public:
+    using PairView<First, Second>::PairView;
+
+    constexpr AssignablePairView(const AssignablePairView&) = default;
+    constexpr AssignablePairView(AssignablePairView&&) noexcept = default;
+    constexpr AssignablePairView& operator=(const AssignablePairView&) = default;
+    constexpr AssignablePairView& operator=(AssignablePairView&&) noexcept = default;
+};
+}  // namespace fixed_containers::pair_view_detail

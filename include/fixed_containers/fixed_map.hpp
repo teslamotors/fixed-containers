@@ -90,7 +90,9 @@ private:
     {
         using ConstOrMutableTree = std::conditional_t<IS_CONST, const Tree, Tree>;
         using ConstOrMutablePairView =
-            std::conditional_t<IS_CONST, PairView<const K, const V>, PairView<const K, V>>;
+            std::conditional_t<IS_CONST,
+                               pair_view_detail::AssignablePairView<const K, const V>,
+                               pair_view_detail::AssignablePairView<const K, V>>;
 
         ConstOrMutableTree* tree_;
         NodeIndex current_index_;
@@ -157,7 +159,7 @@ private:
             // The function is tagged `const` and would add a `const` to the returned type.
             // This is usually fine, but PairView intentionally propagates its constness to each of
             // its views. Therefore, remove the `const`.
-            return const_cast<reference>(storage_);
+            return const_cast<reference>(static_cast<const PairView<const K, V>&>(storage_));
         }
 
         constexpr bool operator==(const PairProvider& other) const noexcept

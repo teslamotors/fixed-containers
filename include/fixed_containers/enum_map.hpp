@@ -138,7 +138,9 @@ private:
         using ConstOrMutableValueArray =
             std::conditional_t<IS_CONST, const ValueArrayType, ValueArrayType>;
         using ConstOrMutablePairView =
-            std::conditional_t<IS_CONST, PairView<const K, const V>, PairView<const K, V>>;
+            std::conditional_t<IS_CONST,
+                               pair_view_detail::AssignablePairView<const K, const V>,
+                               pair_view_detail::AssignablePairView<const K, V>>;
 
         ConstOrMutableValueArray* values_;
         ConstOrMutablePairView current_;  // Needed for liveness
@@ -175,7 +177,7 @@ private:
             // The function is tagged `const` and would add a `const` to the returned type.
             // This is usually fine, but PairView intentionally propagates its constness to each of
             // its views. Therefore, remove the `const`.
-            return const_cast<reference>(current_);
+            return const_cast<reference>(static_cast<const PairView<const K, V>&>(current_));
         }
     };
 

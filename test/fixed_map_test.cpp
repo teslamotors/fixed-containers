@@ -29,6 +29,15 @@ static_assert(TriviallyMoveAssignable<ES_1>);
 static_assert(ranges::bidirectional_iterator<ES_1::iterator>);
 static_assert(ranges::bidirectional_iterator<ES_1::const_iterator>);
 
+static_assert(std::is_trivially_copyable_v<ES_1::const_iterator>);
+static_assert(std::is_trivially_copyable_v<ES_1::iterator>);
+static_assert(std::is_trivially_copyable_v<ES_1::reverse_iterator>);
+static_assert(std::is_trivially_copyable_v<ES_1::const_reverse_iterator>);
+
+using STD_MAP_INT_INT = std::map<int, int>;
+static_assert(ranges::bidirectional_iterator<STD_MAP_INT_INT::iterator>);
+static_assert(ranges::bidirectional_iterator<STD_MAP_INT_INT::const_iterator>);
+
 }  // namespace
 
 TEST(FixedMap, DefaultConstructor)
@@ -897,6 +906,21 @@ TEST(FixedMap, Iterator_EnsureOrder)
     static_assert(std::prev(s1.end(), 2)->second() == 30);
     static_assert(std::prev(s1.end(), 3)->first() == 1);
     static_assert(std::prev(s1.end(), 3)->second() == 10);
+}
+
+TEST(FixedMap, DereferencedIteratorAssignability)
+{
+    {
+        using DereferencedIt = std::map<int, int>::iterator::value_type;
+        static_assert(NotMoveAssignable<DereferencedIt>);
+        static_assert(NotCopyAssignable<DereferencedIt>);
+    }
+
+    {
+        using DereferencedIt = FixedMap<int, int, 10>::iterator::value_type;
+        static_assert(NotMoveAssignable<DereferencedIt>);
+        static_assert(NotCopyAssignable<DereferencedIt>);
+    }
 }
 
 TEST(FixedMap, ReverseIteratorBasic)

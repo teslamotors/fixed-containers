@@ -1,5 +1,7 @@
 #include "fixed_containers/pair_view.hpp"
 
+#include "fixed_containers/concepts.hpp"
+
 #include <gtest/gtest.h>
 
 namespace fixed_containers
@@ -82,9 +84,27 @@ TEST(PairView, References)
     static constexpr const int& ar = a;
     static constexpr const double& br = b;
 
-    constexpr PairView<const int&, const double&> p1{&ar,&br};
+    constexpr PairView<const int&, const double&> p1{&ar, &br};
 
     static_assert(5 == p1.first());
+}
+
+TEST(PairView, Assignability)
+{
+    static_assert(NotCopyAssignable<PairView<const int, double>>);
+    static_assert(NotMoveAssignable<PairView<const int, double>>);
+
+    static_assert(CopyAssignable<PairView<int, double>>);
+    static_assert(MoveAssignable<PairView<int, double>>);
+}
+
+TEST(AssignablePairView, Assignability)
+{
+    static_assert(CopyAssignable<pair_view_detail::AssignablePairView<const int, double>>);
+    static_assert(MoveAssignable<pair_view_detail::AssignablePairView<const int, double>>);
+
+    static_assert(CopyAssignable<pair_view_detail::AssignablePairView<int, double>>);
+    static_assert(MoveAssignable<pair_view_detail::AssignablePairView<int, double>>);
 }
 
 }  // namespace fixed_containers
