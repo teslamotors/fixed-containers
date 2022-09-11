@@ -9,6 +9,7 @@
 #include "fixed_containers/string_literal.hpp"
 #include "fixed_containers/type_name.hpp"
 
+#include <algorithm>
 #include <array>
 #include <cstddef>
 #include <initializer_list>
@@ -985,5 +986,23 @@ template <typename T,
               fixed_vector_customize::AbortChecking<T, MAXIMUM_SIZE>>
 using FixedVector =
     fixed_vector_detail::specializations::FixedVector<T, MAXIMUM_SIZE, CheckingType>;
+
+template <typename T, std::size_t MAXIMUM_SIZE, typename CheckingType, typename U>
+constexpr typename FixedVector<T, MAXIMUM_SIZE, CheckingType>::size_type erase(
+    FixedVector<T, MAXIMUM_SIZE, CheckingType>& c, const U& value)
+{
+    const auto original_size = c.size();
+    c.erase(std::remove(c.begin(), c.end(), value), c.end());
+    return original_size - c.size();
+}
+
+template <typename T, std::size_t MAXIMUM_SIZE, typename CheckingType, typename Predicate>
+constexpr typename FixedVector<T, MAXIMUM_SIZE, CheckingType>::size_type erase_if(
+    FixedVector<T, MAXIMUM_SIZE, CheckingType>& c, Predicate predicate)
+{
+    const auto original_size = c.size();
+    c.erase(std::remove_if(c.begin(), c.end(), predicate), c.end());
+    return original_size - c.size();
+}
 
 }  // namespace fixed_containers

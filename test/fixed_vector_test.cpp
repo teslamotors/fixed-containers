@@ -1400,6 +1400,33 @@ TEST(FixedVector, Erase_Empty)
     }
 }
 
+TEST(FixedVector, EraseFreeFunction)
+{
+    constexpr auto v1 = []()
+    {
+        FixedVector<int, 8> v{3, 0, 1, 2, 3, 4, 5, 3};
+        std::size_t removed_count = fixed_containers::erase(v, 3);
+        assert_or_abort(3 == removed_count);
+        return v;
+    }();
+
+    static_assert(are_equal(v1, std::array<int, 5>{0, 1, 2, 4, 5}));
+}
+
+TEST(FixedVector, EraseIf)
+{
+    constexpr auto v1 = []()
+    {
+        FixedVector<int, 8> v{0, 1, 2, 3, 4, 5};
+        std::size_t removed_count =
+            fixed_containers::erase_if(v, [](const int& a) { return (a % 2) == 0; });
+        assert_or_abort(3 == removed_count);
+        return v;
+    }();
+
+    static_assert(are_equal(v1, std::array<int, 3>{1, 3, 5}));
+}
+
 TEST(FixedVector, Front)
 {
     constexpr auto v1 = []()
