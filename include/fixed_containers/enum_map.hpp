@@ -579,58 +579,7 @@ private:
 };
 }  // namespace fixed_containers::enum_map_detail
 
-namespace fixed_containers::enum_map_detail::trivially_copyable
-{
-template <class K, class V, enum_map_customize::EnumMapChecking<K> CheckingType>
-class EnumMap : public enum_map_detail::EnumMapBase<K, V, CheckingType>
-{
-    using Self = EnumMap<K, V, CheckingType>;
-    using Base = enum_map_detail::EnumMapBase<K, V, CheckingType>;
-
-public:
-    using key_type = typename Base::key_type;
-    using mapped_type = typename Base::mapped_type;
-    using value_type = typename Base::value_type;
-    using reference = typename Base::reference;
-    using const_reference = typename Base::const_reference;
-    using pointer = typename Base::pointer;
-    using const_pointer = typename Base::const_pointer;
-    using const_iterator = typename Base::const_iterator;
-    using iterator = typename Base::iterator;
-    using const_reverse_iterator = typename Base::const_reverse_iterator;
-    using reverse_iterator = typename Base::reverse_iterator;
-    using size_type = typename Base::size_type;
-    using difference_type = typename Base::difference_type;
-
-public:
-    using Builder = enum_map_detail::EnumMapBuilder<K, V, Self>;
-
-    template <class Container, class EnumMapType = Self>
-    static constexpr EnumMapType create_with_keys(const Container& sp, const V& value = V())
-    {
-        return Base::template create_with_keys<Container, EnumMapType>(sp, value);
-    }
-
-    template <class EnumMapType = Self>
-    static constexpr EnumMapType create_with_all_entries(
-        std::initializer_list<value_type> pairs,
-        const std_transition::source_location& loc = std_transition::source_location::current())
-    {
-        return Base::template create_with_all_entries<EnumMapType>(pairs, loc);
-    }
-
-    constexpr EnumMap() noexcept
-      : Base()
-    {
-    }
-    constexpr EnumMap(std::initializer_list<value_type> list) noexcept
-      : Base(list)
-    {
-    }
-};
-}  // namespace fixed_containers::enum_map_detail::trivially_copyable
-
-namespace fixed_containers::enum_map_detail::non_trivially_copyable
+namespace fixed_containers::enum_map_detail::specializations
 {
 template <class K, class V, enum_map_customize::EnumMapChecking<K> CheckingType>
 class EnumMap : public enum_map_detail::EnumMapBase<K, V, CheckingType>
@@ -762,7 +711,55 @@ public:
 
     constexpr ~EnumMap() noexcept { this->clear(); }
 };
-}  // namespace fixed_containers::enum_map_detail::non_trivially_copyable
+
+template <class K, TriviallyCopyable V, enum_map_customize::EnumMapChecking<K> CheckingType>
+class EnumMap<K, V, CheckingType> : public enum_map_detail::EnumMapBase<K, V, CheckingType>
+{
+    using Self = EnumMap<K, V, CheckingType>;
+    using Base = enum_map_detail::EnumMapBase<K, V, CheckingType>;
+
+public:
+    using key_type = typename Base::key_type;
+    using mapped_type = typename Base::mapped_type;
+    using value_type = typename Base::value_type;
+    using reference = typename Base::reference;
+    using const_reference = typename Base::const_reference;
+    using pointer = typename Base::pointer;
+    using const_pointer = typename Base::const_pointer;
+    using const_iterator = typename Base::const_iterator;
+    using iterator = typename Base::iterator;
+    using const_reverse_iterator = typename Base::const_reverse_iterator;
+    using reverse_iterator = typename Base::reverse_iterator;
+    using size_type = typename Base::size_type;
+    using difference_type = typename Base::difference_type;
+
+public:
+    using Builder = enum_map_detail::EnumMapBuilder<K, V, Self>;
+
+    template <class Container, class EnumMapType = Self>
+    static constexpr EnumMapType create_with_keys(const Container& sp, const V& value = V())
+    {
+        return Base::template create_with_keys<Container, EnumMapType>(sp, value);
+    }
+
+    template <class EnumMapType = Self>
+    static constexpr EnumMapType create_with_all_entries(
+        std::initializer_list<value_type> pairs,
+        const std_transition::source_location& loc = std_transition::source_location::current())
+    {
+        return Base::template create_with_all_entries<EnumMapType>(pairs, loc);
+    }
+
+    constexpr EnumMap() noexcept
+      : Base()
+    {
+    }
+    constexpr EnumMap(std::initializer_list<value_type> list) noexcept
+      : Base(list)
+    {
+    }
+};
+}  // namespace fixed_containers::enum_map_detail::specializations
 
 namespace fixed_containers
 {
@@ -777,8 +774,5 @@ template <class K,
           class V,
           enum_map_customize::EnumMapChecking<K> CheckingType =
               enum_map_customize::AbortChecking<K, V>>
-using EnumMap =
-    std::conditional_t<TriviallyCopyable<V>,
-                       enum_map_detail::trivially_copyable::EnumMap<K, V, CheckingType>,
-                       enum_map_detail::non_trivially_copyable::EnumMap<K, V, CheckingType>>;
-}  // end namespace fixed_containers
+using EnumMap = enum_map_detail::specializations::EnumMap<K, V, CheckingType>;
+}  // namespace fixed_containers

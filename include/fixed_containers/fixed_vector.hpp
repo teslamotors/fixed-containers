@@ -125,7 +125,7 @@ private:
 // std::is_trivially_copy_assignable<T>, then so should FixedVector<T>.
 // This is done with concepts. However, at the time of writing there is a compiler bug
 // that is preventing usage of concepts for destructors: https://bugs.llvm.org/show_bug.cgi?id=46269
-// [WORKAROUND-1] due to destructors: manually do the split with std::conditional_t.
+// [WORKAROUND-1] due to destructors: manually do the split with template specialization.
 // FixedVectorBase is only used for avoiding too much duplication for the destructor split
 template <typename T,
           std::size_t MAXIMUM_SIZE,
@@ -805,56 +805,10 @@ protected:
         new (&array_[i]) OptionalT(std::in_place, std::forward<Args>(args)...);
     }
 };
+
 }  // namespace fixed_containers::fixed_vector_detail
 
-namespace fixed_containers::fixed_vector_detail::trivially_copyable
-{
-template <typename T,
-          std::size_t MAXIMUM_SIZE,
-          fixed_vector_customize::FixedVectorChecking CheckingType>
-class FixedVector : public fixed_vector_detail::FixedVectorBase<T, MAXIMUM_SIZE, CheckingType>
-{
-    using Base = fixed_vector_detail::FixedVectorBase<T, MAXIMUM_SIZE, CheckingType>;
-
-public:
-    using Builder =
-        fixed_vector_detail::FixedVectorBuilder<T, FixedVector<T, MAXIMUM_SIZE, CheckingType>>;
-
-    constexpr FixedVector() noexcept
-      : Base()
-    {
-    }
-    constexpr FixedVector(std::initializer_list<T> list,
-                          const std_transition::source_location& loc =
-                              std_transition::source_location::current()) noexcept
-      : Base(list, loc)
-    {
-    }
-    constexpr FixedVector(std::size_t count,
-                          const T& value,
-                          const std_transition::source_location& loc =
-                              std_transition::source_location::current()) noexcept
-      : Base(count, value, loc)
-    {
-    }
-    constexpr explicit FixedVector(std::size_t count,
-                                   const std_transition::source_location& loc =
-                                       std_transition::source_location::current()) noexcept
-      : Base(count, loc)
-    {
-    }
-    template <InputIterator InputIt>
-    constexpr FixedVector(InputIt first,
-                          InputIt last,
-                          const std_transition::source_location& loc =
-                              std_transition::source_location::current()) noexcept
-      : Base(first, last, loc)
-    {
-    }
-};
-}  // namespace fixed_containers::fixed_vector_detail::trivially_copyable
-
-namespace fixed_containers::fixed_vector_detail::non_trivially_copyable
+namespace fixed_containers::fixed_vector_detail::specializations
 {
 template <typename T,
           std::size_t MAXIMUM_SIZE,
@@ -967,7 +921,53 @@ public:
 
     constexpr ~FixedVector() noexcept { this->clear(); }
 };
-}  // namespace fixed_containers::fixed_vector_detail::non_trivially_copyable
+
+template <TriviallyCopyable T,
+          std::size_t MAXIMUM_SIZE,
+          fixed_vector_customize::FixedVectorChecking CheckingType>
+class FixedVector<T, MAXIMUM_SIZE, CheckingType>
+  : public fixed_vector_detail::FixedVectorBase<T, MAXIMUM_SIZE, CheckingType>
+{
+    using Base = fixed_vector_detail::FixedVectorBase<T, MAXIMUM_SIZE, CheckingType>;
+
+public:
+    using Builder =
+        fixed_vector_detail::FixedVectorBuilder<T, FixedVector<T, MAXIMUM_SIZE, CheckingType>>;
+
+    constexpr FixedVector() noexcept
+      : Base()
+    {
+    }
+    constexpr FixedVector(std::initializer_list<T> list,
+                          const std_transition::source_location& loc =
+                              std_transition::source_location::current()) noexcept
+      : Base(list, loc)
+    {
+    }
+    constexpr FixedVector(std::size_t count,
+                          const T& value,
+                          const std_transition::source_location& loc =
+                              std_transition::source_location::current()) noexcept
+      : Base(count, value, loc)
+    {
+    }
+    constexpr explicit FixedVector(std::size_t count,
+                                   const std_transition::source_location& loc =
+                                       std_transition::source_location::current()) noexcept
+      : Base(count, loc)
+    {
+    }
+    template <InputIterator InputIt>
+    constexpr FixedVector(InputIt first,
+                          InputIt last,
+                          const std_transition::source_location& loc =
+                              std_transition::source_location::current()) noexcept
+      : Base(first, last, loc)
+    {
+    }
+};
+
+}  // namespace fixed_containers::fixed_vector_detail::specializations
 
 namespace fixed_containers
 {
@@ -983,8 +983,7 @@ template <typename T,
           std::size_t MAXIMUM_SIZE,
           fixed_vector_customize::FixedVectorChecking CheckingType =
               fixed_vector_customize::AbortChecking<T, MAXIMUM_SIZE>>
-using FixedVector = std::conditional_t<
-    TriviallyCopyable<T>,
-    fixed_vector_detail::trivially_copyable::FixedVector<T, MAXIMUM_SIZE, CheckingType>,
-    fixed_vector_detail::non_trivially_copyable::FixedVector<T, MAXIMUM_SIZE, CheckingType>>;
-}  // end namespace fixed_containers
+using FixedVector =
+    fixed_vector_detail::specializations::FixedVector<T, MAXIMUM_SIZE, CheckingType>;
+
+}  // namespace fixed_containers

@@ -797,37 +797,9 @@ private:
 
 }  // namespace fixed_containers::fixed_red_black_tree_detail
 
-namespace fixed_containers::fixed_red_black_tree_detail::trivially_copyable
+namespace fixed_containers::fixed_red_black_tree_detail::specializations
 {
-template <class K,
-          class V,
-          std::size_t MAXIMUM_SIZE,
-          class Compare,
-          RedBlackTreeNodeColorCompactness COMPACTNESS,
-          template <class /*Would be IsFixedIndexBasedStorage but gcc doesn't like the constraints
-                           here. clang accepts it */
-                    ,
-                    std::size_t>
-          typename StorageTemplate>
-class FixedRedBlackTree
-  : public fixed_red_black_tree_detail::
-        FixedRedBlackTreeBase<K, V, MAXIMUM_SIZE, Compare, COMPACTNESS, StorageTemplate>
-{
-    using Base = fixed_red_black_tree_detail::
-        FixedRedBlackTreeBase<K, V, MAXIMUM_SIZE, Compare, COMPACTNESS, StorageTemplate>;
-    using Ops = FixedRedBlackTreeOps<FixedRedBlackTree>;
-    friend Ops;
 
-public:
-    // clang-format off
-        constexpr FixedRedBlackTree() noexcept : Base() { }
-        explicit constexpr FixedRedBlackTree(const Compare& comparator) noexcept : Base(comparator) { }
-    // clang-format on
-};
-}  // namespace fixed_containers::fixed_red_black_tree_detail::trivially_copyable
-
-namespace fixed_containers::fixed_red_black_tree_detail::non_trivially_copyable
-{
 template <class K,
           class V,
           std::size_t MAXIMUM_SIZE,
@@ -961,11 +933,38 @@ public:
 
     constexpr ~FixedRedBlackTree() noexcept { this->clear(); }
 };
-}  // namespace fixed_containers::fixed_red_black_tree_detail::non_trivially_copyable
+
+template <TriviallyCopyable K,
+          TriviallyCopyable V,
+          std::size_t MAXIMUM_SIZE,
+          class Compare,
+          RedBlackTreeNodeColorCompactness COMPACTNESS,
+          template <class /*Would be IsFixedIndexBasedStorage but gcc doesn't like the constraints
+                           here. clang accepts it */
+                    ,
+                    std::size_t>
+          typename StorageTemplate>
+class FixedRedBlackTree<K, V, MAXIMUM_SIZE, Compare, COMPACTNESS, StorageTemplate>
+  : public fixed_red_black_tree_detail::
+        FixedRedBlackTreeBase<K, V, MAXIMUM_SIZE, Compare, COMPACTNESS, StorageTemplate>
+{
+    using Base = fixed_red_black_tree_detail::
+        FixedRedBlackTreeBase<K, V, MAXIMUM_SIZE, Compare, COMPACTNESS, StorageTemplate>;
+    using Ops = FixedRedBlackTreeOps<FixedRedBlackTree>;
+    friend Ops;
+
+public:
+    // clang-format off
+        constexpr FixedRedBlackTree() noexcept : Base() { }
+        explicit constexpr FixedRedBlackTree(const Compare& comparator) noexcept : Base(comparator) { }
+    // clang-format on
+};
+
+}  // namespace fixed_containers::fixed_red_black_tree_detail::specializations
 
 namespace fixed_containers::fixed_red_black_tree_detail
 {
-// [WORKAROUND-1] due to destructors: manually do the split with std::conditional_t.
+// [WORKAROUND-1] due to destructors: manually do the split with template specialization.
 // See FixedVector which uses the same workaround for more details.
 template <class K,
           class V,
@@ -978,12 +977,8 @@ template <class K,
                     ,
                     std::size_t>
           typename StorageTemplate = FixedIndexBasedPoolStorage>
-using FixedRedBlackTree = std::conditional_t<
-    TriviallyCopyable<K> && TriviallyCopyable<V>,
-    fixed_red_black_tree_detail::trivially_copyable::
-        FixedRedBlackTree<K, V, MAXIMUM_SIZE, Compare, COMPACTNESS, StorageTemplate>,
-    fixed_red_black_tree_detail::non_trivially_copyable::
-        FixedRedBlackTree<K, V, MAXIMUM_SIZE, Compare, COMPACTNESS, StorageTemplate>>;
+using FixedRedBlackTree = fixed_red_black_tree_detail::specializations::
+    FixedRedBlackTree<K, V, MAXIMUM_SIZE, Compare, COMPACTNESS, StorageTemplate>;
 
 template <class K,
           std::size_t MAXIMUM_SIZE,
