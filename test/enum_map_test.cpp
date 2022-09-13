@@ -703,6 +703,32 @@ TEST(EnumMap, EraseRange)
     }
 }
 
+TEST(EnumMap, EraseIf)
+{
+    constexpr auto s1 = []()
+    {
+        EnumMap<TestEnum1, int> s{
+            {TestEnum1::TWO, 20}, {TestEnum1::THREE, 30}, {TestEnum1::FOUR, 40}};
+        std::size_t removed_count =
+            fixed_containers::erase_if(s,
+                                       [](const auto& entry)
+                                       {
+                                           const auto& [key, _] = entry;
+                                           return key == TestEnum1::TWO or key == TestEnum1::FOUR;
+                                       });
+        assert_or_abort(2 == removed_count);
+        return s;
+    }();
+
+    static_assert(consteval_compare::equal<1, s1.size()>);
+    static_assert(!s1.contains(TestEnum1::ONE));
+    static_assert(!s1.contains(TestEnum1::TWO));
+    static_assert(s1.contains(TestEnum1::THREE));
+    static_assert(!s1.contains(TestEnum1::FOUR));
+
+    static_assert(s1.at(TestEnum1::THREE) == 30);
+}
+
 TEST(EnumMap, Iterator_StructuredBinding)
 {
     constexpr auto s1 = []()

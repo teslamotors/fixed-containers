@@ -451,6 +451,24 @@ TEST(EnumSet, EraseRange)
     }
 }
 
+TEST(EnumSet, EraseIf)
+{
+    constexpr auto s1 = []()
+    {
+        EnumSet<TestEnum1> s{TestEnum1::TWO, TestEnum1::THREE, TestEnum1::FOUR};
+        std::size_t removed_count = fixed_containers::erase_if(
+            s, [](const auto& key) { return key == TestEnum1::TWO or key == TestEnum1::FOUR; });
+        assert_or_abort(2 == removed_count);
+        return s;
+    }();
+
+    static_assert(consteval_compare::equal<1, s1.size()>);
+    static_assert(!s1.contains(TestEnum1::ONE));
+    static_assert(!s1.contains(TestEnum1::TWO));
+    static_assert(s1.contains(TestEnum1::THREE));
+    static_assert(!s1.contains(TestEnum1::FOUR));
+}
+
 TEST(EnumSet, IteratorBasic)
 {
     constexpr EnumSet<TestEnum1> s1{

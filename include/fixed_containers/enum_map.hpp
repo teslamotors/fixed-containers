@@ -3,6 +3,7 @@
 #include "fixed_containers/concepts.hpp"
 #include "fixed_containers/constexpr_support.hpp"
 #include "fixed_containers/enum_utils.hpp"
+#include "fixed_containers/erase_if.hpp"
 #include "fixed_containers/index_range_predicate_iterator.hpp"
 #include "fixed_containers/optional_storage.hpp"
 #include "fixed_containers/pair_view.hpp"
@@ -775,4 +776,12 @@ template <class K,
           enum_map_customize::EnumMapChecking<K> CheckingType =
               enum_map_customize::AbortChecking<K, V>>
 using EnumMap = enum_map_detail::specializations::EnumMap<K, V, CheckingType>;
+
+template <class K, class V, enum_map_customize::EnumMapChecking<K> CheckingType, class Predicate>
+constexpr typename EnumMap<K, V, CheckingType>::size_type erase_if(EnumMap<K, V, CheckingType>& c,
+                                                                   Predicate predicate)
+{
+    return erase_if_detail::erase_if_impl(c, predicate);
+}
+
 }  // namespace fixed_containers

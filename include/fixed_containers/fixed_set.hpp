@@ -1,6 +1,7 @@
 #pragma once
 
 #include "fixed_containers/bidirectional_iterator.hpp"
+#include "fixed_containers/erase_if.hpp"
 #include "fixed_containers/fixed_red_black_tree.hpp"
 #include "fixed_containers/preconditions.hpp"
 #include "fixed_containers/source_location.hpp"
@@ -415,4 +416,24 @@ private:
         return {create_const_iterator(l), create_const_iterator(r)};
     }
 };
+
+template <class K,
+          std::size_t MAXIMUM_SIZE,
+          class Compare,
+          fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness COMPACTNESS,
+          template <class /*Would be IsFixedIndexBasedStorage but gcc doesn't like the constraints
+here. clang accepts it */
+                    ,
+                    std::size_t>
+          typename StorageTemplate,
+          fixed_set_customize::FixedSetChecking<K> CheckingType,
+          class Predicate>
+constexpr typename FixedSet<K, MAXIMUM_SIZE, Compare, COMPACTNESS, StorageTemplate, CheckingType>::
+    size_type
+    erase_if(FixedSet<K, MAXIMUM_SIZE, Compare, COMPACTNESS, StorageTemplate, CheckingType>& c,
+             Predicate predicate)
+{
+    return erase_if_detail::erase_if_impl(c, predicate);
+}
+
 }  // namespace fixed_containers

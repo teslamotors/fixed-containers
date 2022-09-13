@@ -408,6 +408,24 @@ TEST(FixedSet, EraseRange)
     }
 }
 
+TEST(FixedSet, EraseIf)
+{
+    constexpr auto s1 = []()
+    {
+        FixedSet<int, 10> s{2, 3, 4};
+        std::size_t removed_count =
+            fixed_containers::erase_if(s, [](const auto& key) { return key == 2 or key == 4; });
+        assert_or_abort(2 == removed_count);
+        return s;
+    }();
+
+    static_assert(consteval_compare::equal<1, s1.size()>);
+    static_assert(!s1.contains(1));
+    static_assert(!s1.contains(2));
+    static_assert(s1.contains(3));
+    static_assert(!s1.contains(4));
+}
+
 TEST(FixedSet, IteratorBasic)
 {
     constexpr FixedSet<int, 10> s1{1, 2, 3, 4};

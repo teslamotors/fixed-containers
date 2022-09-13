@@ -2,6 +2,7 @@
 
 #include "fixed_containers/concepts.hpp"
 #include "fixed_containers/enum_utils.hpp"
+#include "fixed_containers/erase_if.hpp"
 #include "fixed_containers/index_range_predicate_iterator.hpp"
 
 #include <array>
@@ -340,5 +341,11 @@ private:
         size_--;
     }
 };
+
+template <class K, class Predicate>
+constexpr typename EnumSet<K>::size_type erase_if(EnumSet<K>& c, Predicate predicate)
+{
+    return erase_if_detail::erase_if_impl(c, predicate);
+}
 
 }  // namespace fixed_containers
