@@ -755,4 +755,59 @@ constexpr
     return erase_if_detail::erase_if_impl(c, predicate);
 }
 
+/**
+ * Construct a FixedMap with its capacity being deduced from the number of key-value pairs being
+ * passed.
+ */
+template <typename K,
+          typename V,
+          typename Compare = std::less<K>,
+          fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness COMPACTNESS =
+              fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR(),
+          template <typename, std::size_t> typename StorageTemplate = FixedIndexBasedPoolStorage,
+          fixed_map_customize::FixedMapChecking<K> CheckingType,
+          std::size_t MAXIMUM_SIZE,
+          // Exposing this as a template parameter is useful for customization (for example with
+          // child classes that set the CheckingType)
+          typename FixedMapType =
+              FixedMap<K, V, MAXIMUM_SIZE, Compare, COMPACTNESS, StorageTemplate, CheckingType>>
+[[nodiscard]] constexpr FixedMapType make_fixed_map(
+    const std::pair<K, V> (&list)[MAXIMUM_SIZE],
+    const Compare& comparator = Compare{},
+    const std_transition::source_location& loc =
+        std_transition::source_location::current()) noexcept
+{
+    FixedMapType map{comparator};
+    for (const auto& item : list)
+    {
+        map.insert(item, loc);
+    }
+    return map;
+}
+
+template <typename K,
+          typename V,
+          typename Compare = std::less<K>,
+          fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness COMPACTNESS =
+              fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR(),
+          template <typename, std::size_t> typename StorageTemplate = FixedIndexBasedPoolStorage,
+          std::size_t MAXIMUM_SIZE>
+[[nodiscard]] constexpr auto make_fixed_map(const std::pair<K, V> (&list)[MAXIMUM_SIZE],
+                                            const Compare& comparator = Compare{},
+                                            const std_transition::source_location& loc =
+                                                std_transition::source_location::current()) noexcept
+{
+    using CheckingType = fixed_map_customize::AbortChecking<K, V, MAXIMUM_SIZE>;
+    using FixedMapType =
+        FixedMap<K, V, MAXIMUM_SIZE, Compare, COMPACTNESS, StorageTemplate, CheckingType>;
+    return make_fixed_map<K,
+                          V,
+                          Compare,
+                          COMPACTNESS,
+                          StorageTemplate,
+                          CheckingType,
+                          MAXIMUM_SIZE,
+                          FixedMapType>(list, comparator, loc);
+}
+
 }  // namespace fixed_containers

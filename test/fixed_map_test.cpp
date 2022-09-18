@@ -95,6 +95,16 @@ TEST(FixedMap, OperatorBracket_Constexpr)
     static_assert(s1.contains(4));
 }
 
+TEST(FixedMap, MaxSizeDeduction)
+{
+    constexpr auto s1 = make_fixed_map({std::pair{30, 30}, std::pair{31, 54}});
+    static_assert(s1.size() == 2);
+    static_assert(s1.max_size() == 2);
+    static_assert(s1.contains(30));
+    static_assert(s1.contains(31));
+    static_assert(!s1.contains(32));
+}
+
 TEST(FixedMap, OperatorBracket_NonConstexpr)
 {
     FixedMap<int, int, 10> s1{};
