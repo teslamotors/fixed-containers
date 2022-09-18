@@ -369,6 +369,18 @@ TEST(FixedVector, Initializer)
     EXPECT_TRUE(are_equal(v2, std::array{66, 55}));
 }
 
+TEST(FixedVector, MaxSizeDeduction)
+{
+    constexpr auto v1 = make_fixed_vector({10, 11, 12, 13, 14});
+    static_assert(v1.size() == 5);
+    static_assert(v1.max_size() == 5);
+    static_assert(v1[0] == 10);
+    static_assert(v1[1] == 11);
+    static_assert(v1[2] == 12);
+    static_assert(v1[3] == 13);
+    static_assert(v1[4] == 14);
+}
+
 TEST(FixedVector, CountConstructor)
 {
     // Caution: Using braces calls initializer list ctor!

@@ -1005,4 +1005,37 @@ constexpr typename FixedVector<T, MAXIMUM_SIZE, CheckingType>::size_type erase_i
     return original_size - c.size();
 }
 
+/**
+ * Construct a FixedVector with its capacity being deduced from the number of items being passed.
+ */
+template <typename T,
+          fixed_vector_customize::FixedVectorChecking CheckingType,
+          std::size_t MAXIMUM_SIZE,
+          // Exposing this as a template parameter is useful for customization (for example with
+          // child classes that set the CheckingType)
+          typename FixedVectorType = FixedVector<T, MAXIMUM_SIZE, CheckingType>>
+[[nodiscard]] constexpr FixedVectorType make_fixed_vector(
+    const T (&list)[MAXIMUM_SIZE],
+    const std_transition::source_location& loc =
+        std_transition::source_location::current()) noexcept
+{
+    FixedVectorType vector{};
+    for (const auto& item : list)
+    {
+        vector.push_back(item, loc);
+    }
+    return vector;
+}
+
+template <typename T, std::size_t MAXIMUM_SIZE>
+[[nodiscard]] constexpr auto make_fixed_vector(
+    const T (&list)[MAXIMUM_SIZE],
+    const std_transition::source_location& loc =
+        std_transition::source_location::current()) noexcept
+{
+    using CheckingType = fixed_vector_customize::AbortChecking<T, MAXIMUM_SIZE>;
+    using FixedVectorType = FixedVector<T, MAXIMUM_SIZE, CheckingType>;
+    return make_fixed_vector<T, CheckingType, MAXIMUM_SIZE, FixedVectorType>(list, loc);
+}
+
 }  // namespace fixed_containers
