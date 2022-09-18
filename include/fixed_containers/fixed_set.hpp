@@ -436,4 +436,55 @@ constexpr typename FixedSet<K, MAXIMUM_SIZE, Compare, COMPACTNESS, StorageTempla
     return erase_if_detail::erase_if_impl(c, predicate);
 }
 
+/**
+ * Construct a FixedSet with its capacity being deduced from the number of items being passed.
+ */
+template <typename K,
+          typename Compare = std::less<K>,
+          fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness COMPACTNESS =
+              fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR(),
+          template <typename, std::size_t> typename StorageTemplate = FixedIndexBasedPoolStorage,
+          fixed_set_customize::FixedSetChecking<K> CheckingType,
+          std::size_t MAXIMUM_SIZE,
+          // Exposing this as a template parameter is useful for customization (for example with
+          // child classes that set the CheckingType)
+          typename FixedSetType =
+              FixedSet<K, MAXIMUM_SIZE, Compare, COMPACTNESS, StorageTemplate, CheckingType>>
+[[nodiscard]] constexpr FixedSetType make_fixed_set(
+    const K (&list)[MAXIMUM_SIZE],
+    const Compare& comparator = Compare{},
+    const std_transition::source_location& loc =
+        std_transition::source_location::current()) noexcept
+{
+    FixedSetType set{comparator};
+    for (const auto& item : list)
+    {
+        set.insert(item, loc);
+    }
+    return set;
+}
+
+template <typename K,
+          typename Compare = std::less<K>,
+          fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness COMPACTNESS =
+              fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR(),
+          template <typename, std::size_t> typename StorageTemplate = FixedIndexBasedPoolStorage,
+          std::size_t MAXIMUM_SIZE>
+[[nodiscard]] constexpr auto make_fixed_set(const K (&list)[MAXIMUM_SIZE],
+                                            const Compare& comparator = Compare{},
+                                            const std_transition::source_location& loc =
+                                                std_transition::source_location::current()) noexcept
+{
+    using CheckingType = fixed_set_customize::AbortChecking<K, MAXIMUM_SIZE>;
+    using FixedSetType =
+        FixedSet<K, MAXIMUM_SIZE, Compare, COMPACTNESS, StorageTemplate, CheckingType>;
+    return make_fixed_set<K,
+                          Compare,
+                          COMPACTNESS,
+                          StorageTemplate,
+                          CheckingType,
+                          MAXIMUM_SIZE,
+                          FixedSetType>(list, comparator, loc);
+}
+
 }  // namespace fixed_containers

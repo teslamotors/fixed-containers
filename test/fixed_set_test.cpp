@@ -173,6 +173,16 @@ TEST(FixedSet, EmptySizeFull)
     static_assert(!s4.full());
 }
 
+TEST(FixedSet, MaxSizeDeduction)
+{
+    constexpr auto s1 = make_fixed_set({30, 31});
+    static_assert(s1.size() == 2);
+    static_assert(s1.max_size() == 2);
+    static_assert(s1.contains(30));
+    static_assert(s1.contains(31));
+    static_assert(!s1.contains(32));
+}
+
 TEST(FixedSet, Insert)
 {
     constexpr auto s1 = []()
