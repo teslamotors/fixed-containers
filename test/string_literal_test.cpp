@@ -2,8 +2,6 @@
 
 #include <gtest/gtest.h>
 
-#include <atomic>
-
 namespace fixed_containers
 {
 // Static assert for expected type properties
