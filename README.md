@@ -152,7 +152,7 @@ This syntax works as-is for `FixedMap` and `EnumMap`.
 
 ### cmake
 
-1) Build with the [vcpkg toolchain file](https://vcpkg.io/en/docs/users/integration.html#cmake-integration)
+1) Build with the [vcpkg toolchain file](https://vcpkg.io/en/docs/users/buildsystems/cmake-integration.html)
 ```
 mkdir build && cd build
 cmake .. -DCMAKE_C_COMPILER=/bin/clang-13 -DCMAKE_CXX_COMPILER=/bin/clang++-13 -DCMAKE_TOOLCHAIN_FILE=/path/to/vcpkg/scripts/buildsystems/vcpkg.cmake
