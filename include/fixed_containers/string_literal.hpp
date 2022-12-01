@@ -13,9 +13,9 @@ namespace fixed_containers
  *
  * Compare:
  * <ul>
- * <li> static constexpr const char* s = "blah";
- * <li> static constexpr const char s[5] = "blah";  // size 5 =  4 chars + null terminator
- * <li> static constexpr StringLiteral s = "blah";  // size 4 (null-terminator is not counted)
+ * <li> static constexpr const char* s = "blah"; // strlen==4, sizeof==8
+ * <li> static constexpr const char s[5] = "blah";  // strlen==4, sizeof==5 (null terminator)
+ * <li> static constexpr StringLiteral s = "blah";  // constexpr size()==4
  * </ul>
  *
  * StringLiteral is cleaner to use, no confusion about size (null terminator), constant time

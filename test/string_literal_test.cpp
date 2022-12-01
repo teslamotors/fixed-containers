@@ -2,12 +2,28 @@
 
 #include <gtest/gtest.h>
 
+#include <cstring>
+
 namespace fixed_containers
 {
 // Static assert for expected type properties
 static_assert(std::is_trivially_copyable_v<StringLiteral>);
 static_assert(!std::is_trivial_v<StringLiteral>);
 static_assert(std::is_standard_layout_v<StringLiteral>);
+
+TEST(StringLiteral, Compare)
+{
+    static constexpr const char* POINTER = "blah";
+    static_assert(8 == sizeof(POINTER));
+    ASSERT_EQ(4, std::strlen(POINTER));  // not-constexpr
+
+    static constexpr const char ARRAY[5] = "blah";
+    static_assert(5 == sizeof(ARRAY));
+    ASSERT_EQ(4, std::strlen(ARRAY));  // not-constexpr
+
+    static constexpr StringLiteral STRING_LITERAL = "blah";
+    static_assert(4 == STRING_LITERAL.size());
+}
 
 TEST(StringLiteral, DefaultConstructor)
 {

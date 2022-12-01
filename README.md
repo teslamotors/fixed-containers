@@ -43,6 +43,106 @@ static_assert(4 == Color::count());                                // auto-provi
 ```
 More examples can be found [here](test/enums_test_common.hpp).
 
+# Examples
+- FixedVector
+    ```C++
+    constexpr auto v1 = []()
+    {
+        FixedVector<int, 11> v{};
+        v.push_back(0);
+        v.emplace_back(1);
+        v.push_back(2);
+        return v;
+    }();
+    static_assert(v1[0] == 0);
+    static_assert(v1[1] == 2);
+    static_assert(v1[2] == 2);
+    static_assert(v1.size() == 3);
+    static_assert(v1.capacity() == 11);
+    ```
+
+- FixedMap
+    ```C++
+    constexpr auto m1 = []()
+    {
+        FixedMap<int, int, 11> m{};
+        m.insert({2, 20});
+        m[4] = 40;
+        return m;
+    }();
+    static_assert(!m1.contains(1));
+    static_assert(m1.contains(2));
+    static_assert(m1.at(4) == 40);
+    static_assert(m1.size() == 2);
+    static_assert(m1.capacity() == 11);
+    ```
+
+- FixedSet
+    ```C++
+    constexpr auto s1 = []()
+    {
+        FixedSet<int, 11> s{};
+        s.insert(2);
+        s.insert(4);
+        return s;
+    }();
+    static_assert(!s1.contains(1));
+    static_assert(s1.contains(2));
+    static_assert(s1.size() == 2);
+    static_assert(s1.capacity() == 11);
+    ```
+
+- EnumMap
+    ```C++
+    enum class Color { RED, YELLOW, BLUE};
+
+    constexpr auto m1 = []()
+    {
+        EnumMap<Color, int> m{};
+        m.insert({Color::RED, 20});
+        m[Color::YELLOW] = 40;
+        return m;
+    }();
+    static_assert(!m1.contains(Color::BLUE));
+    static_assert(m1.contains(Color::RED));
+    static_assert(m1.at(Color::YELLOW) == 40);
+    static_assert(m1.size() == 2);
+
+    // Ensures all keys are specified, at compile-time
+    constexpr auto m2 = EnumMap<Color, int>::create_with_all_entries({
+        {Color::BLUE, 42},
+        {Color::YELLOW, 7},
+        {Color::BLUE, 42},
+    });
+    ```
+
+- EnumSet
+    ```C++
+    enum class Color { RED, YELLOW, BLUE};
+
+    constexpr auto s1 = []()
+    {
+        EnumSet<Color> s{};
+        s.insert(Color::RED);
+        s.insert(Color::YELLOW);
+        return s;
+    }();
+    static_assert(!s1.contains(Color::BLUE));
+    static_assert(s1.contains(Color::RED));
+    static_assert(s1.size() == 2);
+
+    constexpr auto s2 = EnumSet<Color>::all(); // full set
+    constexpr auto s3 = EnumSet<Color>::none(); // empty set
+    constexpr auto s4 = EnumSet<Color>::complement_of(s2); // empty set
+    ```
+
+- StringLiteral
+    ```C++
+    static constexpr const char* s = "blah"; // strlen==4, sizeof==8
+    static constexpr const char s[5] = "blah";  // strlen==4, sizeof==5 (null terminator)
+    static constexpr StringLiteral s = "blah";  // constexpr .size()==4
+    ```
+
 # Integration
 
 - Add the `include/` folder to your includes
