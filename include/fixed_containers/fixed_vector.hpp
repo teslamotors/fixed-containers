@@ -26,7 +26,7 @@ concept FixedVectorChecking = requires(std::size_t i,
 {
     T::out_of_range(i, s, loc);  // ~ std::out_of_range
     T::length_error(s, loc);     // ~ std::length_error
-    T::empty_vector_access(loc);
+    T::empty_container_access(loc);
     T::invalid_argument(error_message, loc);  // ~ std::invalid_argument
 };
 
@@ -48,7 +48,7 @@ struct AbortChecking
         std::abort();
     }
 
-    [[noreturn]] static constexpr void empty_vector_access(
+    [[noreturn]] static constexpr void empty_container_access(
         const std_transition::source_location& /*loc*/)
     {
         std::abort();
@@ -722,7 +722,7 @@ private:
     {
         if (preconditions::test(!empty()))
         {
-            Checking::empty_vector_access(loc);
+            Checking::empty_container_access(loc);
         }
     }
 
