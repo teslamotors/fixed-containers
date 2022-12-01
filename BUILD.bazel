@@ -108,6 +108,7 @@ cc_library(
     hdrs = ["include/fixed_containers/fixed_deque.hpp"],
     includes = ["include"],
     deps = [
+        ":optional_storage",
     ],
     copts = ["-std=c++20"],
 )
