@@ -23,6 +23,21 @@ TEST(FixedDeque, MaxSize)
     }
 }
 
+TEST(FixedDeque, Size)
+{
+    {
+        constexpr auto v1 = []() { return FixedDeque<int, 7>{}; }();
+        static_assert(v1.size() == 0);
+        static_assert(v1.max_size() == 7);
+    }
+
+    {
+        constexpr auto v1 = []() { return FixedDeque<int, 7>{1, 2, 3}; }();
+        static_assert(v1.size() == 3);
+        static_assert(v1.max_size() == 7);
+    }
+}
+
 TEST(FixedDeque, Empty)
 {
     constexpr auto v1 = []() { return FixedDeque<int, 7>{}; }();

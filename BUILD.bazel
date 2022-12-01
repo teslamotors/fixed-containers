@@ -108,7 +108,14 @@ cc_library(
     hdrs = ["include/fixed_containers/fixed_deque.hpp"],
     includes = ["include"],
     deps = [
+        ":consteval_compare",
+        ":iterator_utils",
         ":optional_storage",
+        ":preconditions",
+        ":random_access_iterator_transformer",
+        ":source_location",
+        ":string_literal",
+        ":type_name",
     ],
     copts = ["-std=c++20"],
 )
