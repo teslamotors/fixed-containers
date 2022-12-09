@@ -166,11 +166,11 @@ TEST(FixedSet, EmptySizeFull)
 
     constexpr FixedSet<int, 2> s3{2, 4};
     static_assert(s3.size() == 2);
-    static_assert(s3.full());
+    static_assert(is_full(s3));
 
     constexpr FixedSet<int, 5> s4{2, 4};
     static_assert(s4.size() == 2);
-    static_assert(!s4.full());
+    static_assert(!is_full(s4));
 }
 
 TEST(FixedSet, MaxSizeDeduction)

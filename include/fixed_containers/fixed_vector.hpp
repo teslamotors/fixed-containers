@@ -568,7 +568,6 @@ public:
      */
     [[nodiscard]] constexpr std::size_t size() const noexcept { return size_; }
     [[nodiscard]] constexpr bool empty() const noexcept { return size_ == 0; }
-    [[nodiscard]] constexpr bool full() const noexcept { return size_ >= MAXIMUM_SIZE; }
 
     /**
      * Equality.
@@ -714,7 +713,7 @@ private:
 
     constexpr void check_not_full(const std_transition::source_location& loc) const
     {
-        if (preconditions::test(!full()))
+        if (preconditions::test(size_ < MAXIMUM_SIZE))
         {
             Checking::length_error(MAXIMUM_SIZE + 1, loc);
         }
@@ -986,6 +985,13 @@ template <typename T,
               fixed_vector_customize::AbortChecking<T, MAXIMUM_SIZE>>
 using FixedVector =
     fixed_vector_detail::specializations::FixedVector<T, MAXIMUM_SIZE, CheckingType>;
+
+template <typename T, std::size_t MAXIMUM_SIZE, typename CheckingType>
+constexpr typename FixedVector<T, MAXIMUM_SIZE, CheckingType>::size_type is_full(
+    const FixedVector<T, MAXIMUM_SIZE, CheckingType>& c)
+{
+    return c.size() >= c.max_size();
+}
 
 template <typename T, std::size_t MAXIMUM_SIZE, typename CheckingType, typename U>
 constexpr typename FixedVector<T, MAXIMUM_SIZE, CheckingType>::size_type erase(

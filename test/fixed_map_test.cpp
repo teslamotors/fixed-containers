@@ -72,10 +72,10 @@ TEST(FixedMap, EmptySizeFull)
     static_assert(s2.empty());
 
     constexpr FixedMap<int, int, 2> s3{{2, 20}, {4, 40}};
-    static_assert(s3.full());
+    static_assert(is_full(s3));
 
     constexpr FixedMap<int, int, 5> s4{{2, 20}, {4, 40}};
-    static_assert(!s4.full());
+    static_assert(!is_full(s4));
 }
 
 TEST(FixedMap, OperatorBracket_Constexpr)

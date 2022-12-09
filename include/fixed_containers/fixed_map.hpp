@@ -312,7 +312,6 @@ public:
 
     [[nodiscard]] constexpr std::size_t size() const noexcept { return tree_.size(); }
     [[nodiscard]] constexpr bool empty() const noexcept { return tree_.empty(); }
-    [[nodiscard]] constexpr bool full() const noexcept { return tree_.full(); }
 
     constexpr void clear() noexcept { tree_.clear(); }
 
@@ -711,7 +710,7 @@ private:
 
     constexpr void check_not_full(const std_transition::source_location& loc) const
     {
-        if (preconditions::test(!full()))
+        if (preconditions::test(!tree_.full()))
         {
             CheckingType::length_error(MAXIMUM_SIZE + 1, loc);
         }
@@ -732,6 +731,27 @@ private:
         return {create_const_iterator(l), create_const_iterator(r)};
     }
 };
+
+template <class K,
+          class V,
+          std::size_t MAXIMUM_SIZE,
+          class Compare,
+          fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness COMPACTNESS,
+          template <class /*Would be IsFixedIndexBasedStorage but gcc doesn't like the constraints
+here. clang accepts it */
+                    ,
+                    std::size_t>
+          typename StorageTemplate,
+          fixed_map_customize::FixedMapChecking<K> CheckingType>
+constexpr
+    typename FixedMap<K, V, MAXIMUM_SIZE, Compare, COMPACTNESS, StorageTemplate, CheckingType>::
+        size_type
+        is_full(
+            const FixedMap<K, V, MAXIMUM_SIZE, Compare, COMPACTNESS, StorageTemplate, CheckingType>&
+                c)
+{
+    return c.size() >= c.max_size();
+}
 
 template <class K,
           class V,

@@ -987,11 +987,11 @@ TEST(FixedVector, Full)
     }();
 
     static_assert(are_equal(v1, std::array<int, 4>{100, 100, 100, 100}));
-    static_assert(v1.full());
+    static_assert(is_full(v1));
     static_assert(v1.size() == 4);
     static_assert(v1.capacity() == 4);
 
-    EXPECT_TRUE(v1.full());
+    EXPECT_TRUE(is_full(v1));
 }
 
 TEST(FixedVector, Span)
