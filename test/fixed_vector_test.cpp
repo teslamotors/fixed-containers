@@ -100,7 +100,7 @@ TEST(FixedVector, DefaultConstructor)
 {
     constexpr FixedVector<int, 8> v1{};
     static_assert(v1.empty());
-    static_assert(v1.capacity() == 8);
+    static_assert(v1.max_size() == 8);
 
     constexpr FixedVector<std::pair<int, int>, 5> v2{};
     static_assert(v2.empty());
@@ -111,7 +111,7 @@ TEST(FixedVector, DefaultConstructorNonDefaultConstructible)
     {
         constexpr FixedVector<MockNonDefaultConstructible, 8> v1{};
         static_assert(v1.empty());
-        static_assert(v1.capacity() == 8);
+        static_assert(v1.max_size() == 8);
     }
     {
         constexpr auto v2 = []()
@@ -393,14 +393,14 @@ TEST(FixedVector, CountConstructor)
     {
         constexpr FixedVector<int, 8> v1(5);
         static_assert(v1.size() == 5);
-        static_assert(v1.capacity() == 8);
+        static_assert(v1.max_size() == 8);
         static_assert(are_equal(v1, std::array{0, 0, 0, 0, 0}));
     }
 
     {
         constexpr FixedVector<int, 8> v2(5, 3);
         static_assert(v2.size() == 5);
-        static_assert(v2.capacity() == 8);
+        static_assert(v2.max_size() == 8);
         static_assert(are_equal(v2, std::array{3, 3, 3, 3, 3}));
     }
 
@@ -448,7 +448,6 @@ TEST(FixedVector, PushBack)
     static_assert(v1[1] == 1);
     static_assert(v1[2] == 2);
     static_assert(v1.size() == 3);
-    static_assert(v1.capacity() == 11);
 
     constexpr auto v2 = []()
     {
@@ -556,7 +555,7 @@ TEST(FixedVector, Popback)
     static_assert(v1[0] == 0);
     static_assert(v1[1] == 1);
     static_assert(v1.size() == 2);
-    static_assert(v1.capacity() == 11);
+    static_assert(v1.max_size() == 11);
 
     FixedVector<int, 17> v2{10, 11, 12};
     v2.pop_back();
@@ -588,7 +587,6 @@ TEST(FixedVector, Accessor)
         static_assert(v1[1] == 201);
         static_assert(v1[2] == 102);
         static_assert(v1.size() == 3);
-        static_assert(v1.capacity() == 11);
 
         const_ref(v1[0]);
         const_span_of_const_ref(v1);
@@ -630,7 +628,6 @@ TEST(FixedVector, At)
     static_assert(v1.at(1) == 201);
     static_assert(v1.at(2) == 102);
     static_assert(v1.size() == 3);
-    static_assert(v1.capacity() == 11);
 
     const_ref(v1.at(0));
     const_span_of_const_ref(v1);
@@ -927,7 +924,7 @@ TEST(FixedVector, Resize)
     static_assert(v1[4] == 100);
     static_assert(v1[5] == 0);
     static_assert(v1.size() == 6);
-    static_assert(v1.capacity() == 7);
+    static_assert(v1.max_size() == 7);
 
     constexpr auto v2 = []()
     {
@@ -944,7 +941,7 @@ TEST(FixedVector, Resize)
     static_assert(v2[3] == 300);
     static_assert(v2[4] == -100);
     static_assert(v2.size() == 5);
-    static_assert(v2.capacity() == 7);
+    static_assert(v2.max_size() == 7);
 
     FixedVector<int, 8> v3{0, 1, 2, 3};
     v3.resize(6);
@@ -974,13 +971,13 @@ TEST(FixedVector, Size)
     {
         constexpr auto v1 = []() { return FixedVector<int, 7>{}; }();
         static_assert(v1.size() == 0);
-        static_assert(v1.capacity() == 7);
+        static_assert(v1.max_size() == 7);
     }
 
     {
         constexpr auto v1 = []() { return FixedVector<int, 7>{1, 2, 3}; }();
         static_assert(v1.size() == 3);
-        static_assert(v1.capacity() == 7);
+        static_assert(v1.max_size() == 7);
     }
 }
 
@@ -989,7 +986,7 @@ TEST(FixedVector, Empty)
     constexpr auto v1 = []() { return FixedVector<int, 7>{}; }();
 
     static_assert(v1.empty());
-    static_assert(v1.capacity() == 7);
+    static_assert(v1.max_size() == 7);
 }
 
 TEST(FixedVector, Full)
@@ -1004,7 +1001,7 @@ TEST(FixedVector, Full)
     static_assert(are_equal(v1, std::array<int, 4>{100, 100, 100, 100}));
     static_assert(is_full(v1));
     static_assert(v1.size() == 4);
-    static_assert(v1.capacity() == 4);
+    static_assert(v1.max_size() == 4);
 
     EXPECT_TRUE(is_full(v1));
 }
@@ -1057,6 +1054,7 @@ TEST(FixedVector, Clear)
 
     static_assert(v1.empty());
     static_assert(v1.capacity() == 7);
+    static_assert(v1.max_size() == 7);
 }
 
 TEST(FixedVector, Emplace)
@@ -1105,7 +1103,6 @@ TEST(FixedVector, AssignValue)
 
         static_assert(are_equal(v1, std::array<int, 5>{100, 100, 100, 100, 100}));
         static_assert(v1.size() == 5);
-        static_assert(v1.capacity() == 7);
     }
 
     {
@@ -1119,7 +1116,7 @@ TEST(FixedVector, AssignValue)
 
         static_assert(are_equal(v2, std::array<int, 2>{300, 300}));
         static_assert(v2.size() == 2);
-        static_assert(v2.capacity() == 7);
+        static_assert(v2.max_size() == 7);
     }
 
     {
@@ -1149,7 +1146,7 @@ TEST(FixedVector, AssignRange)
 
         static_assert(are_equal(v1, std::array<int, 2>{300, 300}));
         static_assert(v1.size() == 2);
-        static_assert(v1.capacity() == 7);
+        static_assert(v1.max_size() == 7);
     }
     {
         auto v2 = []()
@@ -1190,7 +1187,7 @@ TEST(FixedVector, AssignInitializerList)
 
         static_assert(are_equal(v1, std::array<int, 2>{300, 300}));
         static_assert(v1.size() == 2);
-        static_assert(v1.capacity() == 7);
+        static_assert(v1.max_size() == 7);
     }
     {
         auto v2 = []()
@@ -1219,7 +1216,7 @@ TEST(FixedVector, InsertValue)
 
         static_assert(are_equal(v1, std::array<int, 6>{100, 0, 500, 1, 2, 3}));
         static_assert(v1.size() == 6);
-        static_assert(v1.capacity() == 7);
+        static_assert(v1.max_size() == 7);
     }
     {
         // For off-by-one issues, make the capacity just fit
@@ -1234,7 +1231,7 @@ TEST(FixedVector, InsertValue)
 
         static_assert(are_equal(v2, std::array<int, 5>{100, 0, 500, 1, 2}));
         static_assert(v2.size() == 5);
-        static_assert(v2.capacity() == 5);
+        static_assert(v2.max_size() == 5);
     }
 
     // NonTriviallyCopyable<T>
@@ -1279,7 +1276,7 @@ TEST(FixedVector, InsertIterator)
 
         static_assert(are_equal(v1, std::array<int, 6>{0, 1, 100, 500, 2, 3}));
         static_assert(v1.size() == 6);
-        static_assert(v1.capacity() == 7);
+        static_assert(v1.max_size() == 7);
     }
     {
         // For off-by-one issues, make the capacity just fit
@@ -1293,7 +1290,7 @@ TEST(FixedVector, InsertIterator)
 
         static_assert(are_equal(v2, std::array<int, 5>{0, 1, 100, 500, 2}));
         static_assert(v2.size() == 5);
-        static_assert(v2.capacity() == 5);
+        static_assert(v2.max_size() == 5);
     }
 
     {
@@ -1342,7 +1339,7 @@ TEST(FixedVector, InsertInitializerList)
 
         static_assert(are_equal(v1, std::array<int, 5>{0, 1, 100, 500, 2}));
         static_assert(v1.size() == 5);
-        static_assert(v1.capacity() == 5);
+        static_assert(v1.max_size() == 5);
     }
 
     {
@@ -1364,7 +1361,7 @@ TEST(FixedVector, EraseRange)
 
     static_assert(are_equal(v1, std::array<int, 4>{0, 1, 4, 5}));
     static_assert(v1.size() == 4);
-    static_assert(v1.capacity() == 8);
+    static_assert(v1.max_size() == 8);
 
     FixedVector<int, 8> v2{2, 1, 4, 5, 0, 3};
 
@@ -1386,7 +1383,7 @@ TEST(FixedVector, EraseOne)
 
     static_assert(are_equal(v1, std::array<int, 4>{1, 2, 4, 5}));
     static_assert(v1.size() == 4);
-    static_assert(v1.capacity() == 8);
+    static_assert(v1.max_size() == 8);
 
     FixedVector<int, 8> v2{2, 1, 4, 5, 0, 3};
 
@@ -1465,7 +1462,6 @@ TEST(FixedVector, Front)
     static_assert(v1.front() == 99);
     static_assert(are_equal(v1, std::array<int, 3>{99, 1, 2}));
     static_assert(v1.size() == 3);
-    static_assert(v1.capacity() == 8);
 
     FixedVector<int, 8> v2{100, 101, 102};
     const auto& v2_const_ref = v2;
@@ -1498,7 +1494,6 @@ TEST(FixedVector, Back)
     static_assert(v1.back() == 77);
     static_assert(are_equal(v1, std::array<int, 3>{0, 1, 77}));
     static_assert(v1.size() == 3);
-    static_assert(v1.capacity() == 8);
 
     FixedVector<int, 8> v2{100, 101, 102};
     const auto& v2_const_ref = v2;
@@ -1535,7 +1530,6 @@ TEST(FixedVector, Data)
 
         static_assert(are_equal(v1, std::array<int, 3>{0, 1, 2}));
         static_assert(v1.size() == 3);
-        static_assert(v1.capacity() == 8);
     }
 
     {
