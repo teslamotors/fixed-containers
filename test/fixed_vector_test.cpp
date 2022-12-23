@@ -969,6 +969,21 @@ TEST(FixedVector, Resize_ExceedCapacity)
     EXPECT_DEATH(v1.resize(to_size, 5), "");
 }
 
+TEST(FixedVector, Size)
+{
+    {
+        constexpr auto v1 = []() { return FixedVector<int, 7>{}; }();
+        static_assert(v1.size() == 0);
+        static_assert(v1.capacity() == 7);
+    }
+
+    {
+        constexpr auto v1 = []() { return FixedVector<int, 7>{1, 2, 3}; }();
+        static_assert(v1.size() == 3);
+        static_assert(v1.capacity() == 7);
+    }
+}
+
 TEST(FixedVector, Empty)
 {
     constexpr auto v1 = []() { return FixedVector<int, 7>{}; }();
