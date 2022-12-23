@@ -170,6 +170,7 @@ cc_library(
     deps = [
         ":concepts",
         ":consteval_compare",
+        ":iterator_utils",
         ":optional_storage",
         ":preconditions",
         ":random_access_iterator_transformer",
