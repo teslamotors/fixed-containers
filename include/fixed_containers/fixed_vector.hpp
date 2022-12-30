@@ -600,6 +600,26 @@ public:
         return true;
     }
 
+    template <std::size_t MAXIMUM_SIZE_2, fixed_vector_customize::FixedVectorChecking CheckingType2>
+    constexpr auto operator<=>(const FixedVectorBase<T, MAXIMUM_SIZE_2, CheckingType2>& other) const
+    {
+        using OrderingType = decltype(std::declval<T>() <=> std::declval<T>());
+        const std::size_t min_size = std::min(this->size(), other.size());
+        for (std::size_t i = 0; i < min_size; i++)
+        {
+            if (this->array_[i].value < other[i])
+            {
+                return OrderingType::less;
+            }
+            if (this->array_[i].value > other[i])
+            {
+                return OrderingType::greater;
+            }
+        }
+
+        return this->size() <=> other.size();
+    }
+
 private:
     /*
      * Helper for insert

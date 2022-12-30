@@ -704,6 +704,141 @@ TEST(FixedVector, Equality)
     const_span_of_const_ref(v2);
 }
 
+TEST(FixedVector, Comparison)
+{
+    // Using ASSERT_TRUE for symmetry with static_assert
+
+    // Equal size, left < right
+    {
+        std::vector<int> left{1, 2, 3};
+        std::vector<int> right{1, 2, 4};
+
+        ASSERT_TRUE(left < right);
+        ASSERT_TRUE(left <= right);
+        ASSERT_TRUE(!(left > right));
+        ASSERT_TRUE(!(left >= right));
+    }
+
+    {
+        constexpr FixedVector<int, 5> left{1, 2, 3};
+        constexpr FixedVector<int, 5> right{1, 2, 4};
+
+        static_assert(left < right);
+        static_assert(left <= right);
+        static_assert(!(left > right));
+        static_assert(!(left >= right));
+
+        ASSERT_TRUE(left < right);
+        ASSERT_TRUE(left <= right);
+        ASSERT_TRUE(!(left > right));
+        ASSERT_TRUE(!(left >= right));
+    }
+
+    // Left has fewer elements, left > right
+    {
+        std::vector<int> left{1, 5};
+        std::vector<int> right{1, 2, 4};
+
+        ASSERT_TRUE(!(left < right));
+        ASSERT_TRUE(!(left <= right));
+        ASSERT_TRUE(left > right);
+        ASSERT_TRUE(left >= right);
+    }
+
+    {
+        constexpr FixedVector<int, 5> left{1, 5};
+        constexpr FixedVector<int, 5> right{1, 2, 4};
+
+        static_assert(!(left < right));
+        static_assert(!(left <= right));
+        static_assert(left > right);
+        static_assert(left >= right);
+
+        ASSERT_TRUE(!(left < right));
+        ASSERT_TRUE(!(left <= right));
+        ASSERT_TRUE(left > right);
+        ASSERT_TRUE(left >= right);
+    }
+
+    // Right has fewer elements, left < right
+    {
+        std::vector<int> left{1, 2, 3};
+        std::vector<int> right{1, 5};
+
+        ASSERT_TRUE(left < right);
+        ASSERT_TRUE(left <= right);
+        ASSERT_TRUE(!(left > right));
+        ASSERT_TRUE(!(left >= right));
+    }
+
+    {
+        constexpr FixedVector<int, 5> left{1, 2, 3};
+        constexpr FixedVector<int, 5> right{1, 5};
+
+        static_assert(left < right);
+        static_assert(left <= right);
+        static_assert(!(left > right));
+        static_assert(!(left >= right));
+
+        ASSERT_TRUE(left < right);
+        ASSERT_TRUE(left <= right);
+        ASSERT_TRUE(!(left > right));
+        ASSERT_TRUE(!(left >= right));
+    }
+
+    // Left has one additional element
+    {
+        std::vector<int> left{1, 2, 3};
+        std::vector<int> right{1, 2};
+
+        ASSERT_TRUE(!(left < right));
+        ASSERT_TRUE(!(left <= right));
+        ASSERT_TRUE(left > right);
+        ASSERT_TRUE(left >= right);
+    }
+
+    {
+        constexpr FixedVector<int, 5> left{1, 2, 3};
+        constexpr FixedVector<int, 5> right{1, 2};
+
+        static_assert(!(left < right));
+        static_assert(!(left <= right));
+        static_assert(left > right);
+        static_assert(left >= right);
+
+        ASSERT_TRUE(!(left < right));
+        ASSERT_TRUE(!(left <= right));
+        ASSERT_TRUE(left > right);
+        ASSERT_TRUE(left >= right);
+    }
+
+    // Right has one additional element
+    {
+        std::vector<int> left{1, 2};
+        std::vector<int> right{1, 2, 3};
+
+        ASSERT_TRUE(left < right);
+        ASSERT_TRUE(left <= right);
+        ASSERT_TRUE(!(left > right));
+        ASSERT_TRUE(!(left >= right));
+    }
+
+    {
+        constexpr FixedVector<int, 5> left{1, 2};
+        constexpr FixedVector<int, 5> right{1, 2, 3};
+
+        static_assert(left < right);
+        static_assert(left <= right);
+        static_assert(!(left > right));
+        static_assert(!(left >= right));
+
+        ASSERT_TRUE(left < right);
+        ASSERT_TRUE(left <= right);
+        ASSERT_TRUE(!(left > right));
+        ASSERT_TRUE(!(left >= right));
+    }
+}
+
 TEST(FixedVector, IteratorAssignment)
 {
     FixedVector<int, 8>::iterator it;              // Default construction
