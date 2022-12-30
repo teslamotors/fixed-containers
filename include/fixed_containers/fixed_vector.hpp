@@ -573,10 +573,10 @@ public:
     /**
      * Equality.
      */
-    template <std::size_t C, fixed_vector_customize::FixedVectorChecking CheckingType2>
-    constexpr bool operator==(const FixedVectorBase<T, C, CheckingType2>& other) const
+    template <std::size_t MAXIMUM_SIZE_2, fixed_vector_customize::FixedVectorChecking CheckingType2>
+    constexpr bool operator==(const FixedVectorBase<T, MAXIMUM_SIZE_2, CheckingType2>& other) const
     {
-        if constexpr (MAXIMUM_SIZE == C)
+        if constexpr (MAXIMUM_SIZE == MAXIMUM_SIZE_2)
         {
             if (this == &other)
             {
