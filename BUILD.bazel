@@ -170,6 +170,19 @@ cc_library(
 )
 
 cc_library(
+    name = "fixed_string",
+    hdrs = ["include/fixed_containers/fixed_string.hpp"],
+    includes = ["include"],
+    deps = [
+        ":concepts",
+        ":preconditions",
+        ":source_location",
+        ":string_literal",
+    ],
+    copts = ["-std=c++20"],
+)
+
+cc_library(
     name = "fixed_vector",
     hdrs = ["include/fixed_containers/fixed_vector.hpp"],
     includes = ["include"],
@@ -508,6 +521,19 @@ cc_test(
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
         "@com_github_ericniebler_range-v3//:range-v3",
+    ],
+    copts = ["-std=c++20"],
+)
+
+cc_test(
+    name = "fixed_string_test",
+    srcs = ["test/fixed_string_test.cpp"],
+    deps = [
+        ":concepts",
+        ":consteval_compare",
+        ":fixed_string",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
     ],
     copts = ["-std=c++20"],
 )
