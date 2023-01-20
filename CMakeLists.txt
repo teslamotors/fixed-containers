@@ -76,6 +76,7 @@ if(${USING_CLANG})
 elseif(MSVC)
     SET(DIAGNOSTIC_FLAGS ${DIAGNOSTIC_FLAGS}
         /W4
+        /wd4067
     )
 else()
     SET(DIAGNOSTIC_FLAGS ${DIAGNOSTIC_FLAGS}
@@ -170,6 +171,8 @@ if(BUILD_TESTS)
     add_test_dependencies(pair_test)
     add_executable(pair_view_test test/pair_view_test.cpp)
     add_test_dependencies(pair_view_test)
+    add_executable(reflection_test test/reflection_test.cpp)
+    add_test_dependencies(reflection_test)
     add_executable(string_literal_test test/string_literal_test.cpp)
     add_test_dependencies(string_literal_test)
     add_executable(type_name_test test/type_name_test.cpp)
