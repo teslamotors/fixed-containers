@@ -358,7 +358,7 @@ public:  // Public so this type is a structural type and can thus be used in tem
 
     constexpr SkeletalRichEnumStorageBase() noexcept = default;
 
-    /*implicit*/ constexpr SkeletalRichEnumStorageBase(const BackingEnumType& backing_enum) noexcept
+    explicit(false) constexpr SkeletalRichEnumStorageBase(const BackingEnumType& backing_enum) noexcept
       : detail_backing_enum{backing_enum}
     {
     }
@@ -518,7 +518,7 @@ protected:
     // Note that child-classes don't have to provide a default constructor.
     constexpr SkeletalRichEnumLite() noexcept = default;
 
-    /*implicit*/ constexpr SkeletalRichEnumLite(const BackingEnum& backing_enum) noexcept
+    explicit(false) constexpr SkeletalRichEnumLite(const BackingEnum& backing_enum) noexcept
         requires(std::is_empty_v<InfusedData>)
       : Base{backing_enum}
     {
@@ -538,7 +538,7 @@ public:
     constexpr SkeletalRichEnumLite& operator=(SkeletalRichEnumLite&&) noexcept = default;
 
     constexpr const BackingEnum& backing_enum() const { return this->detail_backing_enum.value(); }
-    /*implicit*/ constexpr operator BackingEnum() const
+    explicit(false) constexpr operator BackingEnum() const
     {
         return this->detail_backing_enum.value();
     }
@@ -595,7 +595,7 @@ protected:
     // Note that child-classes don't have to provide a default constructor.
     constexpr SkeletalRichEnum() noexcept = default;
 
-    /*implicit*/ constexpr SkeletalRichEnum(const BackingEnum& backing_enum) noexcept
+    explicit(false) constexpr SkeletalRichEnum(const BackingEnum& backing_enum) noexcept
         requires(std::is_empty_v<InfusedData>)
       : Base{backing_enum}
     {
@@ -660,7 +660,7 @@ public:
     constexpr NonDefaultConstructibleSkeletalRichEnum() noexcept = delete;
 
 protected:
-    /*implicit*/ constexpr NonDefaultConstructibleSkeletalRichEnum(
+    explicit(false) constexpr NonDefaultConstructibleSkeletalRichEnum(
         const BackingEnum& backing_enum) noexcept requires(std::is_empty_v<InfusedData>)
       : Base{backing_enum}
     {

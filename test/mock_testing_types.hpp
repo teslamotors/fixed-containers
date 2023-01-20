@@ -167,7 +167,7 @@ struct MockNonTrivialInt
     {
     }
 
-    /*implicit*/ MockNonTrivialInt(int val)
+    explicit(false) MockNonTrivialInt(int val)
       : value{val}
     {
     }
@@ -296,7 +296,7 @@ struct ImplicitlyConvertibleFromInt
 {
     int value;
 
-    /*implicit*/ constexpr ImplicitlyConvertibleFromInt(int v)
+    explicit(false) constexpr ImplicitlyConvertibleFromInt(int v)
       : value{v}
     {
     }
