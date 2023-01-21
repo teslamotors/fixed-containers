@@ -39,6 +39,11 @@ struct AbortChecking
         std::abort();
     }
 
+    [[noreturn]] static void duplicate_enum_entries(const std_transition::source_location& /*loc*/)
+    {
+        std::abort();
+    }
+
     [[noreturn]] static constexpr void out_of_range(const K& /*key*/,
                                                     const std::size_t /*size*/,
                                                     const std_transition::source_location& /*loc*/)
@@ -222,9 +227,13 @@ public:
                                                          const std_transition::source_location& loc)
     {
         EnumMapType output{};
-        for (const auto& [k, value] : pairs)
+        for (const auto& pair : pairs)
         {
-            output[k] = value;
+            auto [_, was_inserted] = output.insert(pair);
+            if (preconditions::test(was_inserted))
+            {
+                Checking::duplicate_enum_entries(loc);
+            }
         }
 
         if (preconditions::test(output.size() == ENUM_VALUES.size()))

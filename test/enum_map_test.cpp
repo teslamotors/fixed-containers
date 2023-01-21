@@ -189,22 +189,8 @@ TEST(EnumMap, CreateWithAllEntries)
     static_assert(s1.at(TestEnum1::THREE) == 42);
     static_assert(s1.at(TestEnum1::FOUR) == 7);
 
-    // must not compile:
-    //    constexpr auto s2 = EnumMap<TestEnum1, int>::create_with_all_entries({
-    //        {TestEnum1::ONE, 42},
-    //        {TestEnum1::THREE, 42},
-    //        {TestEnum1::FOUR, 7},
-    //    });
-    //
-    // however, if the following dies, that indicates assertion is working, and constexpr functions
-    // that follow an assertion path will fail at compile time, with something like:
-    //   > 's2' must be initialized by a constant expression
-    //   >     constexpr auto s2 = EnumMap<TestEnum1, int>::create_with_all_entries({
-    //   >  '__assert_fail' cannot be used in a constant expression
-    const auto get_incomplete_map = []
+    constexpr auto get_map_with_missing_entries = []
     {
-        // can't put directly in macro due to curly braces for initializer list
-        // return from lambda instead
         const auto s2 = EnumMap<TestEnum1, int>::create_with_all_entries({
             {TestEnum1::ONE, 42},
             {TestEnum1::THREE, 42},
@@ -213,7 +199,36 @@ TEST(EnumMap, CreateWithAllEntries)
         return s2;
     };
 
-    EXPECT_DEATH(get_incomplete_map(), "");
+    // The following line must not compile:
+    // constexpr auto s2 = get_map_with_missing_entries();
+
+    // constexpr functions that follow an assertion path will fail at compile time, with something
+    // like:
+    //   > 's2' must be initialized by a constant expression
+    //   >     constexpr auto s2 = EnumMap<TestEnum1, int>::create_with_all_entries({
+    //   >  'missing_enum_entries' cannot be used in a constant expression
+    EXPECT_DEATH(get_map_with_missing_entries(), "");
+
+    constexpr auto get_map_with_duplicate_entries = []
+    {
+        const auto s3 = EnumMap<TestEnum1, int>::create_with_all_entries({
+            {TestEnum1::ONE, 42},
+            {TestEnum1::THREE, 42},
+            {TestEnum1::ONE, 999999999},
+            {TestEnum1::FOUR, 7},
+        });
+        return s3;
+    };
+
+    // The following line must not compile:
+    // constexpr auto s3 = get_map_with_duplicate_entries();
+
+    // constexpr functions that follow an assertion path will fail at compile time, with something
+    // like:
+    //   > 's3' must be initialized by a constant expression
+    //   >     constexpr auto s3 = EnumMap<TestEnum1, int>::create_with_all_entries({
+    //   >  'duplicate_enum_entries' cannot be used in a constant expression
+    EXPECT_DEATH(get_map_with_duplicate_entries(), "");
 }
 
 TEST(EnumMap, MaxSize)
