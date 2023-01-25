@@ -96,6 +96,16 @@ concept IsReference = std::is_reference_v<T>;
 template <class T>
 concept IsNotReference = not IsReference<T>;
 
+template <typename T>
+concept ConstexprDefaultConstructible = requires(T t)
+{
+    {
+        std::bool_constant<(T{}, true)>()
+        } -> std::same_as<std::true_type>;
+};
+template <class T>
+concept NotConstexprDefaultConstructible = not ConstexprDefaultConstructible<T>;
+
 // NOTE: this doesn't exactly match https://en.cppreference.com/w/cpp/iterator/input_iterator
 template <class Iterator>
 concept InputIterator =
