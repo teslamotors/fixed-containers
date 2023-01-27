@@ -135,17 +135,33 @@ template <typename T,
           fixed_vector_customize::FixedVectorChecking CheckingType>
 class FixedVectorBase
 {
-    using OptionalT = optional_storage_detail::OptionalStorage<T>;
-    static_assert(IsNotReference<T>, "References are not allowed");
+    /*
+     * Use OptionalStorageTransparent, to properly support constexpr .data() for simple types.
+     *
+     * In order to operate on a pointer at compile-time (e.g. increment), it needs to be a
+     * consecutive block of T's. If we use the OptionalStorage wrapper (non-transparent), we instead
+     * have a consecutive block of OptionalStorage<T>. The compiler would figure that out at
+     * compile time and reject it even though they have the same layout. In that case,
+     * vector.data()[0] would be accessible at constexpr, but vector.data()[1] would be rejected.
+     */
+    using OptionalT = optional_storage_detail::OptionalStorageTransparent<T>;
     static_assert(consteval_compare::equal<sizeof(OptionalT), sizeof(T)>);
+    // std::vector has the following restrictions too
+    static_assert(IsNotReference<T>, "References are not allowed");
+    static_assert(std::same_as<std::remove_cv_t<T>, T>,
+                  "Vector must have a non-const, non-volatile value_type");
     using Checking = CheckingType;
 
     struct Mapper
     {
-        constexpr T& operator()(OptionalT& opt_storage) const noexcept { return opt_storage.value; }
-        constexpr const T& operator()(const OptionalT& opt_storage) const noexcept
+        constexpr T& operator()(OptionalT& opt_storage) const noexcept
         {
-            return opt_storage.value;
+            return optional_storage_detail::get(opt_storage);
+        }
+        constexpr const T& operator()(const OptionalT& opt_storage) const noexcept
+        // requires(not std::is_const_v<OptionalT>)
+        {
+            return optional_storage_detail::get(opt_storage);
         }
     };
 
@@ -199,9 +215,19 @@ public:
     }
 
     constexpr FixedVectorBase() noexcept
-      : size_(0)
+      : size_{0}
     // Don't initialize the array
     {
+        // A constexpr context requires everything to be initialized.
+        // The OptionalStorage wrapper takes care of that, but for unwrapped objects
+        // while also being in a constexpr context, initialize array_.
+        if constexpr (!std::same_as<OptionalT, optional_storage_detail::OptionalStorage<T>>)
+        {
+            if (std::is_constant_evaluated())
+            {
+                std::construct_at(&array_);
+            }
+        }
     }
 
     constexpr FixedVectorBase(std::size_t count,
@@ -433,7 +459,8 @@ public:
         // Do the move
         for (std::size_t i = 0; i < entry_count_to_move; ++i)
         {
-            place_at(write_start + i, std::move(array_[read_start + i].value));
+            place_at(write_start + i,
+                     std::move(optional_storage_detail::get(array_[read_start + i])));
             destroy_at(read_start + i);
         }
 
@@ -485,7 +512,7 @@ public:
         {
             Checking::out_of_range(i, size_, loc);
         }
-        return array_[i].value;
+        return optional_storage_detail::get(array_[i]);
     }
     constexpr const_reference at(size_type i,
                                  const std_transition::source_location& loc =
@@ -495,51 +522,38 @@ public:
         {
             Checking::out_of_range(i, size_, loc);
         }
-        return array_[i].value;
+        return optional_storage_detail::get(array_[i]);
     }
 
     constexpr reference front(
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
         check_not_empty(loc);
-        return array_[0].value;
+        return optional_storage_detail::get(array_[0]);
     }
     constexpr const_reference front(const std_transition::source_location& loc =
                                         std_transition::source_location::current()) const
     {
         check_not_empty(loc);
-        return array_[0].value;
+        return optional_storage_detail::get(array_[0]);
     }
     constexpr reference back(
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
         check_not_empty(loc);
-        return array_[size_ - 1].value;
+        return optional_storage_detail::get(array_[size_ - 1]);
     }
     constexpr const_reference back(const std_transition::source_location& loc =
                                        std_transition::source_location::current()) const
     {
         check_not_empty(loc);
-        return array_[size_ - 1].value;
+        return optional_storage_detail::get(array_[size_ - 1]);
     }
 
-    /*
-     * NOTE: In order to operate on a pointer at compile-time (e.g. increment), it needs to be a
-     * consecutive block of T's. Unfortunately, we instead have a consecutive block of
-     * optional_storage_type<T>. The compiler can figure that out at compile time and rejects it
-     * even though they have the same layout. For example, we can constexpr access vector.data()[0],
-     * but vector.data()[1] is rejected.
-     *
-     * NOTE2: reinterpret_cast<> is not constexpr, but `&array_.data()->value` could be used
-     * instead and would allow constexpr-ness but only for element 0 due to the above reason.
-     */
-    /*not-constexpr*/ value_type* data() noexcept
+    constexpr value_type* data() noexcept { return &optional_storage_detail::get(*array_.data()); }
+    constexpr const value_type* data() const noexcept
     {
-        return reinterpret_cast<value_type*>(array_.data());
-    }
-    /*not-constexpr*/ const value_type* data() const noexcept
-    {
-        return reinterpret_cast<const value_type*>(array_.data());
+        return &optional_storage_detail::get(*array_.data());
     }
 
     /**
@@ -592,7 +606,7 @@ public:
 
         for (std::size_t i = 0; i < this->size(); i++)
         {
-            if (this->array_[i].value != other[i])
+            if (optional_storage_detail::get(this->array_[i]) != other[i])
             {
                 return false;
             }
@@ -608,11 +622,11 @@ public:
         const std::size_t min_size = std::min(this->size(), other.size());
         for (std::size_t i = 0; i < min_size; i++)
         {
-            if (this->array_[i].value < other[i])
+            if (optional_storage_detail::get(this->array_[i]) < other[i])
             {
                 return OrderingType::less;
             }
-            if (this->array_[i].value > other[i])
+            if (optional_storage_detail::get(this->array_[i]) > other[i])
             {
                 return OrderingType::greater;
             }
@@ -639,7 +653,7 @@ private:
 
         for (std::size_t i = 0; i < value_count_to_move; i++)
         {
-            place_at(write_end - i, std::move(array_[read_end - i].value));
+            place_at(write_end - i, std::move(optional_storage_detail::get(array_[read_end - i])));
             destroy_at(read_end - i);
         }
 
@@ -781,7 +795,7 @@ protected:
     template <class... Args>
     constexpr void emplace_at(const std::size_t i, Args&&... args)
     {
-        std::construct_at(&array_[i], std::in_place, std::forward<Args>(args)...);
+        optional_storage_detail::construct_at(&array_[i], std::forward<Args>(args)...);
     }
 };
 

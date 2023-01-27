@@ -1659,11 +1659,14 @@ TEST(FixedVector, Data)
             return v;
         }();
 
+        static_assert(v1.data()[0] == 0);
+        static_assert(v1.data()[1] == 1);
+        static_assert(v1.data()[2] == 2);
+
         EXPECT_EQ(v1.data()[0], 0);
         EXPECT_EQ(v1.data()[1], 1);
         EXPECT_EQ(v1.data()[2], 2);
 
-        static_assert(are_equal(v1, std::array<int, 3>{0, 1, 2}));
         static_assert(v1.size() == 3);
     }
 
