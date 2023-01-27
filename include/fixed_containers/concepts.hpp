@@ -34,6 +34,11 @@ template <class T>
 concept NotDefaultConstructible = not DefaultConstructible<T>;
 
 template <class T>
+concept TriviallyDefaultConstructible = std::is_trivially_default_constructible_v<T>;
+template <class T>
+concept NotTriviallyDefaultConstructible = not TriviallyDefaultConstructible<T>;
+
+template <class T>
 concept TriviallyCopyConstructible = std::is_trivially_copy_constructible_v<T>;
 template <class T>
 concept NotTriviallyCopyConstructible = not TriviallyCopyConstructible<T>;
