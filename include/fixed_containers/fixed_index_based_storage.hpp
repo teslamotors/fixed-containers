@@ -8,6 +8,7 @@
 #include <array>
 #include <cassert>
 #include <cstddef>
+#include <memory>
 #include <type_traits>
 
 namespace fixed_containers
@@ -77,29 +78,12 @@ public:
 
 private:
     template <class... Args>
-    constexpr void emplace_at(const std::size_t& i, Args&&... args) noexcept requires
-        TriviallyMoveAssignable<T> && TriviallyDestructible<T>
+    constexpr void emplace_at(const std::size_t& i, Args&&... args)
     {
-        if (std::is_constant_evaluated())
-        {
-            array_[i] = IndexOrValueT(std::in_place, std::forward<Args>(args)...);
-        }
-        else
-        {
-            new (&array_[i]) IndexOrValueT(std::in_place, std::forward<Args>(args)...);
-        }
-    }
-    template <class... Args>
-    /*not-constexpr*/ void emplace_at(const std::size_t& i, Args&&... args) noexcept
-    {
-        new (&array_[i]) IndexOrValueT(std::in_place, std::forward<Args>(args)...);
+        std::construct_at(&array_[i], std::in_place, std::forward<Args>(args)...);
     }
 
-    constexpr void destroy_at(std::size_t) requires TriviallyDestructible<T> {}
-    constexpr void destroy_at(std::size_t i) requires NotTriviallyDestructible<T>
-    {
-        array_[i].value.~T();
-    }
+    constexpr void destroy_at(std::size_t i) { std::destroy_at(&array_[i].value); }
 };
 
 // This allocator keeps entries contiguous in memory - no gaps.
