@@ -1,7 +1,6 @@
 #pragma once
 
 #include "fixed_containers/consteval_compare.hpp"
-#include "fixed_containers/constexpr_support.hpp"
 #include "fixed_containers/fixed_vector.hpp"
 #include "fixed_containers/index_or_value_storage.hpp"
 
@@ -121,7 +120,8 @@ public:
 
     constexpr std::size_t delete_at_and_return_repositioned_index(const std::size_t i) noexcept
     {
-        constexpr_support::destroy_and_place_move(nodes_.at(i), std::move(nodes_.back()));
+        std::destroy_at(&nodes_.at(i));
+        std::construct_at(&nodes_.at(i), std::move(nodes_.back()));
         nodes_.pop_back();
         return nodes_.size();
     }

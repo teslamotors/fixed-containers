@@ -1,7 +1,6 @@
 #pragma once
 
 #include "fixed_containers/concepts.hpp"
-#include "fixed_containers/constexpr_support.hpp"
 #include "fixed_containers/enum_utils.hpp"
 #include "fixed_containers/erase_if.hpp"
 #include "fixed_containers/index_range_predicate_iterator.hpp"
@@ -15,6 +14,7 @@
 #include <cassert>
 #include <cstddef>
 #include <initializer_list>
+#include <memory>
 #include <type_traits>
 
 namespace fixed_containers::enum_map_customize
@@ -346,7 +346,7 @@ public:
 
         size_++;
         array_set_[ordinal] = true;
-        constexpr_support::emplace(values_[ordinal], value.second);
+        std::construct_at(&values_[ordinal], value.second);
         return {create_iterator(ordinal), true};
     }
     constexpr std::pair<iterator, bool> insert(value_type&& value) noexcept
@@ -359,7 +359,7 @@ public:
 
         size_++;
         array_set_[ordinal] = true;
-        constexpr_support::emplace(values_[ordinal], std::move(value.second));
+        std::construct_at(&values_[ordinal], std::move(value.second));
         return {create_iterator(ordinal), true};
     }
 
@@ -408,7 +408,7 @@ public:
 
         size_++;
         array_set_[ordinal] = true;
-        constexpr_support::emplace(values_[ordinal], std::in_place, std::forward<Args>(args)...);
+        std::construct_at(&values_[ordinal], std::in_place, std::forward<Args>(args)...);
         return {create_iterator(ordinal), true};
     }
     template <class... Args>
@@ -546,7 +546,7 @@ private:
 
         size_++;
         array_set_[ordinal] = true;
-        constexpr_support::emplace(values_[ordinal], std::in_place);
+        std::construct_at(&values_[ordinal], std::in_place);
     }
 
     constexpr iterator create_iterator(const std::size_t start_index) noexcept
@@ -582,7 +582,10 @@ private:
     constexpr void reset_at(const std::size_t i) noexcept
     {
         assert(array_set_[i]);
-        constexpr_support::destroy(values_[i].value);
+        if constexpr (NotTriviallyDestructible<V>)  // if-check needed by clang
+        {
+            std::destroy_at(&values_[i].value);
+        }
         array_set_[i] = false;
         size_--;
     }
@@ -656,7 +659,7 @@ public:
         {
             if (this->array_set_[i])
             {
-                constexpr_support::place_copy(this->values_[i], other.values_[i]);
+                std::construct_at(&this->values_[i], other.values_[i]);
             }
         }
     }
@@ -669,7 +672,7 @@ public:
         {
             if (this->array_set_[i])
             {
-                constexpr_support::place_move(this->values_[i], std::move(other.values_[i]));
+                std::construct_at(&this->values_[i], std::move(other.values_[i]));
             }
         }
         // Clear the moved-out-of-map. This is consistent with both std::map
@@ -690,7 +693,7 @@ public:
         {
             if (this->array_set_[i])
             {
-                constexpr_support::place_copy(this->values_[i], other.values_[i]);
+                std::construct_at(&this->values_[i], other.values_[i]);
             }
         }
         return *this;
@@ -709,7 +712,7 @@ public:
         {
             if (this->array_set_[i])
             {
-                constexpr_support::place_move(this->values_[i], std::move(other.values_[i]));
+                std::construct_at(&this->values_[i], std::move(other.values_[i]));
             }
         }
         // The trivial assignment operator does not `other.clear()`, so don't do it here either for
