@@ -18,4 +18,33 @@ struct MockNonConstexprDefaultConstructible
 static_assert(ConstexprDefaultConstructible<MockConstexprDefaultConstructible>);
 static_assert(NotConstexprDefaultConstructible<MockNonConstexprDefaultConstructible>);
 
+struct MockStructuralType
+{
+    constexpr MockStructuralType()
+      : a()
+    {
+    }
+
+    int a;
+};
+
+struct MockNonStructuralType
+{
+    constexpr MockNonStructuralType()
+      : a()
+    {
+    }
+
+    int getter_so_field_a_is_used() const { return a; }
+
+private:
+    int a;
+};
+
+static_assert(ConstexprDefaultConstructible<MockStructuralType>);
+static_assert(IsStructuralType<MockStructuralType>);
+
+static_assert(ConstexprDefaultConstructible<MockNonStructuralType>);
+static_assert(IsNotStructuralType<MockNonStructuralType>);
+
 }  // namespace fixed_containers

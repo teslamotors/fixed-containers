@@ -256,6 +256,8 @@ TEST(RichEnum, BoolNegate)
     }
 }
 
+static_assert(IsStructuralType<TestRichEnum1>);
+
 template <TestRichEnum1 /*MY_ENUM*/>
 struct RichEnumConstantsCanBeUsedAsATemplateParameter
 {

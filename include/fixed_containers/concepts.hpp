@@ -106,6 +106,14 @@ concept ConstexprDefaultConstructible = requires(T t)
 template <class T>
 concept NotConstexprDefaultConstructible = not ConstexprDefaultConstructible<T>;
 
+template <typename T>
+concept IsStructuralType = requires()
+{
+    std::integral_constant<T, T{}>();
+};
+template <typename T>
+concept IsNotStructuralType = not IsStructuralType<T>;
+
 // NOTE: this doesn't exactly match https://en.cppreference.com/w/cpp/iterator/input_iterator
 template <class Iterator>
 concept InputIterator =
