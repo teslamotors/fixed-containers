@@ -9,6 +9,9 @@
 // More info: https://en.cppreference.com/w/cpp/language/constraints
 namespace fixed_containers
 {
+template <typename...>
+concept AlwaysFalseV = false;
+
 // Enforces a specific type, preventing all implicit conversions
 // Example usage:
 // double cos(Strict<double> auto rad) {/*...*/}
