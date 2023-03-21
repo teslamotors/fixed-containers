@@ -93,4 +93,10 @@ struct SuccessorIndexAndRepositionedIndex
     NodeIndex repositioned;
 };
 
+enum class RedBlackTreeStorageType
+{
+    FIXED_INDEX_POOL,
+    FIXED_INDEX_CONTIGUOUS,
+};
+
 }  // namespace fixed_containers::fixed_red_black_tree_detail
