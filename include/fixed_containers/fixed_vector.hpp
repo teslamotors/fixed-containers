@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <array>
 #include <cstddef>
+#include <functional>
 #include <initializer_list>
 #include <iterator>
 #include <memory>
@@ -134,43 +135,23 @@ template <typename T,
           fixed_vector_customize::FixedVectorChecking CheckingType>
 class FixedVectorBase
 {
-    /*
-     * Use OptionalStorageTransparent, to properly support constexpr .data() for simple types.
-     *
-     * In order to operate on a pointer at compile-time (e.g. increment), it needs to be a
-     * consecutive block of T's. If we use the OptionalStorage wrapper (non-transparent), we instead
-     * have a consecutive block of OptionalStorage<T>. The compiler would figure that out at
-     * compile time and reject it even though they have the same layout. In that case,
-     * vector.data()[0] would be accessible at constexpr, but vector.data()[1] would be rejected.
-     */
-    using OptionalT = optional_storage_detail::OptionalStorageTransparent<T>;
-    static_assert(consteval_compare::equal<sizeof(OptionalT), sizeof(T)>);
+    using ArrayT = std::array<T, MAXIMUM_SIZE>;
+    struct Storage
+    {
+        std::size_t size;
+        ArrayT array;
+    };
+    using OptionalStorage = optional_storage_detail::OptionalStorage<Storage>;
+    static_assert(consteval_compare::equal<sizeof(OptionalStorage), sizeof(Storage)>);
     // std::vector has the following restrictions too
     static_assert(IsNotReference<T>, "References are not allowed");
     static_assert(std::same_as<std::remove_cv_t<T>, T>,
                   "Vector must have a non-const, non-volatile value_type");
     using Checking = CheckingType;
 
-    struct Mapper
-    {
-        constexpr T& operator()(OptionalT& opt_storage) const noexcept
-        {
-            return optional_storage_detail::get(opt_storage);
-        }
-        constexpr const T& operator()(const OptionalT& opt_storage) const noexcept
-        // requires(not std::is_const_v<OptionalT>)
-        {
-            return optional_storage_detail::get(opt_storage);
-        }
-    };
-
     template <IteratorConstness CONSTNESS>
-    using IteratorImpl = RandomAccessIteratorTransformer<
-        typename std::array<OptionalT, MAXIMUM_SIZE>::const_iterator,
-        typename std::array<OptionalT, MAXIMUM_SIZE>::iterator,
-        Mapper,
-        Mapper,
-        CONSTNESS>;
+    using IteratorImpl =
+        RandomAccessIteratorTransformer<const T*, T*, std::identity, std::identity, CONSTNESS>;
 
 public:
     using value_type = T;
@@ -196,8 +177,7 @@ private:
     }
 
 protected:  // [WORKAROUND-1] - Needed by the non-trivially-copyable flavor of FixedVector
-    std::size_t size_;  // Current size of vector, which can change in contrast to the capacity
-    std::array<OptionalT, MAXIMUM_SIZE> array_;
+    OptionalStorage optional_storage_;
 
 public:
     static constexpr std::size_t max_size() noexcept { return MAXIMUM_SIZE; }
@@ -214,17 +194,32 @@ public:
     }
 
     constexpr FixedVectorBase() noexcept
-      : size_{0}
-    // Don't initialize the array
+      : optional_storage_{}
     {
-        // A constexpr context requires everything to be initialized.
-        // The OptionalStorage wrapper takes care of that, but for unwrapped objects
-        // while also being in a constexpr context, initialize array_.
-        if constexpr (!std::same_as<OptionalT, optional_storage_detail::OptionalStorage<T>>)
+        // This line is intended to make "value" the active member of the union and it is very
+        // particular. It doesn't work through the getter, needs to directly access the field
+        // References:
+        // https://eel.is/c++draft/class.union#general-5
+        // https://eel.is/c++draft/expr.const#6
+        // https://github.com/llvm/llvm-project/issues/62225
+        //
+        // size is part of the union even though it is just an int that doesn't need
+        // construct/destructor "erasure" for the explicit purposes of making the member active.
+        //
+        // It does not work for non-trivially-default-constructible-types :( (see failing test)
+        // because of https://eel.is/c++draft/class.union#general-5.1
+        //
+        // "If E is of the form A.B, S(E) contains the elements of S(A), and also contains A.B if B
+        // names a union member of a non-class, non-array type, or of a class type with a trivial
+        // default constructor that is not deleted, or an array of such types."
+        optional_storage_.value.size = 0;
+
+        // Constexpr context requires everything to be initialized.
+        if constexpr (ConstexprDefaultConstructible<T>)
         {
             if (std::is_constant_evaluated())
             {
-                std::construct_at(&array_);
+                std::construct_at(&get_array());
             }
         }
     }
@@ -236,7 +231,7 @@ public:
       : FixedVectorBase()
     {
         check_target_size(count, loc);
-        size_ = count;
+        get_size_ref() = count;
         for (std::size_t i = 0; i < count; i++)
         {
             place_at(i, value);
@@ -287,16 +282,17 @@ public:
         check_target_size(count, loc);
 
         // Reinitialize the new members if we are enlarging
-        while (size_ < count)
+        std::size_t& size_ref = get_size_ref();
+        while (size_ref < count)
         {
-            place_at(size_, v);
-            size_++;
+            place_at(size_ref, v);
+            size_ref++;
         }
         // Destroy extras if we are making it smaller.
-        while (size_ > count)
+        while (size_ref > count)
         {
-            size_--;
-            destroy_at(size_);
+            size_ref--;
+            destroy_at(size_ref);
         }
     }
 
@@ -326,8 +322,8 @@ public:
     constexpr reference emplace_back(Args&&... args)
     {
         check_not_full(std_transition::source_location::current());
-        emplace_at(size_, std::forward<Args>(args)...);
-        size_++;
+        emplace_at(size(), std::forward<Args>(args)...);
+        increment_size();
         return this->back();
     }
 
@@ -339,8 +335,8 @@ public:
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
         check_not_empty(loc);
-        destroy_at(size_ - 1);
-        --size_;
+        destroy_at(size() - 1);
+        decrement_size();
     }
 
     /**
@@ -449,7 +445,7 @@ public:
         const std::size_t read_start = this->index_of(last);
         const std::size_t write_start = this->index_of(first);
 
-        std::size_t entry_count_to_move = size_ - read_start;
+        std::size_t entry_count_to_move = size() - read_start;
         const std::size_t entry_count_to_remove = read_start - write_start;
 
         // Clean out the gap
@@ -459,11 +455,11 @@ public:
         for (std::size_t i = 0; i < entry_count_to_move; ++i)
         {
             place_at(write_start + i,
-                     std::move(optional_storage_detail::get(array_[read_start + i])));
+                     std::move(optional_storage_detail::get(get_array()[read_start + i])));
             destroy_at(read_start + i);
         }
 
-        size_ -= entry_count_to_remove;
+        get_size_ref() -= entry_count_to_remove;
         return iterator{this->begin() + static_cast<difference_type>(write_start)};
     }
 
@@ -482,8 +478,8 @@ public:
      */
     constexpr FixedVectorBase& clear() noexcept
     {
-        destroy_index_range(0, size_);
-        size_ = 0;
+        destroy_index_range(0, size());
+        set_size(0);
         return *this;
     }
 
@@ -507,52 +503,55 @@ public:
                            const std_transition::source_location& loc =
                                std_transition::source_location::current()) noexcept
     {
-        if (preconditions::test(i < size_))
+        if (preconditions::test(i < size()))
         {
-            Checking::out_of_range(i, size_, loc);
+            Checking::out_of_range(i, size(), loc);
         }
-        return optional_storage_detail::get(array_[i]);
+        return optional_storage_detail::get(get_array()[i]);
     }
     constexpr const_reference at(size_type i,
                                  const std_transition::source_location& loc =
                                      std_transition::source_location::current()) const noexcept
     {
-        if (preconditions::test(i < size_))
+        if (preconditions::test(i < size()))
         {
-            Checking::out_of_range(i, size_, loc);
+            Checking::out_of_range(i, size(), loc);
         }
-        return optional_storage_detail::get(array_[i]);
+        return optional_storage_detail::get(get_array()[i]);
     }
 
     constexpr reference front(
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
         check_not_empty(loc);
-        return optional_storage_detail::get(array_[0]);
+        return optional_storage_detail::get(get_array()[0]);
     }
     constexpr const_reference front(const std_transition::source_location& loc =
                                         std_transition::source_location::current()) const
     {
         check_not_empty(loc);
-        return optional_storage_detail::get(array_[0]);
+        return optional_storage_detail::get(get_array()[0]);
     }
     constexpr reference back(
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
         check_not_empty(loc);
-        return optional_storage_detail::get(array_[size_ - 1]);
+        return optional_storage_detail::get(get_array()[size() - 1]);
     }
     constexpr const_reference back(const std_transition::source_location& loc =
                                        std_transition::source_location::current()) const
     {
         check_not_empty(loc);
-        return optional_storage_detail::get(array_[size_ - 1]);
+        return optional_storage_detail::get(get_array()[size() - 1]);
     }
 
-    constexpr value_type* data() noexcept { return &optional_storage_detail::get(*array_.data()); }
+    constexpr value_type* data() noexcept
+    {
+        return &optional_storage_detail::get(*std::data(get_array()));
+    }
     constexpr const value_type* data() const noexcept
     {
-        return &optional_storage_detail::get(*array_.data());
+        return &optional_storage_detail::get(*std::data(get_array()));
     }
 
     /**
@@ -561,9 +560,9 @@ public:
     constexpr iterator begin() noexcept { return create_iterator(0); }
     constexpr const_iterator begin() const noexcept { return cbegin(); }
     constexpr const_iterator cbegin() const noexcept { return create_const_iterator(0); }
-    constexpr iterator end() noexcept { return create_iterator(size_); }
+    constexpr iterator end() noexcept { return create_iterator(size()); }
     constexpr const_iterator end() const noexcept { return cend(); }
-    constexpr const_iterator cend() const noexcept { return create_const_iterator(size_); }
+    constexpr const_iterator cend() const noexcept { return create_const_iterator(size()); }
 
     constexpr reverse_iterator rbegin() noexcept { return reverse_iterator(end()); }
     constexpr const_reverse_iterator rbegin() const noexcept { return crbegin(); }
@@ -581,8 +580,11 @@ public:
     /**
      * Size
      */
-    [[nodiscard]] constexpr std::size_t size() const noexcept { return size_; }
-    [[nodiscard]] constexpr bool empty() const noexcept { return size_ == 0; }
+    [[nodiscard]] constexpr std::size_t size() const noexcept
+    {
+        return optional_storage_.get().size;
+    }
+    [[nodiscard]] constexpr bool empty() const noexcept { return size() == 0; }
 
     /**
      * Equality.
@@ -605,7 +607,7 @@ public:
 
         for (std::size_t i = 0; i < this->size(); i++)
         {
-            if (optional_storage_detail::get(this->array_[i]) != other[i])
+            if (optional_storage_detail::get(this->get_array()[i]) != other[i])
             {
                 return false;
             }
@@ -621,11 +623,11 @@ public:
         const std::size_t min_size = std::min(this->size(), other.size());
         for (std::size_t i = 0; i < min_size; i++)
         {
-            if (optional_storage_detail::get(this->array_[i]) < other[i])
+            if (optional_storage_detail::get(this->get_array()[i]) < other[i])
             {
                 return OrderingType::less;
             }
-            if (optional_storage_detail::get(this->array_[i]) > other[i])
+            if (optional_storage_detail::get(this->get_array()[i]) > other[i])
             {
                 return OrderingType::greater;
             }
@@ -638,39 +640,40 @@ private:
     /*
      * Helper for insert
      * Moves everything ahead of a given const_iterator n spots forward, and
-     * returns the index to insert something at that place. Increments size_.
+     * returns the index to insert something at that place. Increments size.
      */
     constexpr std::size_t advance_all_after_iterator_by_n(const const_iterator it,
                                                           const std::size_t n)
     {
         const std::size_t read_start = index_of(it);
         const std::size_t write_start = read_start + n;
-        const std::size_t value_count_to_move = size_ - read_start;
+        const std::size_t value_count_to_move = size() - read_start;
 
         const std::size_t read_end = read_start + value_count_to_move - 1;
         const std::size_t write_end = write_start + value_count_to_move - 1;
 
         for (std::size_t i = 0; i < value_count_to_move; i++)
         {
-            place_at(write_end - i, std::move(optional_storage_detail::get(array_[read_end - i])));
+            place_at(write_end - i,
+                     std::move(optional_storage_detail::get(get_array()[read_end - i])));
             destroy_at(read_end - i);
         }
 
-        size_ += n;
+        increment_size(n);
 
         return read_start;
     }
 
     constexpr void push_back_internal(const value_type& v)
     {
-        place_at(size_, v);
-        size_++;
+        place_at(size(), v);
+        increment_size();
     }
 
     constexpr void push_back_internal(value_type&& v)
     {
-        place_at(size_, std::move(v));
-        size_++;
+        place_at(size(), std::move(v));
+        increment_size();
     }
 
     template <InputIterator InputIt>
@@ -681,11 +684,11 @@ private:
                                        const std_transition::source_location& loc)
     {
         const auto entry_count_to_add = static_cast<std::size_t>(std::distance(first, last));
-        check_target_size(size_ + entry_count_to_add, loc);
+        check_target_size(size() + entry_count_to_add, loc);
         const std::size_t write_index =
             this->advance_all_after_iterator_by_n(it, entry_count_to_add);
 
-        for (std::size_t i = write_index; first != last; std::advance(first, 1), i++)
+        for (std::size_t i = write_index; first != last; ++first, i++)
         {
             place_at(i, *first);
         }
@@ -700,7 +703,7 @@ private:
                                        const std_transition::source_location& loc)
     {
         // Place everything at the end of the vector
-        std::size_t new_size = size_;
+        std::size_t new_size = size();
         for (; first != last && new_size < max_size(); ++first, ++new_size)
         {
             place_at(new_size, *first);
@@ -720,22 +723,24 @@ private:
         // Rotate into the correct places
         const std::size_t write_index = this->index_of(it);
         std::rotate(
-            create_iterator(write_index), create_iterator(size_), create_iterator(new_size));
-        size_ = new_size;
+            create_iterator(write_index), create_iterator(size()), create_iterator(new_size));
+        get_size_ref() = new_size;
 
         return begin() + static_cast<difference_type>(write_index);
     }
 
     constexpr iterator create_iterator(const std::size_t start_index) noexcept
     {
-        auto array_it = std::next(std::begin(array_), static_cast<difference_type>(start_index));
-        return iterator{array_it, Mapper{}};
+        auto array_it =
+            std::next(std::begin(get_array()), static_cast<difference_type>(start_index));
+        return iterator{array_it, std::identity{}};
     }
 
     constexpr const_iterator create_const_iterator(const std::size_t start_index) const noexcept
     {
-        auto array_it = std::next(std::begin(array_), static_cast<difference_type>(start_index));
-        return const_iterator{array_it, Mapper{}};
+        auto array_it =
+            std::next(std::begin(get_array()), static_cast<difference_type>(start_index));
+        return const_iterator{array_it, std::identity{}};
     }
 
 private:
@@ -750,7 +755,7 @@ private:
 
     constexpr void check_not_full(const std_transition::source_location& loc) const
     {
-        if (preconditions::test(size_ < MAXIMUM_SIZE))
+        if (preconditions::test(size() < MAXIMUM_SIZE))
         {
             Checking::length_error(MAXIMUM_SIZE + 1, loc);
         }
@@ -765,6 +770,13 @@ private:
 
     // [WORKAROUND-1] - Needed by the non-trivially-copyable flavor of FixedVector
 protected:
+    constexpr std::size_t& get_size_ref() { return optional_storage_.get().size; }
+    constexpr void increment_size(std::size_t n = 1) { get_size_ref() += n; }
+    constexpr void decrement_size(std::size_t n = 1) { get_size_ref() -= n; }
+    constexpr void set_size(const std::size_t size) { get_size_ref() = size; }
+    constexpr const ArrayT& get_array() const { return optional_storage_.get().array; }
+    constexpr ArrayT& get_array() { return optional_storage_.get().array; }
+
     constexpr void destroy_at(std::size_t)
         requires TriviallyDestructible<T>
     {
@@ -772,7 +784,7 @@ protected:
     constexpr void destroy_at(std::size_t i)
         requires NotTriviallyDestructible<T>
     {
-        array_[i].value.~T();
+        get_array()[i].~T();
     }
 
     constexpr void destroy_index_range(std::size_t, std::size_t)
@@ -790,18 +802,18 @@ protected:
 
     constexpr void place_at(const std::size_t i, const value_type& v)
     {
-        std::construct_at(&array_[i], v);
+        std::construct_at(&get_array()[i], v);
     }
 
     constexpr void place_at(const std::size_t i, value_type&& v)
     {
-        std::construct_at(&array_[i], std::move(v));
+        std::construct_at(&get_array()[i], std::move(v));
     }
 
     template <class... Args>
     constexpr void emplace_at(const std::size_t i, Args&&... args)
     {
-        optional_storage_detail::construct_at(&array_[i], std::forward<Args>(args)...);
+        optional_storage_detail::construct_at(&get_array()[i], std::forward<Args>(args)...);
     }
 };
 
@@ -868,19 +880,21 @@ public:
     constexpr FixedVector(const FixedVector& other)
       : FixedVector()
     {
-        this->size_ = other.size();
-        for (std::size_t i = 0; i < this->size_; i++)
+        const std::size_t sz = other.size();
+        this->get_size_ref() = sz;
+        for (std::size_t i = 0; i < sz; i++)
         {
-            this->place_at(i, other.array_[i].value);
+            this->place_at(i, other.get_array()[i]);
         }
     }
     constexpr FixedVector(FixedVector&& other) noexcept
       : FixedVector()
     {
-        this->size_ = other.size();
-        for (std::size_t i = 0; i < this->size_; i++)
+        const std::size_t sz = other.size();
+        this->get_size_ref() = sz;
+        for (std::size_t i = 0; i < sz; i++)
         {
-            this->place_at(i, std::move(other.array_[i].value));
+            this->place_at(i, std::move(other.get_array()[i]));
         }
         // Clear the moved-out-of-vector. This is consistent with both std::vector
         // as well as the trivial move constructor of this class.
@@ -894,10 +908,11 @@ public:
         }
 
         this->clear();
-        this->size_ = other.size_;
-        for (std::size_t i = 0; i < this->size_; i++)
+        const std::size_t sz = other.size();
+        this->get_size_ref() = sz;
+        for (std::size_t i = 0; i < sz; i++)
         {
-            this->place_at(i, other.array_[i].value);
+            this->place_at(i, other.get_array()[i]);
         }
         return *this;
     }
@@ -909,10 +924,11 @@ public:
         }
 
         this->clear();
-        this->size_ = other.size_;
-        for (std::size_t i = 0; i < this->size_; i++)
+        const std::size_t sz = other.size();
+        this->get_size_ref() = sz;
+        for (std::size_t i = 0; i < sz; i++)
         {
-            this->place_at(i, std::move(other.array_[i].value));
+            this->place_at(i, std::move(other.get_array()[i]));
         }
         // The trivial assignment operator does not `other.clear()`, so don't do it here either for
         // consistency across FixedVectors. std::vector<T> does clear it, so behavior is different.

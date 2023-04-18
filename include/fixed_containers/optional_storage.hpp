@@ -134,12 +134,4 @@ constexpr void construct_at(T* p, Args&&... args)
     std::construct_at(p, std::forward<Args>(args)...);
 }
 
-// "Transparent" here means there will be no wrapping for simple types.
-template <typename T>
-using OptionalStorageTransparent =
-    std::conditional_t<Trivial<T> && StandardLayout<T> &&
-                           /*for deleted*/ TriviallyDefaultConstructible<T>,
-                       T,
-                       OptionalStorage<T>>;
-
 }  // namespace fixed_containers::optional_storage_detail

@@ -102,6 +102,8 @@ TEST(FixedVector, DefaultConstructor)
     static_assert(v1.empty());
     static_assert(v1.max_size() == 8);
 
+    // It does not work for non-trivially-default-constructible-types :(
+    // (std::pair is not trivially-default-constructible)
     constexpr FixedVector<std::pair<int, int>, 5> v2{};
     static_assert(v2.empty());
 }
