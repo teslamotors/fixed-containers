@@ -20,13 +20,11 @@
 namespace fixed_containers::enum_map_customize
 {
 template <class T, class K>
-concept EnumMapChecking = requires(K key,
-                                   std::size_t size,
-                                   const std_transition::source_location& loc)
-{
-    T::missing_enum_entries(loc);
-    T::out_of_range(key, size, loc);  // ~ std::out_of_range
-};
+concept EnumMapChecking =
+    requires(K key, std::size_t size, const std_transition::source_location& loc) {
+        T::missing_enum_entries(loc);
+        T::out_of_range(key, size, loc);  // ~ std::out_of_range
+    };
 
 template <class K, class V>
 struct AbortChecking
@@ -167,7 +165,8 @@ private:
         constexpr PairProvider& operator=(const PairProvider&) = default;
         constexpr PairProvider& operator=(PairProvider&&) noexcept = default;
 
-        constexpr PairProvider(const PairProvider<false>& m) noexcept requires IS_CONST
+        constexpr PairProvider(const PairProvider<false>& m) noexcept
+            requires IS_CONST
           : PairProvider{m.values_}
         {
         }
@@ -177,8 +176,13 @@ private:
             current_ = ConstOrMutablePairView{&ENUM_VALUES[i], &((*values_)[i].get())};
         }
 
-        constexpr const_reference get() const noexcept requires IS_CONST { return current_; }
-        constexpr reference get() const noexcept requires(not IS_CONST)
+        constexpr const_reference get() const noexcept
+            requires IS_CONST
+        {
+            return current_;
+        }
+        constexpr reference get() const noexcept
+            requires(not IS_CONST)
         {
             // The function is tagged `const` and would add a `const` to the returned type.
             // This is usually fine, but PairView intentionally propagates its constness to each of
@@ -377,8 +381,8 @@ public:
     }
 
     template <class M>
-    constexpr std::pair<iterator, bool> insert_or_assign(
-        const K& key, M&& obj) noexcept requires std::is_assignable_v<mapped_type&, M&&>
+    constexpr std::pair<iterator, bool> insert_or_assign(const K& key, M&& obj) noexcept
+        requires std::is_assignable_v<mapped_type&, M&&>
     {
         const std::size_t ordinal = EnumAdapterType::ordinal(key);
         const bool is_insertion = !array_set_[ordinal];
@@ -641,13 +645,17 @@ public:
     {
     }
 
-    constexpr EnumMap(const EnumMap& other) requires TriviallyCopyConstructible<V>
+    constexpr EnumMap(const EnumMap& other)
+        requires TriviallyCopyConstructible<V>
     = default;
-    constexpr EnumMap(EnumMap&& other) noexcept requires TriviallyMoveConstructible<V>
+    constexpr EnumMap(EnumMap&& other) noexcept
+        requires TriviallyMoveConstructible<V>
     = default;
-    constexpr EnumMap& operator=(const EnumMap& other) requires TriviallyCopyAssignable<V>
+    constexpr EnumMap& operator=(const EnumMap& other)
+        requires TriviallyCopyAssignable<V>
     = default;
-    constexpr EnumMap& operator=(EnumMap&& other) noexcept requires TriviallyMoveAssignable<V>
+    constexpr EnumMap& operator=(EnumMap&& other) noexcept
+        requires TriviallyMoveAssignable<V>
     = default;
 
     constexpr EnumMap(const EnumMap& other)

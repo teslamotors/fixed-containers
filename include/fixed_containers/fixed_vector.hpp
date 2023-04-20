@@ -24,8 +24,7 @@ template <class T>
 concept FixedVectorChecking = requires(std::size_t i,
                                        std::size_t s,
                                        const StringLiteral& error_message,
-                                       const std_transition::source_location& loc)
-{
+                                       const std_transition::source_location& loc) {
     T::out_of_range(i, s, loc);  // ~ std::out_of_range
     T::length_error(s, loc);     // ~ std::length_error
     T::empty_container_access(loc);
@@ -764,17 +763,22 @@ private:
 
     // [WORKAROUND-1] - Needed by the non-trivially-copyable flavor of FixedVector
 protected:
-    constexpr void destroy_at(std::size_t) requires TriviallyDestructible<T> {}
-    constexpr void destroy_at(std::size_t i) requires NotTriviallyDestructible<T>
+    constexpr void destroy_at(std::size_t)
+        requires TriviallyDestructible<T>
+    {
+    }
+    constexpr void destroy_at(std::size_t i)
+        requires NotTriviallyDestructible<T>
     {
         array_[i].value.~T();
     }
 
-    constexpr void destroy_index_range(std::size_t, std::size_t) requires TriviallyDestructible<T>
+    constexpr void destroy_index_range(std::size_t, std::size_t)
+        requires TriviallyDestructible<T>
     {
     }
-    constexpr void destroy_index_range(
-        std::size_t from_inclusive, std::size_t to_exclusive) requires NotTriviallyDestructible<T>
+    constexpr void destroy_index_range(std::size_t from_inclusive, std::size_t to_exclusive)
+        requires NotTriviallyDestructible<T>
     {
         for (std::size_t i = from_inclusive; i < to_exclusive; i++)
         {
@@ -846,14 +850,17 @@ public:
     {
     }
 
-    constexpr FixedVector(const FixedVector& other) requires TriviallyCopyConstructible<T>
+    constexpr FixedVector(const FixedVector& other)
+        requires TriviallyCopyConstructible<T>
     = default;
-    constexpr FixedVector(FixedVector&& other) noexcept requires TriviallyMoveConstructible<T>
+    constexpr FixedVector(FixedVector&& other) noexcept
+        requires TriviallyMoveConstructible<T>
     = default;
-    constexpr FixedVector& operator=(const FixedVector& other) requires TriviallyCopyAssignable<T>
+    constexpr FixedVector& operator=(const FixedVector& other)
+        requires TriviallyCopyAssignable<T>
     = default;
-    constexpr FixedVector& operator=(FixedVector&& other) noexcept requires
-        TriviallyMoveAssignable<T>
+    constexpr FixedVector& operator=(FixedVector&& other) noexcept
+        requires TriviallyMoveAssignable<T>
     = default;
 
     constexpr FixedVector(const FixedVector& other)

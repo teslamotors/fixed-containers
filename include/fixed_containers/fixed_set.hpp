@@ -13,12 +13,10 @@
 namespace fixed_containers::fixed_set_customize
 {
 template <class T, class K>
-concept FixedSetChecking = requires(K key,
-                                    std::size_t size,
-                                    const std_transition::source_location& loc)
-{
-    T::length_error(size, loc);  // ~ std::length_error
-};
+concept FixedSetChecking =
+    requires(K key, std::size_t size, const std_transition::source_location& loc) {
+        T::length_error(size, loc);  // ~ std::length_error
+    };
 
 template <class K, std::size_t MAXIMUM_SIZE>
 struct AbortChecking
@@ -284,8 +282,8 @@ public:
     }
 
     template <class K0>
-    [[nodiscard]] constexpr const_iterator find(const K0& key) const noexcept requires
-        IsTransparent<Compare>
+    [[nodiscard]] constexpr const_iterator find(const K0& key) const noexcept
+        requires IsTransparent<Compare>
     {
         const NodeIndex i = tree_.index_of_node_or_null(key);
         if (!tree_.contains_at(i))
@@ -302,8 +300,8 @@ public:
     }
 
     template <class K0>
-    [[nodiscard]] constexpr bool contains(const K0& key) const noexcept requires
-        IsTransparent<Compare>
+    [[nodiscard]] constexpr bool contains(const K0& key) const noexcept
+        requires IsTransparent<Compare>
     {
         return tree_.contains_node(key);
     }
@@ -314,8 +312,8 @@ public:
     }
 
     template <class K0>
-    [[nodiscard]] constexpr std::size_t count(const K0& key) const noexcept requires
-        IsTransparent<Compare>
+    [[nodiscard]] constexpr std::size_t count(const K0& key) const noexcept
+        requires IsTransparent<Compare>
     {
         return static_cast<std::size_t>(contains(key));
     }
@@ -325,8 +323,8 @@ public:
         return create_const_iterator(tree_.index_of_node_ceiling(key));
     }
     template <class K0>
-    [[nodiscard]] constexpr const_iterator lower_bound(const K0& key) const noexcept requires
-        IsTransparent<Compare>
+    [[nodiscard]] constexpr const_iterator lower_bound(const K0& key) const noexcept
+        requires IsTransparent<Compare>
     {
         const NodeIndexAndParentIndex np = tree_.index_of_node_with_parent(key);
         return create_const_iterator(tree_.index_of_node_ceiling(np));
@@ -337,8 +335,8 @@ public:
         return create_const_iterator(tree_.index_of_node_higher(key));
     }
     template <class K0>
-    [[nodiscard]] constexpr const_iterator upper_bound(const K0& key) const noexcept requires
-        IsTransparent<Compare>
+    [[nodiscard]] constexpr const_iterator upper_bound(const K0& key) const noexcept
+        requires IsTransparent<Compare>
     {
         const NodeIndexAndParentIndex np = tree_.index_of_node_with_parent(key);
         return create_const_iterator(tree_.index_of_node_higher(np));
@@ -352,7 +350,8 @@ public:
     }
     template <class K0>
     [[nodiscard]] constexpr std::pair<const_iterator, const_iterator> equal_range(
-        const K0& key) const noexcept requires IsTransparent<Compare>
+        const K0& key) const noexcept
+        requires IsTransparent<Compare>
     {
         const NodeIndexAndParentIndex np = tree_.index_of_node_with_parent(key);
         return equal_range_impl(np);

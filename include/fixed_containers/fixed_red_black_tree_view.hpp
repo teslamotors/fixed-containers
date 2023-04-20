@@ -392,10 +392,7 @@ public:
             tree_ptr_, elem_size_bytes_, max_size_bytes_, compactness_, storage_type_, true);
     }
 
-    std::size_t size() const
-    {
-        return end().size();
-    }
+    std::size_t size() const { return end().size(); }
 };
 
 }  // namespace fixed_containers
