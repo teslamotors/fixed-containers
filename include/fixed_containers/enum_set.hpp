@@ -262,7 +262,7 @@ public:
     template <InputIterator InputIt>
     constexpr void insert(InputIt first, InputIt last) noexcept
     {
-        for (; first != last; ++first)
+        for (; first != last; std::advance(first, 1))
         {
             this->insert(*first);
         }

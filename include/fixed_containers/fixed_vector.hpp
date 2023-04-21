@@ -685,7 +685,7 @@ private:
         const std::size_t write_index =
             this->advance_all_after_iterator_by_n(it, entry_count_to_add);
 
-        for (std::size_t i = write_index; first != last; ++first, i++)
+        for (std::size_t i = write_index; first != last; std::advance(first, 1), i++)
         {
             place_at(i, *first);
         }
@@ -728,12 +728,14 @@ private:
 
     constexpr iterator create_iterator(const std::size_t start_index) noexcept
     {
-        return iterator{array_.begin() + start_index, Mapper{}};
+        auto array_it = std::next(std::begin(array_), static_cast<difference_type>(start_index));
+        return iterator{array_it, Mapper{}};
     }
 
     constexpr const_iterator create_const_iterator(const std::size_t start_index) const noexcept
     {
-        return const_iterator{array_.begin() + start_index, Mapper{}};
+        auto array_it = std::next(std::begin(array_), static_cast<difference_type>(start_index));
+        return const_iterator{array_it, Mapper{}};
     }
 
 private:

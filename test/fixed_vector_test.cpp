@@ -1659,13 +1659,13 @@ TEST(FixedVector, Data)
             return v;
         }();
 
-        static_assert(v1.data()[0] == 0);
-        static_assert(v1.data()[1] == 1);
-        static_assert(v1.data()[2] == 2);
+        static_assert(*std::next(v1.data(), 0) == 0);
+        static_assert(*std::next(v1.data(), 1) == 1);
+        static_assert(*std::next(v1.data(), 2) == 2);
 
-        EXPECT_EQ(v1.data()[0], 0);
-        EXPECT_EQ(v1.data()[1], 1);
-        EXPECT_EQ(v1.data()[2], 2);
+        EXPECT_EQ(*std::next(v1.data(), 0), 0);
+        EXPECT_EQ(*std::next(v1.data(), 1), 1);
+        EXPECT_EQ(*std::next(v1.data(), 2), 2);
 
         static_assert(v1.size() == 3);
     }
@@ -1674,11 +1674,12 @@ TEST(FixedVector, Data)
         FixedVector<int, 8> v2{100, 101, 102};
         const auto& v2_const_ref = v2;
 
-        EXPECT_EQ(v2.data()[1], 101);  // non-const variant
-        v2.data()[1] = 999;
-        EXPECT_EQ(v2.data()[1], 999);
+        auto it = std::next(v2.data(), 1);
+        EXPECT_EQ(*it, 101);  // non-const variant
+        *it = 999;
+        EXPECT_EQ(*it, 999);
 
-        EXPECT_EQ(v2_const_ref.data()[1], 999);  // const variant
+        EXPECT_EQ(*std::next(v2_const_ref.data(), 1), 999);  // const variant
     }
 }
 

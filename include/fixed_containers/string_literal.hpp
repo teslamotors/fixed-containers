@@ -31,7 +31,7 @@ public:
       : size_(N - 1)
       , cstr_(str)
     {
-        assert(cstr_[N - 1] == '\0');
+        assert(*std::next(cstr_, N - 1) == '\0');
     }
 
     constexpr StringLiteral() noexcept

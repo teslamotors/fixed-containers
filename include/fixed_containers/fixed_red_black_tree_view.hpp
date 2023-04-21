@@ -111,7 +111,7 @@ public:
             const auto bptr = reinterpret_cast<const std::byte*>(base_);
             const auto root_index_offset = tree_storage_size_bytes();
             const auto size_offset = root_index_offset + sizeof(NodeIndex);
-            const auto size_ptr = &bptr[size_offset];
+            const auto size_ptr = std::next(bptr, static_cast<difference_type>(size_offset));
             return *reinterpret_cast<const std::size_t*>(size_ptr);
         }
 
@@ -124,10 +124,12 @@ public:
             switch (storage_type_)
             {
             case StorageType::FIXED_INDEX_POOL:
-                return (iov_array_base() + i * storage_elem_size_bytes_);
+                return std::next(iov_array_base(),
+                                 static_cast<difference_type>(i * storage_elem_size_bytes_));
 
             case StorageType::FIXED_INDEX_CONTIGUOUS:
-                return (contiguous_array_base() + i * storage_elem_size_bytes_);
+                return std::next(contiguous_array_base(),
+                                 static_cast<difference_type>(i * storage_elem_size_bytes_));
             }
 
             assert(false && "unreachable");
@@ -159,8 +161,9 @@ public:
         {
             const auto node = node_pointer(i); /* key_ */
             const auto parent_index_offset = align_up(elem_size_bytes_, sizeof(uintptr_t));
-            const auto left_index_offset = parent_index_offset + sizeof(NodeIndex);
-            return *reinterpret_cast<const NodeIndex*>(&node[left_index_offset]);
+            const auto left_index_offset =
+                static_cast<difference_type>(parent_index_offset + sizeof(NodeIndex));
+            return *reinterpret_cast<const NodeIndex*>(std::next(node, left_index_offset));
         }
 
         /**
@@ -171,8 +174,9 @@ public:
             const auto node = node_pointer(i);
             const auto parent_index_offset = align_up(elem_size_bytes_, sizeof(uintptr_t));
             const auto left_index_offset = parent_index_offset + sizeof(NodeIndex);
-            const auto right_index_offset = left_index_offset + sizeof(NodeIndex);
-            return *reinterpret_cast<const NodeIndex*>(&node[right_index_offset]);
+            const auto right_index_offset =
+                static_cast<difference_type>(left_index_offset + sizeof(NodeIndex));
+            return *reinterpret_cast<const NodeIndex*>(std::next(node, right_index_offset));
         }
 
         /**
@@ -184,8 +188,9 @@ public:
             using namespace fixed_red_black_tree_detail;
 
             const auto node = node_pointer(i);
-            const auto parent_index_offset = align_up(elem_size_bytes_, sizeof(uintptr_t));
-            const auto parent_idx_ptr = &node[parent_index_offset];
+            const auto parent_index_offset =
+                static_cast<difference_type>(align_up(elem_size_bytes_, sizeof(uintptr_t)));
+            const auto parent_idx_ptr = std::next(node, parent_index_offset);
 
             switch (compactness_)
             {
@@ -242,7 +247,8 @@ public:
         {
             const auto bptr = reinterpret_cast<const std::byte*>(base_);
             const auto tree_storage_ptr = bptr;
-            const auto root_index_ptr = (tree_storage_ptr + tree_storage_size_bytes());
+            const auto root_index_ptr = std::next(
+                tree_storage_ptr, static_cast<difference_type>(tree_storage_size_bytes()));
             return *reinterpret_cast<const std::size_t*>(root_index_ptr);
         }
 
@@ -293,7 +299,8 @@ public:
             const auto bptr = reinterpret_cast<const std::byte*>(base_);
             const auto storage_ptr = bptr;
             const auto fixed_vector_ptr = storage_ptr;
-            const auto array_ptr = &fixed_vector_ptr[sizeof(std::size_t)];
+            const auto array_ptr =
+                std::next(fixed_vector_ptr, static_cast<difference_type>(sizeof(std::size_t)));
             return array_ptr;
         }
 

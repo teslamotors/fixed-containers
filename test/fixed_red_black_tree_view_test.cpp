@@ -33,7 +33,7 @@ TEST(FixedRedBlackTreeView, ViewOfPoolStorage)
         FixedSetType::max_size(),
         COMPACTNESS,
         fixed_red_black_tree_detail::RedBlackTreeStorageType::FIXED_INDEX_POOL);
-    
+
     EXPECT_EQ(s1.size(), view.size());
 
     FixedSetType s2;
@@ -51,20 +51,18 @@ TEST(FixedRedBlackTreeView, ViewWithStructValue)
     struct A
     {
         int x;
-        int y[42];
+        std::array<int, 42> y;
 
         A(int cx)
           : x(cx)
+          , y{}
         {
-            std::fill(y, y + sizeof(y) / sizeof(y[0]), x);
+            y.fill(x);
         }
 
         auto operator<=>(const A& other) const { return x <=> other.x; }
 
-        bool operator==(const A& other) const
-        {
-            return x == other.x && std::memcmp(y, other.y, sizeof(y) / sizeof(y[0])) == 0;
-        }
+        bool operator==(const A& other) const { return x == other.x && y == other.y; }
     };
 
     constexpr auto COMPACTNESS =
@@ -164,8 +162,7 @@ TEST(FixedRedBlackTreeView, SizeCalculation)
         sizeof(FixedSetType::value_type),
         FixedSetType::max_size(),
         COMPACTNESS,
-        fixed_red_black_tree_detail::RedBlackTreeStorageType::FIXED_INDEX_POOL
-    );
+        fixed_red_black_tree_detail::RedBlackTreeStorageType::FIXED_INDEX_POOL);
     EXPECT_EQ(v1.size(), 0);
 
     // Test partially filled set.
@@ -175,8 +172,7 @@ TEST(FixedRedBlackTreeView, SizeCalculation)
         sizeof(FixedSetType::value_type),
         FixedSetType::max_size(),
         COMPACTNESS,
-        fixed_red_black_tree_detail::RedBlackTreeStorageType::FIXED_INDEX_POOL
-    );
+        fixed_red_black_tree_detail::RedBlackTreeStorageType::FIXED_INDEX_POOL);
     EXPECT_EQ(v2.size(), s2.size());
 
     // Test completely filled set.
@@ -186,8 +182,7 @@ TEST(FixedRedBlackTreeView, SizeCalculation)
         sizeof(FixedSetType::value_type),
         FixedSetType::max_size(),
         COMPACTNESS,
-        fixed_red_black_tree_detail::RedBlackTreeStorageType::FIXED_INDEX_POOL
-    );
+        fixed_red_black_tree_detail::RedBlackTreeStorageType::FIXED_INDEX_POOL);
     EXPECT_EQ(v3.size(), s3.size());
 
     // Test set whose memory has been zero'ed out.
@@ -198,8 +193,7 @@ TEST(FixedRedBlackTreeView, SizeCalculation)
         sizeof(FixedSetType::value_type),
         FixedSetType::max_size(),
         COMPACTNESS,
-        fixed_red_black_tree_detail::RedBlackTreeStorageType::FIXED_INDEX_POOL
-    );
+        fixed_red_black_tree_detail::RedBlackTreeStorageType::FIXED_INDEX_POOL);
     EXPECT_EQ(v4.size(), 0);
 }
 

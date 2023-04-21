@@ -101,20 +101,20 @@ public:
 
     constexpr Self& operator++() noexcept
     {
-        iterator_++;
+        std::advance(iterator_, 1);
         return *this;
     }
 
     constexpr Self operator++(int) & noexcept
     {
         Self tmp = *this;
-        iterator_++;
+        std::advance(iterator_, 1);
         return tmp;
     }
 
     constexpr Self& operator--() noexcept
     {
-        iterator_--;
+        std::advance(iterator_, -1);
         return *this;
     }
 
@@ -127,24 +127,24 @@ public:
 
     constexpr Self& operator+=(difference_type off)
     {
-        iterator_ += off;
+        std::advance(iterator_, off);
         return *this;
     }
 
     constexpr Self operator+(difference_type off) const
     {
-        return Self(iterator_ + off, unary_function_);
+        return Self(std::next(iterator_, off), unary_function_);
     }
 
     constexpr Self& operator-=(difference_type off)
     {
-        iterator_ -= off;
+        std::advance(iterator_, -off);
         return *this;
     }
 
     constexpr Self operator-(difference_type off) const
     {
-        return Self(iterator_ - off, unary_function_);
+        return Self(std::prev(iterator_, off), unary_function_);
     }
 
     constexpr difference_type operator-(const Self& other) const

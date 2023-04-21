@@ -130,7 +130,7 @@ TEST(EnumArray, Data)
     constexpr EnumArray<TestEnum1, int> s1{
         {TestEnum1::ONE, 10}, {TestEnum1::TWO, 20}, {TestEnum1::THREE, 30}, {TestEnum1::FOUR, 40}};
     static_assert(consteval_compare::equal<10, s1.data()[0]>);
-    static_assert(consteval_compare::equal<40, s1.data()[3]>);
+    static_assert(consteval_compare::equal<40, *std::next(s1.data(), 3)>);
 }
 
 TEST(EnumArray, IteratorUsage)

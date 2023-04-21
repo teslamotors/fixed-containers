@@ -237,7 +237,7 @@ public:
                           const std_transition::source_location& loc =
                               std_transition::source_location::current()) noexcept
     {
-        for (; first != last; ++first)
+        for (; first != last; std::advance(first, 1))
         {
             this->insert(*first, loc);
         }

@@ -37,7 +37,8 @@ private:
 
         constexpr std::size_t operator()(const std::size_t i) const
         {
-            return EnumAdapterType::ordinal(list_[i].first);
+            auto it = std::next(list_, static_cast<difference_type>(i));
+            return EnumAdapterType::ordinal(it->first);
         }
     };
 
@@ -46,7 +47,7 @@ private:
     [[nodiscard]] static constexpr ValueArrayType initializer_pair_list_to_value_array_impl(
         const std::pair<const L, T> (&list)[M], std::index_sequence<Is...>)
     {
-        return ValueArrayType{list[Is].second...};
+        return ValueArrayType{std::next(list, static_cast<difference_type>(Is))->second...};
     }
 
     template <std::size_t M>
@@ -65,8 +66,9 @@ public:
     {
     }
 
-    constexpr EnumArray(std::initializer_list<std::pair<const L, T>> list) noexcept requires
-        DefaultConstructible<T> : EnumArray()
+    constexpr EnumArray(std::initializer_list<std::pair<const L, T>> list) noexcept
+        requires DefaultConstructible<T>
+      : EnumArray()
     {
         for (const auto& [label, value] : list)
         {
@@ -81,9 +83,10 @@ public:
     // and facilitates placement in the right ordinal without requiring extra stack space or needing
     // to sort.
     template <std::size_t M>
-    requires(M == ENUM_COUNT)  // Template parameter M is used to avoid -Wzero-length-array
-        constexpr EnumArray(const std::pair<const L, T> (&list)[M]) noexcept requires
-        NotDefaultConstructible<T> : values_(initializer_pair_list_to_value_array(list))
+        requires(M == ENUM_COUNT)  // Template parameter M is used to avoid -Wzero-length-array
+    constexpr EnumArray(const std::pair<const L, T> (&list)[M]) noexcept
+        requires NotDefaultConstructible<T>
+      : values_(initializer_pair_list_to_value_array(list))
     {
         assert(fixed_containers::rich_enums_detail::is_zero_based_contiguous_and_sorted(
             ENUM_COUNT, PairOrdinalComparator<ENUM_COUNT>{list}));
