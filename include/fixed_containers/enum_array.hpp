@@ -17,6 +17,7 @@ class EnumArray
     static constexpr const LabelArrayType& ENUM_VALUES = EnumAdapterType::values();
 
 public:
+    using label_type = L;
     using value_type = typename ValueArrayType::value_type;
     using size_type = typename ValueArrayType::size_type;
     using difference_type = typename ValueArrayType::difference_type;
