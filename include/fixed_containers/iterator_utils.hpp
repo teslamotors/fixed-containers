@@ -9,7 +9,7 @@ namespace detail
 enum class IteratorConstnessBackingEnum : bool
 {
     MUTABLE,
-    CONST,
+    CONSTANT,
 };
 }  // namespace detail
 
@@ -23,7 +23,7 @@ public:
     static constexpr const std::array<IteratorConstness, count()>& values();
 
     FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(IteratorConstness, MUTABLE)
-    FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(IteratorConstness, CONST)
+    FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(IteratorConstness, CONSTANT)
 };
 
 constexpr const std::array<IteratorConstness, IteratorConstness::count()>&

@@ -115,7 +115,7 @@ private:
     template <IteratorDirection DIRECTION>
     using Iterator = BidirectionalIterator<ReferenceProvider,
                                            ReferenceProvider,
-                                           IteratorConstness::CONST(),
+                                           IteratorConstness::CONSTANT(),
                                            DIRECTION>;
 
     // The tree returns NULL_INDEX when an index is not available.

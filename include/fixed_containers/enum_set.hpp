@@ -133,7 +133,7 @@ private:
     using IteratorImpl = IndexRangePredicateIterator<IndexPredicate,
                                                      ReferenceProvider,
                                                      ReferenceProvider,
-                                                     IteratorConstness::CONST(),
+                                                     IteratorConstness::CONSTANT(),
                                                      DIRECTION>;
 
 public:

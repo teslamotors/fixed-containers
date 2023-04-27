@@ -205,10 +205,10 @@ private:
                                                      DIRECTION>;
 
 public:
-    using const_iterator = IteratorImpl<IteratorConstness::CONST(), IteratorDirection::FORWARD()>;
+    using const_iterator = IteratorImpl<IteratorConstness::CONSTANT(), IteratorDirection::FORWARD()>;
     using iterator = IteratorImpl<IteratorConstness::MUTABLE(), IteratorDirection::FORWARD()>;
     using const_reverse_iterator =
-        IteratorImpl<IteratorConstness::CONST(), IteratorDirection::REVERSE()>;
+        IteratorImpl<IteratorConstness::CONSTANT(), IteratorDirection::REVERSE()>;
     using reverse_iterator =
         IteratorImpl<IteratorConstness::MUTABLE(), IteratorDirection::REVERSE()>;
     using size_type = typename KeyArrayType::size_type;

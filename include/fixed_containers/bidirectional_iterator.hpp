@@ -42,7 +42,7 @@ class BidirectionalIterator
                                        NEGATED_CONSTNESS_LVALUE,
                                        DIRECTION>;
 
-    using ReferenceProvider = std::conditional_t<CONSTNESS_LVALUE == IteratorConstness::CONST(),
+    using ReferenceProvider = std::conditional_t<CONSTNESS_LVALUE == IteratorConstness::CONSTANT(),
                                                  ConstReferenceProvider,
                                                  MutableReferenceProvider>;
 
@@ -74,7 +74,7 @@ public:
 
     // Mutable iterator needs to be convertible to const iterator
     constexpr BidirectionalIterator(const Sibling& other) noexcept
-        requires(CONSTNESS == IteratorConstness::CONST())
+        requires(CONSTNESS == IteratorConstness::CONSTANT())
       : BidirectionalIterator{other.reference_provider_}
     {
     }
