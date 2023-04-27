@@ -236,7 +236,7 @@ public:
       : FixedVectorBase()
     {
         check_target_size(count, loc);
-        size_ = count;
+        set_size(count);
         for (std::size_t i = 0; i < count; i++)
         {
             place_at(i, value);
@@ -290,12 +290,12 @@ public:
         while (size() < count)
         {
             place_at(size(), v);
-            size_++;
+            increment_size();
         }
         // Destroy extras if we are making it smaller.
         while (size() > count)
         {
-            size_--;
+            decrement_size();
             destroy_at(size());
         }
     }
@@ -327,7 +327,7 @@ public:
     {
         check_not_full(std_transition::source_location::current());
         emplace_at(size(), std::forward<Args>(args)...);
-        size_++;
+        increment_size();
         return this->back();
     }
 
@@ -340,7 +340,7 @@ public:
     {
         check_not_empty(loc);
         destroy_at(size() - 1);
-        --size_;
+        decrement_size();
     }
 
     /**
@@ -463,7 +463,7 @@ public:
             destroy_at(read_start + i);
         }
 
-        size_ -= entry_count_to_remove;
+        decrement_size(entry_count_to_remove);
         return iterator{this->begin() + static_cast<difference_type>(write_start)};
     }
 
@@ -483,7 +483,7 @@ public:
     constexpr FixedVectorBase& clear() noexcept
     {
         destroy_index_range(0, size());
-        size_ = 0;
+        set_size(0);
         return *this;
     }
 
@@ -656,7 +656,7 @@ private:
             destroy_at(read_end - i);
         }
 
-        size_ += n;
+        increment_size(n);
 
         return read_start;
     }
@@ -664,13 +664,13 @@ private:
     constexpr void push_back_internal(const value_type& v)
     {
         place_at(size(), v);
-        size_++;
+        increment_size();
     }
 
     constexpr void push_back_internal(value_type&& v)
     {
         place_at(size(), std::move(v));
-        size_++;
+        increment_size();
     }
 
     template <InputIterator InputIt>
@@ -721,7 +721,7 @@ private:
         const std::size_t write_index = this->index_of(it);
         std::rotate(
             create_iterator(write_index), create_iterator(size()), create_iterator(new_size));
-        size_ = new_size;
+        set_size(new_size);
 
         return begin() + static_cast<difference_type>(write_index);
     }
@@ -765,6 +765,10 @@ private:
 
     // [WORKAROUND-1] - Needed by the non-trivially-copyable flavor of FixedVector
 protected:
+    constexpr void increment_size(std::size_t n = 1) { size_ += n; }
+    constexpr void decrement_size(std::size_t n = 1) { size_ -= n; }
+    constexpr void set_size(const std::size_t size) { size_ = size; }
+
     constexpr void destroy_at(std::size_t)
         requires TriviallyDestructible<T>
     {
@@ -869,7 +873,7 @@ public:
       : FixedVector()
     {
         const std::size_t sz = other.size();
-        this->size_ = sz;
+        this->set_size(sz);
         for (std::size_t i = 0; i < sz; i++)
         {
             this->place_at(i, other.array_[i].value);
@@ -879,7 +883,7 @@ public:
       : FixedVector()
     {
         const std::size_t sz = other.size();
-        this->size_ = sz;
+        this->set_size(sz);
         for (std::size_t i = 0; i < sz; i++)
         {
             this->place_at(i, std::move(other.array_[i].value));
@@ -897,7 +901,7 @@ public:
 
         this->clear();
         const std::size_t sz = other.size();
-        this->size_ = sz;
+        this->set_size(sz);
         for (std::size_t i = 0; i < sz; i++)
         {
             this->place_at(i, other.array_[i].value);
@@ -913,7 +917,7 @@ public:
 
         this->clear();
         const std::size_t sz = other.size();
-        this->size_ = sz;
+        this->set_size(sz);
         for (std::size_t i = 0; i < sz; i++)
         {
             this->place_at(i, std::move(other.array_[i].value));
