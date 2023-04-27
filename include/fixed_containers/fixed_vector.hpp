@@ -287,16 +287,16 @@ public:
         check_target_size(count, loc);
 
         // Reinitialize the new members if we are enlarging
-        while (size_ < count)
+        while (size() < count)
         {
-            place_at(size_, v);
+            place_at(size(), v);
             size_++;
         }
         // Destroy extras if we are making it smaller.
-        while (size_ > count)
+        while (size() > count)
         {
             size_--;
-            destroy_at(size_);
+            destroy_at(size());
         }
     }
 
@@ -326,7 +326,7 @@ public:
     constexpr reference emplace_back(Args&&... args)
     {
         check_not_full(std_transition::source_location::current());
-        emplace_at(size_, std::forward<Args>(args)...);
+        emplace_at(size(), std::forward<Args>(args)...);
         size_++;
         return this->back();
     }
@@ -339,7 +339,7 @@ public:
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
         check_not_empty(loc);
-        destroy_at(size_ - 1);
+        destroy_at(size() - 1);
         --size_;
     }
 
@@ -449,7 +449,7 @@ public:
         const std::size_t read_start = this->index_of(last);
         const std::size_t write_start = this->index_of(first);
 
-        std::size_t entry_count_to_move = size_ - read_start;
+        std::size_t entry_count_to_move = size() - read_start;
         const std::size_t entry_count_to_remove = read_start - write_start;
 
         // Clean out the gap
@@ -482,7 +482,7 @@ public:
      */
     constexpr FixedVectorBase& clear() noexcept
     {
-        destroy_index_range(0, size_);
+        destroy_index_range(0, size());
         size_ = 0;
         return *this;
     }
@@ -507,9 +507,9 @@ public:
                            const std_transition::source_location& loc =
                                std_transition::source_location::current()) noexcept
     {
-        if (preconditions::test(i < size_))
+        if (preconditions::test(i < size()))
         {
-            Checking::out_of_range(i, size_, loc);
+            Checking::out_of_range(i, size(), loc);
         }
         return optional_storage_detail::get(array_[i]);
     }
@@ -517,9 +517,9 @@ public:
                                  const std_transition::source_location& loc =
                                      std_transition::source_location::current()) const noexcept
     {
-        if (preconditions::test(i < size_))
+        if (preconditions::test(i < size()))
         {
-            Checking::out_of_range(i, size_, loc);
+            Checking::out_of_range(i, size(), loc);
         }
         return optional_storage_detail::get(array_[i]);
     }
@@ -540,13 +540,13 @@ public:
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
         check_not_empty(loc);
-        return optional_storage_detail::get(array_[size_ - 1]);
+        return optional_storage_detail::get(array_[size() - 1]);
     }
     constexpr const_reference back(const std_transition::source_location& loc =
                                        std_transition::source_location::current()) const
     {
         check_not_empty(loc);
-        return optional_storage_detail::get(array_[size_ - 1]);
+        return optional_storage_detail::get(array_[size() - 1]);
     }
 
     constexpr value_type* data() noexcept { return &optional_storage_detail::get(*array_.data()); }
@@ -561,9 +561,9 @@ public:
     constexpr iterator begin() noexcept { return create_iterator(0); }
     constexpr const_iterator begin() const noexcept { return cbegin(); }
     constexpr const_iterator cbegin() const noexcept { return create_const_iterator(0); }
-    constexpr iterator end() noexcept { return create_iterator(size_); }
+    constexpr iterator end() noexcept { return create_iterator(size()); }
     constexpr const_iterator end() const noexcept { return cend(); }
-    constexpr const_iterator cend() const noexcept { return create_const_iterator(size_); }
+    constexpr const_iterator cend() const noexcept { return create_const_iterator(size()); }
 
     constexpr reverse_iterator rbegin() noexcept { return reverse_iterator(end()); }
     constexpr const_reverse_iterator rbegin() const noexcept { return crbegin(); }
@@ -582,7 +582,7 @@ public:
      * Size
      */
     [[nodiscard]] constexpr std::size_t size() const noexcept { return size_; }
-    [[nodiscard]] constexpr bool empty() const noexcept { return size_ == 0; }
+    [[nodiscard]] constexpr bool empty() const noexcept { return size() == 0; }
 
     /**
      * Equality.
@@ -638,14 +638,14 @@ private:
     /*
      * Helper for insert
      * Moves everything ahead of a given const_iterator n spots forward, and
-     * returns the index to insert something at that place. Increments size_.
+     * returns the index to insert something at that place. Increments size.
      */
     constexpr std::size_t advance_all_after_iterator_by_n(const const_iterator it,
                                                           const std::size_t n)
     {
         const std::size_t read_start = index_of(it);
         const std::size_t write_start = read_start + n;
-        const std::size_t value_count_to_move = size_ - read_start;
+        const std::size_t value_count_to_move = size() - read_start;
 
         const std::size_t read_end = read_start + value_count_to_move - 1;
         const std::size_t write_end = write_start + value_count_to_move - 1;
@@ -663,13 +663,13 @@ private:
 
     constexpr void push_back_internal(const value_type& v)
     {
-        place_at(size_, v);
+        place_at(size(), v);
         size_++;
     }
 
     constexpr void push_back_internal(value_type&& v)
     {
-        place_at(size_, std::move(v));
+        place_at(size(), std::move(v));
         size_++;
     }
 
@@ -681,7 +681,7 @@ private:
                                        const std_transition::source_location& loc)
     {
         const auto entry_count_to_add = static_cast<std::size_t>(std::distance(first, last));
-        check_target_size(size_ + entry_count_to_add, loc);
+        check_target_size(size() + entry_count_to_add, loc);
         const std::size_t write_index =
             this->advance_all_after_iterator_by_n(it, entry_count_to_add);
 
@@ -700,7 +700,7 @@ private:
                                        const std_transition::source_location& loc)
     {
         // Place everything at the end of the vector
-        std::size_t new_size = size_;
+        std::size_t new_size = size();
         for (; first != last && new_size < max_size(); ++first, ++new_size)
         {
             place_at(new_size, *first);
@@ -720,7 +720,7 @@ private:
         // Rotate into the correct places
         const std::size_t write_index = this->index_of(it);
         std::rotate(
-            create_iterator(write_index), create_iterator(size_), create_iterator(new_size));
+            create_iterator(write_index), create_iterator(size()), create_iterator(new_size));
         size_ = new_size;
 
         return begin() + static_cast<difference_type>(write_index);
@@ -750,7 +750,7 @@ private:
 
     constexpr void check_not_full(const std_transition::source_location& loc) const
     {
-        if (preconditions::test(size_ < MAXIMUM_SIZE))
+        if (preconditions::test(size() < MAXIMUM_SIZE))
         {
             Checking::length_error(MAXIMUM_SIZE + 1, loc);
         }
@@ -868,8 +868,9 @@ public:
     constexpr FixedVector(const FixedVector& other)
       : FixedVector()
     {
-        this->size_ = other.size();
-        for (std::size_t i = 0; i < this->size_; i++)
+        const std::size_t sz = other.size();
+        this->size_ = sz;
+        for (std::size_t i = 0; i < sz; i++)
         {
             this->place_at(i, other.array_[i].value);
         }
@@ -877,8 +878,9 @@ public:
     constexpr FixedVector(FixedVector&& other) noexcept
       : FixedVector()
     {
-        this->size_ = other.size();
-        for (std::size_t i = 0; i < this->size_; i++)
+        const std::size_t sz = other.size();
+        this->size_ = sz;
+        for (std::size_t i = 0; i < sz; i++)
         {
             this->place_at(i, std::move(other.array_[i].value));
         }
@@ -894,8 +896,9 @@ public:
         }
 
         this->clear();
-        this->size_ = other.size_;
-        for (std::size_t i = 0; i < this->size_; i++)
+        const std::size_t sz = other.size();
+        this->size_ = sz;
+        for (std::size_t i = 0; i < sz; i++)
         {
             this->place_at(i, other.array_[i].value);
         }
@@ -909,8 +912,9 @@ public:
         }
 
         this->clear();
-        this->size_ = other.size_;
-        for (std::size_t i = 0; i < this->size_; i++)
+        const std::size_t sz = other.size();
+        this->size_ = sz;
+        for (std::size_t i = 0; i < sz; i++)
         {
             this->place_at(i, std::move(other.array_[i].value));
         }
