@@ -33,6 +33,7 @@ static_assert(ranges::random_access_iterator<VecType::const_iterator>);
 
 static_assert(std::ranges::contiguous_range<VecType>);
 static_assert(std::ranges::contiguous_range<std::array<int, 5>>);
+static_assert(IsStructuralType<VecType>);
 }  // namespace trivially_copyable_vector
 
 namespace trivially_copyable_but_not_copyable_or_moveable_vector
@@ -1752,6 +1753,27 @@ TEST(FixedVector, NonTriviallyCopyableMoveAssignment)
     auto& v3 = v2;
     v2 = std::move(v3);
     EXPECT_TRUE(are_equal(v2, std::array<MockNonTrivialInt, 2>{1, 2}));
+}
+
+namespace
+{
+template <FixedVector<int, 5> /*MY_VEC*/>
+struct FixedVectorInstanceCanBeUsedAsATemplateParameter
+{
+};
+
+template <FixedVector<int, 5> /*MY_VEC*/>
+constexpr void fixed_vector_instance_can_be_used_as_a_template_parameter()
+{
+}
+}  // namespace
+
+TEST(FixedVector, UsageAsTemplateParameter)
+{
+    static constexpr FixedVector<int, 5> VEC1{};
+    fixed_vector_instance_can_be_used_as_a_template_parameter<VEC1>();
+    FixedVectorInstanceCanBeUsedAsATemplateParameter<VEC1> my_struct{};
+    static_cast<void>(my_struct);
 }
 
 namespace

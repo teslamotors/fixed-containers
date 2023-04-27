@@ -195,9 +195,9 @@ private:
         }
     }
 
-protected:  // [WORKAROUND-1] - Needed by the non-trivially-copyable flavor of FixedVector
-    std::size_t size_;  // Current size of vector, which can change in contrast to the capacity
-    std::array<OptionalT, MAXIMUM_SIZE> array_;
+public:  // Public so this type is a structural type and can thus be used in template parameters
+    std::size_t IMPLEMENTATION_DETAIL_DO_NOT_USE_size_;
+    std::array<OptionalT, MAXIMUM_SIZE> IMPLEMENTATION_DETAIL_DO_NOT_USE_array_;
 
 public:
     static constexpr std::size_t max_size() noexcept { return MAXIMUM_SIZE; }
@@ -214,7 +214,7 @@ public:
     }
 
     constexpr FixedVectorBase() noexcept
-      : size_{0}
+      : IMPLEMENTATION_DETAIL_DO_NOT_USE_size_{0}
     // Don't initialize the array
     {
         // A constexpr context requires everything to be initialized.
@@ -224,7 +224,7 @@ public:
         {
             if (std::is_constant_evaluated())
             {
-                std::construct_at(&array_);
+                std::construct_at(&IMPLEMENTATION_DETAIL_DO_NOT_USE_array_);
             }
         }
     }
@@ -549,10 +549,13 @@ public:
         return unchecked_at(size() - 1);
     }
 
-    constexpr value_type* data() noexcept { return &optional_storage_detail::get(*array_.data()); }
+    constexpr value_type* data() noexcept
+    {
+        return &optional_storage_detail::get(*IMPLEMENTATION_DETAIL_DO_NOT_USE_array_.data());
+    }
     constexpr const value_type* data() const noexcept
     {
-        return &optional_storage_detail::get(*array_.data());
+        return &optional_storage_detail::get(*IMPLEMENTATION_DETAIL_DO_NOT_USE_array_.data());
     }
 
     /**
@@ -581,7 +584,10 @@ public:
     /**
      * Size
      */
-    [[nodiscard]] constexpr std::size_t size() const noexcept { return size_; }
+    [[nodiscard]] constexpr std::size_t size() const noexcept
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_size_;
+    }
     [[nodiscard]] constexpr bool empty() const noexcept { return size() == 0; }
 
     /**
@@ -728,13 +734,15 @@ private:
 
     constexpr iterator create_iterator(const std::size_t start_index) noexcept
     {
-        auto array_it = std::next(std::begin(array_), static_cast<difference_type>(start_index));
+        auto array_it = std::next(std::begin(IMPLEMENTATION_DETAIL_DO_NOT_USE_array_),
+                                  static_cast<difference_type>(start_index));
         return iterator{array_it, Mapper{}};
     }
 
     constexpr const_iterator create_const_iterator(const std::size_t start_index) const noexcept
     {
-        auto array_it = std::next(std::begin(array_), static_cast<difference_type>(start_index));
+        auto array_it = std::next(std::begin(IMPLEMENTATION_DETAIL_DO_NOT_USE_array_),
+                                  static_cast<difference_type>(start_index));
         return const_iterator{array_it, Mapper{}};
     }
 
@@ -765,18 +773,33 @@ private:
 
     // [WORKAROUND-1] - Needed by the non-trivially-copyable flavor of FixedVector
 protected:
-    constexpr void increment_size(std::size_t n = 1) { size_ += n; }
-    constexpr void decrement_size(std::size_t n = 1) { size_ -= n; }
-    constexpr void set_size(const std::size_t size) { size_ = size; }
-    constexpr const OptionalT& array_unchecked_at(const std::size_t i) const { return array_[i]; }
-    constexpr OptionalT& array_unchecked_at(const std::size_t i) { return array_[i]; }
+    constexpr void increment_size(std::size_t n = 1)
+    {
+        IMPLEMENTATION_DETAIL_DO_NOT_USE_size_ += n;
+    }
+    constexpr void decrement_size(std::size_t n = 1)
+    {
+        IMPLEMENTATION_DETAIL_DO_NOT_USE_size_ -= n;
+    }
+    constexpr void set_size(const std::size_t size)
+    {
+        IMPLEMENTATION_DETAIL_DO_NOT_USE_size_ = size;
+    }
+    constexpr const OptionalT& array_unchecked_at(const std::size_t i) const
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_[i];
+    }
+    constexpr OptionalT& array_unchecked_at(const std::size_t i)
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_[i];
+    }
     constexpr const T& unchecked_at(const std::size_t i) const
     {
-        return optional_storage_detail::get(array_[i]);
+        return optional_storage_detail::get(IMPLEMENTATION_DETAIL_DO_NOT_USE_array_[i]);
     }
     constexpr T& unchecked_at(const std::size_t i)
     {
-        return optional_storage_detail::get(array_[i]);
+        return optional_storage_detail::get(IMPLEMENTATION_DETAIL_DO_NOT_USE_array_[i]);
     }
 
     constexpr void destroy_at(std::size_t)
