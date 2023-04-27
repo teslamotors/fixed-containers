@@ -281,7 +281,7 @@ public:
 
 private:
     static constexpr T NO_VALUE_SENTINEL =
-        static_cast<T>(std::numeric_limits<std::underlying_type_t<T>>::max());
+        static_cast<T>((std::numeric_limits<std::underlying_type_t<T>>::max)());
 
 public:  // Public so this type is a structural type and can thus be used in template parameters
     T val;

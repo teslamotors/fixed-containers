@@ -618,7 +618,7 @@ public:
     constexpr auto operator<=>(const FixedVectorBase<T, MAXIMUM_SIZE_2, CheckingType2>& other) const
     {
         using OrderingType = decltype(std::declval<T>() <=> std::declval<T>());
-        const std::size_t min_size = std::min(this->size(), other.size());
+        const std::size_t min_size = (std::min)(this->size(), other.size());
         for (std::size_t i = 0; i < min_size; i++)
         {
             if (optional_storage_detail::get(this->array_[i]) < other[i])
