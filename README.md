@@ -55,7 +55,7 @@ More examples can be found [here](test/enums_test_common.hpp).
         return v;
     }();
     static_assert(v1[0] == 0);
-    static_assert(v1[1] == 2);
+    static_assert(v1[1] == 1);
     static_assert(v1[2] == 2);
     static_assert(v1.size() == 3);
     static_assert(v1.capacity() == 11);
