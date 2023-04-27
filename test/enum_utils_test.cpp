@@ -258,15 +258,18 @@ TEST(RichEnum, BoolNegate)
 
 static_assert(IsStructuralType<TestRichEnum1>);
 
+namespace
+{
 template <TestRichEnum1 /*MY_ENUM*/>
 struct RichEnumConstantsCanBeUsedAsATemplateParameter
 {
 };
 
 template <TestRichEnum1 /*MY_ENUM*/>
-static constexpr void rich_enum_constants_can_be_used_as_a_template_parameter()
+constexpr void rich_enum_constants_can_be_used_as_a_template_parameter()
 {
 }
+}  // namespace
 
 TEST(RichEnum, UsageAsTemplateParameter)
 {
