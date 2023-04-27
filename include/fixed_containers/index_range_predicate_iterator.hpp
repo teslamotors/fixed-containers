@@ -9,8 +9,7 @@
 namespace fixed_containers
 {
 template <class P>
-concept IndexBasedProvider = requires(P p, std::size_t i)
-{
+concept IndexBasedProvider = requires(P p, std::size_t i) {
     p.update_to_index(i);
     p.get();
 };
@@ -19,7 +18,7 @@ concept IndexBasedProvider = requires(P p, std::size_t i)
 // We are using this class to iterate over collections where we would otherwise
 // have made copies as the result of applying a filter.
 //
-// CONSTANT_ITERATOR/MUTABLE_REFERENCE_PROVIDER is the type of a function that takes an index and returns a
+// Const/MutableReferenceProvider is the type of a function that takes an index and returns a
 // reference to an element.
 //
 // IndexPredicate is the type of a function that takes an index and
@@ -34,8 +33,8 @@ class IndexRangePredicateIterator
 {
     // msvc WORKAROUND: "Error C2891 'CONSTNESS' : cannot take the address of a template parameter"
     // Explanation:
-    // "You can't take the address of a template parameter unless it is an lvalue. Type parameters are not lvalues because they have no address"
-    // To work around that, force l-values.
+    // "You can't take the address of a template parameter unless it is an lvalue. Type parameters
+    // are not lvalues because they have no address" To work around that, force l-values.
     static constexpr IteratorConstness CONSTNESS_LVALUE = CONSTNESS;
     static constexpr IteratorConstness NEGATED_CONSTNESS_LVALUE = !CONSTNESS;
 
@@ -59,9 +58,10 @@ class IndexRangePredicateIterator
                                              NEGATED_CONSTNESS_LVALUE,
                                              DIRECTION>;
 
-    using ReferenceProvider = std::conditional_t<CONSTNESS_LVALUE == IteratorConstness::CONSTANT_ITERATOR(),
-                                                 ConstReferenceProvider,
-                                                 MutableReferenceProvider>;
+    using ReferenceProvider =
+        std::conditional_t<CONSTNESS_LVALUE == IteratorConstness::CONSTANT_ITERATOR(),
+                           ConstReferenceProvider,
+                           MutableReferenceProvider>;
 
 public:
     using reference = decltype(std::declval<ReferenceProvider>().get());
