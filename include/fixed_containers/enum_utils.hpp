@@ -13,57 +13,48 @@
 namespace fixed_containers::rich_enums_detail
 {
 template <class T>
-concept has_enum_typename = requires()
-{
-    typename T::Enum;
-};
+concept has_enum_typename = requires() { typename T::Enum; };
 
 template <typename T>
-concept has_member_std_string_view_to_string_void_const = requires(T t)
-{
+concept has_member_std_string_view_to_string_void_const = requires(T t) {
     {
         t.to_string()
-        } -> std::same_as<std::string_view>;
+    } -> std::same_as<std::string_view>;
 };
 
 template <typename T>
-concept has_member_sizet_ordinal_void_const = requires(T t)
-{
+concept has_member_sizet_ordinal_void_const = requires(T t) {
     {
         t.ordinal()
-        } -> std::same_as<std::size_t>;
+    } -> std::same_as<std::size_t>;
 };
 
 template <typename T>
-concept has_static_sizet_count_void = requires()
-{
+concept has_static_sizet_count_void = requires() {
     {
         T::count()
-        } -> std::same_as<std::size_t>;
+    } -> std::same_as<std::size_t>;
 };
 
 template <typename T, typename EnumType, std::size_t ENTRY_COUNT>
-concept has_static_const_ref_array_values_void = requires()
-{
+concept has_static_const_ref_array_values_void = requires() {
     {
         T::values()
-        } -> std::same_as<const std::array<EnumType, ENTRY_COUNT>&>;
+    } -> std::same_as<const std::array<EnumType, ENTRY_COUNT>&>;
 };
 
 template <typename T, typename R>
-concept has_static_std_string_view_to_string_r = requires(const R r)
-{
+concept has_static_std_string_view_to_string_r = requires(const R r) {
     {
         T::to_string(r)
-        } -> std::same_as<std::string_view>;
+    } -> std::same_as<std::string_view>;
 };
 
 template <typename T, typename R>
-concept has_static_sizet_ordinal_r = requires(const R r)
-{
+concept has_static_sizet_ordinal_r = requires(const R r) {
     {
         T::ordinal(r)
-        } -> std::same_as<std::size_t>;
+    } -> std::same_as<std::size_t>;
 };
 
 template <class T>
@@ -85,7 +76,7 @@ struct RichEnumOrdinalFunctor
 };
 
 template <class T>
-requires has_enum_typename<T> && has_static_sizet_ordinal_r<T, typename T::Enum>
+    requires has_enum_typename<T> && has_static_sizet_ordinal_r<T, typename T::Enum>
 struct RichEnumAdapterOrdinalFunctor
 {
     using K = typename T::Enum;
@@ -121,13 +112,14 @@ constexpr bool has_zero_based_and_sorted_contiguous_ordinal()
 }
 
 template <class T>
-concept is_rich_enum = has_static_sizet_count_void<T> &&
-    has_static_const_ref_array_values_void<T, T, T::count()> &&
+concept is_rich_enum =
+    has_static_sizet_count_void<T> && has_static_const_ref_array_values_void<T, T, T::count()> &&
     has_member_sizet_ordinal_void_const<T> && has_member_std_string_view_to_string_void_const<T> &&
     has_zero_based_and_sorted_contiguous_ordinal(T::values(), RichEnumOrdinalFunctor<T>{});
 
 template <class T>
-concept is_enum_adapter = has_enum_typename<T> && has_static_sizet_count_void<T> &&
+concept is_enum_adapter =
+    has_enum_typename<T> && has_static_sizet_count_void<T> &&
     has_static_const_ref_array_values_void<T, typename T::Enum, T::count()> &&
     has_static_sizet_ordinal_r<T, typename T::Enum> &&
     has_static_std_string_view_to_string_r<T, typename T::Enum> &&
@@ -227,17 +219,16 @@ struct NoInfusedDataProvider
 };
 
 template <class T>
-concept IsRichEnumStorage = requires(const T& const_s, const T& const_s2)
-{
+concept IsRichEnumStorage = requires(const T& const_s, const T& const_s2) {
     typename T::UnderlyingType;
     const_s == const_s2;
 
     {
         const_s.has_value()
-        } -> std::same_as<bool>;
+    } -> std::same_as<bool>;
     {
         const_s.value()
-        } -> std::same_as<const typename T::UnderlyingType&>;
+    } -> std::same_as<const typename T::UnderlyingType&>;
 };
 
 template <class T>
@@ -358,7 +349,8 @@ public:  // Public so this type is a structural type and can thus be used in tem
 
     constexpr SkeletalRichEnumStorageBase() noexcept = default;
 
-    explicit(false) constexpr SkeletalRichEnumStorageBase(const BackingEnumType& backing_enum) noexcept
+    explicit(false) constexpr SkeletalRichEnumStorageBase(
+        const BackingEnumType& backing_enum) noexcept
       : detail_backing_enum{backing_enum}
     {
     }
@@ -418,14 +410,13 @@ template <class T>
 concept has_enum_adapter = is_enum_adapter<EnumAdapter<T>>;
 
 template <class T>
-concept IsInfusedDataProvider = requires(const T& provider, const typename T::EnumType& e)
-{
+concept IsInfusedDataProvider = requires(const T& provider, const typename T::EnumType& e) {
     typename T::EnumType;
     typename T::DataType;
 
     {
         T::get(e)
-        } -> std::convertible_to<typename T::DataType>;
+    } -> std::convertible_to<typename T::DataType>;
 };
 
 template <class RichEnumType>
@@ -559,7 +550,8 @@ protected:
     // Intentionally non-virtual. Polymorphism breaks standard layout.
     constexpr ~SkeletalRichEnumLite() noexcept = default;
 
-    constexpr const InfusedData& enum_data() const requires(!std::is_empty_v<InfusedData>)
+    constexpr const InfusedData& enum_data() const
+        requires(!std::is_empty_v<InfusedData>)
     {
         return this->detail_enum_data;
     }
@@ -614,8 +606,8 @@ public:
     constexpr SkeletalRichEnum& operator=(const SkeletalRichEnum&) noexcept = default;
     constexpr SkeletalRichEnum& operator=(SkeletalRichEnum&&) noexcept = default;
 
-    constexpr const RichEnumType& operator!()
-        const requires std::is_same_v<bool, magic_enum::underlying_type_t<BackingEnum>>
+    constexpr const RichEnumType& operator!() const
+        requires std::is_same_v<bool, magic_enum::underlying_type_t<BackingEnum>>
     {
         if (*this == RichEnumType::values()[0])
         {
@@ -661,7 +653,8 @@ public:
 
 protected:
     explicit(false) constexpr NonDefaultConstructibleSkeletalRichEnum(
-        const BackingEnum& backing_enum) noexcept requires(std::is_empty_v<InfusedData>)
+        const BackingEnum& backing_enum) noexcept
+        requires(std::is_empty_v<InfusedData>)
       : Base{backing_enum}
     {
     }
