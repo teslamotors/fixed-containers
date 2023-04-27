@@ -219,7 +219,7 @@ public:
     {
         // A constexpr context requires everything to be initialized.
         // The OptionalStorage wrapper takes care of that, but for unwrapped objects
-        // while also being in a constexpr context, initialize array_.
+        // while also being in a constexpr context, initialize array.
         if constexpr (!std::same_as<OptionalT, optional_storage_detail::OptionalStorage<T>>)
         {
             if (std::is_constant_evaluated())
@@ -459,7 +459,7 @@ public:
         for (std::size_t i = 0; i < entry_count_to_move; ++i)
         {
             place_at(write_start + i,
-                     std::move(optional_storage_detail::get(array_[read_start + i])));
+                     std::move(optional_storage_detail::get(array_unchecked_at(read_start + i))));
             destroy_at(read_start + i);
         }
 
@@ -511,7 +511,7 @@ public:
         {
             Checking::out_of_range(i, size(), loc);
         }
-        return optional_storage_detail::get(array_[i]);
+        return unchecked_at(i);
     }
     constexpr const_reference at(size_type i,
                                  const std_transition::source_location& loc =
@@ -521,32 +521,32 @@ public:
         {
             Checking::out_of_range(i, size(), loc);
         }
-        return optional_storage_detail::get(array_[i]);
+        return unchecked_at(i);
     }
 
     constexpr reference front(
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
         check_not_empty(loc);
-        return optional_storage_detail::get(array_[0]);
+        return unchecked_at(0);
     }
     constexpr const_reference front(const std_transition::source_location& loc =
                                         std_transition::source_location::current()) const
     {
         check_not_empty(loc);
-        return optional_storage_detail::get(array_[0]);
+        return unchecked_at(0);
     }
     constexpr reference back(
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
         check_not_empty(loc);
-        return optional_storage_detail::get(array_[size() - 1]);
+        return unchecked_at(size() - 1);
     }
     constexpr const_reference back(const std_transition::source_location& loc =
                                        std_transition::source_location::current()) const
     {
         check_not_empty(loc);
-        return optional_storage_detail::get(array_[size() - 1]);
+        return unchecked_at(size() - 1);
     }
 
     constexpr value_type* data() noexcept { return &optional_storage_detail::get(*array_.data()); }
@@ -605,7 +605,7 @@ public:
 
         for (std::size_t i = 0; i < this->size(); i++)
         {
-            if (optional_storage_detail::get(this->array_[i]) != other[i])
+            if (this->unchecked_at(i) != other.at(i))
             {
                 return false;
             }
@@ -621,11 +621,11 @@ public:
         const std::size_t min_size = (std::min)(this->size(), other.size());
         for (std::size_t i = 0; i < min_size; i++)
         {
-            if (optional_storage_detail::get(this->array_[i]) < other[i])
+            if (unchecked_at(i) < other.at(i))
             {
                 return OrderingType::less;
             }
-            if (optional_storage_detail::get(this->array_[i]) > other[i])
+            if (unchecked_at(i) > other.at(i))
             {
                 return OrderingType::greater;
             }
@@ -652,7 +652,7 @@ private:
 
         for (std::size_t i = 0; i < value_count_to_move; i++)
         {
-            place_at(write_end - i, std::move(optional_storage_detail::get(array_[read_end - i])));
+            place_at(write_end - i, std::move(unchecked_at(read_end - i)));
             destroy_at(read_end - i);
         }
 
@@ -768,6 +768,16 @@ protected:
     constexpr void increment_size(std::size_t n = 1) { size_ += n; }
     constexpr void decrement_size(std::size_t n = 1) { size_ -= n; }
     constexpr void set_size(const std::size_t size) { size_ = size; }
+    constexpr const OptionalT& array_unchecked_at(const std::size_t i) const { return array_[i]; }
+    constexpr OptionalT& array_unchecked_at(const std::size_t i) { return array_[i]; }
+    constexpr const T& unchecked_at(const std::size_t i) const
+    {
+        return optional_storage_detail::get(array_[i]);
+    }
+    constexpr T& unchecked_at(const std::size_t i)
+    {
+        return optional_storage_detail::get(array_[i]);
+    }
 
     constexpr void destroy_at(std::size_t)
         requires TriviallyDestructible<T>
@@ -776,7 +786,7 @@ protected:
     constexpr void destroy_at(std::size_t i)
         requires NotTriviallyDestructible<T>
     {
-        array_[i].value.~T();
+        array_unchecked_at(i).value.~T();
     }
 
     constexpr void destroy_index_range(std::size_t, std::size_t)
@@ -794,18 +804,18 @@ protected:
 
     constexpr void place_at(const std::size_t i, const value_type& v)
     {
-        std::construct_at(&array_[i], v);
+        std::construct_at(&array_unchecked_at(i), v);
     }
 
     constexpr void place_at(const std::size_t i, value_type&& v)
     {
-        std::construct_at(&array_[i], std::move(v));
+        std::construct_at(&array_unchecked_at(i), std::move(v));
     }
 
     template <class... Args>
     constexpr void emplace_at(const std::size_t i, Args&&... args)
     {
-        optional_storage_detail::construct_at(&array_[i], std::forward<Args>(args)...);
+        optional_storage_detail::construct_at(&array_unchecked_at(i), std::forward<Args>(args)...);
     }
 };
 
@@ -876,7 +886,7 @@ public:
         this->set_size(sz);
         for (std::size_t i = 0; i < sz; i++)
         {
-            this->place_at(i, other.array_[i].value);
+            this->place_at(i, other.array_unchecked_at(i).value);
         }
     }
     constexpr FixedVector(FixedVector&& other) noexcept
@@ -886,7 +896,7 @@ public:
         this->set_size(sz);
         for (std::size_t i = 0; i < sz; i++)
         {
-            this->place_at(i, std::move(other.array_[i].value));
+            this->place_at(i, std::move(other.array_unchecked_at(i).value));
         }
         // Clear the moved-out-of-vector. This is consistent with both std::vector
         // as well as the trivial move constructor of this class.
@@ -904,7 +914,7 @@ public:
         this->set_size(sz);
         for (std::size_t i = 0; i < sz; i++)
         {
-            this->place_at(i, other.array_[i].value);
+            this->place_at(i, other.array_unchecked_at(i).value);
         }
         return *this;
     }
@@ -920,7 +930,7 @@ public:
         this->set_size(sz);
         for (std::size_t i = 0; i < sz; i++)
         {
-            this->place_at(i, std::move(other.array_[i].value));
+            this->place_at(i, std::move(other.array_unchecked_at(i).value));
         }
         // The trivial assignment operator does not `other.clear()`, so don't do it here either for
         // consistency across FixedVectors. std::vector<T> does clear it, so behavior is different.
