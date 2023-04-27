@@ -19,7 +19,7 @@ concept IndexBasedProvider = requires(P p, std::size_t i)
 // We are using this class to iterate over collections where we would otherwise
 // have made copies as the result of applying a filter.
 //
-// CONSTANT/MUTABLE_REFERENCE_PROVIDER is the type of a function that takes an index and returns a
+// CONSTANT_ITERATOR/MUTABLE_REFERENCE_PROVIDER is the type of a function that takes an index and returns a
 // reference to an element.
 //
 // IndexPredicate is the type of a function that takes an index and
@@ -59,7 +59,7 @@ class IndexRangePredicateIterator
                                              NEGATED_CONSTNESS_LVALUE,
                                              DIRECTION>;
 
-    using ReferenceProvider = std::conditional_t<CONSTNESS_LVALUE == IteratorConstness::CONSTANT(),
+    using ReferenceProvider = std::conditional_t<CONSTNESS_LVALUE == IteratorConstness::CONSTANT_ITERATOR(),
                                                  ConstReferenceProvider,
                                                  MutableReferenceProvider>;
 
@@ -119,7 +119,7 @@ public:
 
     // Mutable iterator needs to be convertible to const iterator
     constexpr IndexRangePredicateIterator(const Sibling& other) noexcept
-        requires(CONSTNESS == IteratorConstness::CONSTANT())
+        requires(CONSTNESS == IteratorConstness::CONSTANT_ITERATOR())
       : IndexRangePredicateIterator{
             other.predicate_, other.reference_provider_, other.current_index_, other.end_index_}
     {

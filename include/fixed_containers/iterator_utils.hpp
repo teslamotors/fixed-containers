@@ -6,10 +6,11 @@ namespace fixed_containers
 {
 namespace detail
 {
+// Names are not just "MUTABLE" and "CONSTANT" to avoid collision with macros
 enum class IteratorConstnessBackingEnum : bool
 {
-    MUTABLE,
-    CONSTANT,
+    MUTABLE_ITERATOR,
+    CONSTANT_ITERATOR,
 };
 }  // namespace detail
 
@@ -22,8 +23,8 @@ class IteratorConstness
 public:
     static constexpr const std::array<IteratorConstness, count()>& values();
 
-    FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(IteratorConstness, MUTABLE)
-    FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(IteratorConstness, CONSTANT)
+    FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(IteratorConstness, MUTABLE_ITERATOR)
+    FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(IteratorConstness, CONSTANT_ITERATOR)
 };
 
 constexpr const std::array<IteratorConstness, IteratorConstness::count()>&

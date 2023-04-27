@@ -43,10 +43,10 @@ class RandomAccessIteratorTransformer
                                                  MutableReferenceUnaryFunction,
                                                  NEGATED_CONSTNESS_LVALUE>;
 
-    using IteratorType = std::conditional_t<CONSTNESS_LVALUE == IteratorConstness::CONSTANT(),
+    using IteratorType = std::conditional_t<CONSTNESS_LVALUE == IteratorConstness::CONSTANT_ITERATOR(),
                                             ConstIterator,
                                             MutableIterator>;
-    using UnaryFunction = std::conditional_t<CONSTNESS_LVALUE == IteratorConstness::CONSTANT(),
+    using UnaryFunction = std::conditional_t<CONSTNESS_LVALUE == IteratorConstness::CONSTANT_ITERATOR(),
                                              ConstReferenceUnaryFunction,
                                              MutableReferenceUnaryFunction>;
 
@@ -84,7 +84,7 @@ public:
 
     // Mutable iterator needs to be convertible to const iterator
     constexpr RandomAccessIteratorTransformer(const Sibling& other) noexcept
-        requires(CONSTNESS == IteratorConstness::CONSTANT())
+        requires(CONSTNESS == IteratorConstness::CONSTANT_ITERATOR())
       : iterator_(other.iterator_)
       , unary_function_(other.unary_function_)
     {

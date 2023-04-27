@@ -202,11 +202,11 @@ private:
     }
 
 public:
-    using const_iterator = Iterator<IteratorConstness::CONSTANT(), IteratorDirection::FORWARD()>;
-    using iterator = Iterator<IteratorConstness::MUTABLE(), IteratorDirection::FORWARD()>;
+    using const_iterator = Iterator<IteratorConstness::CONSTANT_ITERATOR(), IteratorDirection::FORWARD()>;
+    using iterator = Iterator<IteratorConstness::MUTABLE_ITERATOR(), IteratorDirection::FORWARD()>;
     using const_reverse_iterator =
-        Iterator<IteratorConstness::CONSTANT(), IteratorDirection::REVERSE()>;
-    using reverse_iterator = Iterator<IteratorConstness::MUTABLE(), IteratorDirection::REVERSE()>;
+        Iterator<IteratorConstness::CONSTANT_ITERATOR(), IteratorDirection::REVERSE()>;
+    using reverse_iterator = Iterator<IteratorConstness::MUTABLE_ITERATOR(), IteratorDirection::REVERSE()>;
     using size_type = typename Tree::size_type;
     using difference_type = typename Tree::difference_type;
 

@@ -359,7 +359,7 @@ public:  // Public so this type is a structural type and can thus be used in tem
 }  // namespace fixed_containers::rich_enums_detail
 
 // MACRO to reduce four lines into one and avoid bugs from potential discrepancy between the
-// BackingEnum::CONSTANT and the rich enum CONSTANT()
+// BackingEnum::CONSTANT_ITERATOR and the rich enum CONSTANT_ITERATOR()
 // Must be used after the values() static function is declared in the rich enum.
 #define FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(RichEnumName, CONSTANT_NAME) \
     static constexpr const RichEnumName& CONSTANT_NAME()                            \

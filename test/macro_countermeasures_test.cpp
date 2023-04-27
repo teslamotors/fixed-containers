@@ -13,6 +13,8 @@ error: expected unqualified-id if (const auto __len = std::min(__d1, __d2))
 // #define min(a, b) (((a) < (b)) ? (a) : (b))
 #define max(a, b) (((a) > (b)) ? (a) : (b))
 #define CONST const
+#define CONSTANT const
+#define MUTABLE mutable
 
 #include "fixed_containers/enum_map.hpp"
 #include "fixed_containers/enum_set.hpp"
@@ -31,14 +33,23 @@ enum class Color
     YELLOW,
     BLUE
 };
-}
+
+struct ClassWithMutableMember
+{
+    MUTABLE int value{};
+};
+
+}  // namespace
 TEST(MacroCountermeasures, DummyUsagesOfTheMacros)
 {
     //    CONST int min_result = min(3, 5);
     //    EXPECT_EQ(3, min_result);
 
-    CONST int max_result = max(3, 5);
-    EXPECT_EQ(5, max_result);
+    CONST int max_result1 = max(3, 5);
+    EXPECT_EQ(5, max_result1);
+
+    CONSTANT int max_result2 = max(ClassWithMutableMember{3}.value, 5);
+    EXPECT_EQ(5, max_result2);
 }
 
 TEST(MacroCountermeasures, DummyUsagesOfContainers)
