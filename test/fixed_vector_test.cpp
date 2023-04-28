@@ -27,13 +27,13 @@ using VecType = FixedVector<int, 5>;
 static_assert(TriviallyCopyable<VecType>);
 static_assert(NotTrivial<VecType>);
 static_assert(StandardLayout<VecType>);
+static_assert(IsStructuralType<VecType>);
 
 static_assert(ranges::random_access_iterator<VecType::iterator>);
 static_assert(ranges::random_access_iterator<VecType::const_iterator>);
 
 static_assert(std::ranges::contiguous_range<VecType>);
 static_assert(std::ranges::contiguous_range<std::array<int, 5>>);
-static_assert(IsStructuralType<VecType>);
 }  // namespace trivially_copyable_vector
 
 namespace trivially_copyable_but_not_copyable_or_moveable_vector
