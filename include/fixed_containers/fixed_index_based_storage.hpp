@@ -13,19 +13,17 @@
 namespace fixed_containers
 {
 template <class StorageType>
-concept IsFixedIndexBasedStorage = requires(const StorageType& a,
-                                            StorageType& b,
-                                            const std::size_t i)
-{
-    typename StorageType::size_type;
-    typename StorageType::difference_type;
+concept IsFixedIndexBasedStorage =
+    requires(const StorageType& a, StorageType& b, const std::size_t i) {
+        typename StorageType::size_type;
+        typename StorageType::difference_type;
 
-    a.at(i);
-    b.at(i);
-    a.full();
-    b.emplace_and_return_index();
-    b.delete_at_and_return_repositioned_index(i);
-};
+        a.at(i);
+        b.at(i);
+        a.full();
+        b.emplace_and_return_index();
+        b.delete_at_and_return_repositioned_index(i);
+    };
 
 template <class T, std::size_t MAXIMUM_SIZE>
 class FixedIndexBasedPoolStorage
@@ -48,21 +46,24 @@ public:
     {
         for (std::size_t i = 0; i < MAXIMUM_SIZE; i++)
         {
-            array_[i].index = i + 1;
+            array_unchecked_at(i).index = i + 1;
         }
     }
 
-    [[nodiscard]] constexpr bool full() const noexcept { return next_index_ == MAXIMUM_SIZE; }
+    [[nodiscard]] constexpr bool full() const noexcept { return next_index() == MAXIMUM_SIZE; }
 
-    constexpr T& at(const std::size_t i) noexcept { return array_[i].value; }
-    constexpr const T& at(const std::size_t i) const noexcept { return array_[i].value; }
+    constexpr T& at(const std::size_t i) noexcept { return array_unchecked_at(i).value; }
+    constexpr const T& at(const std::size_t i) const noexcept
+    {
+        return array_unchecked_at(i).value;
+    }
 
     template <class... Args>
     constexpr std::size_t emplace_and_return_index(Args&&... args)
     {
         assert(!full());
-        const std::size_t i = next_index_;
-        next_index_ = array_[next_index_].index;
+        const std::size_t i = next_index();
+        set_next_index(array_unchecked_at(next_index()).index);
         emplace_at(i, std::forward<Args>(args)...);
         return i;
     }
@@ -70,19 +71,27 @@ public:
     constexpr std::size_t delete_at_and_return_repositioned_index(const std::size_t i) noexcept
     {
         destroy_at(i);
-        array_[i].index = next_index_;
-        next_index_ = i;
+        array_unchecked_at(i).index = next_index();
+        set_next_index(i);
         return i;
     }
 
 private:
+    constexpr const IndexOrValueT& array_unchecked_at(const std::size_t i) const
+    {
+        return array_[i];
+    }
+    constexpr IndexOrValueT& array_unchecked_at(const std::size_t i) { return array_[i]; }
+    [[nodiscard]] constexpr std::size_t next_index() const { return next_index_; }
+    constexpr void set_next_index(const std::size_t n) { next_index_ = n; }
+
     template <class... Args>
     constexpr void emplace_at(const std::size_t& i, Args&&... args)
     {
-        std::construct_at(&array_[i], std::in_place, std::forward<Args>(args)...);
+        std::construct_at(&array_unchecked_at(i), std::in_place, std::forward<Args>(args)...);
     }
 
-    constexpr void destroy_at(std::size_t i) { std::destroy_at(&array_[i].value); }
+    constexpr void destroy_at(std::size_t i) { std::destroy_at(&array_unchecked_at(i).value); }
 };
 
 // This allocator keeps entries contiguous in memory - no gaps.
@@ -106,25 +115,29 @@ public:
     {
     }
 
-    [[nodiscard]] constexpr bool full() const noexcept { return nodes_.full(); }
+    [[nodiscard]] constexpr bool full() const noexcept { return nodes().full(); }
 
-    constexpr T& at(const std::size_t i) noexcept { return nodes_.at(i); }
-    constexpr const T& at(const std::size_t i) const noexcept { return nodes_.at(i); }
+    constexpr T& at(const std::size_t i) noexcept { return nodes().at(i); }
+    constexpr const T& at(const std::size_t i) const noexcept { return nodes().at(i); }
 
     template <class... Args>
     constexpr std::size_t emplace_and_return_index(Args&&... args)
     {
-        nodes_.emplace_back(std::forward<Args>(args)...);
-        return nodes_.size() - 1;
+        nodes().emplace_back(std::forward<Args>(args)...);
+        return nodes().size() - 1;
     }
 
     constexpr std::size_t delete_at_and_return_repositioned_index(const std::size_t i) noexcept
     {
-        std::destroy_at(&nodes_.at(i));
-        std::construct_at(&nodes_.at(i), std::move(nodes_.back()));
-        nodes_.pop_back();
-        return nodes_.size();
+        std::destroy_at(&nodes().at(i));
+        std::construct_at(&nodes().at(i), std::move(nodes().back()));
+        nodes().pop_back();
+        return nodes().size();
     }
+
+private:
+    constexpr const FixedVector<T, MAXIMUM_SIZE>& nodes() const { return nodes_; }
+    constexpr FixedVector<T, MAXIMUM_SIZE>& nodes() { return nodes_; }
 };
 
 }  // namespace fixed_containers
