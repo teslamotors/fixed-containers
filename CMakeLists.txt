@@ -66,6 +66,7 @@ if(${USING_CLANG})
         -Wno-ctad-maybe-unsupported
 
         -Wno-padded
+        -Wno-poison-system-directories
     )
 elseif(MSVC)
     SET(DIAGNOSTIC_FLAGS ${DIAGNOSTIC_FLAGS}
