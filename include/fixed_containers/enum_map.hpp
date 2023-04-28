@@ -328,7 +328,7 @@ public:
         return create_const_reverse_iterator(0);
     }
 
-    [[nodiscard]] constexpr bool empty() const noexcept { return size_ == 0; }
+    [[nodiscard]] constexpr bool empty() const noexcept { return size() == 0; }
 
     [[nodiscard]] constexpr std::size_t size() const noexcept { return size_; }
 
@@ -351,7 +351,7 @@ public:
             return {create_iterator(ordinal), false};
         }
 
-        size_++;
+        increment_size();
         array_set_unchecked_at(ordinal) = true;
         std::construct_at(&values_unchecked_at(ordinal), value.second);
         return {create_iterator(ordinal), true};
@@ -364,7 +364,7 @@ public:
             return {create_iterator(ordinal), false};
         }
 
-        size_++;
+        increment_size();
         array_set_unchecked_at(ordinal) = true;
         std::construct_at(&values_unchecked_at(ordinal), std::move(value.second));
         return {create_iterator(ordinal), true};
@@ -391,7 +391,7 @@ public:
         const bool is_insertion = !array_set_unchecked_at(ordinal);
         if (is_insertion)
         {
-            size_++;
+            increment_size();
             array_set_unchecked_at(ordinal) = true;
         }
         values_unchecked_at(ordinal) = OptionalV(std::forward<M>(obj));
@@ -413,7 +413,7 @@ public:
             return {create_iterator(ordinal), false};
         }
 
-        size_++;
+        increment_size();
         array_set_unchecked_at(ordinal) = true;
         std::construct_at(
             &values_unchecked_at(ordinal), std::in_place, std::forward<Args>(args)...);
@@ -552,7 +552,7 @@ private:
             return;
         }
 
-        size_++;
+        increment_size();
         array_set_unchecked_at(ordinal) = true;
         std::construct_at(&values_unchecked_at(ordinal), std::in_place);
     }
@@ -590,7 +590,7 @@ private:
             std::destroy_at(&unchecked_at(i));
         }
         array_set_unchecked_at(i) = false;
-        size_--;
+        decrement_size();
     }
 
 protected:  // [WORKAROUND-1]
@@ -618,6 +618,10 @@ protected:  // [WORKAROUND-1]
     {
         return array_set_unchecked_at(i);
     }
+
+    constexpr void increment_size(const std::size_t n = 1) { size_ += n; }
+    constexpr void decrement_size(const std::size_t n = 1) { size_ -= n; }
+    constexpr void set_size(const std::size_t size) { size_ = size; }
 };
 }  // namespace fixed_containers::enum_map_detail
 
@@ -687,7 +691,7 @@ public:
       : EnumMap()
     {
         this->array_set() = other.array_set();
-        this->size_ = other.size_;
+        this->set_size(other.size());
         for (std::size_t i = 0; i < Base::ENUM_COUNT; i++)
         {
             if (this->contains_at(i))
@@ -700,7 +704,7 @@ public:
       : EnumMap()
     {
         this->array_set() = other.array_set();
-        this->size_ = other.size_;
+        this->set_size(other.size());
         for (std::size_t i = 0; i < Base::ENUM_COUNT; i++)
         {
             if (this->contains_at(i))
@@ -722,7 +726,7 @@ public:
 
         this->clear();
         this->array_set() = other.array_set();
-        this->size_ = other.size_;
+        this->set_size(other.size());
         for (std::size_t i = 0; i < Base::ENUM_COUNT; i++)
         {
             if (this->contains_at(i))
@@ -741,7 +745,7 @@ public:
 
         this->clear();
         this->array_set() = other.array_set();
-        this->size_ = other.size_;
+        this->set_size(other.size());
         for (std::size_t i = 0; i < Base::ENUM_COUNT; i++)
         {
             if (this->contains_at(i))
