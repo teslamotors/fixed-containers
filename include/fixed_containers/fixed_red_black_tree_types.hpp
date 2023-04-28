@@ -54,7 +54,7 @@ public:
 
     [[nodiscard]] constexpr NodeIndex get_index() const
     {
-        NodeIndex ret = index_and_color_ & (~MASK);
+        NodeIndex ret = index_and_color() & (~MASK);
 
         if (ret == LOCAL_NULL_INDEX)
         {
@@ -68,16 +68,20 @@ public:
     {
         const NodeIndex j = i == NULL_INDEX ? LOCAL_NULL_INDEX : i;
         assert(j <= LOCAL_NULL_INDEX);
-        index_and_color_ = (index_and_color_ & MASK) | j;
+        index_and_color() = (index_and_color() & MASK) | j;
     }
 
-    [[nodiscard]] constexpr Color get_color() const { return (index_and_color_ & MASK) == MASK; }
+    [[nodiscard]] constexpr Color get_color() const { return (index_and_color() & MASK) == MASK; }
 
     constexpr void set_color(const Color c)
     {
-        index_and_color_ = (~MASK & index_and_color_) |
-                           (static_cast<NodeIndex>(c) << SHIFT_TO_MOST_SIGNIFICANT_BIT);
+        index_and_color() = (~MASK & index_and_color()) |
+                            (static_cast<NodeIndex>(c) << SHIFT_TO_MOST_SIGNIFICANT_BIT);
     }
+
+private:
+    [[nodiscard]] constexpr const NodeIndex& index_and_color() const { return index_and_color_; }
+    [[nodiscard]] constexpr NodeIndex& index_and_color() { return index_and_color_; }
 };
 
 struct NodeIndexAndParentIndex
