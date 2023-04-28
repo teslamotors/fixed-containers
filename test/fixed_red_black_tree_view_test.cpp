@@ -21,7 +21,7 @@ static_assert(std::ranges::forward_range<FixedRedBlackTreeRawView>);
 TEST(FixedRedBlackTreeView, ViewOfPoolStorage)
 {
     constexpr auto COMPACTNESS =
-        fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness::DEDICATED_COLOR();
+        fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness::DEDICATED_COLOR;
     using FixedSetType = FixedSet<int, 10, std::less<int>, COMPACTNESS, FixedIndexBasedPoolStorage>;
 
     FixedSetType s1{1, 2, 3, 4};
@@ -66,7 +66,7 @@ TEST(FixedRedBlackTreeView, ViewWithStructValue)
     };
 
     constexpr auto COMPACTNESS =
-        fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness::DEDICATED_COLOR();
+        fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness::DEDICATED_COLOR;
     using FixedSetType = FixedSet<A, 10, std::less<A>, COMPACTNESS, FixedIndexBasedPoolStorage>;
 
     FixedSetType s1{A(1), A(2), A(3)};
@@ -94,7 +94,7 @@ TEST(FixedRedBlackTreeView, ViewWithStructValue)
 TEST(FixedRedBlackTreeView, ViewOfContiguousStorage)
 {
     constexpr auto COMPACTNESS =
-        fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR();
+        fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR;
     using FixedSetType =
         FixedSet<int, 10, std::less<int>, COMPACTNESS, FixedIndexBasedContiguousStorage>;
 
@@ -123,7 +123,7 @@ TEST(FixedRedBlackTreeView, ViewOfContiguousStorage)
 TEST(FixedRedBlackTreeView, PreservedOrdering)
 {
     constexpr auto COMPACTNESS =
-        fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR();
+        fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR;
     using FixedSetType = FixedSet<int, 10, std::less<int>, COMPACTNESS, FixedIndexBasedPoolStorage>;
 
     FixedSetType s1{4, 1, 2, 6, 3, 5};
@@ -152,7 +152,7 @@ TEST(FixedRedBlackTreeView, PreservedOrdering)
 TEST(FixedRedBlackTreeView, SizeCalculation)
 {
     constexpr auto COMPACTNESS =
-        fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR();
+        fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR;
     using FixedSetType = FixedSet<int, 10, std::less<int>, COMPACTNESS, FixedIndexBasedPoolStorage>;
 
     // Test empty set.

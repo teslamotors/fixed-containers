@@ -32,37 +32,31 @@ template <typename IndexPredicate,
           IteratorDirection DIRECTION>
 class IndexRangePredicateIterator
 {
-    // msvc WORKAROUND: "Error C2891 'CONSTNESS' : cannot take the address of a template parameter"
-    // Explanation:
-    // "You can't take the address of a template parameter unless it is an lvalue. Type parameters
-    // are not lvalues because they have no address" To work around that, force l-values.
-    static constexpr IteratorConstness CONSTNESS_LVALUE = CONSTNESS;
-    static constexpr IteratorConstness NEGATED_CONSTNESS_LVALUE = !CONSTNESS;
+    static constexpr IteratorConstness NEGATED_CONSTNESS = IteratorConstness(!bool(CONSTNESS));
 
     using Self = IndexRangePredicateIterator<IndexPredicate,
                                              ConstReferenceProvider,
                                              MutableReferenceProvider,
-                                             CONSTNESS_LVALUE,
+                                             CONSTNESS,
                                              DIRECTION>;
 
     // Sibling has the same parameters, but different const-ness
     using Sibling = IndexRangePredicateIterator<IndexPredicate,
                                                 ConstReferenceProvider,
                                                 MutableReferenceProvider,
-                                                NEGATED_CONSTNESS_LVALUE,
+                                                NEGATED_CONSTNESS,
                                                 DIRECTION>;
 
     // Give Sibling access to private members
     friend class IndexRangePredicateIterator<IndexPredicate,
                                              ConstReferenceProvider,
                                              MutableReferenceProvider,
-                                             NEGATED_CONSTNESS_LVALUE,
+                                             NEGATED_CONSTNESS,
                                              DIRECTION>;
 
-    using ReferenceProvider =
-        std::conditional_t<CONSTNESS_LVALUE == IteratorConstness::CONSTANT_ITERATOR(),
-                           ConstReferenceProvider,
-                           MutableReferenceProvider>;
+    using ReferenceProvider = std::conditional_t<CONSTNESS == IteratorConstness::CONSTANT_ITERATOR,
+                                                 ConstReferenceProvider,
+                                                 MutableReferenceProvider>;
 
 public:
     using reference = decltype(std::declval<ReferenceProvider>().get());
@@ -88,7 +82,7 @@ public:
                                           const ReferenceProvider& reference_provider,
                                           const std::size_t start_index,
                                           const std::size_t end_index) noexcept
-        requires(DIRECTION == IteratorDirection::FORWARD())
+        requires(DIRECTION == IteratorDirection::FORWARD)
       : predicate_(predicate)
       , reference_provider_(reference_provider)
       , current_index_(start_index)
@@ -106,7 +100,7 @@ public:
                                           const ReferenceProvider& reference_provider,
                                           const std::size_t start_index,
                                           const std::size_t end_index) noexcept
-        requires(DIRECTION == IteratorDirection::REVERSE())
+        requires(DIRECTION == IteratorDirection::REVERSE)
       : predicate_(predicate)
       , reference_provider_(reference_provider)
       , current_index_(start_index)
@@ -120,7 +114,7 @@ public:
 
     // Mutable iterator needs to be convertible to const iterator
     constexpr IndexRangePredicateIterator(const Sibling& other) noexcept
-        requires(CONSTNESS == IteratorConstness::CONSTANT_ITERATOR())
+        requires(CONSTNESS == IteratorConstness::CONSTANT_ITERATOR)
       : IndexRangePredicateIterator{
             other.predicate_, other.reference_provider_, other.current_index_, other.end_index_}
     {
@@ -184,7 +178,7 @@ private:
 
     constexpr void advance() noexcept
     {
-        if constexpr (DIRECTION == IteratorDirection::FORWARD())
+        if constexpr (DIRECTION == IteratorDirection::FORWARD)
         {
             advance_left();
         }
@@ -195,7 +189,7 @@ private:
     }
     constexpr void recede() noexcept
     {
-        if constexpr (DIRECTION == IteratorDirection::FORWARD())
+        if constexpr (DIRECTION == IteratorDirection::FORWARD)
         {
             recede_left();
         }

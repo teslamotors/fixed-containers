@@ -206,13 +206,12 @@ private:
 
 public:
     using const_iterator =
-        IteratorImpl<IteratorConstness::CONSTANT_ITERATOR(), IteratorDirection::FORWARD()>;
-    using iterator =
-        IteratorImpl<IteratorConstness::MUTABLE_ITERATOR(), IteratorDirection::FORWARD()>;
+        IteratorImpl<IteratorConstness::CONSTANT_ITERATOR, IteratorDirection::FORWARD>;
+    using iterator = IteratorImpl<IteratorConstness::MUTABLE_ITERATOR, IteratorDirection::FORWARD>;
     using const_reverse_iterator =
-        IteratorImpl<IteratorConstness::CONSTANT_ITERATOR(), IteratorDirection::REVERSE()>;
+        IteratorImpl<IteratorConstness::CONSTANT_ITERATOR, IteratorDirection::REVERSE>;
     using reverse_iterator =
-        IteratorImpl<IteratorConstness::MUTABLE_ITERATOR(), IteratorDirection::REVERSE()>;
+        IteratorImpl<IteratorConstness::MUTABLE_ITERATOR, IteratorDirection::REVERSE>;
     using size_type = typename KeyArrayType::size_type;
     using difference_type = typename KeyArrayType::difference_type;
 

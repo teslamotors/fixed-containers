@@ -133,13 +133,13 @@ private:
     using IteratorImpl = IndexRangePredicateIterator<IndexPredicate,
                                                      ReferenceProvider,
                                                      ReferenceProvider,
-                                                     IteratorConstness::CONSTANT_ITERATOR(),
+                                                     IteratorConstness::CONSTANT_ITERATOR,
                                                      DIRECTION>;
 
 public:
-    using const_iterator = IteratorImpl<IteratorDirection::FORWARD()>;
+    using const_iterator = IteratorImpl<IteratorDirection::FORWARD>;
     using iterator = const_iterator;
-    using const_reverse_iterator = IteratorImpl<IteratorDirection::REVERSE()>;
+    using const_reverse_iterator = IteratorImpl<IteratorDirection::REVERSE>;
     using reverse_iterator = const_reverse_iterator;
     using size_type = typename KeyArrayType::size_type;
     using difference_type = typename KeyArrayType::difference_type;

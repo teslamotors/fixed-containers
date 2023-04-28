@@ -1012,7 +1012,7 @@ template <class K,
           std::size_t MAXIMUM_SIZE,
           class Compare = std::less<K>,
           RedBlackTreeNodeColorCompactness COMPACTNESS =
-              RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR(),
+              RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR,
           template <class /*Would be IsFixedIndexBasedStorage but gcc doesn't like the constraints
                            here. clang accepts it */
                     ,
@@ -1025,7 +1025,7 @@ template <class K,
           std::size_t MAXIMUM_SIZE,
           class Compare = std::less<K>,
           RedBlackTreeNodeColorCompactness COMPACTNESS =
-              RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR(),
+              RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR,
           template <IsFixedIndexBasedStorage, std::size_t> typename StorageTemplate =
               FixedIndexBasedPoolStorage>
 using FixedRedBlackTreeSet =

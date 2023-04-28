@@ -58,7 +58,7 @@ template <class K,
           std::size_t MAXIMUM_SIZE,
           class Compare = std::less<K>,
           fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness COMPACTNESS =
-              fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR(),
+              fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR,
           template <class /*Would be IsFixedIndexBasedStorage but gcc doesn't like the constraints
                              here. clang accepts it */
                     ,
@@ -203,12 +203,12 @@ private:
 
 public:
     using const_iterator =
-        Iterator<IteratorConstness::CONSTANT_ITERATOR(), IteratorDirection::FORWARD()>;
-    using iterator = Iterator<IteratorConstness::MUTABLE_ITERATOR(), IteratorDirection::FORWARD()>;
+        Iterator<IteratorConstness::CONSTANT_ITERATOR, IteratorDirection::FORWARD>;
+    using iterator = Iterator<IteratorConstness::MUTABLE_ITERATOR, IteratorDirection::FORWARD>;
     using const_reverse_iterator =
-        Iterator<IteratorConstness::CONSTANT_ITERATOR(), IteratorDirection::REVERSE()>;
+        Iterator<IteratorConstness::CONSTANT_ITERATOR, IteratorDirection::REVERSE>;
     using reverse_iterator =
-        Iterator<IteratorConstness::MUTABLE_ITERATOR(), IteratorDirection::REVERSE()>;
+        Iterator<IteratorConstness::MUTABLE_ITERATOR, IteratorDirection::REVERSE>;
     using size_type = typename Tree::size_type;
     using difference_type = typename Tree::difference_type;
 
@@ -794,7 +794,7 @@ template <typename K,
           typename V,
           typename Compare = std::less<K>,
           fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness COMPACTNESS =
-              fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR(),
+              fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR,
           template <typename, std::size_t> typename StorageTemplate = FixedIndexBasedPoolStorage,
           fixed_map_customize::FixedMapChecking<K> CheckingType,
           std::size_t MAXIMUM_SIZE,
@@ -820,7 +820,7 @@ template <typename K,
           typename V,
           typename Compare = std::less<K>,
           fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness COMPACTNESS =
-              fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR(),
+              fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR,
           template <typename, std::size_t> typename StorageTemplate = FixedIndexBasedPoolStorage,
           std::size_t MAXIMUM_SIZE>
 [[nodiscard]] constexpr auto make_fixed_map(const std::pair<K, V> (&list)[MAXIMUM_SIZE],

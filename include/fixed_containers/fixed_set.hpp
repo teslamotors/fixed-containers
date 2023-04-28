@@ -47,7 +47,7 @@ template <class K,
           std::size_t MAXIMUM_SIZE,
           class Compare = std::less<K>,
           fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness COMPACTNESS =
-              fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR(),
+              fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR,
           template <class /*Would be IsFixedIndexBasedStorage but gcc doesn't like the constraints
                              here. clang accepts it */
                     ,
@@ -115,7 +115,7 @@ private:
     template <IteratorDirection DIRECTION>
     using Iterator = BidirectionalIterator<ReferenceProvider,
                                            ReferenceProvider,
-                                           IteratorConstness::CONSTANT_ITERATOR(),
+                                           IteratorConstness::CONSTANT_ITERATOR,
                                            DIRECTION>;
 
     // The tree returns NULL_INDEX when an index is not available.
@@ -128,9 +128,9 @@ private:
     }
 
 public:
-    using const_iterator = Iterator<IteratorDirection::FORWARD()>;
+    using const_iterator = Iterator<IteratorDirection::FORWARD>;
     using iterator = const_iterator;
-    using const_reverse_iterator = Iterator<IteratorDirection::REVERSE()>;
+    using const_reverse_iterator = Iterator<IteratorDirection::REVERSE>;
     using reverse_iterator = const_reverse_iterator;
     using size_type = typename Tree::size_type;
     using difference_type = typename Tree::difference_type;
@@ -460,7 +460,7 @@ constexpr typename FixedSet<K, MAXIMUM_SIZE, Compare, COMPACTNESS, StorageTempla
 template <typename K,
           typename Compare = std::less<K>,
           fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness COMPACTNESS =
-              fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR(),
+              fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR,
           template <typename, std::size_t> typename StorageTemplate = FixedIndexBasedPoolStorage,
           fixed_set_customize::FixedSetChecking<K> CheckingType,
           std::size_t MAXIMUM_SIZE,
@@ -485,7 +485,7 @@ template <typename K,
 template <typename K,
           typename Compare = std::less<K>,
           fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness COMPACTNESS =
-              fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR(),
+              fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR,
           template <typename, std::size_t> typename StorageTemplate = FixedIndexBasedPoolStorage,
           std::size_t MAXIMUM_SIZE>
 [[nodiscard]] constexpr auto make_fixed_set(const K (&list)[MAXIMUM_SIZE],

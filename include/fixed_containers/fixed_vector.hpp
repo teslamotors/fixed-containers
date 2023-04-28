@@ -180,8 +180,8 @@ public:
     using const_pointer = const T*;
     using reference = T&;
     using const_reference = const T&;
-    using const_iterator = IteratorImpl<IteratorConstness::CONSTANT_ITERATOR()>;
-    using iterator = IteratorImpl<IteratorConstness::MUTABLE_ITERATOR()>;
+    using const_iterator = IteratorImpl<IteratorConstness::CONSTANT_ITERATOR>;
+    using iterator = IteratorImpl<IteratorConstness::MUTABLE_ITERATOR>;
     using reverse_iterator = std::reverse_iterator<iterator>;
     using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 

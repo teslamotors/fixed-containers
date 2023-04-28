@@ -1,43 +1,18 @@
 #pragma once
 
 #include "fixed_containers/concepts.hpp"
-#include "fixed_containers/enum_utils.hpp"
 #include "fixed_containers/fixed_red_black_tree_types.hpp"
 #include "fixed_containers/value_or_reference_storage.hpp"
 
 #include <utility>
 
-namespace fixed_containers::fixed_red_black_tree_detail::detail
-{
-enum class RedBlackTreeNodeColorCompactnessBackingEnum : bool
-{
-    DEDICATED_COLOR,
-    EMBEDDED_COLOR,
-};
-}  // namespace fixed_containers::fixed_red_black_tree_detail::detail
-
 namespace fixed_containers::fixed_red_black_tree_detail
 {
-class RedBlackTreeNodeColorCompactness
-  : public rich_enums::SkeletalRichEnum<RedBlackTreeNodeColorCompactness,
-                                        detail::RedBlackTreeNodeColorCompactnessBackingEnum>
+enum class RedBlackTreeNodeColorCompactness : bool
 {
-    friend SkeletalRichEnum::ValuesFriend;
-    using SkeletalRichEnum::SkeletalRichEnum;
-
-public:
-    static constexpr const std::array<RedBlackTreeNodeColorCompactness, count()>& values();
-
-    FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(RedBlackTreeNodeColorCompactness,
-                                                   DEDICATED_COLOR)
-    FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(RedBlackTreeNodeColorCompactness, EMBEDDED_COLOR)
+    DEDICATED_COLOR = false,
+    EMBEDDED_COLOR = true,
 };
-constexpr const std::array<RedBlackTreeNodeColorCompactness,
-                           RedBlackTreeNodeColorCompactness::count()>&
-RedBlackTreeNodeColorCompactness::values()
-{
-    return rich_enums::SkeletalRichEnumValues<RedBlackTreeNodeColorCompactness>::VALUES;
-}
 
 template <class T>
 concept IsRedBlackTreeNode = requires(

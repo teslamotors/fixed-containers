@@ -203,9 +203,6 @@ cc_library(
     name = "iterator_utils",
     hdrs = ["include/fixed_containers/iterator_utils.hpp"],
     includes = ["include"],
-    deps = [
-        ":enum_utils"
-    ],
     copts = ["-std=c++20"],
 )
 

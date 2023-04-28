@@ -1,46 +1,23 @@
 #pragma once
 
-#include "fixed_containers/enum_utils.hpp"
+#include <iterator>
+#include <type_traits>
 
 namespace fixed_containers
 {
-namespace detail
-{
+
 // Names are not just "MUTABLE" and "CONSTANT" to avoid collision with macros
-enum class IteratorConstnessBackingEnum : bool
+enum class IteratorConstness : bool
 {
-    MUTABLE_ITERATOR,
-    CONSTANT_ITERATOR,
-};
-}  // namespace detail
-
-class IteratorConstness
-  : public rich_enums::SkeletalRichEnum<IteratorConstness, detail::IteratorConstnessBackingEnum>
-{
-    friend SkeletalRichEnum::ValuesFriend;
-    using SkeletalRichEnum::SkeletalRichEnum;
-
-public:
-    static constexpr const std::array<IteratorConstness, count()>& values();
-
-    FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(IteratorConstness, MUTABLE_ITERATOR)
-    FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(IteratorConstness, CONSTANT_ITERATOR)
+    MUTABLE_ITERATOR = false,
+    CONSTANT_ITERATOR = true,
 };
 
-constexpr const std::array<IteratorConstness, IteratorConstness::count()>&
-IteratorConstness::values()
+enum class IteratorDirection : bool
 {
-    return rich_enums::SkeletalRichEnumValues<IteratorConstness>::VALUES;
-}
-
-namespace detail
-{
-enum class IteratorDirectionBackingEnum : bool
-{
-    FORWARD,
-    REVERSE,
+    FORWARD = false,
+    REVERSE = true,
 };
-}  // namespace detail
 
 // Using std::reverse_iterator fails to compile with the error message below.
 // Only applies to maps, because they leverage operator->
@@ -86,24 +63,6 @@ declared here _S_to_pointer(_Tp __t)
 // Native support is a bit faster than std::reverse_iterator as the latter does
 // a copy + decrement on every dereference, whereas a non-wrapper doesn't need to do that.
 // clang-format off
-class IteratorDirection
-  : public rich_enums::SkeletalRichEnum<IteratorDirection, detail::IteratorDirectionBackingEnum>
-{
-    friend SkeletalRichEnum::ValuesFriend;
-    using SkeletalRichEnum::SkeletalRichEnum;
-
-public:
-    static constexpr const std::array<IteratorDirection, count()>& values();
-
-    FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(IteratorDirection, FORWARD)
-    FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(IteratorDirection, REVERSE)
-};
-
-constexpr const std::array<IteratorDirection, IteratorDirection::count()>&
-IteratorDirection::values()
-{
-    return rich_enums::SkeletalRichEnumValues<IteratorDirection>::VALUES;
-}
 
 // msvc's array iterator is a class, but gcc's and clang's is a raw pointer.
 // Normally, std::iterator_traits handles this, but for `iterator_concept`

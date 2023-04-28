@@ -36,7 +36,7 @@ static_assert(
 using Storage_1 = FixedRedBlackTreeStorage<int,
                                            double,
                                            10,
-                                           RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR(),
+                                           RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR,
                                            FixedIndexBasedPoolStorage>;
 static_assert(IsFixedRedBlackTreeStorage<Storage_1>);
 static_assert(IsStructuralType<Storage_1>);

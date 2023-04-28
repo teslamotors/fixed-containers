@@ -14,7 +14,7 @@ using CompactPoolFixedMap =
              V,
              MAXIMUM_SIZE,
              std::less<int>,
-             fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR(),
+             fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR,
              FixedIndexBasedPoolStorage>;
 static_assert(std::is_same_v<FixedMap<int, V, CAP>, CompactPoolFixedMap<int, V, CAP>>);
 
@@ -24,7 +24,7 @@ using CompactContiguousFixedMap =
              V,
              MAXIMUM_SIZE,
              std::less<int>,
-             fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR(),
+             fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR,
              FixedIndexBasedContiguousStorage>;
 
 template <class K, class V, std::size_t MAXIMUM_SIZE>
@@ -33,7 +33,7 @@ using DedicatedColorBitPoolFixedMap =
              V,
              MAXIMUM_SIZE,
              std::less<int>,
-             fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness::DEDICATED_COLOR(),
+             fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness::DEDICATED_COLOR,
              FixedIndexBasedContiguousStorage>;
 
 template <class K, class V, std::size_t MAXIMUM_SIZE>
@@ -42,7 +42,7 @@ using DedicatedColorBitContiguousFixedMap =
              V,
              MAXIMUM_SIZE,
              std::less<int>,
-             fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness::DEDICATED_COLOR(),
+             fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness::DEDICATED_COLOR,
              FixedIndexBasedContiguousStorage>;
 
 // The reference boost-based fixed_map (with an array-backed pool-allocator) was at 51000

@@ -194,10 +194,10 @@ public:
 
             switch (compactness_)
             {
-            case Compactness::DEDICATED_COLOR(): /* default node */
+            case Compactness::DEDICATED_COLOR: /* default node */
                 return *reinterpret_cast<const NodeIndex*>(parent_idx_ptr);
 
-            case Compactness::EMBEDDED_COLOR(): /* compact node*/
+            case Compactness::EMBEDDED_COLOR: /* compact node*/
                 return reinterpret_cast<const NodeIndexWithColorEmbeddedInTheMostSignificantBit*>(
                            parent_idx_ptr)
                     ->get_index();
@@ -354,10 +354,10 @@ public:
             std::size_t base_node_size_bytes = 0;
             switch (compactness_)
             {
-            case Compactness::DEDICATED_COLOR():
+            case Compactness::DEDICATED_COLOR:
                 base_node_size_bytes = sizeof(DefaultRedBlackTreeNode<uintptr_t>);
                 break;
-            case Compactness::EMBEDDED_COLOR():
+            case Compactness::EMBEDDED_COLOR:
                 base_node_size_bytes = sizeof(CompactRedBlackTreeNode<uintptr_t>);
                 break;
             }

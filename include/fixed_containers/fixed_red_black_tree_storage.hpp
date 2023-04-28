@@ -52,17 +52,11 @@ template <class K,
           typename StorageTemplate>
 class FixedRedBlackTreeStorage
 {
-    // msvc WORKAROUND: "Error C2891 'CONSTNESS' : cannot take the address of a template parameter"
-    // Explanation:
-    // "You can't take the address of a template parameter unless it is an lvalue. Type parameters
-    // are not lvalues because they have no address" To work around that, force l-values.
-    static constexpr RedBlackTreeNodeColorCompactness COMPACTNESS_LVALUE = COMPACTNESS;
-
 public:
     using KeyType = K;
     using ValueType = V;
     using NodeType =
-        std::conditional_t<COMPACTNESS_LVALUE == RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR(),
+        std::conditional_t<COMPACTNESS == RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR,
                            CompactRedBlackTreeNode<K, V>,
                            DefaultRedBlackTreeNode<K, V>>;
     static constexpr bool HAS_ASSOCIATED_VALUE = NodeType::HAS_ASSOCIATED_VALUE;

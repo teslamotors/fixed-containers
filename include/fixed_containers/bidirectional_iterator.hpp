@@ -23,26 +23,21 @@ template <NextAndPreviousProvider ConstReferenceProvider,
           IteratorDirection DIRECTION>
 class BidirectionalIterator
 {
-    // msvc WORKAROUND: "Error C2891 'CONSTNESS' : cannot take the address of a template parameter"
-    // Explanation:
-    // "You can't take the address of a template parameter unless it is an lvalue. Type parameters
-    // are not lvalues because they have no address" To work around that, force l-values.
-    static constexpr IteratorConstness CONSTNESS_LVALUE = CONSTNESS;
-    static constexpr IteratorConstness NEGATED_CONSTNESS_LVALUE = !CONSTNESS;
+    static constexpr IteratorConstness NEGATED_CONSTNESS = IteratorConstness(!bool(CONSTNESS));
 
     // Sibling has the same parameters, but different const-ness
     using Sibling = BidirectionalIterator<ConstReferenceProvider,
                                           MutableReferenceProvider,
-                                          NEGATED_CONSTNESS_LVALUE,
+                                          NEGATED_CONSTNESS,
                                           DIRECTION>;
 
     // Give Sibling access to private members
     friend class BidirectionalIterator<ConstReferenceProvider,
                                        MutableReferenceProvider,
-                                       NEGATED_CONSTNESS_LVALUE,
+                                       NEGATED_CONSTNESS,
                                        DIRECTION>;
 
-    using ReferenceProvider = std::conditional_t<CONSTNESS_LVALUE == IteratorConstness::CONSTANT_ITERATOR(),
+    using ReferenceProvider = std::conditional_t<CONSTNESS == IteratorConstness::CONSTANT_ITERATOR,
                                                  ConstReferenceProvider,
                                                  MutableReferenceProvider>;
 
@@ -66,7 +61,7 @@ public:
     explicit constexpr BidirectionalIterator(const ReferenceProvider& reference_provider) noexcept
       : reference_provider_(reference_provider)
     {
-        if constexpr (DIRECTION == IteratorDirection::REVERSE())
+        if constexpr (DIRECTION == IteratorDirection::REVERSE)
         {
             advance();
         }
@@ -74,7 +69,7 @@ public:
 
     // Mutable iterator needs to be convertible to const iterator
     constexpr BidirectionalIterator(const Sibling& other) noexcept
-        requires(CONSTNESS == IteratorConstness::CONSTANT_ITERATOR())
+        requires(CONSTNESS == IteratorConstness::CONSTANT_ITERATOR)
       : BidirectionalIterator{other.reference_provider_}
     {
     }
@@ -122,7 +117,7 @@ public:
 private:
     constexpr void advance() noexcept
     {
-        if constexpr (DIRECTION == IteratorDirection::FORWARD())
+        if constexpr (DIRECTION == IteratorDirection::FORWARD)
         {
             reference_provider_.advance();
         }
@@ -133,7 +128,7 @@ private:
     }
     constexpr void recede() noexcept
     {
-        if constexpr (DIRECTION == IteratorDirection::FORWARD())
+        if constexpr (DIRECTION == IteratorDirection::FORWARD)
         {
             reference_provider_.recede();
         }
