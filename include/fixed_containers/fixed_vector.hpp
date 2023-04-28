@@ -773,11 +773,11 @@ private:
 
     // [WORKAROUND-1] - Needed by the non-trivially-copyable flavor of FixedVector
 protected:
-    constexpr void increment_size(std::size_t n = 1)
+    constexpr void increment_size(const std::size_t n = 1)
     {
         IMPLEMENTATION_DETAIL_DO_NOT_USE_size_ += n;
     }
-    constexpr void decrement_size(std::size_t n = 1)
+    constexpr void decrement_size(const std::size_t n = 1)
     {
         IMPLEMENTATION_DETAIL_DO_NOT_USE_size_ -= n;
     }
