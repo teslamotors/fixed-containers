@@ -25,6 +25,11 @@ static_assert(IsRedBlackTreeNodeWithValue<DefaultRedBlackTreeNode<int, double>>)
 static_assert(IsRedBlackTreeNode<CompactRedBlackTreeNode<int, EmptyValue>>);
 static_assert(IsRedBlackTreeNodeWithValue<CompactRedBlackTreeNode<int, double>>);
 
+static_assert(IsStructuralType<DefaultRedBlackTreeNode<int, EmptyValue>, 5>);
+static_assert(IsStructuralType<DefaultRedBlackTreeNode<int, int>, 5, 99>);
+static_assert(IsStructuralType<CompactRedBlackTreeNode<int, EmptyValue>, 5>);
+static_assert(IsStructuralType<CompactRedBlackTreeNode<int, int>, 5, 99>);
+
 static_assert(
     IsRedBlackTreeNodeWithValue<RedBlackTreeNodeView<CompactRedBlackTreeNode<int, EmptyValue>>>);
 

@@ -77,42 +77,63 @@ public:
     using ValueType = V;
     static constexpr bool HAS_ASSOCIATED_VALUE = true;
 
-private:
-    K key_;
-    V value_;
-    NodeIndex parent_index_ = NULL_INDEX;
-    NodeIndex left_index_ = NULL_INDEX;
-    NodeIndex right_index_ = NULL_INDEX;
-    Color color_ = BLACK;
+public:  // Public so this type is a structural type and can thus be used in template parameters
+    K IMPLEMENTATION_DETAIL_DO_NOT_USE_key_;
+    V IMPLEMENTATION_DETAIL_DO_NOT_USE_value_;
+    NodeIndex IMPLEMENTATION_DETAIL_DO_NOT_USE_parent_index_ = NULL_INDEX;
+    NodeIndex IMPLEMENTATION_DETAIL_DO_NOT_USE_left_index_ = NULL_INDEX;
+    NodeIndex IMPLEMENTATION_DETAIL_DO_NOT_USE_right_index_ = NULL_INDEX;
+    Color IMPLEMENTATION_DETAIL_DO_NOT_USE_color_ = BLACK;
 
 public:
     template <typename... Args>
     explicit(sizeof...(Args) == 0) constexpr DefaultRedBlackTreeNode(const K& k,
                                                                      Args&&... args) noexcept
-      : key_(k)
-      , value_(std::forward<Args>(args)...)
+      : IMPLEMENTATION_DETAIL_DO_NOT_USE_key_(k)
+      , IMPLEMENTATION_DETAIL_DO_NOT_USE_value_(std::forward<Args>(args)...)
     {
     }
     template <typename... Args>
     explicit(sizeof...(Args) == 0) constexpr DefaultRedBlackTreeNode(K&& k, Args&&... args) noexcept
-      : key_(std::move(k))
-      , value_(std::forward<Args>(args)...)
+      : IMPLEMENTATION_DETAIL_DO_NOT_USE_key_(std::move(k))
+      , IMPLEMENTATION_DETAIL_DO_NOT_USE_value_(std::forward<Args>(args)...)
     {
     }
 
-    [[nodiscard]] constexpr const K& key() const { return key_; }
-    constexpr K& key() { return key_; }
-    [[nodiscard]] constexpr const V& value() const { return value_; }
-    constexpr V& value() { return value_; }
+    [[nodiscard]] constexpr const K& key() const { return IMPLEMENTATION_DETAIL_DO_NOT_USE_key_; }
+    constexpr K& key() { return IMPLEMENTATION_DETAIL_DO_NOT_USE_key_; }
+    [[nodiscard]] constexpr const V& value() const
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_value_;
+    }
+    constexpr V& value() { return IMPLEMENTATION_DETAIL_DO_NOT_USE_value_; }
 
-    [[nodiscard]] constexpr NodeIndex parent_index() const { return parent_index_; }
-    constexpr void set_parent_index(const NodeIndex& i) { parent_index_ = i; }
-    [[nodiscard]] constexpr NodeIndex left_index() const { return left_index_; }
-    constexpr void set_left_index(const NodeIndex& i) { left_index_ = i; }
-    [[nodiscard]] constexpr NodeIndex right_index() const { return right_index_; }
-    constexpr void set_right_index(const NodeIndex& i) { right_index_ = i; }
-    [[nodiscard]] constexpr Color color() const { return color_; }
-    constexpr void set_color(const Color& c) { color_ = c; }
+    [[nodiscard]] constexpr NodeIndex parent_index() const
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_parent_index_;
+    }
+    constexpr void set_parent_index(const NodeIndex& i)
+    {
+        IMPLEMENTATION_DETAIL_DO_NOT_USE_parent_index_ = i;
+    }
+    [[nodiscard]] constexpr NodeIndex left_index() const
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_left_index_;
+    }
+    constexpr void set_left_index(const NodeIndex& i)
+    {
+        IMPLEMENTATION_DETAIL_DO_NOT_USE_left_index_ = i;
+    }
+    [[nodiscard]] constexpr NodeIndex right_index() const
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_right_index_;
+    }
+    constexpr void set_right_index(const NodeIndex& i)
+    {
+        IMPLEMENTATION_DETAIL_DO_NOT_USE_right_index_ = i;
+    }
+    [[nodiscard]] constexpr Color color() const { return IMPLEMENTATION_DETAIL_DO_NOT_USE_color_; }
+    constexpr void set_color(const Color& c) { IMPLEMENTATION_DETAIL_DO_NOT_USE_color_ = c; }
 };
 
 template <class K>
@@ -123,34 +144,52 @@ public:
     using ValueType = EmptyValue;
     static constexpr bool HAS_ASSOCIATED_VALUE = false;
 
-private:
-    K key_;
-    NodeIndex parent_index_ = NULL_INDEX;
-    NodeIndex left_index_ = NULL_INDEX;
-    NodeIndex right_index_ = NULL_INDEX;
-    Color color_ = BLACK;
+public:  // Public so this type is a structural type and can thus be used in template parameters
+    K IMPLEMENTATION_DETAIL_DO_NOT_USE_key_;
+    NodeIndex IMPLEMENTATION_DETAIL_DO_NOT_USE_parent_index_ = NULL_INDEX;
+    NodeIndex IMPLEMENTATION_DETAIL_DO_NOT_USE_left_index_ = NULL_INDEX;
+    NodeIndex IMPLEMENTATION_DETAIL_DO_NOT_USE_right_index_ = NULL_INDEX;
+    Color IMPLEMENTATION_DETAIL_DO_NOT_USE_color_ = BLACK;
 
 public:
     explicit constexpr DefaultRedBlackTreeNode(const K& k) noexcept
-      : key_(k)
+      : IMPLEMENTATION_DETAIL_DO_NOT_USE_key_(k)
     {
     }
     explicit constexpr DefaultRedBlackTreeNode(K&& k) noexcept
-      : key_(std::move(k))
+      : IMPLEMENTATION_DETAIL_DO_NOT_USE_key_(std::move(k))
     {
     }
 
-    [[nodiscard]] constexpr const K& key() const { return key_; }
-    constexpr K& key() { return key_; }
+    [[nodiscard]] constexpr const K& key() const { return IMPLEMENTATION_DETAIL_DO_NOT_USE_key_; }
+    constexpr K& key() { return IMPLEMENTATION_DETAIL_DO_NOT_USE_key_; }
 
-    [[nodiscard]] constexpr NodeIndex parent_index() const { return parent_index_; }
-    constexpr void set_parent_index(const NodeIndex& i) { parent_index_ = i; }
-    [[nodiscard]] constexpr NodeIndex left_index() const { return left_index_; }
-    constexpr void set_left_index(const NodeIndex& i) { left_index_ = i; }
-    [[nodiscard]] constexpr NodeIndex right_index() const { return right_index_; }
-    constexpr void set_right_index(const NodeIndex& i) { right_index_ = i; }
-    [[nodiscard]] constexpr Color color() const { return color_; }
-    constexpr void set_color(const Color& c) { color_ = c; }
+    [[nodiscard]] constexpr NodeIndex parent_index() const
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_parent_index_;
+    }
+    constexpr void set_parent_index(const NodeIndex& i)
+    {
+        IMPLEMENTATION_DETAIL_DO_NOT_USE_parent_index_ = i;
+    }
+    [[nodiscard]] constexpr NodeIndex left_index() const
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_left_index_;
+    }
+    constexpr void set_left_index(const NodeIndex& i)
+    {
+        IMPLEMENTATION_DETAIL_DO_NOT_USE_left_index_ = i;
+    }
+    [[nodiscard]] constexpr NodeIndex right_index() const
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_right_index_;
+    }
+    constexpr void set_right_index(const NodeIndex& i)
+    {
+        IMPLEMENTATION_DETAIL_DO_NOT_USE_right_index_ = i;
+    }
+    [[nodiscard]] constexpr Color color() const { return IMPLEMENTATION_DETAIL_DO_NOT_USE_color_; }
+    constexpr void set_color(const Color& c) { IMPLEMENTATION_DETAIL_DO_NOT_USE_color_ = c; }
 };
 
 // boost::container::map has the option to embed the color in one of the pointers
@@ -165,44 +204,70 @@ public:
     using ValueType = V;
     static constexpr bool HAS_ASSOCIATED_VALUE = true;
 
-private:
-    K key_;
-    value_or_reference_storage_detail::ValueOrReferenceStorage<V> value_;
-    NodeIndexWithColorEmbeddedInTheMostSignificantBit parent_index_and_color_{};
-    NodeIndex left_index_ = NULL_INDEX;
-    NodeIndex right_index_ = NULL_INDEX;
+public:  // Public so this type is a structural type and can thus be used in template parameters
+    K IMPLEMENTATION_DETAIL_DO_NOT_USE_key_;
+    value_or_reference_storage_detail::ValueOrReferenceStorage<V>
+        IMPLEMENTATION_DETAIL_DO_NOT_USE_value_;
+    NodeIndexWithColorEmbeddedInTheMostSignificantBit
+        IMPLEMENTATION_DETAIL_DO_NOT_USE_parent_index_and_color_{};
+    NodeIndex IMPLEMENTATION_DETAIL_DO_NOT_USE_left_index_ = NULL_INDEX;
+    NodeIndex IMPLEMENTATION_DETAIL_DO_NOT_USE_right_index_ = NULL_INDEX;
 
 public:
     template <typename... Args>
     explicit(sizeof...(Args) == 0) constexpr CompactRedBlackTreeNode(const K& k,
                                                                      Args&&... args) noexcept
-      : key_(k)
-      , value_(std::forward<Args>(args)...)
+      : IMPLEMENTATION_DETAIL_DO_NOT_USE_key_(k)
+      , IMPLEMENTATION_DETAIL_DO_NOT_USE_value_(std::forward<Args>(args)...)
     {
     }
     template <typename... Args>
     explicit(sizeof...(Args) == 0) constexpr CompactRedBlackTreeNode(K&& k, Args&&... args) noexcept
-      : key_(std::move(k))
-      , value_(std::forward<Args>(args)...)
+      : IMPLEMENTATION_DETAIL_DO_NOT_USE_key_(std::move(k))
+      , IMPLEMENTATION_DETAIL_DO_NOT_USE_value_(std::forward<Args>(args)...)
     {
     }
 
-    [[nodiscard]] constexpr const K& key() const { return key_; }
-    constexpr K& key() { return key_; }
-    [[nodiscard]] constexpr const V& value() const { return value_.get(); }
-    constexpr V& value() { return value_.get(); }
+    [[nodiscard]] constexpr const K& key() const { return IMPLEMENTATION_DETAIL_DO_NOT_USE_key_; }
+    constexpr K& key() { return IMPLEMENTATION_DETAIL_DO_NOT_USE_key_; }
+    [[nodiscard]] constexpr const V& value() const
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_value_.get();
+    }
+    constexpr V& value() { return IMPLEMENTATION_DETAIL_DO_NOT_USE_value_.get(); }
 
     [[nodiscard]] constexpr NodeIndex parent_index() const
     {
-        return parent_index_and_color_.get_index();
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_parent_index_and_color_.get_index();
     }
-    constexpr void set_parent_index(const NodeIndex& i) { parent_index_and_color_.set_index(i); }
-    [[nodiscard]] constexpr NodeIndex left_index() const { return left_index_; }
-    constexpr void set_left_index(const NodeIndex& i) { left_index_ = i; }
-    [[nodiscard]] constexpr NodeIndex right_index() const { return right_index_; }
-    constexpr void set_right_index(const NodeIndex& i) { right_index_ = i; }
-    [[nodiscard]] constexpr Color color() const { return parent_index_and_color_.get_color(); }
-    constexpr void set_color(const Color& c) { parent_index_and_color_.set_color(c); }
+    constexpr void set_parent_index(const NodeIndex& i)
+    {
+        IMPLEMENTATION_DETAIL_DO_NOT_USE_parent_index_and_color_.set_index(i);
+    }
+    [[nodiscard]] constexpr NodeIndex left_index() const
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_left_index_;
+    }
+    constexpr void set_left_index(const NodeIndex& i)
+    {
+        IMPLEMENTATION_DETAIL_DO_NOT_USE_left_index_ = i;
+    }
+    [[nodiscard]] constexpr NodeIndex right_index() const
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_right_index_;
+    }
+    constexpr void set_right_index(const NodeIndex& i)
+    {
+        IMPLEMENTATION_DETAIL_DO_NOT_USE_right_index_ = i;
+    }
+    [[nodiscard]] constexpr Color color() const
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_parent_index_and_color_.get_color();
+    }
+    constexpr void set_color(const Color& c)
+    {
+        IMPLEMENTATION_DETAIL_DO_NOT_USE_parent_index_and_color_.set_color(c);
+    }
 };
 
 template <class K>
@@ -213,36 +278,58 @@ public:
     using ValueType = EmptyValue;
     static constexpr bool HAS_ASSOCIATED_VALUE = true;
 
-private:
-    K key_;
-    NodeIndexWithColorEmbeddedInTheMostSignificantBit parent_index_and_color_{};
-    NodeIndex left_index_ = NULL_INDEX;
-    NodeIndex right_index_ = NULL_INDEX;
+public:  // Public so this type is a structural type and can thus be used in template parameters
+    K IMPLEMENTATION_DETAIL_DO_NOT_USE_key_;
+    NodeIndexWithColorEmbeddedInTheMostSignificantBit
+        IMPLEMENTATION_DETAIL_DO_NOT_USE_parent_index_and_color_{};
+    NodeIndex IMPLEMENTATION_DETAIL_DO_NOT_USE_left_index_ = NULL_INDEX;
+    NodeIndex IMPLEMENTATION_DETAIL_DO_NOT_USE_right_index_ = NULL_INDEX;
 
 public:
     explicit constexpr CompactRedBlackTreeNode(const K& k) noexcept
-      : key_(k)
+      : IMPLEMENTATION_DETAIL_DO_NOT_USE_key_(k)
     {
     }
     explicit constexpr CompactRedBlackTreeNode(K&& k) noexcept
-      : key_(std::move(k))
+      : IMPLEMENTATION_DETAIL_DO_NOT_USE_key_(std::move(k))
     {
     }
 
-    [[nodiscard]] constexpr const K& key() const { return key_; }
-    constexpr K& key() { return key_; }
+    [[nodiscard]] constexpr const K& key() const { return IMPLEMENTATION_DETAIL_DO_NOT_USE_key_; }
+    constexpr K& key() { return IMPLEMENTATION_DETAIL_DO_NOT_USE_key_; }
 
     [[nodiscard]] constexpr NodeIndex parent_index() const
     {
-        return parent_index_and_color_.get_index();
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_parent_index_and_color_.get_index();
     }
-    constexpr void set_parent_index(const NodeIndex& i) { parent_index_and_color_.set_index(i); }
-    [[nodiscard]] constexpr NodeIndex left_index() const { return left_index_; }
-    constexpr void set_left_index(const NodeIndex& i) { left_index_ = i; }
-    [[nodiscard]] constexpr NodeIndex right_index() const { return right_index_; }
-    constexpr void set_right_index(const NodeIndex& i) { right_index_ = i; }
-    [[nodiscard]] constexpr Color color() const { return parent_index_and_color_.get_color(); }
-    constexpr void set_color(const Color& c) { parent_index_and_color_.set_color(c); }
+    constexpr void set_parent_index(const NodeIndex& i)
+    {
+        IMPLEMENTATION_DETAIL_DO_NOT_USE_parent_index_and_color_.set_index(i);
+    }
+    [[nodiscard]] constexpr NodeIndex left_index() const
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_left_index_;
+    }
+    constexpr void set_left_index(const NodeIndex& i)
+    {
+        IMPLEMENTATION_DETAIL_DO_NOT_USE_left_index_ = i;
+    }
+    [[nodiscard]] constexpr NodeIndex right_index() const
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_right_index_;
+    }
+    constexpr void set_right_index(const NodeIndex& i)
+    {
+        IMPLEMENTATION_DETAIL_DO_NOT_USE_right_index_ = i;
+    }
+    [[nodiscard]] constexpr Color color() const
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_parent_index_and_color_.get_color();
+    }
+    constexpr void set_color(const Color& c)
+    {
+        IMPLEMENTATION_DETAIL_DO_NOT_USE_parent_index_and_color_.set_color(c);
+    }
 };
 
 template <class S>
