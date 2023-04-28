@@ -31,3 +31,5 @@ build --copt -Wno-padded
 # due to gtest
 build:clang --copt -Wno-exit-time-destructors
 build:clang --copt -Wno-used-but-marked-unused
+#
+build:clang --copt -Wno-poison-system-directories
