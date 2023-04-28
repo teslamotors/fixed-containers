@@ -1228,6 +1228,7 @@ static constexpr int INT_VALUE_30 = 30;
 TEST(EnumMap, ConstRef)
 {
     {
+#ifndef _LIBCPP_VERSION
         std::map<TestEnum1, const int&> s{{TestEnum1::ONE, INT_VALUE_10}};
         s.insert({TestEnum1::TWO, INT_VALUE_20});
         s.emplace(TestEnum1::THREE, INT_VALUE_30);
@@ -1243,6 +1244,7 @@ TEST(EnumMap, ConstRef)
         ASSERT_TRUE(!s.contains(TestEnum1::FOUR));
 
         ASSERT_EQ(INT_VALUE_10, s.at(TestEnum1::ONE));
+#endif
     }
 
     {

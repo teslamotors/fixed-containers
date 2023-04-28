@@ -1212,6 +1212,7 @@ static constexpr int INT_VALUE_30 = 30;
 TEST(FixedMap, ConstRef)
 {
     {
+#ifndef _LIBCPP_VERSION
         std::map<int, const int&> s{{1, INT_VALUE_10}};
         s.insert({2, INT_VALUE_20});
         s.emplace(3, INT_VALUE_30);
@@ -1227,6 +1228,7 @@ TEST(FixedMap, ConstRef)
         ASSERT_TRUE(!s.contains(4));
 
         ASSERT_EQ(INT_VALUE_10, s.at(1));
+#endif
     }
 
     {
