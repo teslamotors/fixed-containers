@@ -78,7 +78,7 @@ public:
     {
     }
 
-    [[nodiscard]] constexpr bool full() const noexcept { return storage_.full(); }
+    [[nodiscard]] constexpr bool full() const noexcept { return storage().full(); }
 
     constexpr RedBlackTreeNodeView<const FixedRedBlackTreeStorage> at(const NodeIndex& i) const
     {
@@ -89,62 +89,69 @@ public:
         return {this, i};
     }
 
-    constexpr const K& key(const NodeIndex& i) const { return storage_.at(i).key(); }
-    constexpr K& key(const NodeIndex& i) { return storage_.at(i).key(); }
+    constexpr const K& key(const NodeIndex& i) const { return storage().at(i).key(); }
+    constexpr K& key(const NodeIndex& i) { return storage().at(i).key(); }
     constexpr const V& value(const NodeIndex& i) const
         requires HAS_ASSOCIATED_VALUE
     {
-        return storage_.at(i).value();
+        return storage().at(i).value();
     }
     constexpr V& value(const NodeIndex& i)
         requires HAS_ASSOCIATED_VALUE
     {
-        return storage_.at(i).value();
+        return storage().at(i).value();
     }
 
     [[nodiscard]] constexpr NodeIndex left_index(const NodeIndex& i) const
     {
-        return storage_.at(i).left_index();
+        return storage().at(i).left_index();
     }
     constexpr void set_left_index(const NodeIndex& i, const NodeIndex& s)
     {
-        storage_.at(i).set_left_index(s);
+        storage().at(i).set_left_index(s);
     }
 
     [[nodiscard]] constexpr NodeIndex right_index(const NodeIndex& i) const
     {
-        return storage_.at(i).right_index();
+        return storage().at(i).right_index();
     }
     constexpr void set_right_index(const NodeIndex& i, const NodeIndex& s)
     {
-        return storage_.at(i).set_right_index(s);
+        return storage().at(i).set_right_index(s);
     }
 
     [[nodiscard]] constexpr NodeIndex parent_index(const NodeIndex& i) const
     {
-        return storage_.at(i).parent_index();
+        return storage().at(i).parent_index();
     }
     constexpr void set_parent_index(const NodeIndex& i, const NodeIndex& s)
     {
-        return storage_.at(i).set_parent_index(s);
+        return storage().at(i).set_parent_index(s);
     }
 
-    [[nodiscard]] constexpr Color color(const NodeIndex& i) const { return storage_.at(i).color(); }
+    [[nodiscard]] constexpr Color color(const NodeIndex& i) const
+    {
+        return storage().at(i).color();
+    }
     constexpr void set_color(const NodeIndex& i, const Color& c)
     {
-        return storage_.at(i).set_color(c);
+        return storage().at(i).set_color(c);
     }
 
     template <class... Args>
     constexpr NodeIndex emplace_and_return_index(Args&&... args)
     {
-        return storage_.emplace_and_return_index(std::forward<Args>(args)...);
+        return storage().emplace_and_return_index(std::forward<Args>(args)...);
     }
 
     constexpr NodeIndex delete_at_and_return_repositioned_index(const std::size_t i) noexcept
     {
-        return storage_.delete_at_and_return_repositioned_index(i);
+        return storage().delete_at_and_return_repositioned_index(i);
     }
+
+private:
+    constexpr const StorageTemplate<NodeType, MAXIMUM_SIZE>& storage() const { return storage_; }
+    constexpr StorageTemplate<NodeType, MAXIMUM_SIZE>& storage() { return storage_; }
 };
 
 }  // namespace fixed_containers::fixed_red_black_tree_detail
