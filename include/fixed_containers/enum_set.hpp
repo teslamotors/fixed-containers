@@ -231,9 +231,10 @@ public:
 
     constexpr void clear() noexcept
     {
-        for (std::size_t i = 0; i < array_set_.size(); i++)
+        const std::size_t sz = array_set().size();
+        for (std::size_t i = 0; i < sz; i++)
         {
-            if (array_set_[i])
+            if (contains_at(i))
             {
                 reset_at(i);
             }
@@ -248,7 +249,7 @@ public:
         }
 
         size_++;
-        array_set_[EnumAdapterType::ordinal(key)] = true;
+        array_set_unchecked_at(EnumAdapterType::ordinal(key)) = true;
         return {create_const_iterator(ordinal), true};
     }
     constexpr const_iterator insert(const_iterator /*hint*/, const K& key) noexcept
@@ -285,7 +286,7 @@ public:
 
         for (std::size_t i = from; i < to; i++)
         {
-            if (array_set_[i])
+            if (contains_at(i))
             {
                 reset_at(i);
             }
@@ -313,31 +314,39 @@ public:
 
     constexpr bool operator==(const EnumSet<K>& other) const
     {
-        return array_set_ == other.array_set_;
+        return array_set() == other.array_set();
     }
 
 private:
+    constexpr const std::array<bool, ENUM_COUNT>& array_set() const { return array_set_; }
+    constexpr std::array<bool, ENUM_COUNT>& array_set() { return array_set_; }
+    constexpr const bool& array_set_unchecked_at(const std::size_t i) const
+    {
+        return array_set_[i];
+    }
+    constexpr bool& array_set_unchecked_at(const std::size_t i) { return array_set_[i]; }
+
     constexpr const_iterator create_const_iterator(const std::size_t start_index) const noexcept
     {
         return const_iterator{
-            IndexPredicate{&array_set_}, ReferenceProvider{}, start_index, ENUM_COUNT};
+            IndexPredicate{&array_set()}, ReferenceProvider{}, start_index, ENUM_COUNT};
     }
     constexpr const_reverse_iterator create_const_reverse_iterator(
         const std::size_t start_index) const noexcept
     {
         return const_reverse_iterator{
-            IndexPredicate{&array_set_}, ReferenceProvider{}, start_index, ENUM_COUNT};
+            IndexPredicate{&array_set()}, ReferenceProvider{}, start_index, ENUM_COUNT};
     }
 
     [[nodiscard]] constexpr bool contains_at(const std::size_t i) const noexcept
     {
-        return array_set_[i];
+        return array_set_unchecked_at(i);
     }
 
     constexpr void reset_at(const std::size_t i) noexcept
     {
-        assert(array_set_[i]);
-        array_set_[i] = false;
+        assert(contains_at(i));
+        array_set_unchecked_at(i) = false;
         size_--;
     }
 };
