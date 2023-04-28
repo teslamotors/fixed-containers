@@ -77,8 +77,8 @@ public:
 
 public:
     [[nodiscard]] constexpr std::size_t size() const noexcept { return size_; }
-    [[nodiscard]] constexpr bool empty() const noexcept { return size_ == 0; }
-    [[nodiscard]] constexpr bool full() const noexcept { return size_ == MAXIMUM_SIZE; }
+    [[nodiscard]] constexpr bool empty() const noexcept { return size() == 0; }
+    [[nodiscard]] constexpr bool full() const noexcept { return size() == MAXIMUM_SIZE; }
 
     constexpr void clear() noexcept
     {
@@ -125,7 +125,7 @@ public:
     constexpr void insert_new_at(NodeIndexAndParentIndex& np, Args&&... args) noexcept
     {
         assert(!contains_at(np.i));
-        size_++;
+        increment_size();
         np.i = tree_storage_.emplace_and_return_index(std::forward<Args>(args)...);
 
         RedBlackTreeNodeView node_i = tree_storage_.at(np.i);
@@ -426,6 +426,10 @@ public:
     }
 
 private:
+    constexpr void increment_size(const std::size_t n = 1) { size_ += n; }
+    constexpr void decrement_size(const std::size_t n = 1) { size_ -= n; }
+    constexpr void set_size(const std::size_t size) { size_ = size; }
+
     template <class K1, class K2>
     constexpr int compare(const K1& left, const K2& right) const
     {
@@ -601,11 +605,11 @@ private:
         {
             tree_storage_.delete_at_and_return_repositioned_index(i);
             root_index_ = NULL_INDEX;
-            size_ = 0;
+            set_size(0);
             return {NULL_INDEX, NULL_INDEX};
         }
 
-        size_--;
+        decrement_size();
         const NodeIndex index_to_delete = i;
         const NodeIndex successor_index = index_of_successor_at(index_to_delete);
 
