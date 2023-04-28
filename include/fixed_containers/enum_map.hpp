@@ -205,8 +205,10 @@ private:
                                                      DIRECTION>;
 
 public:
-    using const_iterator = IteratorImpl<IteratorConstness::CONSTANT_ITERATOR(), IteratorDirection::FORWARD()>;
-    using iterator = IteratorImpl<IteratorConstness::MUTABLE_ITERATOR(), IteratorDirection::FORWARD()>;
+    using const_iterator =
+        IteratorImpl<IteratorConstness::CONSTANT_ITERATOR(), IteratorDirection::FORWARD()>;
+    using iterator =
+        IteratorImpl<IteratorConstness::MUTABLE_ITERATOR(), IteratorDirection::FORWARD()>;
     using const_reverse_iterator =
         IteratorImpl<IteratorConstness::CONSTANT_ITERATOR(), IteratorDirection::REVERSE()>;
     using reverse_iterator =
@@ -275,11 +277,11 @@ public:
                                       std_transition::source_location::current()) noexcept
     {
         const std::size_t ordinal = EnumAdapterType::ordinal(key);
-        if (preconditions::test(array_set_[ordinal]))
+        if (preconditions::test(array_set_unchecked_at(ordinal)))
         {
             CheckingType::out_of_range(key, size(), loc);
         }
-        return values_[ordinal].get();
+        return unchecked_at(ordinal);
     }
     [[nodiscard]] constexpr const V& at(
         const K& key,
@@ -287,23 +289,23 @@ public:
             std_transition::source_location::current()) const noexcept
     {
         const std::size_t ordinal = EnumAdapterType::ordinal(key);
-        if (preconditions::test(array_set_[ordinal]))
+        if (preconditions::test(array_set_unchecked_at(ordinal)))
         {
             CheckingType::out_of_range(key, size(), loc);
         }
-        return values_[ordinal].get();
+        return unchecked_at(ordinal);
     }
     constexpr V& operator[](const K& key) noexcept
     {
         const std::size_t ordinal = EnumAdapterType::ordinal(key);
         touch_if_not_present(ordinal);
-        return values_[ordinal].value;
+        return unchecked_at(ordinal);
     }
     constexpr V& operator[](K&& key) noexcept
     {
         const std::size_t ordinal = EnumAdapterType::ordinal(key);
         touch_if_not_present(ordinal);
-        return values_[ordinal].value;
+        return unchecked_at(ordinal);
     }
 
     constexpr const_iterator cbegin() const noexcept { return create_const_iterator(0); }
@@ -332,9 +334,10 @@ public:
 
     constexpr void clear() noexcept
     {
-        for (std::size_t i = 0; i < values_.size(); i++)
+        const std::size_t sz = values().size();
+        for (std::size_t i = 0; i < sz; i++)
         {
-            if (array_set_[i])
+            if (array_set_unchecked_at(i))
             {
                 reset_at(i);
             }
@@ -343,27 +346,27 @@ public:
     constexpr std::pair<iterator, bool> insert(const value_type& value) noexcept
     {
         const std::size_t ordinal = EnumAdapterType::ordinal(value.first);
-        if (array_set_[ordinal])
+        if (array_set_unchecked_at(ordinal))
         {
             return {create_iterator(ordinal), false};
         }
 
         size_++;
-        array_set_[ordinal] = true;
-        std::construct_at(&values_[ordinal], value.second);
+        array_set_unchecked_at(ordinal) = true;
+        std::construct_at(&values_unchecked_at(ordinal), value.second);
         return {create_iterator(ordinal), true};
     }
     constexpr std::pair<iterator, bool> insert(value_type&& value) noexcept
     {
         const std::size_t ordinal = EnumAdapterType::ordinal(value.first);
-        if (array_set_[ordinal])
+        if (array_set_unchecked_at(ordinal))
         {
             return {create_iterator(ordinal), false};
         }
 
         size_++;
-        array_set_[ordinal] = true;
-        std::construct_at(&values_[ordinal], std::move(value.second));
+        array_set_unchecked_at(ordinal) = true;
+        std::construct_at(&values_unchecked_at(ordinal), std::move(value.second));
         return {create_iterator(ordinal), true};
     }
 
@@ -385,13 +388,13 @@ public:
         requires std::is_assignable_v<mapped_type&, M&&>
     {
         const std::size_t ordinal = EnumAdapterType::ordinal(key);
-        const bool is_insertion = !array_set_[ordinal];
+        const bool is_insertion = !array_set_unchecked_at(ordinal);
         if (is_insertion)
         {
             size_++;
-            array_set_[ordinal] = true;
+            array_set_unchecked_at(ordinal) = true;
         }
-        values_[ordinal] = OptionalV(std::forward<M>(obj));
+        values_unchecked_at(ordinal) = OptionalV(std::forward<M>(obj));
         return {create_iterator(ordinal), is_insertion};
     }
     template <class M>
@@ -405,14 +408,15 @@ public:
     constexpr std::pair<iterator, bool> try_emplace(const K& key, Args&&... args) noexcept
     {
         const std::size_t ordinal = EnumAdapterType::ordinal(key);
-        if (array_set_[ordinal])
+        if (array_set_unchecked_at(ordinal))
         {
             return {create_iterator(ordinal), false};
         }
 
         size_++;
-        array_set_[ordinal] = true;
-        std::construct_at(&values_[ordinal], std::in_place, std::forward<Args>(args)...);
+        array_set_unchecked_at(ordinal) = true;
+        std::construct_at(
+            &values_unchecked_at(ordinal), std::in_place, std::forward<Args>(args)...);
         return {create_iterator(ordinal), true};
     }
     template <class... Args>
@@ -463,7 +467,7 @@ public:
 
         for (std::size_t i = from; i < to; i++)
         {
-            if (array_set_[i])
+            if (contains_at(i))
             {
                 reset_at(i);
             }
@@ -521,17 +525,17 @@ public:
     {
         for (std::size_t i = 0; i < ENUM_COUNT; i++)
         {
-            if (this->array_set_[i] != other.array_set_[i])
+            if (this->array_set_unchecked_at(i) != other.array_set_unchecked_at(i))
             {
                 return false;
             }
 
-            if (!this->array_set_[i])
+            if (!this->array_set_unchecked_at(i))
             {
                 continue;
             }
 
-            if (this->values_[i].value != other.values_[i].value)
+            if (this->unchecked_at(i) != other.unchecked_at(i))
             {
                 return false;
             }
@@ -543,55 +547,76 @@ public:
 private:
     constexpr void touch_if_not_present(const std::size_t ordinal) noexcept
     {
-        if (array_set_[ordinal])
+        if (contains_at(ordinal))
         {
             return;
         }
 
         size_++;
-        array_set_[ordinal] = true;
-        std::construct_at(&values_[ordinal], std::in_place);
+        array_set_unchecked_at(ordinal) = true;
+        std::construct_at(&values_unchecked_at(ordinal), std::in_place);
     }
 
     constexpr iterator create_iterator(const std::size_t start_index) noexcept
     {
         return iterator{
-            IndexPredicate{&array_set_}, PairProvider<false>{&values_}, start_index, ENUM_COUNT};
+            IndexPredicate{&array_set()}, PairProvider<false>{&values()}, start_index, ENUM_COUNT};
     }
 
     constexpr const_iterator create_const_iterator(const std::size_t start_index) const noexcept
     {
         return const_iterator{
-            IndexPredicate{&array_set_}, PairProvider<true>{&values_}, start_index, ENUM_COUNT};
+            IndexPredicate{&array_set()}, PairProvider<true>{&values()}, start_index, ENUM_COUNT};
     }
 
     constexpr reverse_iterator create_reverse_iterator(const std::size_t start_index) noexcept
     {
         return reverse_iterator{
-            IndexPredicate{&array_set_}, PairProvider<false>{&values_}, start_index, ENUM_COUNT};
+            IndexPredicate{&array_set()}, PairProvider<false>{&values()}, start_index, ENUM_COUNT};
     }
 
     constexpr const_reverse_iterator create_const_reverse_iterator(
         const std::size_t start_index) const noexcept
     {
         return const_reverse_iterator{
-            IndexPredicate{&array_set_}, PairProvider<true>{&values_}, start_index, ENUM_COUNT};
-    }
-
-    [[nodiscard]] constexpr bool contains_at(const std::size_t i) const noexcept
-    {
-        return array_set_[i];
+            IndexPredicate{&array_set()}, PairProvider<true>{&values()}, start_index, ENUM_COUNT};
     }
 
     constexpr void reset_at(const std::size_t i) noexcept
     {
-        assert(array_set_[i]);
+        assert(contains_at(i));
         if constexpr (NotTriviallyDestructible<V>)  // if-check needed by clang
         {
-            std::destroy_at(&values_[i].value);
+            std::destroy_at(&unchecked_at(i));
         }
-        array_set_[i] = false;
+        array_set_unchecked_at(i) = false;
         size_--;
+    }
+
+protected:  // [WORKAROUND-1]
+    constexpr const std::array<bool, ENUM_COUNT>& array_set() const { return array_set_; }
+    constexpr std::array<bool, ENUM_COUNT>& array_set() { return array_set_; }
+    constexpr const bool& array_set_unchecked_at(const std::size_t i) const
+    {
+        return array_set_[i];
+    }
+    constexpr bool& array_set_unchecked_at(const std::size_t i) { return array_set_[i]; }
+
+    constexpr const ValueArrayType& values() const { return values_; }
+    constexpr ValueArrayType& values() { return values_; }
+    constexpr const OptionalV& values_unchecked_at(const std::size_t i) const { return values_[i]; }
+    constexpr OptionalV& values_unchecked_at(const std::size_t i) { return values_[i]; }
+    constexpr const V& unchecked_at(const std::size_t i) const
+    {
+        return optional_storage_detail::get(values_[i]);
+    }
+    constexpr V& unchecked_at(const std::size_t i)
+    {
+        return optional_storage_detail::get(values_[i]);
+    }
+    [[nodiscard]] constexpr bool contains_at(const std::size_t i) const noexcept
+    {
+        return array_set_unchecked_at(i);
     }
 };
 }  // namespace fixed_containers::enum_map_detail
@@ -661,26 +686,27 @@ public:
     constexpr EnumMap(const EnumMap& other)
       : EnumMap()
     {
-        this->array_set_ = other.array_set_;
+        this->array_set() = other.array_set();
         this->size_ = other.size_;
         for (std::size_t i = 0; i < Base::ENUM_COUNT; i++)
         {
-            if (this->array_set_[i])
+            if (this->contains_at(i))
             {
-                std::construct_at(&this->values_[i], other.values_[i]);
+                std::construct_at(&this->values_unchecked_at(i), other.values_unchecked_at(i));
             }
         }
     }
     constexpr EnumMap(EnumMap&& other) noexcept
       : EnumMap()
     {
-        this->array_set_ = other.array_set_;
+        this->array_set() = other.array_set();
         this->size_ = other.size_;
         for (std::size_t i = 0; i < Base::ENUM_COUNT; i++)
         {
-            if (this->array_set_[i])
+            if (this->contains_at(i))
             {
-                std::construct_at(&this->values_[i], std::move(other.values_[i]));
+                std::construct_at(&this->values_unchecked_at(i),
+                                  std::move(other.values_unchecked_at(i)));
             }
         }
         // Clear the moved-out-of-map. This is consistent with both std::map
@@ -695,13 +721,13 @@ public:
         }
 
         this->clear();
-        this->array_set_ = other.array_set_;
+        this->array_set() = other.array_set();
         this->size_ = other.size_;
         for (std::size_t i = 0; i < Base::ENUM_COUNT; i++)
         {
-            if (this->array_set_[i])
+            if (this->contains_at(i))
             {
-                std::construct_at(&this->values_[i], other.values_[i]);
+                std::construct_at(&this->values_unchecked_at(i), other.values_unchecked_at(i));
             }
         }
         return *this;
@@ -714,13 +740,14 @@ public:
         }
 
         this->clear();
-        this->array_set_ = other.array_set_;
+        this->array_set() = other.array_set();
         this->size_ = other.size_;
         for (std::size_t i = 0; i < Base::ENUM_COUNT; i++)
         {
-            if (this->array_set_[i])
+            if (this->contains_at(i))
             {
-                std::construct_at(&this->values_[i], std::move(other.values_[i]));
+                std::construct_at(&this->values_unchecked_at(i),
+                                  std::move(other.values_unchecked_at(i)));
             }
         }
         // The trivial assignment operator does not `other.clear()`, so don't do it here either for
