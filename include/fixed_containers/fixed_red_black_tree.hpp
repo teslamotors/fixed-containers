@@ -101,14 +101,14 @@ public:
     {
         NodeIndexAndParentIndex np = index_of_node_with_parent(key);
         insert_if_not_present_at(np, key);
-        return tree_storage_.value(np.i);
+        return tree_storage().value(np.i);
     }
     constexpr V& operator[](K&& key) noexcept
         requires HAS_ASSOCIATED_VALUE
     {
         NodeIndexAndParentIndex np = index_of_node_with_parent(key);
         insert_if_not_present_at(np, std::move(key));
-        return tree_storage_.value(np.i);
+        return tree_storage().value(np.i);
     }
 
     template <class... Args>
@@ -126,7 +126,7 @@ public:
     {
         assert(!contains_at(np.i));
         increment_size();
-        np.i = tree_storage_.emplace_and_return_index(std::forward<Args>(args)...);
+        np.i = tree_storage().emplace_and_return_index(std::forward<Args>(args)...);
 
         RedBlackTreeNodeView node_i = tree_storage_at(np.i);
         node_i.set_parent_index(np.parent);
@@ -174,7 +174,7 @@ public:
     {
         if (from_index != NULL_INDEX && to_index != NULL_INDEX)
         {
-            assert(compare(tree_storage_.key(from_index), tree_storage_.key(to_index)) <= 0);
+            assert(compare(tree_storage().key(from_index), tree_storage().key(to_index)) <= 0);
         }
 
         NodeIndex i = from_index;
@@ -337,7 +337,7 @@ public:
         }
         for (NodeIndex i = root_index;;)
         {
-            const NodeIndex left_index = tree_storage_.left_index(i);
+            const NodeIndex left_index = tree_storage().left_index(i);
             if (left_index == NULL_INDEX)
             {
                 return i;
@@ -357,7 +357,7 @@ public:
         }
         for (NodeIndex i = root_index;;)
         {
-            const NodeIndex right_index = tree_storage_.right_index(i);
+            const NodeIndex right_index = tree_storage().right_index(i);
             if (right_index == NULL_INDEX)
             {
                 return i;
@@ -376,7 +376,7 @@ public:
         {
             return NULL_INDEX;
         }
-        const auto& tree = this->tree_storage_;
+        const auto& tree = this->tree_storage();
         if (const RedBlackTreeNodeView node = tree.at(i); node.right_index() != NULL_INDEX)
         {
             NodeIndex s = node.right_index();
@@ -403,7 +403,7 @@ public:
         {
             return NULL_INDEX;
         }
-        const auto& tree = this->tree_storage_;
+        const auto& tree = this->tree_storage();
         if (const RedBlackTreeNodeView node = tree.at(i); node.left_index() != NULL_INDEX)
         {
             NodeIndex s = node.left_index();
@@ -447,25 +447,25 @@ private:
     // Accessors that automatically handle NULL_INDEX
     [[nodiscard]] constexpr NodeIndex parent_index_of(const NodeIndex& i) const
     {
-        return i == NULL_INDEX ? NULL_INDEX : tree_storage_.parent_index(i);
+        return i == NULL_INDEX ? NULL_INDEX : tree_storage().parent_index(i);
     }
     [[nodiscard]] constexpr NodeIndex left_index_of(const NodeIndex& i) const
     {
-        return i == NULL_INDEX ? NULL_INDEX : tree_storage_.left_index(i);
+        return i == NULL_INDEX ? NULL_INDEX : tree_storage().left_index(i);
     }
     [[nodiscard]] constexpr NodeIndex right_index_of(const NodeIndex& i) const
     {
-        return i == NULL_INDEX ? NULL_INDEX : tree_storage_.right_index(i);
+        return i == NULL_INDEX ? NULL_INDEX : tree_storage().right_index(i);
     }
     [[nodiscard]] constexpr Color color_of(const NodeIndex& i) const
     {
         if (i == NULL_INDEX) return BLACK;  // null nodes are treated as BLACK
-        return tree_storage_.color(i);
+        return tree_storage().color(i);
     }
     constexpr void set_color(const NodeIndex& i, const Color& color)
     {
         if (i == NULL_INDEX) return;
-        tree_storage_.set_color(i, color);
+        tree_storage().set_color(i, color);
     }
 
     constexpr void rotate_left(const NodeIndex& i)
@@ -541,7 +541,7 @@ private:
     constexpr void fix_after_insertion(const NodeIndex& index_of_newly_added)
     {
         NodeIndex i = index_of_newly_added;
-        tree_storage_.set_color(i, RED);
+        tree_storage().set_color(i, RED);
 
         while (i != NULL_INDEX && i != root_index_ &&
                tree_storage_at(tree_storage_at(i).parent_index()).color() == RED)
@@ -603,7 +603,7 @@ private:
         // If there is only one node
         if (size() == 1)
         {
-            tree_storage_.delete_at_and_return_repositioned_index(i);
+            tree_storage().delete_at_and_return_repositioned_index(i);
             root_index_ = NULL_INDEX;
             set_size(0);
             return {NULL_INDEX, NULL_INDEX};
@@ -696,7 +696,7 @@ private:
         }
 
         const NodeIndex repositioned_index =
-            tree_storage_.delete_at_and_return_repositioned_index(index_to_delete);
+            tree_storage().delete_at_and_return_repositioned_index(index_to_delete);
 
         SuccessorIndexAndRepositionedIndex ret{successor_index, repositioned_index};
 
@@ -801,6 +801,8 @@ private:
     }
 
 protected:  // [WORKAROUND-1]
+    constexpr const TreeStorage& tree_storage() const { return tree_storage_; }
+    constexpr TreeStorage& tree_storage() { return tree_storage_; }
     constexpr auto tree_storage_at(const NodeIndex& i) const { return tree_storage_.at(i); }
     constexpr auto tree_storage_at(const NodeIndex& i) { return tree_storage_.at(i); }
 };
