@@ -183,15 +183,15 @@ public:
 
     static constexpr std::size_t max_size() noexcept { return ENUM_COUNT; }
 
-private:
+public:  // Public so this type is a structural type and can thus be used in template parameters
     // std::bitset is not sufficiently constexpr to use here, using a std::array instead.
-    std::array<bool, ENUM_COUNT> array_set_;
-    std::size_t size_;
+    std::array<bool, ENUM_COUNT> IMPLEMENTATION_DETAIL_DO_NOT_USE_array_set_;
+    std::size_t IMPLEMENTATION_DETAIL_DO_NOT_USE_size_;
 
 public:
     constexpr EnumSet() noexcept
-      : array_set_()
-      , size_{}
+      : IMPLEMENTATION_DETAIL_DO_NOT_USE_array_set_()
+      , IMPLEMENTATION_DETAIL_DO_NOT_USE_size_{}
     {
     }
 
@@ -227,7 +227,10 @@ public:
 
     [[nodiscard]] constexpr bool empty() const noexcept { return size() == 0; }
 
-    [[nodiscard]] constexpr std::size_t size() const noexcept { return size_; }
+    [[nodiscard]] constexpr std::size_t size() const noexcept
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_size_;
+    }
 
     constexpr void clear() noexcept
     {
@@ -318,15 +321,30 @@ public:
     }
 
 private:
-    constexpr const std::array<bool, ENUM_COUNT>& array_set() const { return array_set_; }
-    constexpr std::array<bool, ENUM_COUNT>& array_set() { return array_set_; }
+    constexpr const std::array<bool, ENUM_COUNT>& array_set() const
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_set_;
+    }
+    constexpr std::array<bool, ENUM_COUNT>& array_set()
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_set_;
+    }
     constexpr const bool& array_set_unchecked_at(const std::size_t i) const
     {
-        return array_set_[i];
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_set_[i];
     }
-    constexpr bool& array_set_unchecked_at(const std::size_t i) { return array_set_[i]; }
-    constexpr void increment_size(const std::size_t n = 1) { size_ += n; }
-    constexpr void decrement_size(const std::size_t n = 1) { size_ -= n; }
+    constexpr bool& array_set_unchecked_at(const std::size_t i)
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_set_[i];
+    }
+    constexpr void increment_size(const std::size_t n = 1)
+    {
+        IMPLEMENTATION_DETAIL_DO_NOT_USE_size_ += n;
+    }
+    constexpr void decrement_size(const std::size_t n = 1)
+    {
+        IMPLEMENTATION_DETAIL_DO_NOT_USE_size_ -= n;
+    }
 
     constexpr const_iterator create_const_iterator(const std::size_t start_index) const noexcept
     {

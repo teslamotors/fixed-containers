@@ -252,16 +252,16 @@ public:
 
     static constexpr std::size_t max_size() noexcept { return ENUM_COUNT; }
 
-protected:  // [WORKAROUND-1] - Needed by the non-trivially-copyable flavor of EnumMap
-    ValueArrayType values_;
-    std::array<bool, ENUM_COUNT> array_set_;
-    std::size_t size_;
+public:  // Public so this type is a structural type and can thus be used in template parameters
+    ValueArrayType IMPLEMENTATION_DETAIL_DO_NOT_USE_values_;
+    std::array<bool, ENUM_COUNT> IMPLEMENTATION_DETAIL_DO_NOT_USE_array_set_;
+    std::size_t IMPLEMENTATION_DETAIL_DO_NOT_USE_size_;
 
 public:
     constexpr EnumMapBase() noexcept
-      : values_{}
-      , array_set_{}
-      , size_{}
+      : IMPLEMENTATION_DETAIL_DO_NOT_USE_values_{}
+      , IMPLEMENTATION_DETAIL_DO_NOT_USE_array_set_{}
+      , IMPLEMENTATION_DETAIL_DO_NOT_USE_size_{}
     {
     }
 
@@ -330,7 +330,10 @@ public:
 
     [[nodiscard]] constexpr bool empty() const noexcept { return size() == 0; }
 
-    [[nodiscard]] constexpr std::size_t size() const noexcept { return size_; }
+    [[nodiscard]] constexpr std::size_t size() const noexcept
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_size_;
+    }
 
     constexpr void clear() noexcept
     {
@@ -594,34 +597,61 @@ private:
     }
 
 protected:  // [WORKAROUND-1]
-    constexpr const std::array<bool, ENUM_COUNT>& array_set() const { return array_set_; }
-    constexpr std::array<bool, ENUM_COUNT>& array_set() { return array_set_; }
+    constexpr const std::array<bool, ENUM_COUNT>& array_set() const
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_set_;
+    }
+    constexpr std::array<bool, ENUM_COUNT>& array_set()
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_set_;
+    }
     constexpr const bool& array_set_unchecked_at(const std::size_t i) const
     {
-        return array_set_[i];
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_set_[i];
     }
-    constexpr bool& array_set_unchecked_at(const std::size_t i) { return array_set_[i]; }
+    constexpr bool& array_set_unchecked_at(const std::size_t i)
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_set_[i];
+    }
 
-    constexpr const ValueArrayType& values() const { return values_; }
-    constexpr ValueArrayType& values() { return values_; }
-    constexpr const OptionalV& values_unchecked_at(const std::size_t i) const { return values_[i]; }
-    constexpr OptionalV& values_unchecked_at(const std::size_t i) { return values_[i]; }
+    constexpr const ValueArrayType& values() const
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_values_;
+    }
+    constexpr ValueArrayType& values() { return IMPLEMENTATION_DETAIL_DO_NOT_USE_values_; }
+    constexpr const OptionalV& values_unchecked_at(const std::size_t i) const
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_values_[i];
+    }
+    constexpr OptionalV& values_unchecked_at(const std::size_t i)
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_values_[i];
+    }
     constexpr const V& unchecked_at(const std::size_t i) const
     {
-        return optional_storage_detail::get(values_[i]);
+        return optional_storage_detail::get(IMPLEMENTATION_DETAIL_DO_NOT_USE_values_[i]);
     }
     constexpr V& unchecked_at(const std::size_t i)
     {
-        return optional_storage_detail::get(values_[i]);
+        return optional_storage_detail::get(IMPLEMENTATION_DETAIL_DO_NOT_USE_values_[i]);
     }
     [[nodiscard]] constexpr bool contains_at(const std::size_t i) const noexcept
     {
         return array_set_unchecked_at(i);
     }
 
-    constexpr void increment_size(const std::size_t n = 1) { size_ += n; }
-    constexpr void decrement_size(const std::size_t n = 1) { size_ -= n; }
-    constexpr void set_size(const std::size_t size) { size_ = size; }
+    constexpr void increment_size(const std::size_t n = 1)
+    {
+        IMPLEMENTATION_DETAIL_DO_NOT_USE_size_ += n;
+    }
+    constexpr void decrement_size(const std::size_t n = 1)
+    {
+        IMPLEMENTATION_DETAIL_DO_NOT_USE_size_ -= n;
+    }
+    constexpr void set_size(const std::size_t size)
+    {
+        IMPLEMENTATION_DETAIL_DO_NOT_USE_size_ = size;
+    }
 };
 }  // namespace fixed_containers::enum_map_detail
 

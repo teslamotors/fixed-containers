@@ -34,18 +34,21 @@ static_assert(!std::is_trivial_v<ES_1>);
 static_assert(std::is_standard_layout_v<ES_1>);
 static_assert(std::is_trivially_copy_assignable_v<ES_1>);
 static_assert(std::is_trivially_move_assignable_v<ES_1>);
+static_assert(IsStructuralType<ES_1>);
 
 static_assert(std::is_trivially_copyable_v<ES_2>);
 static_assert(!std::is_trivial_v<ES_2>);
 static_assert(std::is_standard_layout_v<ES_2>);
 static_assert(std::is_trivially_copy_assignable_v<ES_2>);
 static_assert(std::is_trivially_move_assignable_v<ES_2>);
+static_assert(IsStructuralType<ES_2>);
 
 static_assert(std::is_trivially_copyable_v<ES_3>);
 static_assert(!std::is_trivial_v<ES_3>);
 static_assert(std::is_standard_layout_v<ES_3>);
 static_assert(std::is_trivially_copy_assignable_v<ES_3>);
 static_assert(std::is_trivially_move_assignable_v<ES_3>);
+static_assert(IsStructuralType<ES_3>);
 
 static_assert(ranges::bidirectional_iterator<ES_1::iterator>);
 static_assert(ranges::bidirectional_iterator<ES_1::const_iterator>);
@@ -1285,6 +1288,27 @@ TEST(EnumMap, ConstRef)
 
     static_assert(NotTriviallyCopyable<const int&>);
     static_assert(NotTriviallyCopyable<EnumMap<TestEnum1, const int&>>);
+}
+
+namespace
+{
+template <EnumMap<TestEnum1, int> /*INSTANCE*/>
+struct EnumMapInstanceCanBeUsedAsATemplateParameter
+{
+};
+
+template <EnumMap<TestEnum1, int> /*INSTANCE*/>
+constexpr void enum_map_instance_can_be_used_as_a_template_parameter()
+{
+}
+}  // namespace
+
+TEST(EnumMap, UsageAsTemplateParameter)
+{
+    static constexpr EnumMap<TestEnum1, int> INSTANCE1{};
+    enum_map_instance_can_be_used_as_a_template_parameter<INSTANCE1>();
+    EnumMapInstanceCanBeUsedAsATemplateParameter<INSTANCE1> my_struct{};
+    static_cast<void>(my_struct);
 }
 
 namespace

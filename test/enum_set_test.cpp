@@ -28,14 +28,17 @@ using ES_3 = EnumSet<NonConformingTestRichEnum1>;
 static_assert(std::is_trivially_copyable_v<ES_1>);
 static_assert(!std::is_trivial_v<ES_1>);
 static_assert(std::is_standard_layout_v<ES_1>);
+static_assert(IsStructuralType<ES_1>);
 
 static_assert(std::is_trivially_copyable_v<ES_2>);
 static_assert(!std::is_trivial_v<ES_2>);
 static_assert(std::is_standard_layout_v<ES_2>);
+static_assert(IsStructuralType<ES_2>);
 
 static_assert(std::is_trivially_copyable_v<ES_3>);
 static_assert(!std::is_trivial_v<ES_3>);
 static_assert(std::is_standard_layout_v<ES_3>);
+static_assert(IsStructuralType<ES_3>);
 
 static_assert(ranges::bidirectional_iterator<ES_1::iterator>);
 static_assert(ranges::bidirectional_iterator<ES_1::const_iterator>);
@@ -616,6 +619,27 @@ TEST(EnumSet, SetIntersection)
     static_assert(!s1.contains(TestEnum1::TWO));
     static_assert(!s1.contains(TestEnum1::THREE));
     static_assert(!s1.contains(TestEnum1::FOUR));
+}
+
+namespace
+{
+template <EnumSet<TestEnum1> /*INSTANCE*/>
+struct EnumSetInstanceCanBeUsedAsATemplateParameter
+{
+};
+
+template <EnumSet<TestEnum1> /*INSTANCE*/>
+constexpr void enum_set_instance_can_be_used_as_a_template_parameter()
+{
+}
+}  // namespace
+
+TEST(EnumSet, UsageAsTemplateParameter)
+{
+    static constexpr EnumSet<TestEnum1> INSTANCE1{};
+    enum_set_instance_can_be_used_as_a_template_parameter<INSTANCE1>();
+    EnumSetInstanceCanBeUsedAsATemplateParameter<INSTANCE1> my_struct{};
+    static_cast<void>(my_struct);
 }
 
 }  // namespace fixed_containers
