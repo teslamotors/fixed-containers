@@ -225,7 +225,7 @@ public:
     constexpr const_reverse_iterator rbegin() const noexcept { return crbegin(); }
     constexpr const_reverse_iterator rend() const noexcept { return crend(); }
 
-    [[nodiscard]] constexpr bool empty() const noexcept { return size_ == 0; }
+    [[nodiscard]] constexpr bool empty() const noexcept { return size() == 0; }
 
     [[nodiscard]] constexpr std::size_t size() const noexcept { return size_; }
 
@@ -248,7 +248,7 @@ public:
             return {create_const_iterator(ordinal), false};
         }
 
-        size_++;
+        increment_size();
         array_set_unchecked_at(EnumAdapterType::ordinal(key)) = true;
         return {create_const_iterator(ordinal), true};
     }
@@ -325,6 +325,8 @@ private:
         return array_set_[i];
     }
     constexpr bool& array_set_unchecked_at(const std::size_t i) { return array_set_[i]; }
+    constexpr void increment_size(const std::size_t n = 1) { size_ += n; }
+    constexpr void decrement_size(const std::size_t n = 1) { size_ -= n; }
 
     constexpr const_iterator create_const_iterator(const std::size_t start_index) const noexcept
     {
@@ -347,7 +349,7 @@ private:
     {
         assert(contains_at(i));
         array_set_unchecked_at(i) = false;
-        size_--;
+        decrement_size();
     }
 };
 
