@@ -35,8 +35,8 @@ class NodeIndexWithColorEmbeddedInTheMostSignificantBit
     static constexpr NodeIndex MASK = 1ULL << SHIFT_TO_MOST_SIGNIFICANT_BIT;
     static constexpr NodeIndex LOCAL_NULL_INDEX = NULL_INDEX >> 1;
 
-private:
-    NodeIndex index_and_color_;
+public:  // Public so this type is a structural type and can thus be used in template parameters
+    NodeIndex IMPLEMENTATION_DETAIL_DO_NOT_USE_index_and_color_;
 
 public:
     constexpr NodeIndexWithColorEmbeddedInTheMostSignificantBit()
@@ -46,7 +46,7 @@ public:
 
     constexpr NodeIndexWithColorEmbeddedInTheMostSignificantBit(const NodeIndex& index,
                                                                 const Color& color)
-      : index_and_color_{}
+      : IMPLEMENTATION_DETAIL_DO_NOT_USE_index_and_color_{}
     {
         set_index(index);
         set_color(color);
@@ -80,8 +80,14 @@ public:
     }
 
 private:
-    [[nodiscard]] constexpr const NodeIndex& index_and_color() const { return index_and_color_; }
-    [[nodiscard]] constexpr NodeIndex& index_and_color() { return index_and_color_; }
+    [[nodiscard]] constexpr const NodeIndex& index_and_color() const
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_index_and_color_;
+    }
+    [[nodiscard]] constexpr NodeIndex& index_and_color()
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_index_and_color_;
+    }
 };
 
 struct NodeIndexAndParentIndex
