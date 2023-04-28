@@ -69,12 +69,12 @@ public:
     using size_type = typename StorageTemplate<NodeType, MAXIMUM_SIZE>::size_type;
     using difference_type = typename StorageTemplate<NodeType, MAXIMUM_SIZE>::difference_type;
 
-private:
-    StorageTemplate<NodeType, MAXIMUM_SIZE> storage_;
+public:  // Public so this type is a structural type and can thus be used in template parameters
+    StorageTemplate<NodeType, MAXIMUM_SIZE> IMPLEMENTATION_DETAIL_DO_NOT_USE_storage_;
 
 public:
     constexpr FixedRedBlackTreeStorage()
-      : storage_()
+      : IMPLEMENTATION_DETAIL_DO_NOT_USE_storage_()
     {
     }
 
@@ -150,8 +150,14 @@ public:
     }
 
 private:
-    constexpr const StorageTemplate<NodeType, MAXIMUM_SIZE>& storage() const { return storage_; }
-    constexpr StorageTemplate<NodeType, MAXIMUM_SIZE>& storage() { return storage_; }
+    constexpr const StorageTemplate<NodeType, MAXIMUM_SIZE>& storage() const
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_storage_;
+    }
+    constexpr StorageTemplate<NodeType, MAXIMUM_SIZE>& storage()
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_storage_;
+    }
 };
 
 }  // namespace fixed_containers::fixed_red_black_tree_detail

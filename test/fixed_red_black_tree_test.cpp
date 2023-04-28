@@ -33,12 +33,13 @@ static_assert(IsStructuralType<CompactRedBlackTreeNode<int, int>, 5, 99>);
 static_assert(
     IsRedBlackTreeNodeWithValue<RedBlackTreeNodeView<CompactRedBlackTreeNode<int, EmptyValue>>>);
 
-static_assert(IsFixedRedBlackTreeStorage<
-              FixedRedBlackTreeStorage<int,
-                                       double,
-                                       10,
-                                       RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR(),
-                                       FixedIndexBasedPoolStorage>>);
+using Storage_1 = FixedRedBlackTreeStorage<int,
+                                           double,
+                                           10,
+                                           RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR(),
+                                           FixedIndexBasedPoolStorage>;
+static_assert(IsFixedRedBlackTreeStorage<Storage_1>);
+static_assert(IsStructuralType<Storage_1>);
 
 using ES_1 = FixedRedBlackTree<int, int, 10>;
 static_assert(TriviallyCopyable<ES_1>);
