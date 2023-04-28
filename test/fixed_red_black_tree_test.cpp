@@ -15,6 +15,9 @@ namespace fixed_containers::fixed_red_black_tree_detail
 {
 namespace
 {
+static_assert(IsStructuralType<FixedIndexBasedPoolStorage<int, 5>>);
+static_assert(IsStructuralType<FixedIndexBasedContiguousStorage<int, 5>>);
+
 static_assert(IsRedBlackTreeNode<DefaultRedBlackTreeNode<int, EmptyValue>>);
 static_assert(IsRedBlackTreeNodeWithValue<DefaultRedBlackTreeNode<int, double>>);
 static_assert(IsRedBlackTreeNode<CompactRedBlackTreeNode<int, EmptyValue>>);

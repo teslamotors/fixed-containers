@@ -35,14 +35,14 @@ public:
     using size_type = typename IndexOrValueArray::size_type;
     using difference_type = typename IndexOrValueArray::difference_type;
 
-private:
-    IndexOrValueArray array_;
-    std::size_t next_index_;
+public:  // Public so this type is a structural type and can thus be used in template parameters
+    IndexOrValueArray IMPLEMENTATION_DETAIL_DO_NOT_USE_array_;
+    std::size_t IMPLEMENTATION_DETAIL_DO_NOT_USE_next_index_;
 
 public:
     constexpr FixedIndexBasedPoolStorage() noexcept
-      : array_{}
-      , next_index_{}
+      : IMPLEMENTATION_DETAIL_DO_NOT_USE_array_{}
+      , IMPLEMENTATION_DETAIL_DO_NOT_USE_next_index_{}
     {
         for (std::size_t i = 0; i < MAXIMUM_SIZE; i++)
         {
@@ -79,11 +79,20 @@ public:
 private:
     constexpr const IndexOrValueT& array_unchecked_at(const std::size_t i) const
     {
-        return array_[i];
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_[i];
     }
-    constexpr IndexOrValueT& array_unchecked_at(const std::size_t i) { return array_[i]; }
-    [[nodiscard]] constexpr std::size_t next_index() const { return next_index_; }
-    constexpr void set_next_index(const std::size_t n) { next_index_ = n; }
+    constexpr IndexOrValueT& array_unchecked_at(const std::size_t i)
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_[i];
+    }
+    [[nodiscard]] constexpr std::size_t next_index() const
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_next_index_;
+    }
+    constexpr void set_next_index(const std::size_t n)
+    {
+        IMPLEMENTATION_DETAIL_DO_NOT_USE_next_index_ = n;
+    }
 
     template <class... Args>
     constexpr void emplace_at(const std::size_t& i, Args&&... args)
@@ -106,12 +115,12 @@ public:
     using size_type = typename FixedVector<T, MAXIMUM_SIZE>::size_type;
     using difference_type = typename FixedVector<T, MAXIMUM_SIZE>::difference_type;
 
-private:
-    FixedVector<T, MAXIMUM_SIZE> nodes_{};
+public:  // Public so this type is a structural type and can thus be used in template parameters
+    FixedVector<T, MAXIMUM_SIZE> IMPLEMENTATION_DETAIL_DO_NOT_USE_nodes_{};
 
 public:
     constexpr FixedIndexBasedContiguousStorage() noexcept
-      : nodes_{}
+      : IMPLEMENTATION_DETAIL_DO_NOT_USE_nodes_{}
     {
     }
 
@@ -136,8 +145,14 @@ public:
     }
 
 private:
-    constexpr const FixedVector<T, MAXIMUM_SIZE>& nodes() const { return nodes_; }
-    constexpr FixedVector<T, MAXIMUM_SIZE>& nodes() { return nodes_; }
+    constexpr const FixedVector<T, MAXIMUM_SIZE>& nodes() const
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_nodes_;
+    }
+    constexpr FixedVector<T, MAXIMUM_SIZE>& nodes()
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_nodes_;
+    }
 };
 
 }  // namespace fixed_containers
