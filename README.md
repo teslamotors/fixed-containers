@@ -9,11 +9,11 @@
 
 Header-only C++20 library that provides containers with the following properties:
 
-* Fixed-capacity, declared at compile-time
-* constexpr
+* Fixed-capacity, declared at compile-time, no dynamic allocations
+* constexpr - can be used at both compile-time and runtime (including mutation)
 * containers retain the properties of T (e.g. if T is trivially copyable, then so is FixedVector<T>)
 * no pointers stored (data layout is purely self-referential and can be serialized directly)
-* no dynamic allocations
+* instances can be used as non-type template parameters
 
 # Features
 
@@ -24,7 +24,7 @@ Header-only C++20 library that provides containers with the following properties
 * Rich enums - `enum` & `class` hybrid.
 
 ## Rich enum features
-* Rich enums behave like an enum (compile-time known values, can be used in switch-statements and as template parameters as well as `EnumMap`/`EnumSet` etc).
+* Rich enums behave like an enum (compile-time known values, can be used in switch-statements, template parameters as well as `EnumMap`/`EnumSet` etc).
 * Can have member functions and fields.
 * Readily available `count()`, `to_string()`.
 * Conversion from string, ordinal.
@@ -141,6 +141,22 @@ More examples can be found [here](test/enums_test_common.hpp).
     static constexpr const char* s = "blah"; // strlen==4, sizeof==8
     static constexpr const char s[5] = "blah";  // strlen==4, sizeof==5 (null terminator)
     static constexpr StringLiteral s = "blah";  // constexpr .size()==4
+    ```
+
+- Using instances as non-type template parameters
+    ```C++
+    // Similarly to simple types like ints/enums and std::array,
+    // fixed_container instances can be used as template parameters
+    template <FixedVector<int, 5> /*MY_VEC*/>
+    constexpr void fixed_vector_instance_can_be_used_as_a_template_parameter()
+    {
+    }
+
+    void test()
+    {
+        static constexpr FixedVector<int, 5> VEC1{};
+        fixed_vector_instance_can_be_used_as_a_template_parameter<VEC1>();
+    }
     ```
 
 # Integration
