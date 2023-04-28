@@ -25,6 +25,7 @@ static_assert(NotTrivial<ES_1>);
 static_assert(StandardLayout<ES_1>);
 static_assert(TriviallyCopyAssignable<ES_1>);
 static_assert(TriviallyMoveAssignable<ES_1>);
+static_assert(IsStructuralType<ES_1>);
 
 static_assert(ranges::bidirectional_iterator<ES_1::iterator>);
 static_assert(ranges::bidirectional_iterator<ES_1::const_iterator>);
@@ -1271,6 +1272,27 @@ TEST(FixedMap, ConstRef)
 
     static_assert(NotTriviallyCopyable<const int&>);
     static_assert(NotTriviallyCopyable<FixedMap<int, const int&, 5>>);
+}
+
+namespace
+{
+template <FixedMap<int, int, 5> /*INSTANCE*/>
+struct FixedMapInstanceCanBeUsedAsATemplateParameter
+{
+};
+
+template <FixedMap<int, int, 5> /*INSTANCE*/>
+constexpr void fixed_map_instance_can_be_used_as_a_template_parameter()
+{
+}
+}  // namespace
+
+TEST(FixedMap, UsageAsTemplateParameter)
+{
+    static constexpr FixedMap<int, int, 5> INSTANCE1{};
+    fixed_map_instance_can_be_used_as_a_template_parameter<INSTANCE1>();
+    FixedMapInstanceCanBeUsedAsATemplateParameter<INSTANCE1> my_struct{};
+    static_cast<void>(my_struct);
 }
 
 namespace

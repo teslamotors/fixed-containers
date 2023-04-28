@@ -138,8 +138,8 @@ public:
 public:
     static constexpr std::size_t max_size() noexcept { return MAXIMUM_SIZE; }
 
-private:
-    Tree tree_;
+public:  // Public so this type is a structural type and can thus be used in template parameters
+    Tree IMPLEMENTATION_DETAIL_DO_NOT_USE_tree_;
 
 public:
     constexpr FixedSet() noexcept
@@ -148,7 +148,7 @@ public:
     }
 
     explicit constexpr FixedSet(const Compare& comparator) noexcept
-      : tree_{comparator}
+      : IMPLEMENTATION_DETAIL_DO_NOT_USE_tree_{comparator}
     {
     }
 
@@ -387,8 +387,8 @@ public:
     }
 
 private:
-    constexpr Tree& tree() { return tree_; }
-    constexpr const Tree& tree() const { return tree_; }
+    constexpr Tree& tree() { return IMPLEMENTATION_DETAIL_DO_NOT_USE_tree_; }
+    constexpr const Tree& tree() const { return IMPLEMENTATION_DETAIL_DO_NOT_USE_tree_; }
 
     constexpr const_iterator create_const_iterator(const NodeIndex& start_index) const noexcept
     {

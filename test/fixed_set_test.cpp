@@ -23,6 +23,7 @@ static_assert(NotTrivial<ES_1>);
 static_assert(StandardLayout<ES_1>);
 static_assert(TriviallyCopyAssignable<ES_1>);
 static_assert(TriviallyMoveAssignable<ES_1>);
+static_assert(IsStructuralType<ES_1>);
 
 static_assert(ranges::bidirectional_iterator<ES_1::iterator>);
 static_assert(ranges::bidirectional_iterator<ES_1::const_iterator>);
@@ -550,6 +551,27 @@ TEST(FixedSet, SetIntersection)
     static_assert(consteval_compare::equal<1, s1.size()>);
     static_assert(s1.contains(1));
     static_assert(!s1.contains(4));
+}
+
+namespace
+{
+template <FixedSet<int, 5> /*INSTANCE*/>
+struct FixedSetInstanceCanBeUsedAsATemplateParameter
+{
+};
+
+template <FixedSet<int, 5> /*INSTANCE*/>
+constexpr void fixed_set_instance_can_be_used_as_a_template_parameter()
+{
+}
+}  // namespace
+
+TEST(FixedSet, UsageAsTemplateParameter)
+{
+    static constexpr FixedSet<int, 5> INSTANCE1{};
+    fixed_set_instance_can_be_used_as_a_template_parameter<INSTANCE1>();
+    FixedSetInstanceCanBeUsedAsATemplateParameter<INSTANCE1> my_struct{};
+    static_cast<void>(my_struct);
 }
 
 }  // namespace fixed_containers
