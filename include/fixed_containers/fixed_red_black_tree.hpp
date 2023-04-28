@@ -134,8 +134,8 @@ public:
         // No parent. Corner case for root node
         if (np.parent == NULL_INDEX)
         {
-            root_index_ = np.i;
-            fix_after_insertion(root_index_);
+            set_root_index(np.i);
+            fix_after_insertion(root_index());
             return;
         }
 
@@ -210,7 +210,7 @@ public:
     template <class K0>
     constexpr NodeIndexAndParentIndex index_of_node_with_parent(const K0& key) const
     {
-        NodeIndexAndParentIndex np{.i = root_index_, .parent = NULL_INDEX, .is_left_child = true};
+        NodeIndexAndParentIndex np{.i = root_index(), .parent = NULL_INDEX, .is_left_child = true};
         while (np.i != NULL_INDEX)
         {
             const RedBlackTreeNodeView current_node = tree_storage_at(np.i);
@@ -347,7 +347,7 @@ public:
     }
     [[nodiscard]] constexpr NodeIndex index_of_min_at() const noexcept
     {
-        return index_of_min_at(this->root_index_);
+        return index_of_min_at(this->root_index());
     }
     [[nodiscard]] constexpr NodeIndex index_of_max_at(const NodeIndex& root_index) const noexcept
     {
@@ -367,7 +367,7 @@ public:
     }
     [[nodiscard]] constexpr NodeIndex index_of_max_at() const noexcept
     {
-        return index_of_max_at(this->root_index_);
+        return index_of_max_at(this->root_index());
     }
 
     [[nodiscard]] constexpr NodeIndex index_of_successor_at(const NodeIndex& i) const
@@ -487,7 +487,7 @@ private:
 
         if (node.parent_index() == NULL_INDEX)
         {
-            root_index_ = r;
+            set_root_index(r);
         }
         else if (RedBlackTreeNodeView parent = tree_storage_at(node.parent_index());
                  parent.left_index() == i)
@@ -522,7 +522,7 @@ private:
 
         if (node.parent_index() == NULL_INDEX)
         {
-            root_index_ = l;
+            set_root_index(l);
         }
         else if (RedBlackTreeNodeView parent = tree_storage_at(node.parent_index());
                  parent.right_index() == i)
@@ -543,7 +543,7 @@ private:
         NodeIndex i = index_of_newly_added;
         tree_storage().set_color(i, RED);
 
-        while (i != NULL_INDEX && i != root_index_ &&
+        while (i != NULL_INDEX && i != root_index() &&
                tree_storage_at(tree_storage_at(i).parent_index()).color() == RED)
         {
             if (parent_index_of(i) == left_index_of(parent_index_of(parent_index_of(i))))
@@ -592,7 +592,7 @@ private:
             }
         }
 
-        tree_storage_at(root_index_).set_color(BLACK);
+        tree_storage_at(root_index()).set_color(BLACK);
     }
 
     constexpr SuccessorIndexAndRepositionedIndex delete_at_and_return_successor_and_repositioned(
@@ -604,7 +604,7 @@ private:
         if (size() == 1)
         {
             tree_storage().delete_at_and_return_repositioned_index(i);
-            root_index_ = NULL_INDEX;
+            set_root_index(NULL_INDEX);
             set_size(0);
             return {NULL_INDEX, NULL_INDEX};
         }
@@ -649,7 +649,7 @@ private:
             // If we become the root, update the root_index
             if (node_to_delete.parent_index() == NULL_INDEX)
             {
-                root_index_ = replacement_node_index;
+                set_root_index(replacement_node_index);
             }
             else if (RedBlackTreeNodeView parent_node =
                          tree_storage_at(node_to_delete.parent_index());
@@ -715,7 +715,7 @@ private:
     {
         NodeIndex i = index_of_deleted;
 
-        while (i != root_index_ && color_of(i) == BLACK)
+        while (i != root_index() && color_of(i) == BLACK)
         {
             if (i == left_index_of(parent_index_of(i)))
             {
@@ -748,7 +748,7 @@ private:
                     set_color(parent_index_of(i), BLACK);
                     set_color(right_index_of(sibling_index), BLACK);
                     rotate_left(parent_index_of(i));
-                    i = root_index_;
+                    i = root_index();
                 }
             }
             else
@@ -782,7 +782,7 @@ private:
                     set_color(parent_index_of(i), BLACK);
                     set_color(left_index_of(sibling_index), BLACK);
                     rotate_right(parent_index_of(i));
-                    i = root_index_;
+                    i = root_index();
                 }
             }
         }
@@ -805,6 +805,7 @@ protected:  // [WORKAROUND-1]
     constexpr TreeStorage& tree_storage() { return tree_storage_; }
     constexpr auto tree_storage_at(const NodeIndex& i) const { return tree_storage_.at(i); }
     constexpr auto tree_storage_at(const NodeIndex& i) { return tree_storage_.at(i); }
+    constexpr void set_root_index(const std::size_t r) { root_index_ = r; }
 };
 
 }  // namespace fixed_containers::fixed_red_black_tree_detail
