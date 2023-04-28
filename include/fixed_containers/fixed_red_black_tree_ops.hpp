@@ -172,11 +172,11 @@ public:
 
         if (i == tree.root_index())
         {
-            tree.root_index_ = j;
+            tree.IMPLEMENTATION_DETAIL_DO_NOT_USE_root_index_ = j;
         }
         else if (j == tree.root_index())
         {
-            tree.root_index_ = i;
+            tree.IMPLEMENTATION_DETAIL_DO_NOT_USE_root_index_ = i;
         }
 
         swap_color(node_i, node_j);

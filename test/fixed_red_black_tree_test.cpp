@@ -47,6 +47,7 @@ static_assert(NotTrivial<ES_1>);
 static_assert(StandardLayout<ES_1>);
 static_assert(TriviallyCopyAssignable<ES_1>);
 static_assert(TriviallyMoveAssignable<ES_1>);
+static_assert(IsStructuralType<ES_1>);
 
 template <typename K>
 constexpr CompactRedBlackTreeNode<K> make_node(

@@ -55,11 +55,11 @@ public:
     using size_type = std::size_t;
     using difference_type = std::ptrdiff_t;
 
-protected:  // [WORKAROUND-1]
-    TreeStorage tree_storage_;
-    NodeIndex root_index_;
-    NodeIndex size_;
-    Compare comparator_{};
+public:  // Public so this type is a structural type and can thus be used in template parameters
+    TreeStorage IMPLEMENTATION_DETAIL_DO_NOT_USE_tree_storage_;
+    NodeIndex IMPLEMENTATION_DETAIL_DO_NOT_USE_root_index_;
+    NodeIndex IMPLEMENTATION_DETAIL_DO_NOT_USE_size_;
+    Compare IMPLEMENTATION_DETAIL_DO_NOT_USE_comparator_{};
 
 public:
     constexpr FixedRedBlackTreeBase() noexcept
@@ -68,15 +68,18 @@ public:
     }
 
     explicit constexpr FixedRedBlackTreeBase(const Compare& comparator) noexcept
-      : tree_storage_{}
-      , root_index_{NULL_INDEX}
-      , size_{}
-      , comparator_{comparator}
+      : IMPLEMENTATION_DETAIL_DO_NOT_USE_tree_storage_{}
+      , IMPLEMENTATION_DETAIL_DO_NOT_USE_root_index_{NULL_INDEX}
+      , IMPLEMENTATION_DETAIL_DO_NOT_USE_size_{}
+      , IMPLEMENTATION_DETAIL_DO_NOT_USE_comparator_{comparator}
     {
     }
 
 public:
-    [[nodiscard]] constexpr std::size_t size() const noexcept { return size_; }
+    [[nodiscard]] constexpr std::size_t size() const noexcept
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_size_;
+    }
     [[nodiscard]] constexpr bool empty() const noexcept { return size() == 0; }
     [[nodiscard]] constexpr bool full() const noexcept { return size() == MAXIMUM_SIZE; }
 
@@ -197,7 +200,10 @@ public:
         return to;
     }
 
-    [[nodiscard]] constexpr const NodeIndex& root_index() const { return root_index_; }
+    [[nodiscard]] constexpr const NodeIndex& root_index() const
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_root_index_;
+    }
     constexpr RedBlackTreeNodeView<const TreeStorage> node_at(const NodeIndex& i) const
     {
         return tree_storage_at(i);
@@ -426,15 +432,24 @@ public:
     }
 
 private:
-    constexpr void increment_size(const std::size_t n = 1) { size_ += n; }
-    constexpr void decrement_size(const std::size_t n = 1) { size_ -= n; }
-    constexpr void set_size(const std::size_t size) { size_ = size; }
+    constexpr void increment_size(const std::size_t n = 1)
+    {
+        IMPLEMENTATION_DETAIL_DO_NOT_USE_size_ += n;
+    }
+    constexpr void decrement_size(const std::size_t n = 1)
+    {
+        IMPLEMENTATION_DETAIL_DO_NOT_USE_size_ -= n;
+    }
+    constexpr void set_size(const std::size_t size)
+    {
+        IMPLEMENTATION_DETAIL_DO_NOT_USE_size_ = size;
+    }
 
     template <class K1, class K2>
     constexpr int compare(const K1& left, const K2& right) const
     {
-        if (comparator_(left, right)) return -1;
-        if (comparator_(right, left)) return 1;
+        if (IMPLEMENTATION_DETAIL_DO_NOT_USE_comparator_(left, right)) return -1;
+        if (IMPLEMENTATION_DETAIL_DO_NOT_USE_comparator_(right, left)) return 1;
         return 0;
     }
 
@@ -704,7 +719,8 @@ private:
         {
             Ops::fixup_neighbours_of_node_to_point_to_a_new_index(
                 *this, tree_storage_at(index_to_delete), ret.repositioned, index_to_delete);
-            fixup_repositioned_index(root_index_, ret.repositioned, index_to_delete);
+            fixup_repositioned_index(
+                IMPLEMENTATION_DETAIL_DO_NOT_USE_root_index_, ret.repositioned, index_to_delete);
             fixup_repositioned_index(ret.successor, ret.repositioned, index_to_delete);
         }
 
@@ -801,11 +817,23 @@ private:
     }
 
 protected:  // [WORKAROUND-1]
-    constexpr const TreeStorage& tree_storage() const { return tree_storage_; }
-    constexpr TreeStorage& tree_storage() { return tree_storage_; }
-    constexpr auto tree_storage_at(const NodeIndex& i) const { return tree_storage_.at(i); }
-    constexpr auto tree_storage_at(const NodeIndex& i) { return tree_storage_.at(i); }
-    constexpr void set_root_index(const std::size_t r) { root_index_ = r; }
+    constexpr const TreeStorage& tree_storage() const
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_tree_storage_;
+    }
+    constexpr TreeStorage& tree_storage() { return IMPLEMENTATION_DETAIL_DO_NOT_USE_tree_storage_; }
+    constexpr auto tree_storage_at(const NodeIndex& i) const
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_tree_storage_.at(i);
+    }
+    constexpr auto tree_storage_at(const NodeIndex& i)
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_tree_storage_.at(i);
+    }
+    constexpr void set_root_index(const std::size_t r)
+    {
+        IMPLEMENTATION_DETAIL_DO_NOT_USE_root_index_ = r;
+    }
 };
 
 }  // namespace fixed_containers::fixed_red_black_tree_detail
