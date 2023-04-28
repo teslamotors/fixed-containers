@@ -184,8 +184,8 @@ public:
 
     static constexpr void swap_nodes_including_key_and_value(RedBlackTreeStorage& tree,
                                                              const NodeIndex& i,
-                                                             const NodeIndex& j) requires
-        TriviallyCopyable<K> && TriviallyCopyable<V>
+                                                             const NodeIndex& j)
+        requires TriviallyCopyable<K> && TriviallyCopyable<V>
     {
         swap_nodes_excluding_key_and_value(tree, i, j);
 

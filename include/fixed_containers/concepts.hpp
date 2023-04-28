@@ -87,12 +87,13 @@ concept NotMoveAssignable = not MoveAssignable<T>;
 // the type still counts as trivially copyable. Example: std::atomic<int>
 // https://en.cppreference.com/w/cpp/named_req/TriviallyCopyable
 template <class T>
-concept TriviallyCopyableWithAtLeastOneNonDeleted = TriviallyCopyable<T> &&
+concept TriviallyCopyableWithAtLeastOneNonDeleted =
+    TriviallyCopyable<T> &&
     (CopyConstructible<T> || MoveConstructible<T> || CopyAssignable<T> || MoveAssignable<T>);
 template <class T>
-concept NotTriviallyCopyableWithAtLeastOneNonDeleted = NotTriviallyCopyable<T> ||
-    (NotCopyConstructible<T>&& NotMoveConstructible<T>&& NotCopyAssignable<T>&&
-         NotMoveAssignable<T>);
+concept NotTriviallyCopyableWithAtLeastOneNonDeleted =
+    NotTriviallyCopyable<T> || (NotCopyConstructible<T> && NotMoveConstructible<T> &&
+                                NotCopyAssignable<T> && NotMoveAssignable<T>);
 
 template <class T>
 concept TriviallyDestructible = std::is_trivially_destructible_v<T>;
@@ -105,20 +106,16 @@ template <class T>
 concept IsNotReference = not IsReference<T>;
 
 template <typename T>
-concept ConstexprDefaultConstructible = requires(T t)
-{
+concept ConstexprDefaultConstructible = requires(T t) {
     {
         std::bool_constant<(T{}, true)>()
-        } -> std::same_as<std::true_type>;
+    } -> std::same_as<std::true_type>;
 };
 template <class T>
 concept NotConstexprDefaultConstructible = not ConstexprDefaultConstructible<T>;
 
 template <typename T>
-concept IsStructuralType = requires()
-{
-    std::integral_constant<T, T{}>();
-};
+concept IsStructuralType = requires() { std::integral_constant<T, T{}>(); };
 template <typename T>
 concept IsNotStructuralType = not IsStructuralType<T>;
 
@@ -141,8 +138,5 @@ concept InputIterator =
 // When using transparent comparators, lookups on this map can happen with
 // `std::string_view` or `const char*` without having to convert them to `std::string`.
 template <class T>
-concept IsTransparent = requires()
-{
-    typename T::is_transparent;
-};
+concept IsTransparent = requires() { typename T::is_transparent; };
 }  // namespace fixed_containers

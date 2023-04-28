@@ -9,41 +9,40 @@
 namespace fixed_containers::fixed_red_black_tree_detail
 {
 template <class StorageType>
-concept IsFixedRedBlackTreeStorage = IsFixedIndexBasedStorage<StorageType> &&
-    requires(const StorageType& const_s,
-             std::remove_const_t<StorageType>& mutable_s,
-             const NodeIndex& i,
-             Color color)
-{
-    typename StorageType::KeyType;
-    typename StorageType::ValueType;
-    StorageType::HAS_ASSOCIATED_VALUE;
+concept IsFixedRedBlackTreeStorage =
+    IsFixedIndexBasedStorage<StorageType> && requires(const StorageType& const_s,
+                                                      std::remove_const_t<StorageType>& mutable_s,
+                                                      const NodeIndex& i,
+                                                      Color color) {
+        typename StorageType::KeyType;
+        typename StorageType::ValueType;
+        StorageType::HAS_ASSOCIATED_VALUE;
 
-    const_s.at(i);
-    mutable_s.at(i);
+        const_s.at(i);
+        mutable_s.at(i);
 
-    const_s.key(i);
-    mutable_s.key(i);
-    const_s.value(i);
-    mutable_s.value(i);
+        const_s.key(i);
+        mutable_s.key(i);
+        const_s.value(i);
+        mutable_s.value(i);
 
-    const_s.left_index(i);
-    mutable_s.left_index(i);
-    const_s.right_index(i);
-    mutable_s.right_index(i);
-    const_s.parent_index(i);
-    mutable_s.parent_index(i);
-    const_s.color(i);
-    mutable_s.color(i);
+        const_s.left_index(i);
+        mutable_s.left_index(i);
+        const_s.right_index(i);
+        mutable_s.right_index(i);
+        const_s.parent_index(i);
+        mutable_s.parent_index(i);
+        const_s.color(i);
+        mutable_s.color(i);
 
-    mutable_s.set_left_index(i, i);
-    mutable_s.set_right_index(i, i);
-    mutable_s.set_parent_index(i, i);
-    mutable_s.set_color(i, color);
+        mutable_s.set_left_index(i, i);
+        mutable_s.set_right_index(i, i);
+        mutable_s.set_parent_index(i, i);
+        mutable_s.set_color(i, color);
 
-    mutable_s.emplace_and_return_index();
-    mutable_s.delete_at_and_return_repositioned_index(i);
-};
+        mutable_s.emplace_and_return_index();
+        mutable_s.delete_at_and_return_repositioned_index(i);
+    };
 
 template <class K,
           class V,
@@ -92,11 +91,13 @@ public:
 
     constexpr const K& key(const NodeIndex& i) const { return storage_.at(i).key(); }
     constexpr K& key(const NodeIndex& i) { return storage_.at(i).key(); }
-    constexpr const V& value(const NodeIndex& i) const requires HAS_ASSOCIATED_VALUE
+    constexpr const V& value(const NodeIndex& i) const
+        requires HAS_ASSOCIATED_VALUE
     {
         return storage_.at(i).value();
     }
-    constexpr V& value(const NodeIndex& i) requires HAS_ASSOCIATED_VALUE
+    constexpr V& value(const NodeIndex& i)
+        requires HAS_ASSOCIATED_VALUE
     {
         return storage_.at(i).value();
     }

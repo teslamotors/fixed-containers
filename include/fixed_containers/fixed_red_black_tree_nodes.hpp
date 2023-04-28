@@ -40,11 +40,8 @@ RedBlackTreeNodeColorCompactness::values()
 }
 
 template <class T>
-concept IsRedBlackTreeNode = requires(const T& const_s,
-                                      std::remove_const_t<T>& mutable_s,
-                                      const NodeIndex& i,
-                                      const Color& c)
-{
+concept IsRedBlackTreeNode = requires(
+    const T& const_s, std::remove_const_t<T>& mutable_s, const NodeIndex& i, const Color& c) {
     typename T::KeyType;
     typename T::ValueType;
     T::HAS_ASSOCIATED_VALUE;
@@ -66,12 +63,11 @@ concept IsRedBlackTreeNode = requires(const T& const_s,
 };
 
 template <class T>
-concept IsRedBlackTreeNodeWithValue = IsRedBlackTreeNode<T> &&
-    requires(const T& const_s, std::remove_const_t<T>& mutable_s)
-{
-    const_s.value();
-    mutable_s.value();
-};
+concept IsRedBlackTreeNodeWithValue =
+    IsRedBlackTreeNode<T> && requires(const T& const_s, std::remove_const_t<T>& mutable_s) {
+        const_s.value();
+        mutable_s.value();
+    };
 
 template <class K, class V = EmptyValue>
 class DefaultRedBlackTreeNode
@@ -273,30 +269,46 @@ public:
     }
 
     constexpr const K& key() const { return storage->key(i); }
-    constexpr K& key() requires IS_MUTABLE { return storage->key(i); }
-    constexpr const V& value() const requires HAS_ASSOCIATED_VALUE { return storage->value(i); }
-    constexpr V& value() requires IS_MUTABLE && HAS_ASSOCIATED_VALUE { return storage->value(i); }
+    constexpr K& key()
+        requires IS_MUTABLE
+    {
+        return storage->key(i);
+    }
+    constexpr const V& value() const
+        requires HAS_ASSOCIATED_VALUE
+    {
+        return storage->value(i);
+    }
+    constexpr V& value()
+        requires IS_MUTABLE && HAS_ASSOCIATED_VALUE
+    {
+        return storage->value(i);
+    }
 
     [[nodiscard]] constexpr NodeIndex left_index() const { return storage->left_index(i); }
-    constexpr void set_left_index(const NodeIndex& s) requires IS_MUTABLE
+    constexpr void set_left_index(const NodeIndex& s)
+        requires IS_MUTABLE
     {
         storage->set_left_index(i, s);
     }
 
     [[nodiscard]] constexpr NodeIndex right_index() const { return storage->right_index(i); }
-    constexpr void set_right_index(const NodeIndex& s) requires IS_MUTABLE
+    constexpr void set_right_index(const NodeIndex& s)
+        requires IS_MUTABLE
     {
         storage->set_right_index(i, s);
     }
 
     [[nodiscard]] constexpr NodeIndex parent_index() const { return storage->parent_index(i); }
-    constexpr void set_parent_index(const NodeIndex& s) requires IS_MUTABLE
+    constexpr void set_parent_index(const NodeIndex& s)
+        requires IS_MUTABLE
     {
         return storage->set_parent_index(i, s);
     }
 
     [[nodiscard]] constexpr Color color() const { return storage->color(i); }
-    constexpr void set_color(const Color& c) requires IS_MUTABLE
+    constexpr void set_color(const Color& c)
+        requires IS_MUTABLE
     {
         return storage->set_color(i, c);
     }

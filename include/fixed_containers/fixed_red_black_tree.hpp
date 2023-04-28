@@ -96,13 +96,15 @@ public:
         insert_if_not_present_at(np, std::move(key));
     }
 
-    constexpr V& operator[](const K& key) noexcept requires HAS_ASSOCIATED_VALUE
+    constexpr V& operator[](const K& key) noexcept
+        requires HAS_ASSOCIATED_VALUE
     {
         NodeIndexAndParentIndex np = index_of_node_with_parent(key);
         insert_if_not_present_at(np, key);
         return tree_storage_.value(np.i);
     }
-    constexpr V& operator[](K&& key) noexcept requires HAS_ASSOCIATED_VALUE
+    constexpr V& operator[](K&& key) noexcept
+        requires HAS_ASSOCIATED_VALUE
     {
         NodeIndexAndParentIndex np = index_of_node_with_parent(key);
         insert_if_not_present_at(np, std::move(key));
@@ -825,17 +827,17 @@ public:
         explicit constexpr FixedRedBlackTree(const Compare& comparator) noexcept : Base(comparator) { }
     // clang-format on
 
-    constexpr FixedRedBlackTree(const FixedRedBlackTree& other) requires
-        TriviallyCopyConstructible<K> && TriviallyCopyConstructible<V>
+    constexpr FixedRedBlackTree(const FixedRedBlackTree& other)
+        requires TriviallyCopyConstructible<K> && TriviallyCopyConstructible<V>
     = default;
-    constexpr FixedRedBlackTree(FixedRedBlackTree&& other) noexcept requires
-        TriviallyMoveConstructible<K> && TriviallyMoveConstructible<V>
+    constexpr FixedRedBlackTree(FixedRedBlackTree&& other) noexcept
+        requires TriviallyMoveConstructible<K> && TriviallyMoveConstructible<V>
     = default;
-    constexpr FixedRedBlackTree& operator=(const FixedRedBlackTree& other) requires
-        TriviallyCopyAssignable<K> && TriviallyCopyAssignable<V>
+    constexpr FixedRedBlackTree& operator=(const FixedRedBlackTree& other)
+        requires TriviallyCopyAssignable<K> && TriviallyCopyAssignable<V>
     = default;
-    constexpr FixedRedBlackTree& operator=(FixedRedBlackTree&& other) noexcept requires
-        TriviallyMoveAssignable<K> && TriviallyMoveAssignable<V>
+    constexpr FixedRedBlackTree& operator=(FixedRedBlackTree&& other) noexcept
+        requires TriviallyMoveAssignable<K> && TriviallyMoveAssignable<V>
     = default;
 
     // TODO: Use O(N) algorithm. Do non-recursive
