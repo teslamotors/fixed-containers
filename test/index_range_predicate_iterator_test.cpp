@@ -2,6 +2,8 @@
 
 #include <gtest/gtest.h>
 
+#include <array>
+
 namespace fixed_containers
 {
 namespace
