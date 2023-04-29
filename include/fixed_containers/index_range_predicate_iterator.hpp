@@ -2,6 +2,7 @@
 
 #include "fixed_containers/iterator_utils.hpp"
 
+#include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <iterator>
