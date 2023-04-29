@@ -50,7 +50,6 @@ public:
         using reference = value_type&;
         using const_reference = const value_type&;
         using iterator_category = std::forward_iterator_tag;
-        using iterator_concept = std::forward_iterator_tag;
 
         Iterator(const std::byte* ptr,
                  std::size_t elem_size_bytes,

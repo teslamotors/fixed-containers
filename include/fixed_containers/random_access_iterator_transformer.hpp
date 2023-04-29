@@ -46,19 +46,21 @@ class RandomAccessIteratorTransformer
                                              MutableReferenceUnaryFunction>;
 
 public:
-    using reference = decltype(std::declval<UnaryFunction>()(*std::declval<IteratorType>()));
-    using value_type = std::remove_reference_t<reference>;
-    using pointer = std::add_pointer_t<value_type>;
-    using iterator = Self;
-    using element_type = value_type;  // Needed for contiguous iterators
-    using iterator_category = typename std::iterator_traits<IteratorType>::iterator_category;
-    using iterator_concept = typename IteratorConceptHelper<IteratorType>::iterator_concept;
+    static_assert(std::random_access_iterator<ConstIterator>);
+    static_assert(std::random_access_iterator<MutableIterator>);
 
-    static_assert(std::same_as<iterator_category, std::random_access_iterator_tag> ||
-                  std::same_as<iterator_category, std::contiguous_iterator_tag>);
-    static_assert(std::same_as<iterator_concept, std::random_access_iterator_tag> ||
-                  std::same_as<iterator_concept, std::contiguous_iterator_tag>);
+    using reference = decltype(std::declval<UnaryFunction>()(*std::declval<IteratorType>()));
+    using value_type = std::remove_cvref_t<reference>;
+    using pointer = std::add_pointer_t<reference>;
     using difference_type = typename std::iterator_traits<IteratorType>::difference_type;
+    using iterator_category = std::conditional_t<
+        std::contiguous_iterator<IteratorType>,
+        std::contiguous_iterator_tag, std::random_access_iterator_tag
+    >;
+    using element_type = std::conditional_t<
+        std::contiguous_iterator<IteratorType>,
+        std::remove_reference_t<reference>, void
+    >;
 
 private:
     IteratorType iterator_;

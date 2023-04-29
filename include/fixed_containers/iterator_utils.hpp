@@ -64,26 +64,4 @@ declared here _S_to_pointer(_Tp __t)
 // a copy + decrement on every dereference, whereas a non-wrapper doesn't need to do that.
 // clang-format off
 
-// msvc's array iterator is a class, but gcc's and clang's is a raw pointer.
-// Normally, std::iterator_traits handles this, but for `iterator_concept`
-// it might not exist:
-// https://en.cppreference.com/w/cpp/iterator/iterator_traits
-//"User specializations may define the member type iterator_concept
-// to one of iterator category tags, to indicate conformance to the
-// iterator concepts."
-//
-// It is only mandated to be defined for the specialization `std::iterator_traits<T*>`
-//
-// As such, use this helper to work for pointers and classes alike.
-template<class IteratorType>
-struct IteratorConceptHelper
-{
-    using iterator_concept =  typename IteratorType::iterator_concept;
-};
-template<class IteratorType> requires std::is_pointer_v<IteratorType>
-struct IteratorConceptHelper<IteratorType>
-{
-    using iterator_concept = typename std::iterator_traits<IteratorType>::iterator_concept;
-};
-
 }  // namespace fixed_containers
