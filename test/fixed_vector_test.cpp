@@ -48,6 +48,9 @@ static_assert(std::is_same_v<typename std::iterator_traits<VecType::const_iterat
 static_assert(std::is_same_v<typename std::iterator_traits<VecType::const_iterator>::iterator_category, std::random_access_iterator_tag>);
 static_assert(std::is_same_v<typename std::pointer_traits<VecType::const_iterator>::element_type, const int>);
 
+using ConstVecType = const VecType;
+static_assert(std::is_same_v<int, typename ConstVecType::iterator::value_type>);
+static_assert(std::is_same_v<const int, typename ConstVecType::const_iterator::value_type>); // BUG!
 }  // namespace trivially_copyable_vector
 
 namespace trivially_copyable_but_not_copyable_or_moveable_vector
