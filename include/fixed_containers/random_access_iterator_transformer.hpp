@@ -131,6 +131,11 @@ public:
         return Self(std::next(iterator_, off), unary_function_);
     }
 
+    friend constexpr Self operator+(difference_type off, const Self& other)
+    {
+        return Self(std::next(other.iterator_, off), other.unary_function_);
+    }
+
     constexpr Self& operator-=(difference_type off)
     {
         std::advance(iterator_, -off);
@@ -152,38 +157,15 @@ public:
         return this->iterator_ - other.iterator_;
     }
 
-    constexpr bool operator==(const Self& other) const noexcept
-    {
-        return this->iterator_ == other.iterator_;
-    }
-
     constexpr std::strong_ordering operator<=>(const Self& other) const
     {
         return this->iterator_ <=> other.iterator_;
     }
 
-    constexpr bool operator==(const Sibling& other) const noexcept
+    constexpr bool operator==(const Self& other) const noexcept
     {
         return this->iterator_ == other.iterator_;
     }
-
-    constexpr std::strong_ordering operator<=>(const Sibling& other) const
-    {
-        return this->iterator_ <=> other.iterator_;
-    }
 };
-
-// Random access iterators require that both of these are valid:
-// 1) it + 5
-// 2) 5 + it
-// This function allows the latter.
-template <class CIt, class MIt, class ConstF, class MutF, IteratorConstness CONSTNESS>
-constexpr RandomAccessIteratorTransformer<CIt, MIt, ConstF, MutF, CONSTNESS> operator+(
-    typename RandomAccessIteratorTransformer<CIt, MIt, ConstF, MutF, CONSTNESS>::difference_type
-        off,
-    RandomAccessIteratorTransformer<CIt, MIt, ConstF, MutF, CONSTNESS> i)
-{
-    return i + off;
-}
 
 }  // namespace fixed_containers
