@@ -29,11 +29,25 @@ static_assert(NotTrivial<VecType>);
 static_assert(StandardLayout<VecType>);
 static_assert(IsStructuralType<VecType>);
 
-static_assert(ranges::random_access_iterator<VecType::iterator>);
-static_assert(ranges::random_access_iterator<VecType::const_iterator>);
-
+static_assert(std::contiguous_iterator<VecType::iterator>);
+static_assert(std::contiguous_iterator<VecType::const_iterator>);
 static_assert(std::ranges::contiguous_range<VecType>);
-static_assert(std::ranges::contiguous_range<std::array<int, 5>>);
+static_assert(std::ranges::contiguous_range<const VecType>);
+
+static_assert(std::is_same_v<std::iter_value_t<VecType::iterator>, int>);
+static_assert(std::is_same_v<std::iter_reference_t<VecType::iterator>, int&>);
+static_assert(std::is_same_v<std::iter_difference_t<VecType::iterator>, std::ptrdiff_t>);
+static_assert(std::is_same_v<typename std::iterator_traits<VecType::iterator>::pointer, int*>);
+static_assert(std::is_same_v<typename std::iterator_traits<VecType::iterator>::iterator_category, std::random_access_iterator_tag>);
+static_assert(std::is_same_v<typename std::pointer_traits<VecType::iterator>::element_type, int>);
+
+static_assert(std::is_same_v<std::iter_value_t<VecType::const_iterator>, int>);
+static_assert(std::is_same_v<std::iter_reference_t<VecType::const_iterator>, const int&>);
+static_assert(std::is_same_v<std::iter_difference_t<VecType::const_iterator>, std::ptrdiff_t>);
+static_assert(std::is_same_v<typename std::iterator_traits<VecType::const_iterator>::pointer, const int*>);
+static_assert(std::is_same_v<typename std::iterator_traits<VecType::const_iterator>::iterator_category, std::random_access_iterator_tag>);
+static_assert(std::is_same_v<typename std::pointer_traits<VecType::const_iterator>::element_type, const int>);
+
 }  // namespace trivially_copyable_vector
 
 namespace trivially_copyable_but_not_copyable_or_moveable_vector
@@ -56,6 +70,35 @@ static_assert(NotTriviallyDestructible<VecType>);
 static_assert(NotTrivial<VecType>);
 static_assert(StandardLayout<VecType>);
 }  // namespace trivially_copyable_but_not_copyable_or_moveable_vector
+
+namespace not_trivially_copyable_vector
+{
+using T = MockNonTrivialInt;
+using VecType = FixedVector<T, 5>;
+static_assert(!TriviallyCopyable<VecType>);
+static_assert(NotTrivial<VecType>);
+static_assert(StandardLayout<VecType>);
+static_assert(!IsStructuralType<VecType>);
+
+static_assert(std::contiguous_iterator<VecType::iterator>);
+static_assert(std::contiguous_iterator<VecType::const_iterator>);
+static_assert(std::ranges::contiguous_range<VecType>);
+static_assert(std::ranges::contiguous_range<const VecType>);
+
+static_assert(std::is_same_v<std::iter_value_t<VecType::iterator>, T>);
+static_assert(std::is_same_v<std::iter_reference_t<VecType::iterator>, T&>);
+static_assert(std::is_same_v<std::iter_difference_t<VecType::iterator>, std::ptrdiff_t>);
+static_assert(std::is_same_v<typename std::iterator_traits<VecType::iterator>::pointer, T*>);
+static_assert(std::is_same_v<typename std::iterator_traits<VecType::iterator>::iterator_category, std::random_access_iterator_tag>);
+static_assert(std::is_same_v<typename std::pointer_traits<VecType::iterator>::element_type, T>);
+
+static_assert(std::is_same_v<std::iter_value_t<VecType::const_iterator>, T>);
+static_assert(std::is_same_v<std::iter_reference_t<VecType::const_iterator>, const T&>);
+static_assert(std::is_same_v<std::iter_difference_t<VecType::const_iterator>, std::ptrdiff_t>);
+static_assert(std::is_same_v<typename std::iterator_traits<VecType::const_iterator>::pointer, const T*>);
+static_assert(std::is_same_v<typename std::iterator_traits<VecType::const_iterator>::iterator_category, std::random_access_iterator_tag>);
+static_assert(std::is_same_v<typename std::pointer_traits<VecType::const_iterator>::element_type, const T>);
+}
 
 void const_ref(const int&) {}
 void const_span_ref(const std::span<int>&) {}
@@ -848,7 +891,7 @@ TEST(FixedVector, IteratorAssignment)
     const_it = it;  // Non-const needs to assignable to const
 }
 
-TEST(FixedVector, Iterators)
+TEST(FixedVector, TrivialIterators)
 {
     {
         constexpr FixedVector<int, 3> v1{77, 88, 99};
@@ -909,6 +952,43 @@ TEST(FixedVector, Iterators)
             {
                 EXPECT_LT(ctr, 4);
                 EXPECT_EQ(ctr, *it);
+                ++ctr;
+            }
+            EXPECT_EQ(ctr, 4);
+        }
+    }
+}
+
+TEST(FixedVector, NonTrivialIterators)
+{
+    struct S {
+        S(int i) : i_(i) {}
+        int i_;
+        std::vector<int> v_; // unused, but makes S non-trivial
+    };
+    static_assert(!std::is_trivially_copyable_v<S>);
+    {
+        FixedVector<S, 8> v = {0, 1};
+        v.push_back(2);
+        v.push_back(3);
+        {
+            int ctr = 0;
+            for (auto it = v.begin(); it != v.end(); it++)
+            {
+                EXPECT_LT(ctr, 4);
+                EXPECT_EQ(ctr, (*it).i_);
+                EXPECT_EQ(ctr, it->i_);
+                ++ctr;
+            }
+            EXPECT_EQ(ctr, 4);
+        }
+        {
+            int ctr = 0;
+            for (auto it = v.cbegin(); it != v.cend(); it++)
+            {
+                EXPECT_LT(ctr, 4);
+                EXPECT_EQ(ctr, (*it).i_);
+                EXPECT_EQ(ctr, it->i_);
                 ++ctr;
             }
             EXPECT_EQ(ctr, 4);
