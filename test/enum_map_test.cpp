@@ -69,6 +69,16 @@ TEST(EnumMap, DefaultConstructor)
     static_assert(s1.empty());
 }
 
+TEST(EnumMap, IteratorConstructor)
+{
+    constexpr std::array INPUT{std::pair{TestEnum1::TWO, 20}, std::pair{TestEnum1::FOUR, 40}};
+    constexpr EnumMap<TestEnum1, int> s2{INPUT.begin(), INPUT.end()};
+    static_assert(s2.size() == 2);
+
+    static_assert(s2.at(TestEnum1::TWO) == 20);
+    static_assert(s2.at(TestEnum1::FOUR) == 40);
+}
+
 TEST(EnumMap, Initializer)
 {
     constexpr EnumMap<TestEnum1, int> s1{{TestEnum1::TWO, 20}, {TestEnum1::FOUR, 40}};

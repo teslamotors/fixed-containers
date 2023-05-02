@@ -152,6 +152,17 @@ public:
     {
     }
 
+    template <InputIterator InputIt>
+    constexpr FixedSet(
+        InputIt first,
+        InputIt last,
+        const Compare& comparator = {},
+        const std_transition::source_location& loc = std_transition::source_location::current())
+      : FixedSet{comparator}
+    {
+        insert(first, last, loc);
+    }
+
     constexpr FixedSet(std::initializer_list<value_type> list,
                        const Compare& comparator = {},
                        const std_transition::source_location& loc =

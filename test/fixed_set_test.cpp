@@ -53,6 +53,16 @@ TEST(FixedSet, DefaultConstructor)
     static_assert(s1.empty());
 }
 
+TEST(FixedSet, IteratorConstructor)
+{
+    constexpr std::array INPUT{2, 4};
+    constexpr FixedSet<int, 10> s2{INPUT.begin(), INPUT.end()};
+
+    static_assert(s2.size() == 2);
+    static_assert(s2.contains(2));
+    static_assert(s2.contains(4));
+}
+
 TEST(FixedSet, Initializer)
 {
     constexpr FixedSet<int, 10> s1{2, 4};

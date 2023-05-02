@@ -229,6 +229,17 @@ public:
     {
     }
 
+    template <InputIterator InputIt>
+    constexpr FixedMap(
+        InputIt first,
+        InputIt last,
+        const Compare& comparator = {},
+        const std_transition::source_location& loc = std_transition::source_location::current())
+      : FixedMap{comparator}
+    {
+        insert(first, last, loc);
+    }
+
     constexpr FixedMap(std::initializer_list<value_type> list,
                        const Compare& comparator = {},
                        const std_transition::source_location& loc =

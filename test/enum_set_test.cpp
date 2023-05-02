@@ -188,18 +188,9 @@ TEST(EnumSet, DefaultConstructor)
     static_assert(s1.empty());
 }
 
-TEST(EnumSet, InitializerConstructor)
-{
-    constexpr EnumSet<TestEnum1> s1{TestEnum1::TWO, TestEnum1::FOUR};
-    static_assert(s1.size() == 2);
-
-    constexpr EnumSet<TestEnum1> s2{TestEnum1::THREE};
-    static_assert(s2.size() == 1);
-}
-
 TEST(EnumSet, IteratorConstructor)
 {
-    constexpr std::array INPUT = {TestEnum1::TWO, TestEnum1::FOUR};
+    constexpr std::array INPUT{TestEnum1::TWO, TestEnum1::FOUR};
     constexpr EnumSet<TestEnum1> s1{INPUT.begin(), INPUT.end()};
     static_assert(s1.size() == 2);
 
@@ -207,6 +198,15 @@ TEST(EnumSet, IteratorConstructor)
     static_assert(s1.contains(TestEnum1::TWO));
     static_assert(!s1.contains(TestEnum1::THREE));
     static_assert(s1.contains(TestEnum1::FOUR));
+}
+
+TEST(EnumSet, InitializerConstructor)
+{
+    constexpr EnumSet<TestEnum1> s1{TestEnum1::TWO, TestEnum1::FOUR};
+    static_assert(s1.size() == 2);
+
+    constexpr EnumSet<TestEnum1> s2{TestEnum1::THREE};
+    static_assert(s2.size() == 1);
 }
 
 TEST(EnumSet, Contains)

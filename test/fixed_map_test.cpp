@@ -69,6 +69,16 @@ TEST(FixedMap, DefaultConstructor)
     static_assert(s1.empty());
 }
 
+TEST(FixedMap, IteratorConstructor)
+{
+    constexpr std::array INPUT{std::pair{2, 20}, std::pair{4, 40}};
+    constexpr FixedMap<int, int, 10> s2{INPUT.begin(), INPUT.end()};
+    static_assert(s2.size() == 2);
+
+    static_assert(s2.at(2) == 20);
+    static_assert(s2.at(4) == 40);
+}
+
 TEST(FixedMap, Initializer)
 {
     constexpr FixedMap<int, int, 10> s1{{2, 20}, {4, 40}};

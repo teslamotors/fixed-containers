@@ -195,17 +195,17 @@ public:
     {
     }
 
-    constexpr EnumSet(std::initializer_list<K> list) noexcept
-      : EnumSet()
-    {
-        insert(list);
-    }
-
     template <InputIterator InputIt>
     constexpr EnumSet(InputIt first, InputIt last) noexcept
       : EnumSet()
     {
         insert(first, last);
+    }
+
+    constexpr EnumSet(std::initializer_list<K> list) noexcept
+      : EnumSet()
+    {
+        insert(list);
     }
 
 public:

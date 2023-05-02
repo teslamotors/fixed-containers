@@ -264,6 +264,13 @@ public:
     {
     }
 
+    template <InputIterator InputIt>
+    constexpr EnumMapBase(InputIt first, InputIt last)
+      : EnumMapBase()
+    {
+        insert(first, last);
+    }
+
     constexpr EnumMapBase(std::initializer_list<value_type> list) noexcept
       : EnumMapBase()
     {
@@ -698,6 +705,11 @@ public:
       : Base()
     {
     }
+    template <InputIterator InputIt>
+    constexpr EnumMap(InputIt first, InputIt last)
+      : Base(first, last)
+    {
+    }
     constexpr EnumMap(std::initializer_list<value_type> list) noexcept
       : Base(list)
     {
@@ -833,6 +845,11 @@ public:
 
     constexpr EnumMap() noexcept
       : Base()
+    {
+    }
+    template <InputIterator InputIt>
+    constexpr EnumMap(InputIt first, InputIt last)
+      : Base(first, last)
     {
     }
     constexpr EnumMap(std::initializer_list<value_type> list) noexcept
