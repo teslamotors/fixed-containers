@@ -37,17 +37,25 @@ static_assert(std::is_trivially_copyable_v<ES_1::iterator>);
 static_assert(std::is_trivially_copyable_v<ES_1::reverse_iterator>);
 static_assert(std::is_trivially_copyable_v<ES_1::const_reverse_iterator>);
 
-static_assert(std::is_same_v<std::iter_value_t<ES_1::iterator>, fixed_containers::PairView<const int, int>>);
-static_assert(std::is_same_v<std::iter_reference_t<ES_1::iterator>, fixed_containers::PairView<const int, int>&>);
+static_assert(
+    std::is_same_v<std::iter_value_t<ES_1::iterator>, fixed_containers::PairView<const int, int>>);
+static_assert(std::is_same_v<std::iter_reference_t<ES_1::iterator>,
+                             fixed_containers::PairView<const int, int>&>);
 static_assert(std::is_same_v<std::iter_difference_t<ES_1::iterator>, std::ptrdiff_t>);
-static_assert(std::is_same_v<typename std::iterator_traits<ES_1::iterator>::pointer, fixed_containers::PairView<const int, int>*>);
-static_assert(std::is_same_v<typename std::iterator_traits<ES_1::iterator>::iterator_category, std::bidirectional_iterator_tag>);
+static_assert(std::is_same_v<typename std::iterator_traits<ES_1::iterator>::pointer,
+                             fixed_containers::PairView<const int, int>*>);
+static_assert(std::is_same_v<typename std::iterator_traits<ES_1::iterator>::iterator_category,
+                             std::bidirectional_iterator_tag>);
 
-static_assert(std::is_same_v<std::iter_value_t<ES_1::const_iterator>, fixed_containers::PairView<const int, const int>>);
-static_assert(std::is_same_v<std::iter_reference_t<ES_1::const_iterator>, fixed_containers::PairView<const int, const int> const&>);
+static_assert(std::is_same_v<std::iter_value_t<ES_1::const_iterator>,
+                             fixed_containers::PairView<const int, const int>>);
+static_assert(std::is_same_v<std::iter_reference_t<ES_1::const_iterator>,
+                             fixed_containers::PairView<const int, const int> const&>);
 static_assert(std::is_same_v<std::iter_difference_t<ES_1::const_iterator>, std::ptrdiff_t>);
-static_assert(std::is_same_v<typename std::iterator_traits<ES_1::const_iterator>::pointer, fixed_containers::PairView<const int, const int> const*>);
-static_assert(std::is_same_v<typename std::iterator_traits<ES_1::const_iterator>::iterator_category, std::bidirectional_iterator_tag>);
+static_assert(std::is_same_v<typename std::iterator_traits<ES_1::const_iterator>::pointer,
+                             fixed_containers::PairView<const int, const int> const*>);
+static_assert(std::is_same_v<typename std::iterator_traits<ES_1::const_iterator>::iterator_category,
+                             std::bidirectional_iterator_tag>);
 
 using STD_MAP_INT_INT = std::map<int, int>;
 static_assert(ranges::bidirectional_iterator<STD_MAP_INT_INT::iterator>);
