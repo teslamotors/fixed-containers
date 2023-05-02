@@ -158,3 +158,30 @@ if(BUILD_TESTS)
     add_executable(type_name_test test/type_name_test.cpp)
     add_test_dependencies(type_name_test)
 endif()
+
+option(FIXED_CONTAINERS_OPT_INSTALL "Enable install target" ${PROJECT_IS_TOP_LEVEL})
+if (FIXED_CONTAINERS_OPT_INSTALL)
+    target_include_directories(fixed_containers INTERFACE $<INSTALL_INTERFACE:include>)
+
+    include(CMakePackageConfigHelpers)
+    write_basic_package_version_file(${PROJECT_NAME}ConfigVersion.cmake
+            VERSION "0.0.0"
+            COMPATIBILITY AnyNewerVersion
+            ARCH_INDEPENDENT)
+
+    install(TARGETS ${PROJECT_NAME}
+            EXPORT ${PROJECT_NAME}Config)
+
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
+            DESTINATION lib/cmake/${PROJECT_NAME})
+
+    install(EXPORT ${PROJECT_NAME}Config
+            NAMESPACE ${PROJECT_NAME}::
+            DESTINATION lib/cmake/${PROJECT_NAME})
+
+    install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include
+            DESTINATION .)
+
+    export(EXPORT ${PROJECT_NAME}Config
+            NAMESPACE ${PROJECT_NAME}::)
+endif()

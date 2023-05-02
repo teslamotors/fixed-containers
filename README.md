@@ -161,10 +161,10 @@ More examples can be found [here](test/enums_test_common.hpp).
 
 # Integration
 
-- Add the `include/` folder to your includes
-- Get the dependencies. For example, with [vcpkg](https://github.com/Microsoft/vcpkg):
+### cmake
 ```
-vcpkg install magic-enum range-v3
+find_package(fixed_containers CONFIG REQUIRED)
+target_link_libraries(<your_binary> fixed_containers::fixed_containers)
 ```
 
 ### bazel
@@ -193,6 +193,14 @@ cc_test(
     copts = ["-std=c++20"],
 )
 ```
+### Alternative
+Since this is a header-only library, you can also:
+- Add the `include/` folder to your includes
+- Get the dependencies. For example, with [vcpkg](https://github.com/Microsoft/vcpkg):
+```
+vcpkg install magic-enum range-v3
+```
+
 
 # API deviations compared to the standard library
 
