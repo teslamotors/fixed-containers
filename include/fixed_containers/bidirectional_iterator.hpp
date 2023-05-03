@@ -23,6 +23,12 @@ template <NextAndPreviousProvider ConstReferenceProvider,
 class BidirectionalIterator
 {
     static constexpr IteratorConstness NEGATED_CONSTNESS = IteratorConstness(!bool(CONSTNESS));
+    static constexpr IteratorReturnTypeOwnership ITERATOR_RETURN_TYPE_OWNERSHIP =
+        CONSTNESS == IteratorConstness::CONSTANT_ITERATOR
+            ? ConstReferenceProvider::ITERATOR_RETURN_TYPE_OWNERSHIP
+            : MutableReferenceProvider::ITERATOR_RETURN_TYPE_OWNERSHIP;
+    static constexpr bool SAFE_LIFETIME =
+        ITERATOR_RETURN_TYPE_OWNERSHIP == IteratorReturnTypeOwnership::COLLECTION_OWNED;
 
     // Sibling has the same parameters, but different const-ness
     using Sibling = BidirectionalIterator<ConstReferenceProvider,
@@ -78,8 +84,11 @@ public:
     {
     }
 
-    constexpr reference operator*() const noexcept { return reference_provider_.get(); }
-
+    constexpr reference operator*() const& noexcept { return reference_provider_.get(); }
+    constexpr std::conditional_t<SAFE_LIFETIME, reference, value_type> operator*() && noexcept
+    {
+        return reference_provider_.get();
+    }
     constexpr pointer operator->() const noexcept { return &reference_provider_.get(); }
 
     constexpr BidirectionalIterator& operator++() noexcept

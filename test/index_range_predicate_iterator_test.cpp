@@ -20,6 +20,9 @@ struct AlwaysFalsePredicate
 
 struct IdentityIndexProvider
 {
+    static constexpr IteratorReturnTypeOwnership ITERATOR_RETURN_TYPE_OWNERSHIP =
+        IteratorReturnTypeOwnership::ITERATOR_OWNED;
+
     std::size_t current_index_;
     constexpr void update_to_index(const std::size_t i) noexcept { current_index_ = i; }
     [[nodiscard]] constexpr std::size_t get() const noexcept { return current_index_; }

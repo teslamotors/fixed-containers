@@ -11,6 +11,7 @@ namespace fixed_containers
 {
 template <class P>
 concept IndexBasedProvider = requires(P p, std::size_t i) {
+    P::ITERATOR_RETURN_TYPE_OWNERSHIP;
     p.update_to_index(i);
     p.get();
 };
@@ -33,6 +34,12 @@ template <typename IndexPredicate,
 class IndexRangePredicateIterator
 {
     static constexpr IteratorConstness NEGATED_CONSTNESS = IteratorConstness(!bool(CONSTNESS));
+    static constexpr IteratorReturnTypeOwnership ITERATOR_RETURN_TYPE_OWNERSHIP =
+        CONSTNESS == IteratorConstness::CONSTANT_ITERATOR
+            ? ConstReferenceProvider::ITERATOR_RETURN_TYPE_OWNERSHIP
+            : MutableReferenceProvider::ITERATOR_RETURN_TYPE_OWNERSHIP;
+    static constexpr bool SAFE_LIFETIME =
+        ITERATOR_RETURN_TYPE_OWNERSHIP == IteratorReturnTypeOwnership::COLLECTION_OWNED;
 
     using Self = IndexRangePredicateIterator<IndexPredicate,
                                              ConstReferenceProvider,
@@ -119,7 +126,11 @@ public:
         update_reference();
     }
 
-    constexpr reference operator*() const noexcept { return reference_provider_.get(); }
+    constexpr reference operator*() const& noexcept { return reference_provider_.get(); }
+    constexpr std::conditional_t<SAFE_LIFETIME, reference, value_type> operator*() && noexcept
+    {
+        return reference_provider_.get();
+    }
 
     constexpr pointer operator->() const noexcept { return &reference_provider_.get(); }
 

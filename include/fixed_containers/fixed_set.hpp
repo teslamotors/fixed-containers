@@ -74,6 +74,9 @@ private:
 
     struct ReferenceProvider
     {
+        static constexpr IteratorReturnTypeOwnership ITERATOR_RETURN_TYPE_OWNERSHIP =
+            IteratorReturnTypeOwnership::COLLECTION_OWNED;
+
         const Tree* tree_{nullptr};
         NodeIndex current_index_{MAXIMUM_SIZE};
 

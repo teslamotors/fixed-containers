@@ -118,6 +118,9 @@ private:
 
     struct ReferenceProvider
     {
+        static constexpr IteratorReturnTypeOwnership ITERATOR_RETURN_TYPE_OWNERSHIP =
+            IteratorReturnTypeOwnership::COLLECTION_OWNED;
+
         std::size_t i_{};
         constexpr void update_to_index(const std::size_t i) noexcept { i_ = i; }
         constexpr const K& get() const { return ENUM_VALUES[i_]; }

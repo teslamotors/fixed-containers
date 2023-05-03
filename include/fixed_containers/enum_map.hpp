@@ -1,11 +1,11 @@
 #pragma once
 
+#include "fixed_containers/assignable_storage.hpp"
 #include "fixed_containers/concepts.hpp"
 #include "fixed_containers/enum_utils.hpp"
 #include "fixed_containers/erase_if.hpp"
 #include "fixed_containers/index_range_predicate_iterator.hpp"
 #include "fixed_containers/optional_storage.hpp"
-#include "fixed_containers/pair_view.hpp"
 #include "fixed_containers/preconditions.hpp"
 #include "fixed_containers/source_location.hpp"
 #include "fixed_containers/type_name.hpp"
@@ -15,6 +15,7 @@
 #include <cstddef>
 #include <initializer_list>
 #include <memory>
+#include <optional>
 #include <type_traits>
 
 namespace fixed_containers::enum_map_customize
@@ -121,8 +122,8 @@ public:
     using key_type = K;
     using mapped_type = V;
     using value_type = std::pair<const K, V>;
-    using reference = PairView<const K, V>&;
-    using const_reference = const PairView<const K, const V>&;
+    using reference = std::pair<const K&, V&>;
+    using const_reference = std::pair<const K&, const V&>;
     using pointer = std::add_pointer_t<reference>;
     using const_pointer = std::add_pointer_t<const_reference>;
 
@@ -139,15 +140,18 @@ private:
     template <bool IS_CONST>
     struct PairProvider
     {
+        static constexpr IteratorReturnTypeOwnership ITERATOR_RETURN_TYPE_OWNERSHIP =
+            IteratorReturnTypeOwnership::ITERATOR_OWNED;
+
         using ConstOrMutableValueArray =
             std::conditional_t<IS_CONST, const ValueArrayType, ValueArrayType>;
-        using ConstOrMutablePairView =
-            std::conditional_t<IS_CONST,
-                               pair_view_detail::AssignablePairView<const K, const V>,
-                               pair_view_detail::AssignablePairView<const K, V>>;
+        using ConstOrMutablePair =
+            std::conditional_t<IS_CONST, std::pair<const K&, const V&>, std::pair<const K&, V&>>;
 
         ConstOrMutableValueArray* values_;
-        ConstOrMutablePairView current_;  // Needed for liveness
+        // Needed for liveness
+        assignable_storage_detail::AssignableStorage<std::optional<ConstOrMutablePair>>
+            current_value_;
 
         constexpr PairProvider() noexcept
           : PairProvider{nullptr}
@@ -156,13 +160,13 @@ private:
 
         constexpr PairProvider(ConstOrMutableValueArray* const values) noexcept
           : values_{values}
-          , current_{nullptr, nullptr}
+          , current_value_{}
         {
         }
 
         constexpr PairProvider(const PairProvider&) = default;
         constexpr PairProvider(PairProvider&&) noexcept = default;
-        constexpr PairProvider& operator=(const PairProvider&) = default;
+        constexpr PairProvider& operator=(const PairProvider& other) = default;
         constexpr PairProvider& operator=(PairProvider&&) noexcept = default;
 
         // https://github.com/llvm/llvm-project/issues/62555
@@ -175,21 +179,19 @@ private:
 
         constexpr void update_to_index(const std::size_t i) noexcept
         {
-            current_ = ConstOrMutablePairView{&ENUM_VALUES[i], &((*values_)[i].get())};
+            current_value_.value.emplace(ENUM_VALUES[i], (*values_)[i].get());
         }
 
-        constexpr const_reference get() const noexcept
+        constexpr const const_reference& get() const noexcept
             requires IS_CONST
         {
-            return current_;
+            return current_value_.value.value();
         }
-        constexpr reference get() const noexcept
+        constexpr reference& get() const noexcept
             requires(not IS_CONST)
         {
             // The function is tagged `const` and would add a `const` to the returned type.
-            // This is usually fine, but PairView intentionally propagates its constness to each of
-            // its views. Therefore, remove the `const`.
-            return const_cast<reference>(static_cast<const PairView<const K, V>&>(current_));
+            return const_cast<reference&>(current_value_.value.value());
         }
     };
 
@@ -454,7 +456,7 @@ public:
     constexpr iterator erase(const_iterator pos) noexcept
     {
         assert(pos != cend());
-        const std::size_t i = EnumAdapterType::ordinal(pos->first());
+        const std::size_t i = EnumAdapterType::ordinal(pos->first);
         assert(contains_at(i));
         reset_at(i);
         return create_iterator(i);
@@ -462,7 +464,7 @@ public:
     constexpr iterator erase(iterator pos) noexcept
     {
         assert(pos != end());
-        const std::size_t i = EnumAdapterType::ordinal(pos->first());
+        const std::size_t i = EnumAdapterType::ordinal(pos->first);
         assert(contains_at(i));
         reset_at(i);
         return create_iterator(i);
@@ -471,9 +473,8 @@ public:
     constexpr iterator erase(const_iterator first, const_iterator last) noexcept
     {
         const std::size_t from =
-            first == cend() ? ENUM_COUNT : EnumAdapterType::ordinal(first->first());
-        const std::size_t to =
-            last == cend() ? ENUM_COUNT : EnumAdapterType::ordinal(last->first());
+            first == cend() ? ENUM_COUNT : EnumAdapterType::ordinal(first->first);
+        const std::size_t to = last == cend() ? ENUM_COUNT : EnumAdapterType::ordinal(last->first);
         assert(from <= to);
 
         for (std::size_t i = from; i < to; i++)

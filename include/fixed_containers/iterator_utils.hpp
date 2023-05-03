@@ -19,6 +19,12 @@ enum class IteratorDirection : bool
     REVERSE = true,
 };
 
+enum class IteratorReturnTypeOwnership : bool
+{
+    ITERATOR_OWNED = false,
+    COLLECTION_OWNED = true,
+};
+
 // Using std::reverse_iterator fails to compile with the error message below.
 // Only applies to maps, because they leverage operator->
 //

@@ -1,15 +1,16 @@
 #pragma once
 
+#include "fixed_containers/assignable_storage.hpp"
 #include "fixed_containers/bidirectional_iterator.hpp"
 #include "fixed_containers/erase_if.hpp"
 #include "fixed_containers/fixed_red_black_tree.hpp"
-#include "fixed_containers/pair_view.hpp"
 #include "fixed_containers/preconditions.hpp"
 #include "fixed_containers/source_location.hpp"
 
 #include <algorithm>
 #include <cstddef>
 #include <functional>
+#include <optional>
 
 namespace fixed_containers::fixed_map_customize
 {
@@ -72,8 +73,8 @@ public:
     using key_type = K;
     using mapped_type = V;
     using value_type = std::pair<const K, V>;
-    using reference = PairView<const K, V>&;
-    using const_reference = const PairView<const K, const V>&;
+    using reference = std::pair<const K&, V&>;
+    using const_reference = std::pair<const K&, const V&>;
     using pointer = std::add_pointer_t<reference>;
     using const_pointer = std::add_pointer_t<const_reference>;
 
@@ -87,15 +88,18 @@ private:
     template <bool IS_CONST>
     struct PairProvider
     {
+        static constexpr IteratorReturnTypeOwnership ITERATOR_RETURN_TYPE_OWNERSHIP =
+            IteratorReturnTypeOwnership::ITERATOR_OWNED;
+
         using ConstOrMutableTree = std::conditional_t<IS_CONST, const Tree, Tree>;
-        using ConstOrMutablePairView =
-            std::conditional_t<IS_CONST,
-                               pair_view_detail::AssignablePairView<const K, const V>,
-                               pair_view_detail::AssignablePairView<const K, V>>;
+        using ConstOrMutablePair =
+            std::conditional_t<IS_CONST, std::pair<const K&, const V&>, std::pair<const K&, V&>>;
 
         ConstOrMutableTree* tree_;
         NodeIndex current_index_;
-        ConstOrMutablePairView storage_;  // Needed for liveness
+        // Needed for liveness
+        assignable_storage_detail::AssignableStorage<std::optional<ConstOrMutablePair>>
+            current_value_;
 
         constexpr PairProvider() noexcept
           : PairProvider{nullptr, MAXIMUM_SIZE}
@@ -106,7 +110,7 @@ private:
                                const NodeIndex& current_index) noexcept
           : tree_{tree}
           , current_index_{current_index}
-          , storage_{nullptr, nullptr}
+          , current_value_{}
         {
             if (tree != nullptr)
             {
@@ -155,18 +159,16 @@ private:
             update_storage();
         }
 
-        constexpr const_reference get() const noexcept
+        constexpr const const_reference& get() const noexcept
             requires IS_CONST
         {
-            return storage_;
+            return current_value_.value.value();
         }
-        constexpr reference get() const noexcept
+        constexpr reference& get() const noexcept
             requires(not IS_CONST)
         {
             // The function is tagged `const` and would add a `const` to the returned type.
-            // This is usually fine, but PairView intentionally propagates its constness to each of
-            // its views. Therefore, remove the `const`.
-            return const_cast<reference>(static_cast<const PairView<const K, V>&>(storage_));
+            return const_cast<reference&>(current_value_.value.value());
         }
 
         constexpr bool operator==(const PairProvider& other) const noexcept
@@ -185,7 +187,7 @@ private:
             {
                 fixed_red_black_tree_detail::RedBlackTreeNodeView node =
                     tree_->node_at(current_index_);
-                storage_ = ConstOrMutablePairView{&node.key(), &node.value()};
+                current_value_.value.emplace(node.key(), node.value());
             }
         }
     };
@@ -499,7 +501,7 @@ public:
     constexpr iterator erase(const_iterator pos) noexcept
     {
         assert(pos != cend());
-        const NodeIndex i = tree().index_of_node_or_null(pos->first());
+        const NodeIndex i = tree().index_of_node_or_null(pos->first);
         assert(tree().contains_at(i));
         const NodeIndex successor_index = tree().delete_at_and_return_successor(i);
         return create_iterator(successor_index);
@@ -507,7 +509,7 @@ public:
     constexpr iterator erase(iterator pos) noexcept
     {
         assert(pos != end());
-        const NodeIndex i = tree().index_of_node_or_null(pos->first());
+        const NodeIndex i = tree().index_of_node_or_null(pos->first);
         assert(tree().contains_at(i));
         const NodeIndex successor_index = tree().delete_at_and_return_successor(i);
         return create_iterator(successor_index);
@@ -517,9 +519,9 @@ public:
     {
         // iterators might be invalidated after every deletion, so we can't just loop through
         const NodeIndex from =
-            first == cend() ? NULL_INDEX : tree().index_of_node_or_null(first->first());
+            first == cend() ? NULL_INDEX : tree().index_of_node_or_null(first->first);
         const NodeIndex to =
-            last == cend() ? NULL_INDEX : tree().index_of_node_or_null(last->first());
+            last == cend() ? NULL_INDEX : tree().index_of_node_or_null(last->first);
 
         const NodeIndex successor_index = tree().delete_range_and_return_successor(from, to);
         return create_iterator(successor_index);

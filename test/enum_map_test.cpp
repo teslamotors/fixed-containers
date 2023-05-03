@@ -55,28 +55,30 @@ static_assert(std::bidirectional_iterator<ES_1::const_iterator>);
 static_assert(!std::random_access_iterator<ES_1::iterator>);
 static_assert(!std::random_access_iterator<ES_1::const_iterator>);
 
-static_assert(std::is_trivially_copyable_v<ES_2::const_iterator>);
-static_assert(std::is_trivially_copyable_v<ES_2::iterator>);
-static_assert(std::is_trivially_copyable_v<ES_2::reverse_iterator>);
-static_assert(std::is_trivially_copyable_v<ES_2::const_reverse_iterator>);
+// Not trivially-copyable because of the field of references
+// std::pair<const K&, V&> and working around its non-assignability
+// with custom assignment operators via AssignableStorage.
+static_assert(!std::is_trivially_copyable_v<ES_2::const_iterator>);
+static_assert(!std::is_trivially_copyable_v<ES_2::iterator>);
+static_assert(!std::is_trivially_copyable_v<ES_2::reverse_iterator>);
+static_assert(!std::is_trivially_copyable_v<ES_2::const_reverse_iterator>);
 
-static_assert(std::is_same_v<std::iter_value_t<ES_1::iterator>,
-                             fixed_containers::PairView<const TestEnum1, int>>);
-static_assert(std::is_same_v<std::iter_reference_t<ES_1::iterator>,
-                             fixed_containers::PairView<const TestEnum1, int>&>);
+static_assert(std::is_same_v<std::iter_value_t<ES_1::iterator>, std::pair<const TestEnum1&, int&>>);
+static_assert(
+    std::is_same_v<std::iter_reference_t<ES_1::iterator>, std::pair<const TestEnum1&, int&>&>);
 static_assert(std::is_same_v<std::iter_difference_t<ES_1::iterator>, std::ptrdiff_t>);
 static_assert(std::is_same_v<typename std::iterator_traits<ES_1::iterator>::pointer,
-                             fixed_containers::PairView<const TestEnum1, int>*>);
+                             std::pair<const TestEnum1&, int&>*>);
 static_assert(std::is_same_v<typename std::iterator_traits<ES_1::iterator>::iterator_category,
                              std::bidirectional_iterator_tag>);
 
 static_assert(std::is_same_v<std::iter_value_t<ES_1::const_iterator>,
-                             fixed_containers::PairView<const TestEnum1, const int>>);
+                             std::pair<const TestEnum1&, const int&>>);
 static_assert(std::is_same_v<std::iter_reference_t<ES_1::const_iterator>,
-                             fixed_containers::PairView<const TestEnum1, const int> const&>);
+                             std::pair<const TestEnum1&, const int&> const&>);
 static_assert(std::is_same_v<std::iter_difference_t<ES_1::const_iterator>, std::ptrdiff_t>);
 static_assert(std::is_same_v<typename std::iterator_traits<ES_1::const_iterator>::pointer,
-                             fixed_containers::PairView<const TestEnum1, const int> const*>);
+                             std::pair<const TestEnum1&, const int&> const*>);
 static_assert(std::is_same_v<typename std::iterator_traits<ES_1::const_iterator>::iterator_category,
                              std::bidirectional_iterator_tag>);
 
@@ -378,26 +380,26 @@ TEST(EnumMap, InsertMultipleTimes)
         {
             auto [it, was_inserted] = s.insert({TestEnum1::TWO, 20});
             assert_or_abort(was_inserted);
-            assert_or_abort(TestEnum1::TWO == it->first());
-            assert_or_abort(20 == it->second());
+            assert_or_abort(TestEnum1::TWO == it->first);
+            assert_or_abort(20 == it->second);
         }
         {
             auto [it, was_inserted] = s.insert({TestEnum1::FOUR, 40});
             assert_or_abort(was_inserted);
-            assert_or_abort(TestEnum1::FOUR == it->first());
-            assert_or_abort(40 == it->second());
+            assert_or_abort(TestEnum1::FOUR == it->first);
+            assert_or_abort(40 == it->second);
         }
         {
             auto [it, was_inserted] = s.insert({TestEnum1::TWO, 99999});
             assert_or_abort(!was_inserted);
-            assert_or_abort(TestEnum1::TWO == it->first());
-            assert_or_abort(20 == it->second());
+            assert_or_abort(TestEnum1::TWO == it->first);
+            assert_or_abort(20 == it->second);
         }
         {
             auto [it, was_inserted] = s.insert({TestEnum1::FOUR, 88888});
             assert_or_abort(!was_inserted);
-            assert_or_abort(TestEnum1::FOUR == it->first());
-            assert_or_abort(40 == it->second());
+            assert_or_abort(TestEnum1::FOUR == it->first);
+            assert_or_abort(40 == it->second);
         }
         return s;
     }();
@@ -451,28 +453,28 @@ TEST(EnumMap, InsertOrAssign)
         {
             auto [it, was_inserted] = s.insert_or_assign(TestEnum1::TWO, 20);
             assert_or_abort(was_inserted);
-            assert_or_abort(TestEnum1::TWO == it->first());
-            assert_or_abort(20 == it->second());
+            assert_or_abort(TestEnum1::TWO == it->first);
+            assert_or_abort(20 == it->second);
         }
         {
             const TestEnum1 key = TestEnum1::FOUR;
             auto [it, was_inserted] = s.insert_or_assign(key, 40);
             assert_or_abort(was_inserted);
-            assert_or_abort(TestEnum1::FOUR == it->first());
-            assert_or_abort(40 == it->second());
+            assert_or_abort(TestEnum1::FOUR == it->first);
+            assert_or_abort(40 == it->second);
         }
         {
             auto [it, was_inserted] = s.insert_or_assign(TestEnum1::TWO, 99999);
             assert_or_abort(!was_inserted);
-            assert_or_abort(TestEnum1::TWO == it->first());
-            assert_or_abort(99999 == it->second());
+            assert_or_abort(TestEnum1::TWO == it->first);
+            assert_or_abort(99999 == it->second);
         }
         {
             const TestEnum1 key = TestEnum1::FOUR;
             auto [it, was_inserted] = s.insert_or_assign(key, 88888);
             assert_or_abort(!was_inserted);
-            assert_or_abort(TestEnum1::FOUR == it->first());
-            assert_or_abort(88888 == it->second());
+            assert_or_abort(TestEnum1::FOUR == it->first);
+            assert_or_abort(88888 == it->second);
         }
         return s;
     }();
@@ -513,8 +515,8 @@ TEST(EnumMap, TryEmplace)
             ASSERT_TRUE(!s1.contains(TestEnum1::FOUR));
             ASSERT_EQ(20, s1.at(TestEnum1::TWO));
             ASSERT_TRUE(was_inserted);
-            ASSERT_EQ(TestEnum1::TWO, it->first());
-            ASSERT_EQ(20, it->second());
+            ASSERT_EQ(TestEnum1::TWO, it->first);
+            ASSERT_EQ(20, it->second);
         }
 
         {
@@ -527,8 +529,8 @@ TEST(EnumMap, TryEmplace)
             ASSERT_TRUE(!s1.contains(TestEnum1::FOUR));
             ASSERT_EQ(20, s1.at(TestEnum1::TWO));
             ASSERT_FALSE(was_inserted);
-            ASSERT_EQ(TestEnum1::TWO, it->first());
-            ASSERT_EQ(20, it->second());
+            ASSERT_EQ(TestEnum1::TWO, it->first);
+            ASSERT_EQ(20, it->second);
         }
 
         {
@@ -591,8 +593,8 @@ TEST(EnumMap, Emplace)
             ASSERT_TRUE(!s1.contains(TestEnum1::FOUR));
             ASSERT_EQ(20, s1.at(TestEnum1::TWO));
             ASSERT_TRUE(was_inserted);
-            ASSERT_EQ(TestEnum1::TWO, it->first());
-            ASSERT_EQ(20, it->second());
+            ASSERT_EQ(TestEnum1::TWO, it->first);
+            ASSERT_EQ(20, it->second);
         }
 
         {
@@ -604,8 +606,8 @@ TEST(EnumMap, Emplace)
             ASSERT_TRUE(!s1.contains(TestEnum1::FOUR));
             ASSERT_EQ(20, s1.at(TestEnum1::TWO));
             ASSERT_FALSE(was_inserted);
-            ASSERT_EQ(TestEnum1::TWO, it->first());
-            ASSERT_EQ(20, it->second());
+            ASSERT_EQ(TestEnum1::TWO, it->first);
+            ASSERT_EQ(20, it->second);
         }
 
         {
@@ -617,8 +619,8 @@ TEST(EnumMap, Emplace)
             ASSERT_TRUE(!s1.contains(TestEnum1::FOUR));
             ASSERT_EQ(20, s1.at(TestEnum1::TWO));
             ASSERT_FALSE(was_inserted);
-            ASSERT_EQ(TestEnum1::TWO, it->first());
-            ASSERT_EQ(20, it->second());
+            ASSERT_EQ(TestEnum1::TWO, it->first);
+            ASSERT_EQ(20, it->second);
         }
     }
 }
@@ -663,15 +665,15 @@ TEST(EnumMap, EraseIterator)
         {
             auto it = s.begin();
             auto next = s.erase(it);
-            assert_or_abort(next->first() == TestEnum1::THREE);
-            assert_or_abort(next->second() == 30);
+            assert_or_abort(next->first == TestEnum1::THREE);
+            assert_or_abort(next->second == 30);
         }
 
         {
             auto it = s.cbegin();
             auto next = s.erase(it);
-            assert_or_abort(next->first() == TestEnum1::FOUR);
-            assert_or_abort(next->second() == 40);
+            assert_or_abort(next->first == TestEnum1::FOUR);
+            assert_or_abort(next->second == 40);
         }
         return s;
     }();
@@ -705,8 +707,8 @@ TEST(EnumMap, EraseRange)
             auto to = s.begin();
             std::advance(to, 2);
             auto next = s.erase(from, to);
-            assert_or_abort(next->first() == TestEnum1::FOUR);
-            assert_or_abort(next->second() == 40);
+            assert_or_abort(next->first == TestEnum1::FOUR);
+            assert_or_abort(next->second == 40);
             return s;
         }();
 
@@ -723,8 +725,8 @@ TEST(EnumMap, EraseRange)
             auto from = s.begin();
             auto to = s.begin();
             auto next = s.erase(from, to);
-            assert_or_abort(next->first() == TestEnum1::TWO);
-            assert_or_abort(next->second() == 20);
+            assert_or_abort(next->first == TestEnum1::TWO);
+            assert_or_abort(next->second == 20);
             return s;
         }();
 
@@ -804,23 +806,23 @@ TEST(EnumMap, IteratorBasic)
 
     static_assert(std::distance(s1.cbegin(), s1.cend()) == 4);
 
-    static_assert(s1.begin()->first() == TestEnum1::ONE);
-    static_assert(s1.begin()->second() == 10);
-    static_assert(std::next(s1.begin(), 1)->first() == TestEnum1::TWO);
-    static_assert(std::next(s1.begin(), 1)->second() == 20);
-    static_assert(std::next(s1.begin(), 2)->first() == TestEnum1::THREE);
-    static_assert(std::next(s1.begin(), 2)->second() == 30);
-    static_assert(std::next(s1.begin(), 3)->first() == TestEnum1::FOUR);
-    static_assert(std::next(s1.begin(), 3)->second() == 40);
+    static_assert(s1.begin()->first == TestEnum1::ONE);
+    static_assert(s1.begin()->second == 10);
+    static_assert(std::next(s1.begin(), 1)->first == TestEnum1::TWO);
+    static_assert(std::next(s1.begin(), 1)->second == 20);
+    static_assert(std::next(s1.begin(), 2)->first == TestEnum1::THREE);
+    static_assert(std::next(s1.begin(), 2)->second == 30);
+    static_assert(std::next(s1.begin(), 3)->first == TestEnum1::FOUR);
+    static_assert(std::next(s1.begin(), 3)->second == 40);
 
-    static_assert(std::prev(s1.end(), 1)->first() == TestEnum1::FOUR);
-    static_assert(std::prev(s1.end(), 1)->second() == 40);
-    static_assert(std::prev(s1.end(), 2)->first() == TestEnum1::THREE);
-    static_assert(std::prev(s1.end(), 2)->second() == 30);
-    static_assert(std::prev(s1.end(), 3)->first() == TestEnum1::TWO);
-    static_assert(std::prev(s1.end(), 3)->second() == 20);
-    static_assert(std::prev(s1.end(), 4)->first() == TestEnum1::ONE);
-    static_assert(std::prev(s1.end(), 4)->second() == 10);
+    static_assert(std::prev(s1.end(), 1)->first == TestEnum1::FOUR);
+    static_assert(std::prev(s1.end(), 1)->second == 40);
+    static_assert(std::prev(s1.end(), 2)->first == TestEnum1::THREE);
+    static_assert(std::prev(s1.end(), 2)->second == 30);
+    static_assert(std::prev(s1.end(), 3)->first == TestEnum1::TWO);
+    static_assert(std::prev(s1.end(), 3)->second == 20);
+    static_assert(std::prev(s1.end(), 4)->first == TestEnum1::ONE);
+    static_assert(std::prev(s1.end(), 4)->second == 10);
 }
 
 TEST(EnumMap, IteratorTypes)
@@ -832,26 +834,28 @@ TEST(EnumMap, IteratorTypes)
         for (const auto& key_and_value : s)
         {
             static_assert(
-                std::is_same_v<decltype(key_and_value), const PairView<const TestEnum1, int>&>);
-            // key_and_value.second() = 5;  // Not allowed
+                std::is_same_v<decltype(key_and_value), const std::pair<const TestEnum1&, int&>&>);
+            // key_and_value.second = 5;  // Allowed, but ideally should not.
         }
 
         for (auto& key_and_value : s)
         {
-            static_assert(std::is_same_v<decltype(key_and_value), PairView<const TestEnum1, int>&>);
-            key_and_value.second() = 5;  // Allowed
+            static_assert(
+                std::is_same_v<decltype(key_and_value), std::pair<const TestEnum1&, int&>&>);
+            key_and_value.second = 5;  // Allowed
         }
 
         for (auto&& key_and_value : s)
         {
-            static_assert(std::is_same_v<decltype(key_and_value), PairView<const TestEnum1, int>&>);
-            key_and_value.second() = 5;  // Allowed
+            static_assert(
+                std::is_same_v<decltype(key_and_value), std::pair<const TestEnum1&, int&>&>);
+            key_and_value.second = 5;  // Allowed
         }
 
         for (const auto& [key, value] : s)
         {
             static_assert(std::is_same_v<decltype(key), const TestEnum1&>);
-            static_assert(std::is_same_v<decltype(value), const int&>);
+            static_assert(std::is_same_v<decltype(value), int&>);  // Non-ideal, should be const
         }
 
         for (auto& [key, value] : s)
@@ -869,16 +873,22 @@ TEST(EnumMap, IteratorTypes)
         return s;
     }();
 
+    const auto lvalue_it = s1.begin();
     static_assert(
-        std::is_same_v<decltype(*s1.begin()), const PairView<const TestEnum1, const int>&>);
+        std::is_same_v<decltype(*lvalue_it), const std::pair<const TestEnum1&, const int&>&>);
+    static_assert(std::is_same_v<decltype(*s1.begin()), std::pair<const TestEnum1&, const int&>>);
 
     EnumMap<TestEnum1, int> s_non_const{};
-    static_assert(std::is_same_v<decltype(*s_non_const.begin()), PairView<const TestEnum1, int>&>);
+    auto lvalue_it_of_non_const = s_non_const.begin();
+    static_assert(
+        std::is_same_v<decltype(*lvalue_it_of_non_const), std::pair<const TestEnum1&, int&>&>);
+    static_assert(
+        std::is_same_v<decltype(*s_non_const.begin()), std::pair<const TestEnum1&, int&>>);
 
     for (const auto& key_and_value : s1)
     {
-        static_assert(
-            std::is_same_v<decltype(key_and_value), const PairView<const TestEnum1, const int>&>);
+        static_assert(std::is_same_v<decltype(key_and_value),
+                                     const std::pair<const TestEnum1&, const int&>&>);
     }
 
     for (auto&& [key, value] : s1)
@@ -947,15 +957,15 @@ TEST(EnumMap, IteratorMutableValue)
 
     static_assert(std::distance(s1.cbegin(), s1.cend()) == 2);
 
-    static_assert(s1.begin()->first() == TestEnum1::TWO);
-    static_assert(s1.begin()->second() == 40);
-    static_assert(std::next(s1.begin(), 1)->first() == TestEnum1::FOUR);
-    static_assert(std::next(s1.begin(), 1)->second() == 80);
+    static_assert(s1.begin()->first == TestEnum1::TWO);
+    static_assert(s1.begin()->second == 40);
+    static_assert(std::next(s1.begin(), 1)->first == TestEnum1::FOUR);
+    static_assert(std::next(s1.begin(), 1)->second == 80);
 
-    static_assert(std::prev(s1.end(), 1)->first() == TestEnum1::FOUR);
-    static_assert(std::prev(s1.end(), 1)->second() == 80);
-    static_assert(std::prev(s1.end(), 2)->first() == TestEnum1::TWO);
-    static_assert(std::prev(s1.end(), 2)->second() == 40);
+    static_assert(std::prev(s1.end(), 1)->first == TestEnum1::FOUR);
+    static_assert(std::prev(s1.end(), 1)->second == 80);
+    static_assert(std::prev(s1.end(), 2)->first == TestEnum1::TWO);
+    static_assert(std::prev(s1.end(), 2)->second == 40);
 }
 
 TEST(EnumMap, IteratorComparisonOperator)
@@ -1034,15 +1044,15 @@ TEST(EnumMap, Iterator_OffByOneIssues)
 
     static_assert(std::distance(s1.cbegin(), s1.cend()) == 2);
 
-    static_assert(s1.begin()->first() == TestEnum1::ONE);
-    static_assert(s1.begin()->second() == 10);
-    static_assert(std::next(s1.begin(), 1)->first() == TestEnum1::FOUR);
-    static_assert(std::next(s1.begin(), 1)->second() == 40);
+    static_assert(s1.begin()->first == TestEnum1::ONE);
+    static_assert(s1.begin()->second == 10);
+    static_assert(std::next(s1.begin(), 1)->first == TestEnum1::FOUR);
+    static_assert(std::next(s1.begin(), 1)->second == 40);
 
-    static_assert(std::prev(s1.end(), 1)->first() == TestEnum1::FOUR);
-    static_assert(std::prev(s1.end(), 1)->second() == 40);
-    static_assert(std::prev(s1.end(), 2)->first() == TestEnum1::ONE);
-    static_assert(std::prev(s1.end(), 2)->second() == 10);
+    static_assert(std::prev(s1.end(), 1)->first == TestEnum1::FOUR);
+    static_assert(std::prev(s1.end(), 1)->second == 40);
+    static_assert(std::prev(s1.end(), 2)->first == TestEnum1::ONE);
+    static_assert(std::prev(s1.end(), 2)->second == 10);
 }
 
 TEST(EnumMap, Iterator_EnsureOrder)
@@ -1058,19 +1068,19 @@ TEST(EnumMap, Iterator_EnsureOrder)
 
     static_assert(std::distance(s1.cbegin(), s1.cend()) == 3);
 
-    static_assert(s1.begin()->first() == TestEnum1::ONE);
-    static_assert(s1.begin()->second() == 10);
-    static_assert(std::next(s1.begin(), 1)->first() == TestEnum1::THREE);
-    static_assert(std::next(s1.begin(), 1)->second() == 30);
-    static_assert(std::next(s1.begin(), 2)->first() == TestEnum1::FOUR);
-    static_assert(std::next(s1.begin(), 2)->second() == 40);
+    static_assert(s1.begin()->first == TestEnum1::ONE);
+    static_assert(s1.begin()->second == 10);
+    static_assert(std::next(s1.begin(), 1)->first == TestEnum1::THREE);
+    static_assert(std::next(s1.begin(), 1)->second == 30);
+    static_assert(std::next(s1.begin(), 2)->first == TestEnum1::FOUR);
+    static_assert(std::next(s1.begin(), 2)->second == 40);
 
-    static_assert(std::prev(s1.end(), 1)->first() == TestEnum1::FOUR);
-    static_assert(std::prev(s1.end(), 1)->second() == 40);
-    static_assert(std::prev(s1.end(), 2)->first() == TestEnum1::THREE);
-    static_assert(std::prev(s1.end(), 2)->second() == 30);
-    static_assert(std::prev(s1.end(), 3)->first() == TestEnum1::ONE);
-    static_assert(std::prev(s1.end(), 3)->second() == 10);
+    static_assert(std::prev(s1.end(), 1)->first == TestEnum1::FOUR);
+    static_assert(std::prev(s1.end(), 1)->second == 40);
+    static_assert(std::prev(s1.end(), 2)->first == TestEnum1::THREE);
+    static_assert(std::prev(s1.end(), 2)->second == 30);
+    static_assert(std::prev(s1.end(), 3)->first == TestEnum1::ONE);
+    static_assert(std::prev(s1.end(), 3)->second == 10);
 }
 
 TEST(EnumMap, DereferencedIteratorAssignability)
@@ -1092,7 +1102,7 @@ TEST(EnumMap, Iterator_AccessingDefaultConstructedIteratorFails)
 {
     auto it = EnumMap<TestEnum1, int>::iterator{};
 
-    EXPECT_DEATH(it->second()++, "");
+    EXPECT_DEATH(it->second++, "");
 }
 
 TEST(EnumMap, ReverseIteratorBasic)
@@ -1102,23 +1112,23 @@ TEST(EnumMap, ReverseIteratorBasic)
 
     static_assert(std::distance(s1.crbegin(), s1.crend()) == 4);
 
-    static_assert(s1.rbegin()->first() == TestEnum1::FOUR);
-    static_assert(s1.rbegin()->second() == 40);
-    static_assert(std::next(s1.rbegin(), 1)->first() == TestEnum1::THREE);
-    static_assert(std::next(s1.rbegin(), 1)->second() == 30);
-    static_assert(std::next(s1.crbegin(), 2)->first() == TestEnum1::TWO);
-    static_assert(std::next(s1.crbegin(), 2)->second() == 20);
-    static_assert(std::next(s1.rbegin(), 3)->first() == TestEnum1::ONE);
-    static_assert(std::next(s1.rbegin(), 3)->second() == 10);
+    static_assert(s1.rbegin()->first == TestEnum1::FOUR);
+    static_assert(s1.rbegin()->second == 40);
+    static_assert(std::next(s1.rbegin(), 1)->first == TestEnum1::THREE);
+    static_assert(std::next(s1.rbegin(), 1)->second == 30);
+    static_assert(std::next(s1.crbegin(), 2)->first == TestEnum1::TWO);
+    static_assert(std::next(s1.crbegin(), 2)->second == 20);
+    static_assert(std::next(s1.rbegin(), 3)->first == TestEnum1::ONE);
+    static_assert(std::next(s1.rbegin(), 3)->second == 10);
 
-    static_assert(std::prev(s1.rend(), 1)->first() == TestEnum1::ONE);
-    static_assert(std::prev(s1.rend(), 1)->second() == 10);
-    static_assert(std::prev(s1.crend(), 2)->first() == TestEnum1::TWO);
-    static_assert(std::prev(s1.crend(), 2)->second() == 20);
-    static_assert(std::prev(s1.rend(), 3)->first() == TestEnum1::THREE);
-    static_assert(std::prev(s1.rend(), 3)->second() == 30);
-    static_assert(std::prev(s1.rend(), 4)->first() == TestEnum1::FOUR);
-    static_assert(std::prev(s1.rend(), 4)->second() == 40);
+    static_assert(std::prev(s1.rend(), 1)->first == TestEnum1::ONE);
+    static_assert(std::prev(s1.rend(), 1)->second == 10);
+    static_assert(std::prev(s1.crend(), 2)->first == TestEnum1::TWO);
+    static_assert(std::prev(s1.crend(), 2)->second == 20);
+    static_assert(std::prev(s1.rend(), 3)->first == TestEnum1::THREE);
+    static_assert(std::prev(s1.rend(), 3)->second == 30);
+    static_assert(std::prev(s1.rend(), 4)->first == TestEnum1::FOUR);
+    static_assert(std::prev(s1.rend(), 4)->second == 40);
 }
 
 TEST(EnumMap, ReverseIteratorBase)
@@ -1159,9 +1169,9 @@ TEST(EnumMap, MutableFind)
     {
         EnumMap<TestEnum1, int> s{{TestEnum1::TWO, 20}, {TestEnum1::FOUR, 40}};
         auto it = s.find(TestEnum1::TWO);
-        it->second() = 25;
+        it->second = 25;
         it++;
-        it->second() = 45;
+        it->second = 45;
         return s;
     }();
 
@@ -1257,10 +1267,10 @@ TEST(EnumMap, Equality)
 TEST(EnumMap, Ranges)
 {
     EnumMap<TestRichEnum1, int> s1{{TestRichEnum1::C_ONE(), 10}, {TestRichEnum1::C_FOUR(), 40}};
-    auto f = s1 | ranges::views::filter([](const auto& v) -> bool { return v.second() == 10; });
+    auto f = s1 | ranges::views::filter([](const auto& v) -> bool { return v.second == 10; });
 
     EXPECT_EQ(1, ranges::distance(f));
-    int first_entry = f.begin()->second();
+    int first_entry = f.begin()->second;
     EXPECT_EQ(10, first_entry);
 }
 
