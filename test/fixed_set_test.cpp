@@ -533,6 +533,23 @@ TEST(FixedSet, ReverseIteratorBasic)
     static_assert(*std::prev(s1.rend(), 4) == 4);
 }
 
+TEST(FixedSet, ReverseIteratorBase)
+{
+    constexpr auto s1 = []()
+    {
+        FixedSet<int, 7> s{1, 2, 3};
+        auto it = s.rbegin();  // points to 3
+        std::advance(it, 1);   // points to 2
+        // https://stackoverflow.com/questions/1830158/how-to-call-erase-with-a-reverse-iterator
+        s.erase(std::next(it).base());
+        return s;
+    }();
+
+    static_assert(s1.size() == 2);
+    static_assert(s1.contains(1));
+    static_assert(s1.contains(3));
+}
+
 TEST(FixedSet, Equality)
 {
     constexpr FixedSet<int, 10> s1{{1, 4}};

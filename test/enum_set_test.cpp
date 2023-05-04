@@ -543,6 +543,23 @@ TEST(EnumSet, ReverseIteratorBasic)
     static_assert(*std::prev(s1.rend(), 4) == TestEnum1::FOUR);
 }
 
+TEST(EnumSet, ReverseIteratorBase)
+{
+    constexpr auto s1 = []()
+    {
+        EnumSet<TestEnum1> s{TestEnum1::ONE, TestEnum1::TWO, TestEnum1::THREE};
+        auto it = s.rbegin();  // points to 3
+        std::advance(it, 1);   // points to 2
+        // https://stackoverflow.com/questions/1830158/how-to-call-erase-with-a-reverse-iterator
+        s.erase(std::next(it).base());
+        return s;
+    }();
+
+    static_assert(s1.size() == 2);
+    static_assert(s1.contains(TestEnum1::ONE));
+    static_assert(s1.contains(TestEnum1::THREE));
+}
+
 TEST(EnumSet, RichEnum)
 {
     constexpr auto s1 = []()

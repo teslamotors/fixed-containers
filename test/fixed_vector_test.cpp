@@ -1081,6 +1081,21 @@ TEST(FixedVector, ReverseIterators)
     }
 }
 
+TEST(FixedVector, ReverseIteratorBase)
+{
+    constexpr auto v1 = []()
+    {
+        FixedVector<int, 7> v{1, 2, 3};
+        auto it = v.rbegin();  // points to 3
+        std::advance(it, 1);   // points to 2
+        // https://stackoverflow.com/questions/1830158/how-to-call-erase-with-a-reverse-iterator
+        v.erase(std::next(it).base());
+        return v;
+    }();
+
+    static_assert(are_equal(v1, std::array<int, 2>{1, 3}));
+}
+
 TEST(FixedVector, IterationBasic)
 {
     FixedVector<int, 13> v_expected{};

@@ -54,6 +54,12 @@ class IndexRangePredicateIterator
                                              NEGATED_CONSTNESS,
                                              DIRECTION>;
 
+    using ReverseBase = IndexRangePredicateIterator<IndexPredicate,
+                                                    ConstReferenceProvider,
+                                                    MutableReferenceProvider,
+                                                    CONSTNESS,
+                                                    IteratorDirection(!bool(DIRECTION))>;
+
     using ReferenceProvider = std::conditional_t<CONSTNESS == IteratorConstness::CONSTANT_ITERATOR,
                                                  ConstReferenceProvider,
                                                  MutableReferenceProvider>;
@@ -163,6 +169,14 @@ public:
     constexpr bool operator==(const Sibling& other) const noexcept
     {
         return current_index_ == other.current_index_ && end_index_ == other.end_index_;
+    }
+
+    constexpr ReverseBase base() const noexcept
+        requires(DIRECTION == IteratorDirection::REVERSE)
+    {
+        ReverseBase out{predicate_, reference_provider_, current_index_, end_index_};
+        ++out;
+        return out;
     }
 
 private:

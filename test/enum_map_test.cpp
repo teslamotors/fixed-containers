@@ -1075,6 +1075,24 @@ TEST(EnumMap, ReverseIteratorBasic)
     static_assert(std::prev(s1.rend(), 4)->second() == 40);
 }
 
+TEST(EnumMap, ReverseIteratorBase)
+{
+    constexpr auto s1 = []()
+    {
+        EnumMap<TestEnum1, int> s{
+            {TestEnum1::ONE, 10}, {TestEnum1::TWO, 20}, {TestEnum1::THREE, 30}};
+        auto it = s.rbegin();  // points to 3
+        std::advance(it, 1);   // points to 2
+        // https://stackoverflow.com/questions/1830158/how-to-call-erase-with-a-reverse-iterator
+        s.erase(std::next(it).base());
+        return s;
+    }();
+
+    static_assert(s1.size() == 2);
+    static_assert(s1.at(TestEnum1::ONE) == 10);
+    static_assert(s1.at(TestEnum1::THREE) == 30);
+}
+
 TEST(EnumMap, Find)
 {
     constexpr EnumMap<TestEnum1, int> s1{{TestEnum1::TWO, 20}, {TestEnum1::FOUR, 40}};

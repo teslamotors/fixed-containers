@@ -9,8 +9,7 @@
 namespace fixed_containers
 {
 template <class P>
-concept NextAndPreviousProvider = requires(P p, P other)
-{
+concept NextAndPreviousProvider = requires(P p, P other) {
     p.advance();
     p.get();
     p.recede();
@@ -36,6 +35,11 @@ class BidirectionalIterator
                                        MutableReferenceProvider,
                                        NEGATED_CONSTNESS,
                                        DIRECTION>;
+
+    using ReverseBase = BidirectionalIterator<ConstReferenceProvider,
+                                              MutableReferenceProvider,
+                                              CONSTNESS,
+                                              IteratorDirection(!bool(DIRECTION))>;
 
     using ReferenceProvider = std::conditional_t<CONSTNESS == IteratorConstness::CONSTANT_ITERATOR,
                                                  ConstReferenceProvider,
@@ -112,6 +116,14 @@ public:
     constexpr bool operator==(const Sibling& other) const noexcept
     {
         return reference_provider_ == other.reference_provider_;
+    }
+
+    constexpr ReverseBase base() const noexcept
+        requires(DIRECTION == IteratorDirection::REVERSE)
+    {
+        ReverseBase out{reference_provider_};
+        ++out;
+        return out;
     }
 
 private:

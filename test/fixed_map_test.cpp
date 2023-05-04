@@ -1015,6 +1015,23 @@ TEST(FixedMap, ReverseIteratorBasic)
     static_assert(consteval_compare::equal<40, std::prev(s1.rend(), 4)->second()>);
 }
 
+TEST(FixedMap, ReverseIteratorBase)
+{
+    constexpr auto s1 = []()
+    {
+        FixedMap<int, int, 7> s{{1, 10}, {2, 20}, {3, 30}};
+        auto it = s.rbegin();  // points to 3
+        std::advance(it, 1);   // points to 2
+        // https://stackoverflow.com/questions/1830158/how-to-call-erase-with-a-reverse-iterator
+        s.erase(std::next(it).base());
+        return s;
+    }();
+
+    static_assert(s1.size() == 2);
+    static_assert(s1.at(1) == 10);
+    static_assert(s1.at(3) == 30);
+}
+
 TEST(FixedMap, Find)
 {
     constexpr FixedMap<int, int, 10> s1{{2, 20}, {4, 40}};
