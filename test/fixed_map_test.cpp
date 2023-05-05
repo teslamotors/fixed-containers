@@ -990,6 +990,13 @@ TEST(FixedMap, DereferencedIteratorAssignability)
     }
 }
 
+TEST(FixedMap, Iterator_AccessingDefaultConstructedIteratorFails)
+{
+    auto it = FixedMap<int, int, 10>::iterator{};
+
+    EXPECT_DEATH(it->second()++, "");
+}
+
 TEST(FixedMap, ReverseIteratorBasic)
 {
     constexpr FixedMap<int, int, 10> s1{{1, 10}, {2, 20}, {3, 30}, {4, 40}};
