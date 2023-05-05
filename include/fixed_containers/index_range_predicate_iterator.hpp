@@ -88,32 +88,24 @@ public:
                                           const ReferenceProvider& reference_provider,
                                           const std::size_t start_index,
                                           const std::size_t end_index) noexcept
-        requires(DIRECTION == IteratorDirection::FORWARD)
       : predicate_(predicate)
       , reference_provider_(reference_provider)
       , current_index_(start_index)
       , end_index_(end_index)
     {
         assert(start_index <= end_index);
-        if (start_index < end_index && !predicate(current_index_))
+
+        if constexpr (DIRECTION == IteratorDirection::FORWARD)
+        {
+            if (start_index < end_index && !predicate(current_index_))
+            {
+                advance();
+            }
+        }
+        else
         {
             advance();
         }
-
-        update_reference();
-    }
-    constexpr IndexRangePredicateIterator(const IndexPredicate& predicate,
-                                          const ReferenceProvider& reference_provider,
-                                          const std::size_t start_index,
-                                          const std::size_t end_index) noexcept
-        requires(DIRECTION == IteratorDirection::REVERSE)
-      : predicate_(predicate)
-      , reference_provider_(reference_provider)
-      , current_index_(start_index)
-      , end_index_(end_index)
-    {
-        assert(start_index <= end_index);
-        advance();
 
         update_reference();
     }
