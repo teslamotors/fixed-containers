@@ -1049,6 +1049,13 @@ TEST(EnumMap, DereferencedIteratorAssignability)
     }
 }
 
+TEST(EnumMap, Iterator_AccessingDefaultConstructedIteratorFails)
+{
+    auto it = EnumMap<TestEnum1, int>::iterator{};
+
+    EXPECT_DEATH(it->second()++, "");
+}
+
 TEST(EnumMap, ReverseIteratorBasic)
 {
     constexpr EnumMap<TestEnum1, int> s1{
