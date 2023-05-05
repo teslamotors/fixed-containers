@@ -165,8 +165,10 @@ private:
         constexpr PairProvider& operator=(const PairProvider&) = default;
         constexpr PairProvider& operator=(PairProvider&&) noexcept = default;
 
-        constexpr PairProvider(const PairProvider<false>& m) noexcept
-            requires IS_CONST
+        // https://github.com/llvm/llvm-project/issues/62555
+        template <bool IS_CONST_2>
+        constexpr PairProvider(const PairProvider<IS_CONST_2>& m) noexcept
+            requires(IS_CONST and !IS_CONST_2)
           : PairProvider{m.values_}
         {
         }
