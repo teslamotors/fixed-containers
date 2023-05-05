@@ -1,5 +1,6 @@
 #pragma once
 
+#include "fixed_containers/arrow_proxy.hpp"
 #include "fixed_containers/iterator_utils.hpp"
 
 #include <cassert>
@@ -67,7 +68,7 @@ class IndexRangePredicateIterator
 public:
     using reference = decltype(std::declval<ReferenceProvider>().get());
     using value_type = std::remove_cvref_t<reference>;
-    using pointer = std::add_pointer_t<reference>;
+    using pointer = ArrowProxy<reference>;
     using iterator = Self;
     using iterator_category = std::bidirectional_iterator_tag;
     using difference_type = std::ptrdiff_t;
@@ -121,7 +122,7 @@ public:
 
     constexpr reference operator*() const noexcept { return reference_provider_.get(); }
 
-    constexpr pointer operator->() const noexcept { return &reference_provider_.get(); }
+    constexpr pointer operator->() const noexcept { return {reference_provider_.get()}; }
 
     constexpr Self& operator++() noexcept
     {

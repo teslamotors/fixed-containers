@@ -53,16 +53,16 @@ static_assert(std::is_trivially_copyable_v<ES_2::const_reverse_iterator>);
 static_assert(std::is_same_v<std::iter_value_t<ES_1::iterator>, TestEnum1>);
 static_assert(std::is_same_v<std::iter_reference_t<ES_1::iterator>, const TestEnum1&>);
 static_assert(std::is_same_v<std::iter_difference_t<ES_1::iterator>, std::ptrdiff_t>);
-static_assert(
-    std::is_same_v<typename std::iterator_traits<ES_1::iterator>::pointer, const TestEnum1*>);
+static_assert(std::is_same_v<typename std::iterator_traits<ES_1::iterator>::pointer,
+                             ArrowProxy<const fixed_containers::rich_enums::TestEnum1&>>);
 static_assert(std::is_same_v<typename std::iterator_traits<ES_1::iterator>::iterator_category,
                              std::bidirectional_iterator_tag>);
 
 static_assert(std::is_same_v<std::iter_value_t<ES_1::const_iterator>, TestEnum1>);
 static_assert(std::is_same_v<std::iter_reference_t<ES_1::const_iterator>, const TestEnum1&>);
 static_assert(std::is_same_v<std::iter_difference_t<ES_1::const_iterator>, std::ptrdiff_t>);
-static_assert(
-    std::is_same_v<typename std::iterator_traits<ES_1::const_iterator>::pointer, const TestEnum1*>);
+static_assert(std::is_same_v<typename std::iterator_traits<ES_1::const_iterator>::pointer,
+                             ArrowProxy<const fixed_containers::rich_enums::TestEnum1&>>);
 static_assert(std::is_same_v<typename std::iterator_traits<ES_1::const_iterator>::iterator_category,
                              std::bidirectional_iterator_tag>);
 }  // namespace
