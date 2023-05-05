@@ -807,28 +807,43 @@ TEST(FixedMap, IteratorTypes)
     }
 
     {
-        std::map<int, int> std_map{};
-        for (auto&& [key, v] : std_map)
+        std::map<int, int> s{};
+
+        for (const auto& key_and_value : s)
         {
-            static_assert(std::is_same_v<decltype(key), const int>);
-            static_assert(std::is_same_v<decltype(v), int>);
-        }
-        for (const auto& [key, v] : std_map)
-        {
-            static_assert(std::is_same_v<decltype(key), const int>);
-            static_assert(std::is_same_v<decltype(v), const int>);
+            static_assert(
+                std::is_same_v<decltype(key_and_value), const std::pair<const int, int>&>);
+            // key_and_value.second = 5;  // Not allowed
         }
 
-        FixedMap<int, int, 10> this_map{};
-        for (auto&& [key, v] : this_map)
+        for (auto& key_and_value : s)
         {
-            static_assert(std::is_same_v<decltype(key), const int&>);
-            static_assert(std::is_same_v<decltype(v), int&>);
+            static_assert(std::is_same_v<decltype(key_and_value), std::pair<const int, int>&>);
+            key_and_value.second = 5;  // Allowed
         }
-        for (const auto& [key, v] : this_map)
+
+        for (auto&& key_and_value : s)
         {
-            static_assert(std::is_same_v<decltype(key), const int&>);
-            static_assert(std::is_same_v<decltype(v), const int&>);
+            static_assert(std::is_same_v<decltype(key_and_value), std::pair<const int, int>&>);
+            key_and_value.second = 5;  // Allowed
+        }
+
+        for (const auto& [key, value] : s)
+        {
+            static_assert(std::is_same_v<decltype(key), const int>);
+            static_assert(std::is_same_v<decltype(value), const int>);
+        }
+
+        for (auto& [key, value] : s)
+        {
+            static_assert(std::is_same_v<decltype(key), const int>);
+            static_assert(std::is_same_v<decltype(value), int>);
+        }
+
+        for (auto&& [key, value] : s)
+        {
+            static_assert(std::is_same_v<decltype(key), const int>);
+            static_assert(std::is_same_v<decltype(value), int>);
         }
     }
 }
