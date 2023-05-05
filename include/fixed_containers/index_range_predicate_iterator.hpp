@@ -66,8 +66,8 @@ class IndexRangePredicateIterator
 
 public:
     using reference = decltype(std::declval<ReferenceProvider>().get());
-    using value_type = std::remove_reference_t<reference>;
-    using pointer = std::add_pointer_t<value_type>;
+    using value_type = std::remove_cvref_t<reference>;
+    using pointer = std::add_pointer_t<reference>;
     using iterator = Self;
     using iterator_category = std::bidirectional_iterator_tag;
     using difference_type = std::ptrdiff_t;
