@@ -5,7 +5,6 @@
 #include "fixed_containers/erase_if.hpp"
 #include "fixed_containers/index_range_predicate_iterator.hpp"
 #include "fixed_containers/optional_storage.hpp"
-#include "fixed_containers/pair_view.hpp"
 #include "fixed_containers/preconditions.hpp"
 #include "fixed_containers/source_location.hpp"
 #include "fixed_containers/type_name.hpp"
@@ -121,8 +120,8 @@ public:
     using key_type = K;
     using mapped_type = V;
     using value_type = std::pair<const K, V>;
-    using reference = PairView<const K, V>;
-    using const_reference = PairView<const K, const V>;
+    using reference = std::pair<const K&, V&>;
+    using const_reference = std::pair<const K&, const V&>;
     using pointer = std::add_pointer_t<reference>;
     using const_pointer = std::add_pointer_t<const_reference>;
 
@@ -176,12 +175,12 @@ private:
         constexpr const_reference get() const noexcept
             requires IS_CONST
         {
-            return {&ENUM_VALUES[current_index_], &(*values_)[current_index_].get()};
+            return {ENUM_VALUES[current_index_], (*values_)[current_index_].get()};
         }
         constexpr reference get() const noexcept
             requires(not IS_CONST)
         {
-            return {&ENUM_VALUES[current_index_], &(*values_)[current_index_].get()};
+            return {ENUM_VALUES[current_index_], (*values_)[current_index_].get()};
         }
     };
 
@@ -446,7 +445,7 @@ public:
     constexpr iterator erase(const_iterator pos) noexcept
     {
         assert(pos != cend());
-        const std::size_t i = EnumAdapterType::ordinal(pos->first());
+        const std::size_t i = EnumAdapterType::ordinal(pos->first);
         assert(contains_at(i));
         reset_at(i);
         return create_iterator(i);
@@ -454,7 +453,7 @@ public:
     constexpr iterator erase(iterator pos) noexcept
     {
         assert(pos != end());
-        const std::size_t i = EnumAdapterType::ordinal(pos->first());
+        const std::size_t i = EnumAdapterType::ordinal(pos->first);
         assert(contains_at(i));
         reset_at(i);
         return create_iterator(i);
@@ -463,9 +462,8 @@ public:
     constexpr iterator erase(const_iterator first, const_iterator last) noexcept
     {
         const std::size_t from =
-            first == cend() ? ENUM_COUNT : EnumAdapterType::ordinal(first->first());
-        const std::size_t to =
-            last == cend() ? ENUM_COUNT : EnumAdapterType::ordinal(last->first());
+            first == cend() ? ENUM_COUNT : EnumAdapterType::ordinal(first->first);
+        const std::size_t to = last == cend() ? ENUM_COUNT : EnumAdapterType::ordinal(last->first);
         assert(from <= to);
 
         for (std::size_t i = from; i < to; i++)

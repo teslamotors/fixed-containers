@@ -37,21 +37,21 @@ static_assert(std::is_trivially_copyable_v<ES_1::iterator>);
 static_assert(std::is_trivially_copyable_v<ES_1::reverse_iterator>);
 static_assert(std::is_trivially_copyable_v<ES_1::const_reverse_iterator>);
 
-static_assert(std::is_same_v<std::iter_value_t<ES_1::iterator>, PairView<const int, int>>);
-static_assert(std::is_same_v<std::iter_reference_t<ES_1::iterator>, PairView<const int, int>>);
+static_assert(std::is_same_v<std::iter_value_t<ES_1::iterator>, std::pair<const int&, int&>>);
+static_assert(std::is_same_v<std::iter_reference_t<ES_1::iterator>, std::pair<const int&, int&>>);
 static_assert(std::is_same_v<std::iter_difference_t<ES_1::iterator>, std::ptrdiff_t>);
 static_assert(std::is_same_v<typename std::iterator_traits<ES_1::iterator>::pointer,
-                             ArrowProxy<PairView<const int, int>>>);
+                             ArrowProxy<std::pair<const int&, int&>>>);
 static_assert(std::is_same_v<typename std::iterator_traits<ES_1::iterator>::iterator_category,
                              std::bidirectional_iterator_tag>);
 
 static_assert(
-    std::is_same_v<std::iter_value_t<ES_1::const_iterator>, PairView<const int, const int>>);
+    std::is_same_v<std::iter_value_t<ES_1::const_iterator>, std::pair<const int&, const int&>>);
 static_assert(
-    std::is_same_v<std::iter_reference_t<ES_1::const_iterator>, PairView<const int, const int>>);
+    std::is_same_v<std::iter_reference_t<ES_1::const_iterator>, std::pair<const int&, const int&>>);
 static_assert(std::is_same_v<std::iter_difference_t<ES_1::const_iterator>, std::ptrdiff_t>);
 static_assert(std::is_same_v<typename std::iterator_traits<ES_1::const_iterator>::pointer,
-                             ArrowProxy<PairView<const int, const int>>>);
+                             ArrowProxy<std::pair<const int&, const int&>>>);
 static_assert(std::is_same_v<typename std::iterator_traits<ES_1::const_iterator>::iterator_category,
                              std::bidirectional_iterator_tag>);
 
@@ -256,26 +256,26 @@ TEST(FixedMap, InsertMultipleTimes)
         {
             auto [it, was_inserted] = s.insert({2, 20});
             assert_or_abort(was_inserted);
-            assert_or_abort(2 == it->first());
-            assert_or_abort(20 == it->second());
+            assert_or_abort(2 == it->first);
+            assert_or_abort(20 == it->second);
         }
         {
             auto [it, was_inserted] = s.insert({4, 40});
             assert_or_abort(was_inserted);
-            assert_or_abort(4 == it->first());
-            assert_or_abort(40 == it->second());
+            assert_or_abort(4 == it->first);
+            assert_or_abort(40 == it->second);
         }
         {
             auto [it, was_inserted] = s.insert({2, 99999});
             assert_or_abort(!was_inserted);
-            assert_or_abort(2 == it->first());
-            assert_or_abort(20 == it->second());
+            assert_or_abort(2 == it->first);
+            assert_or_abort(20 == it->second);
         }
         {
             auto [it, was_inserted] = s.insert({4, 88888});
             assert_or_abort(!was_inserted);
-            assert_or_abort(4 == it->first());
-            assert_or_abort(40 == it->second());
+            assert_or_abort(4 == it->first);
+            assert_or_abort(40 == it->second);
         }
         return s;
     }();
@@ -329,28 +329,28 @@ TEST(FixedMap, InsertOrAssign)
         {
             auto [it, was_inserted] = s.insert_or_assign(2, 20);
             assert_or_abort(was_inserted);
-            assert_or_abort(2 == it->first());
-            assert_or_abort(20 == it->second());
+            assert_or_abort(2 == it->first);
+            assert_or_abort(20 == it->second);
         }
         {
             const int key = 4;
             auto [it, was_inserted] = s.insert_or_assign(key, 40);
             assert_or_abort(was_inserted);
-            assert_or_abort(4 == it->first());
-            assert_or_abort(40 == it->second());
+            assert_or_abort(4 == it->first);
+            assert_or_abort(40 == it->second);
         }
         {
             auto [it, was_inserted] = s.insert_or_assign(2, 99999);
             assert_or_abort(!was_inserted);
-            assert_or_abort(2 == it->first());
-            assert_or_abort(99999 == it->second());
+            assert_or_abort(2 == it->first);
+            assert_or_abort(99999 == it->second);
         }
         {
             const int key = 4;
             auto [it, was_inserted] = s.insert_or_assign(key, 88888);
             assert_or_abort(!was_inserted);
-            assert_or_abort(4 == it->first());
-            assert_or_abort(88888 == it->second());
+            assert_or_abort(4 == it->first);
+            assert_or_abort(88888 == it->second);
         }
         return s;
     }();
@@ -412,8 +412,8 @@ TEST(FixedMap, TryEmplace)
             ASSERT_TRUE(!s1.contains(4));
             ASSERT_EQ(20, s1.at(2));
             ASSERT_TRUE(was_inserted);
-            ASSERT_EQ(2, it->first());
-            ASSERT_EQ(20, it->second());
+            ASSERT_EQ(2, it->first);
+            ASSERT_EQ(20, it->second);
         }
 
         {
@@ -426,8 +426,8 @@ TEST(FixedMap, TryEmplace)
             ASSERT_TRUE(!s1.contains(4));
             ASSERT_EQ(20, s1.at(2));
             ASSERT_FALSE(was_inserted);
-            ASSERT_EQ(2, it->first());
-            ASSERT_EQ(20, it->second());
+            ASSERT_EQ(2, it->first);
+            ASSERT_EQ(20, it->second);
         }
     }
 
@@ -504,8 +504,8 @@ TEST(FixedMap, Emplace)
             ASSERT_TRUE(!s1.contains(4));
             ASSERT_EQ(20, s1.at(2));
             ASSERT_TRUE(was_inserted);
-            ASSERT_EQ(2, it->first());
-            ASSERT_EQ(20, it->second());
+            ASSERT_EQ(2, it->first);
+            ASSERT_EQ(20, it->second);
         }
 
         {
@@ -517,8 +517,8 @@ TEST(FixedMap, Emplace)
             ASSERT_TRUE(!s1.contains(4));
             ASSERT_EQ(20, s1.at(2));
             ASSERT_FALSE(was_inserted);
-            ASSERT_EQ(2, it->first());
-            ASSERT_EQ(20, it->second());
+            ASSERT_EQ(2, it->first);
+            ASSERT_EQ(20, it->second);
         }
 
         {
@@ -588,15 +588,15 @@ TEST(FixedMap, EraseIterator)
         {
             auto it = s.begin();
             auto next = s.erase(it);
-            assert_or_abort(next->first() == 3);
-            assert_or_abort(next->second() == 30);
+            assert_or_abort(next->first == 3);
+            assert_or_abort(next->second == 30);
         }
 
         {
             auto it = s.cbegin();
             auto next = s.erase(it);
-            assert_or_abort(next->first() == 4);
-            assert_or_abort(next->second() == 40);
+            assert_or_abort(next->first == 4);
+            assert_or_abort(next->second == 40);
         }
         return s;
     }();
@@ -629,8 +629,8 @@ TEST(FixedMap, EraseRange)
             auto to = s.begin();
             std::advance(to, 2);
             auto next = s.erase(from, to);
-            assert_or_abort(next->first() == 4);
-            assert_or_abort(next->second() == 40);
+            assert_or_abort(next->first == 4);
+            assert_or_abort(next->second == 40);
             return s;
         }();
 
@@ -647,8 +647,8 @@ TEST(FixedMap, EraseRange)
             auto from = s.begin();
             auto to = s.begin();
             auto next = s.erase(from, to);
-            assert_or_abort(next->first() == 2);
-            assert_or_abort(next->second() == 20);
+            assert_or_abort(next->first == 2);
+            assert_or_abort(next->second == 20);
             return s;
         }();
 
@@ -725,23 +725,23 @@ TEST(FixedMap, IteratorBasic)
 
     static_assert(std::distance(s1.cbegin(), s1.cend()) == 4);
 
-    static_assert(s1.begin()->first() == 1);
-    static_assert(s1.begin()->second() == 10);
-    static_assert(std::next(s1.begin(), 1)->first() == 2);
-    static_assert(std::next(s1.begin(), 1)->second() == 20);
-    static_assert(std::next(s1.begin(), 2)->first() == 3);
-    static_assert(std::next(s1.begin(), 2)->second() == 30);
-    static_assert(std::next(s1.begin(), 3)->first() == 4);
-    static_assert(std::next(s1.begin(), 3)->second() == 40);
+    static_assert(s1.begin()->first == 1);
+    static_assert(s1.begin()->second == 10);
+    static_assert(std::next(s1.begin(), 1)->first == 2);
+    static_assert(std::next(s1.begin(), 1)->second == 20);
+    static_assert(std::next(s1.begin(), 2)->first == 3);
+    static_assert(std::next(s1.begin(), 2)->second == 30);
+    static_assert(std::next(s1.begin(), 3)->first == 4);
+    static_assert(std::next(s1.begin(), 3)->second == 40);
 
-    static_assert(std::prev(s1.end(), 1)->first() == 4);
-    static_assert(std::prev(s1.end(), 1)->second() == 40);
-    static_assert(std::prev(s1.end(), 2)->first() == 3);
-    static_assert(std::prev(s1.end(), 2)->second() == 30);
-    static_assert(std::prev(s1.end(), 3)->first() == 2);
-    static_assert(std::prev(s1.end(), 3)->second() == 20);
-    static_assert(std::prev(s1.end(), 4)->first() == 1);
-    static_assert(std::prev(s1.end(), 4)->second() == 10);
+    static_assert(std::prev(s1.end(), 1)->first == 4);
+    static_assert(std::prev(s1.end(), 1)->second == 40);
+    static_assert(std::prev(s1.end(), 2)->first == 3);
+    static_assert(std::prev(s1.end(), 2)->second == 30);
+    static_assert(std::prev(s1.end(), 3)->first == 2);
+    static_assert(std::prev(s1.end(), 3)->second == 20);
+    static_assert(std::prev(s1.end(), 4)->first == 1);
+    static_assert(std::prev(s1.end(), 4)->second == 10);
 }
 
 TEST(FixedMap, IteratorTypes)
@@ -752,35 +752,36 @@ TEST(FixedMap, IteratorTypes)
 
         for (const auto& key_and_value : s)  // "-Wrange-loop-bind-reference"
         {
-            static_assert(std::is_same_v<decltype(key_and_value), const PairView<const int, int>&>);
-            // key_and_value.second() = 5; // Not allowed
+            static_assert(
+                std::is_same_v<decltype(key_and_value), const std::pair<const int&, int&>&>);
+            // key_and_value.second = 5; // Allowed, but ideally should not.
         }
         // cannot do this
-        // error: non-const lvalue reference to type 'PairView<...>' cannot bind to a temporary of
-        // type 'PairView<...>'
+        // error: non-const lvalue reference to type 'std::pair<...>' cannot bind to a temporary of
+        // type 'std::pair<...>'
         /*
         for (auto& key_and_value : s)
         {
-            static_assert(std::is_same_v<decltype(key_and_value), PairView<const int, int>&>);
-            key_and_value.second() = 5;  // Allowed
+            static_assert(std::is_same_v<decltype(key_and_value), std::pair<const int&, int&>&>);
+            key_and_value.second = 5;  // Allowed
         }
          */
 
         for (auto&& key_and_value : s)
         {
-            static_assert(std::is_same_v<decltype(key_and_value), PairView<const int, int>&&>);
-            key_and_value.second() = 5;  // Allowed
+            static_assert(std::is_same_v<decltype(key_and_value), std::pair<const int&, int&>&&>);
+            key_and_value.second = 5;  // Allowed
         }
 
         for (const auto& [key, value] : s)  // "-Wrange-loop-bind-reference"
         {
             static_assert(std::is_same_v<decltype(key), const int&>);
-            static_assert(std::is_same_v<decltype(value), const int&>);
+            static_assert(std::is_same_v<decltype(value), int&>);  // Non-ideal, should be const
         }
 
         // cannot do this
-        // error: non-const lvalue reference to type 'PairView<...>' cannot bind to a temporary of
-        // type 'PairView<...>'
+        // error: non-const lvalue reference to type 'std::pair<...>' cannot bind to a temporary of
+        // type 'std::pair<...>'
         /*
         for (auto& [key, value] : s)
         {
@@ -799,18 +800,18 @@ TEST(FixedMap, IteratorTypes)
     }();
 
     const auto lvalue_it = s1.begin();
-    static_assert(std::is_same_v<decltype(*lvalue_it), PairView<const int, const int>>);
-    static_assert(std::is_same_v<decltype(*s1.begin()), PairView<const int, const int>>);
+    static_assert(std::is_same_v<decltype(*lvalue_it), std::pair<const int&, const int&>>);
+    static_assert(std::is_same_v<decltype(*s1.begin()), std::pair<const int&, const int&>>);
 
     FixedMap<int, int, 10> s_non_const{};
     auto lvalue_it_of_non_const = s_non_const.begin();
-    static_assert(std::is_same_v<decltype(*lvalue_it_of_non_const), PairView<const int, int>>);
-    static_assert(std::is_same_v<decltype(*s_non_const.begin()), PairView<const int, int>>);
+    static_assert(std::is_same_v<decltype(*lvalue_it_of_non_const), std::pair<const int&, int&>>);
+    static_assert(std::is_same_v<decltype(*s_non_const.begin()), std::pair<const int&, int&>>);
 
     for (const auto& key_and_value : s1)
     {
         static_assert(
-            std::is_same_v<decltype(key_and_value), const PairView<const int, const int>&>);
+            std::is_same_v<decltype(key_and_value), const std::pair<const int&, const int&>&>);
     }
 
     for (auto&& [key, value] : s1)
@@ -877,15 +878,15 @@ TEST(FixedMap, IteratorMutableValue)
 
     static_assert(std::distance(s1.cbegin(), s1.cend()) == 2);
 
-    static_assert(s1.begin()->first() == 2);
-    static_assert(s1.begin()->second() == 40);
-    static_assert(std::next(s1.begin(), 1)->first() == 4);
-    static_assert(std::next(s1.begin(), 1)->second() == 80);
+    static_assert(s1.begin()->first == 2);
+    static_assert(s1.begin()->second == 40);
+    static_assert(std::next(s1.begin(), 1)->first == 4);
+    static_assert(std::next(s1.begin(), 1)->second == 80);
 
-    static_assert(std::prev(s1.end(), 1)->first() == 4);
-    static_assert(std::prev(s1.end(), 1)->second() == 80);
-    static_assert(std::prev(s1.end(), 2)->first() == 2);
-    static_assert(std::prev(s1.end(), 2)->second() == 40);
+    static_assert(std::prev(s1.end(), 1)->first == 4);
+    static_assert(std::prev(s1.end(), 1)->second == 80);
+    static_assert(std::prev(s1.end(), 2)->first == 2);
+    static_assert(std::prev(s1.end(), 2)->second == 40);
 }
 
 TEST(FixedMap, IteratorComparisonOperator)
@@ -914,8 +915,8 @@ TEST(FixedMap, IteratorAssignment)
             FixedMap<int, int, 10>::const_iterator it;  // Default construction
             it = s.cbegin();
             assert_or_abort(it == s.begin());
-            assert_or_abort(it->first() == 2);
-            assert_or_abort(it->second() == 20);
+            assert_or_abort(it->first == 2);
+            assert_or_abort(it->second == 20);
 
             it = s.cend();
             assert_or_abort(it == s.cend());
@@ -964,15 +965,15 @@ TEST(FixedMap, Iterator_OffByOneIssues)
 
     static_assert(std::distance(s1.cbegin(), s1.cend()) == 2);
 
-    static_assert(s1.begin()->first() == 1);
-    static_assert(s1.begin()->second() == 10);
-    static_assert(std::next(s1.begin(), 1)->first() == 4);
-    static_assert(std::next(s1.begin(), 1)->second() == 40);
+    static_assert(s1.begin()->first == 1);
+    static_assert(s1.begin()->second == 10);
+    static_assert(std::next(s1.begin(), 1)->first == 4);
+    static_assert(std::next(s1.begin(), 1)->second == 40);
 
-    static_assert(std::prev(s1.end(), 1)->first() == 4);
-    static_assert(std::prev(s1.end(), 1)->second() == 40);
-    static_assert(std::prev(s1.end(), 2)->first() == 1);
-    static_assert(std::prev(s1.end(), 2)->second() == 10);
+    static_assert(std::prev(s1.end(), 1)->first == 4);
+    static_assert(std::prev(s1.end(), 1)->second == 40);
+    static_assert(std::prev(s1.end(), 2)->first == 1);
+    static_assert(std::prev(s1.end(), 2)->second == 10);
 }
 
 TEST(FixedMap, Iterator_EnsureOrder)
@@ -988,19 +989,19 @@ TEST(FixedMap, Iterator_EnsureOrder)
 
     static_assert(std::distance(s1.cbegin(), s1.cend()) == 3);
 
-    static_assert(s1.begin()->first() == 1);
-    static_assert(s1.begin()->second() == 10);
-    static_assert(std::next(s1.begin(), 1)->first() == 3);
-    static_assert(std::next(s1.begin(), 1)->second() == 30);
-    static_assert(std::next(s1.begin(), 2)->first() == 4);
-    static_assert(std::next(s1.begin(), 2)->second() == 40);
+    static_assert(s1.begin()->first == 1);
+    static_assert(s1.begin()->second == 10);
+    static_assert(std::next(s1.begin(), 1)->first == 3);
+    static_assert(std::next(s1.begin(), 1)->second == 30);
+    static_assert(std::next(s1.begin(), 2)->first == 4);
+    static_assert(std::next(s1.begin(), 2)->second == 40);
 
-    static_assert(std::prev(s1.end(), 1)->first() == 4);
-    static_assert(std::prev(s1.end(), 1)->second() == 40);
-    static_assert(std::prev(s1.end(), 2)->first() == 3);
-    static_assert(std::prev(s1.end(), 2)->second() == 30);
-    static_assert(std::prev(s1.end(), 3)->first() == 1);
-    static_assert(std::prev(s1.end(), 3)->second() == 10);
+    static_assert(std::prev(s1.end(), 1)->first == 4);
+    static_assert(std::prev(s1.end(), 1)->second == 40);
+    static_assert(std::prev(s1.end(), 2)->first == 3);
+    static_assert(std::prev(s1.end(), 2)->second == 30);
+    static_assert(std::prev(s1.end(), 3)->first == 1);
+    static_assert(std::prev(s1.end(), 3)->second == 10);
 }
 
 TEST(FixedMap, DereferencedIteratorAssignability)
@@ -1022,7 +1023,7 @@ TEST(FixedMap, Iterator_AccessingDefaultConstructedIteratorFails)
 {
     auto it = FixedMap<int, int, 10>::iterator{};
 
-    EXPECT_DEATH(it->second()++, "");
+    EXPECT_DEATH(it->second++, "");
 }
 
 static constexpr FixedMap<int, int, 7> LIVENESS_TEST_INSTANCE{{1, 100}};
@@ -1031,31 +1032,31 @@ TEST(FixedMap, IteratorDereferenceLiveness)
 {
     {
         constexpr auto ref = []() { return *LIVENESS_TEST_INSTANCE.begin(); }();
-        static_assert(ref.first() == 1);
-        static_assert(ref.second() == 100);
+        static_assert(ref.first == 1);
+        static_assert(ref.second == 100);
     }
 
     {
         // this test needs ubsan/asan
         FixedMap<int, int, 7> m = {{1, 100}};
         decltype(m)::reference ref = *m.begin();  // Fine
-        EXPECT_EQ(1, ref.first());
-        EXPECT_EQ(100, ref.second());
+        EXPECT_EQ(1, ref.first);
+        EXPECT_EQ(100, ref.second);
     }
     {
         // this test needs ubsan/asan
         FixedMap<int, int, 7> m = {{1, 100}};
         auto ref = *m.begin();  // Fine
-        EXPECT_EQ(1, ref.first());
-        EXPECT_EQ(100, ref.second());
+        EXPECT_EQ(1, ref.first);
+        EXPECT_EQ(100, ref.second);
     }
     {
         /*
         // this test needs ubsan/asan
         FixedMap<int, int, 7> m = {{1, 100}};
         auto& ref = *m.begin();  // Fails to compile, instead of allowing dangling pointers
-        EXPECT_EQ(1, ref.first());
-        EXPECT_EQ(100, ref.second());
+        EXPECT_EQ(1, ref.first);
+        EXPECT_EQ(100, ref.second);
          */
     }
 }
@@ -1066,23 +1067,23 @@ TEST(FixedMap, ReverseIteratorBasic)
 
     static_assert(consteval_compare::equal<4, std::distance(s1.crbegin(), s1.crend())>);
 
-    static_assert(consteval_compare::equal<4, s1.rbegin()->first()>);
-    static_assert(consteval_compare::equal<40, s1.rbegin()->second()>);
-    static_assert(consteval_compare::equal<3, std::next(s1.rbegin(), 1)->first()>);
-    static_assert(consteval_compare::equal<30, std::next(s1.rbegin(), 1)->second()>);
-    static_assert(consteval_compare::equal<2, std::next(s1.rbegin(), 2)->first()>);
-    static_assert(consteval_compare::equal<20, std::next(s1.rbegin(), 2)->second()>);
-    static_assert(consteval_compare::equal<1, std::next(s1.rbegin(), 3)->first()>);
-    static_assert(consteval_compare::equal<10, std::next(s1.rbegin(), 3)->second()>);
+    static_assert(consteval_compare::equal<4, s1.rbegin()->first>);
+    static_assert(consteval_compare::equal<40, s1.rbegin()->second>);
+    static_assert(consteval_compare::equal<3, std::next(s1.rbegin(), 1)->first>);
+    static_assert(consteval_compare::equal<30, std::next(s1.rbegin(), 1)->second>);
+    static_assert(consteval_compare::equal<2, std::next(s1.rbegin(), 2)->first>);
+    static_assert(consteval_compare::equal<20, std::next(s1.rbegin(), 2)->second>);
+    static_assert(consteval_compare::equal<1, std::next(s1.rbegin(), 3)->first>);
+    static_assert(consteval_compare::equal<10, std::next(s1.rbegin(), 3)->second>);
 
-    static_assert(consteval_compare::equal<1, std::prev(s1.rend(), 1)->first()>);
-    static_assert(consteval_compare::equal<10, std::prev(s1.rend(), 1)->second()>);
-    static_assert(consteval_compare::equal<2, std::prev(s1.rend(), 2)->first()>);
-    static_assert(consteval_compare::equal<20, std::prev(s1.rend(), 2)->second()>);
-    static_assert(consteval_compare::equal<3, std::prev(s1.rend(), 3)->first()>);
-    static_assert(consteval_compare::equal<30, std::prev(s1.rend(), 3)->second()>);
-    static_assert(consteval_compare::equal<4, std::prev(s1.rend(), 4)->first()>);
-    static_assert(consteval_compare::equal<40, std::prev(s1.rend(), 4)->second()>);
+    static_assert(consteval_compare::equal<1, std::prev(s1.rend(), 1)->first>);
+    static_assert(consteval_compare::equal<10, std::prev(s1.rend(), 1)->second>);
+    static_assert(consteval_compare::equal<2, std::prev(s1.rend(), 2)->first>);
+    static_assert(consteval_compare::equal<20, std::prev(s1.rend(), 2)->second>);
+    static_assert(consteval_compare::equal<3, std::prev(s1.rend(), 3)->first>);
+    static_assert(consteval_compare::equal<30, std::prev(s1.rend(), 3)->second>);
+    static_assert(consteval_compare::equal<4, std::prev(s1.rend(), 4)->first>);
+    static_assert(consteval_compare::equal<40, std::prev(s1.rend(), 4)->second>);
 }
 
 TEST(FixedMap, ReverseIteratorBase)
@@ -1129,9 +1130,9 @@ TEST(FixedMap, MutableFind)
     {
         FixedMap<int, int, 10> s{{2, 20}, {4, 40}};
         auto it = s.find(2);
-        it->second() = 25;
+        it->second = 25;
         it++;
-        it->second() = 45;
+        it->second = 45;
         return s;
     }();
 
@@ -1188,10 +1189,10 @@ TEST(FixedMap, LowerBound)
     constexpr FixedMap<int, int, 10> s1{{2, 20}, {4, 40}};
     static_assert(s1.size() == 2);
 
-    static_assert(s1.lower_bound(1)->first() == 2);
-    static_assert(s1.lower_bound(2)->first() == 2);
-    static_assert(s1.lower_bound(3)->first() == 4);
-    static_assert(s1.lower_bound(4)->first() == 4);
+    static_assert(s1.lower_bound(1)->first == 2);
+    static_assert(s1.lower_bound(2)->first == 2);
+    static_assert(s1.lower_bound(3)->first == 4);
+    static_assert(s1.lower_bound(4)->first == 4);
     static_assert(s1.lower_bound(5) == s1.cend());
 }
 
@@ -1200,7 +1201,7 @@ TEST(FixedMap, LowerBound_TransparentComparator)
     constexpr FixedMap<MockAComparableToB, int, 5, std::less<>> s{
         {MockAComparableToB{1}, 10}, {MockAComparableToB{3}, 30}, {MockAComparableToB{5}, 50}};
     constexpr MockBComparableToA b{3};
-    static_assert(s.lower_bound(b)->first() == MockAComparableToB{3});
+    static_assert(s.lower_bound(b)->first == MockAComparableToB{3});
 }
 
 TEST(FixedMap, UpperBound)
@@ -1208,9 +1209,9 @@ TEST(FixedMap, UpperBound)
     constexpr FixedMap<int, int, 10> s1{{2, 20}, {4, 40}};
     static_assert(s1.size() == 2);
 
-    static_assert(s1.upper_bound(1)->first() == 2);
-    static_assert(s1.upper_bound(2)->first() == 4);
-    static_assert(s1.upper_bound(3)->first() == 4);
+    static_assert(s1.upper_bound(1)->first == 2);
+    static_assert(s1.upper_bound(2)->first == 4);
+    static_assert(s1.upper_bound(3)->first == 4);
     static_assert(s1.upper_bound(4) == s1.cend());
     static_assert(s1.upper_bound(5) == s1.cend());
 }
@@ -1220,7 +1221,7 @@ TEST(FixedMap, UpperBound_TransparentComparator)
     constexpr FixedMap<MockAComparableToB, int, 5, std::less<>> s{
         {MockAComparableToB{1}, 10}, {MockAComparableToB{3}, 30}, {MockAComparableToB{5}, 50}};
     constexpr MockBComparableToA b{3};
-    static_assert(s.upper_bound(b)->first() == MockAComparableToB{5});
+    static_assert(s.upper_bound(b)->first == MockAComparableToB{5});
 }
 
 TEST(FixedMap, EqualRange)
@@ -1285,11 +1286,11 @@ TEST(FixedMap, Equality)
 TEST(FixedMap, Ranges)
 {
     FixedMap<int, int, 10> s1{{1, 10}, {4, 40}};
-    auto f = s1 | ranges::views::filter([](const auto& v) -> bool { return v.second() == 10; });
+    auto f = s1 | ranges::views::filter([](const auto& v) -> bool { return v.second == 10; });
 
     EXPECT_EQ(1, ranges::distance(f));
-    int first_entry = (*f.begin()).second();  // Can't use arrow with range-v3 because it requires
-                                              // l-value. Note that std::ranges works
+    int first_entry = (*f.begin()).second;  // Can't use arrow with range-v3 because it requires
+                                            // l-value. Note that std::ranges works
     EXPECT_EQ(10, first_entry);
 }
 

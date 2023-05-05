@@ -3,7 +3,6 @@
 #include "fixed_containers/bidirectional_iterator.hpp"
 #include "fixed_containers/erase_if.hpp"
 #include "fixed_containers/fixed_red_black_tree.hpp"
-#include "fixed_containers/pair_view.hpp"
 #include "fixed_containers/preconditions.hpp"
 #include "fixed_containers/source_location.hpp"
 
@@ -72,8 +71,8 @@ public:
     using key_type = K;
     using mapped_type = V;
     using value_type = std::pair<const K, V>;
-    using reference = PairView<const K, V>;
-    using const_reference = PairView<const K, const V>;
+    using reference = std::pair<const K&, V&>;
+    using const_reference = std::pair<const K&, const V&>;
     using pointer = std::add_pointer_t<reference>;
     using const_pointer = std::add_pointer_t<const_reference>;
 
@@ -147,13 +146,13 @@ private:
             requires IS_CONST
         {
             fixed_red_black_tree_detail::RedBlackTreeNodeView node = tree_->node_at(current_index_);
-            return {&node.key(), &node.value()};
+            return {node.key(), node.value()};
         }
         constexpr reference get() const noexcept
             requires(not IS_CONST)
         {
             fixed_red_black_tree_detail::RedBlackTreeNodeView node = tree_->node_at(current_index_);
-            return {&node.key(), &node.value()};
+            return {node.key(), node.value()};
         }
 
         constexpr bool operator==(const PairProvider& other) const noexcept
@@ -475,7 +474,7 @@ public:
     constexpr iterator erase(const_iterator pos) noexcept
     {
         assert(pos != cend());
-        const NodeIndex i = tree().index_of_node_or_null(pos->first());
+        const NodeIndex i = tree().index_of_node_or_null(pos->first);
         assert(tree().contains_at(i));
         const NodeIndex successor_index = tree().delete_at_and_return_successor(i);
         return create_iterator(successor_index);
@@ -483,7 +482,7 @@ public:
     constexpr iterator erase(iterator pos) noexcept
     {
         assert(pos != end());
-        const NodeIndex i = tree().index_of_node_or_null(pos->first());
+        const NodeIndex i = tree().index_of_node_or_null(pos->first);
         assert(tree().contains_at(i));
         const NodeIndex successor_index = tree().delete_at_and_return_successor(i);
         return create_iterator(successor_index);
@@ -493,9 +492,9 @@ public:
     {
         // iterators might be invalidated after every deletion, so we can't just loop through
         const NodeIndex from =
-            first == cend() ? NULL_INDEX : tree().index_of_node_or_null(first->first());
+            first == cend() ? NULL_INDEX : tree().index_of_node_or_null(first->first);
         const NodeIndex to =
-            last == cend() ? NULL_INDEX : tree().index_of_node_or_null(last->first());
+            last == cend() ? NULL_INDEX : tree().index_of_node_or_null(last->first);
 
         const NodeIndex successor_index = tree().delete_range_and_return_successor(from, to);
         return create_iterator(successor_index);
