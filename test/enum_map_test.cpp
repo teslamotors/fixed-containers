@@ -1095,6 +1095,42 @@ TEST(EnumMap, Iterator_AccessingDefaultConstructedIteratorFails)
     EXPECT_DEATH(it->second()++, "");
 }
 
+static constexpr EnumMap<TestEnum1, int> LIVENESS_TEST_INSTANCE{{TestEnum1::ONE, 100}};
+
+TEST(EnumMap, IteratorDereferenceLiveness)
+{
+    {
+        constexpr auto ref = []() { return *LIVENESS_TEST_INSTANCE.begin(); }();
+        static_assert(ref.first() == TestEnum1::ONE);
+        static_assert(ref.second() == 100);
+    }
+
+    {
+        /*
+        // this test needs ubsan/asan
+        EnumMap<TestEnum1, int> m = {{TestEnum1::ONE, 2}};
+        decltype(m)::reference ref = *m.begin();  // Dangling!!
+        EXPECT_EQ(TestEnum1::ONE, ref.first());
+        EXPECT_EQ(2, ref.second());
+         */
+    } {
+        // this test needs ubsan/asan
+        EnumMap<TestEnum1, int> m = {{TestEnum1::ONE, 2}};
+        auto ref = *m.begin();  // Fine
+        EXPECT_EQ(TestEnum1::ONE, ref.first());
+        EXPECT_EQ(2, ref.second());
+    }
+    {
+        /*
+        // this test needs ubsan/asan
+        EnumMap<TestEnum1, int> m = {{TestEnum1::ONE, 2}};
+        auto& ref = *m.begin();  // Dangling!!
+        EXPECT_EQ(TestEnum1::ONE, ref.first());
+        EXPECT_EQ(2, ref.second());
+         */
+    }
+}
+
 TEST(EnumMap, ReverseIteratorBasic)
 {
     constexpr EnumMap<TestEnum1, int> s1{

@@ -1012,6 +1012,42 @@ TEST(FixedMap, Iterator_AccessingDefaultConstructedIteratorFails)
     EXPECT_DEATH(it->second()++, "");
 }
 
+static constexpr FixedMap<int, int, 7> LIVENESS_TEST_INSTANCE{{1, 100}};
+
+TEST(FixedMap, IteratorDereferenceLiveness)
+{
+    {
+        constexpr auto ref = []() { return *LIVENESS_TEST_INSTANCE.begin(); }();
+        static_assert(ref.first() == 1);
+        static_assert(ref.second() == 100);
+    }
+
+    {
+        /*
+        // this test needs ubsan/asan
+        FixedMap<int, int, 7> m = {{1, 100}};
+        decltype(m)::reference ref = *m.begin();  // Dangling!!
+        EXPECT_EQ(1, ref.first());
+        EXPECT_EQ(100, ref.second());
+         */
+    } {
+        // this test needs ubsan/asan
+        FixedMap<int, int, 7> m = {{1, 100}};
+        auto ref = *m.begin();  // Fine
+        EXPECT_EQ(1, ref.first());
+        EXPECT_EQ(100, ref.second());
+    }
+    {
+        /*
+        // this test needs ubsan/asan
+        FixedMap<int, int, 7> m = {{1, 100}};
+        auto& ref = *m.begin();  // Dangling!!
+        EXPECT_EQ(1, ref.first());
+        EXPECT_EQ(100, ref.second());
+         */
+    }
+}
+
 TEST(FixedMap, ReverseIteratorBasic)
 {
     constexpr FixedMap<int, int, 10> s1{{1, 10}, {2, 20}, {3, 30}, {4, 40}};
