@@ -55,30 +55,27 @@ static_assert(std::bidirectional_iterator<ES_1::const_iterator>);
 static_assert(!std::random_access_iterator<ES_1::iterator>);
 static_assert(!std::random_access_iterator<ES_1::const_iterator>);
 
-// Not trivially-copyable because of the field of references
-// std::pair<const K&, V&> and working around its non-assignability
-// with custom assignment operators via AssignableStorage.
-static_assert(!std::is_trivially_copyable_v<ES_2::const_iterator>);
-static_assert(!std::is_trivially_copyable_v<ES_2::iterator>);
-static_assert(!std::is_trivially_copyable_v<ES_2::reverse_iterator>);
-static_assert(!std::is_trivially_copyable_v<ES_2::const_reverse_iterator>);
+static_assert(std::is_trivially_copyable_v<ES_2::const_iterator>);
+static_assert(std::is_trivially_copyable_v<ES_2::iterator>);
+static_assert(std::is_trivially_copyable_v<ES_2::reverse_iterator>);
+static_assert(std::is_trivially_copyable_v<ES_2::const_reverse_iterator>);
 
 static_assert(std::is_same_v<std::iter_value_t<ES_1::iterator>, std::pair<const TestEnum1&, int&>>);
 static_assert(
-    std::is_same_v<std::iter_reference_t<ES_1::iterator>, std::pair<const TestEnum1&, int&>&>);
+    std::is_same_v<std::iter_reference_t<ES_1::iterator>, std::pair<const TestEnum1&, int&>>);
 static_assert(std::is_same_v<std::iter_difference_t<ES_1::iterator>, std::ptrdiff_t>);
 static_assert(std::is_same_v<typename std::iterator_traits<ES_1::iterator>::pointer,
-                             std::pair<const TestEnum1&, int&>*>);
+                             ArrowProxy<std::pair<const TestEnum1&, int&>>>);
 static_assert(std::is_same_v<typename std::iterator_traits<ES_1::iterator>::iterator_category,
                              std::bidirectional_iterator_tag>);
 
 static_assert(std::is_same_v<std::iter_value_t<ES_1::const_iterator>,
                              std::pair<const TestEnum1&, const int&>>);
 static_assert(std::is_same_v<std::iter_reference_t<ES_1::const_iterator>,
-                             std::pair<const TestEnum1&, const int&> const&>);
+                             std::pair<const TestEnum1&, const int&>>);
 static_assert(std::is_same_v<std::iter_difference_t<ES_1::const_iterator>, std::ptrdiff_t>);
 static_assert(std::is_same_v<typename std::iterator_traits<ES_1::const_iterator>::pointer,
-                             std::pair<const TestEnum1&, const int&> const*>);
+                             ArrowProxy<std::pair<const TestEnum1&, const int&>>>);
 static_assert(std::is_same_v<typename std::iterator_traits<ES_1::const_iterator>::iterator_category,
                              std::bidirectional_iterator_tag>);
 
@@ -830,39 +827,45 @@ TEST(EnumMap, IteratorTypes)
     constexpr auto s1 = []()
     {
         EnumMap<TestEnum1, int> s{{TestEnum1::TWO, 20}, {TestEnum1::FOUR, 40}};
-
-        for (const auto& key_and_value : s)
+        for (const auto& key_and_value : s)  // "-Wrange-loop-bind-reference"
         {
             static_assert(
                 std::is_same_v<decltype(key_and_value), const std::pair<const TestEnum1&, int&>&>);
             // key_and_value.second = 5;  // Allowed, but ideally should not.
         }
 
-        for (auto& key_and_value : s)
-        {
-            static_assert(
-                std::is_same_v<decltype(key_and_value), std::pair<const TestEnum1&, int&>&>);
-            key_and_value.second = 5;  // Allowed
-        }
+        // cannot do this
+        // error: non-const lvalue reference to type 'pair<...>' cannot bind to a temporary of type
+        // 'pair<...>'
+        //        for (auto& key_and_value : s)
+        //        {
+        //            static_assert(
+        //                std::is_same_v<decltype(key_and_value), std::pair<const TestEnum1&,
+        //                int&>&>);
+        //            key_and_value.second = 5;  // Allowed
+        //        }
 
         for (auto&& key_and_value : s)
         {
             static_assert(
-                std::is_same_v<decltype(key_and_value), std::pair<const TestEnum1&, int&>&>);
+                std::is_same_v<decltype(key_and_value), std::pair<const TestEnum1&, int&>&&>);
             key_and_value.second = 5;  // Allowed
         }
 
-        for (const auto& [key, value] : s)
+        for (const auto& [key, value] : s)  // "-Wrange-loop-bind-reference"
         {
             static_assert(std::is_same_v<decltype(key), const TestEnum1&>);
             static_assert(std::is_same_v<decltype(value), int&>);  // Non-ideal, should be const
         }
 
-        for (auto& [key, value] : s)
-        {
-            static_assert(std::is_same_v<decltype(key), const TestEnum1&>);
-            static_assert(std::is_same_v<decltype(value), int&>);
-        }
+        // cannot do this
+        // error: non-const lvalue reference to type 'pair<...>' cannot bind to a temporary of type
+        // 'pair<...>'
+        //        for (auto& [key, value] : s)
+        //        {
+        //            static_assert(std::is_same_v<decltype(key), const TestEnum1&>);
+        //            static_assert(std::is_same_v<decltype(value), int&>);
+        //        }
 
         for (auto&& [key, value] : s)
         {
@@ -874,18 +877,17 @@ TEST(EnumMap, IteratorTypes)
     }();
 
     const auto lvalue_it = s1.begin();
-    static_assert(
-        std::is_same_v<decltype(*lvalue_it), const std::pair<const TestEnum1&, const int&>&>);
+    static_assert(std::is_same_v<decltype(*lvalue_it), std::pair<const TestEnum1&, const int&>>);
     static_assert(std::is_same_v<decltype(*s1.begin()), std::pair<const TestEnum1&, const int&>>);
 
     EnumMap<TestEnum1, int> s_non_const{};
     auto lvalue_it_of_non_const = s_non_const.begin();
     static_assert(
-        std::is_same_v<decltype(*lvalue_it_of_non_const), std::pair<const TestEnum1&, int&>&>);
+        std::is_same_v<decltype(*lvalue_it_of_non_const), std::pair<const TestEnum1&, int&>>);
     static_assert(
         std::is_same_v<decltype(*s_non_const.begin()), std::pair<const TestEnum1&, int&>>);
 
-    for (const auto& key_and_value : s1)
+    for (const auto& key_and_value : s1)  // "-Wrange-loop-bind-reference"
     {
         static_assert(std::is_same_v<decltype(key_and_value),
                                      const std::pair<const TestEnum1&, const int&>&>);
@@ -1113,7 +1115,7 @@ TEST(EnumMap, IteratorDereferenceLiveness)
         constexpr auto ref = []() { return *LIVENESS_TEST_INSTANCE.begin(); }();
         static_assert(ref.first == TestEnum1::ONE);
         static_assert(ref.second == 100);
-    }
+    }  // namespace fixed_containers
 
     {
         // this test needs ubsan/asan
@@ -1302,7 +1304,8 @@ TEST(EnumMap, Ranges)
     auto f = s1 | ranges::views::filter([](const auto& v) -> bool { return v.second == 10; });
 
     EXPECT_EQ(1, ranges::distance(f));
-    int first_entry = f.begin()->second;
+    int first_entry = (*f.begin()).second;  // Can't use arrow with range-v3 because it requires
+                                            // l-value. Note that std::ranges works
     EXPECT_EQ(10, first_entry);
 }
 

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "fixed_containers/assignable_storage.hpp"
 #include "fixed_containers/concepts.hpp"
 #include "fixed_containers/enum_utils.hpp"
 #include "fixed_containers/erase_if.hpp"
@@ -15,7 +14,6 @@
 #include <cstddef>
 #include <initializer_list>
 #include <memory>
-#include <optional>
 #include <type_traits>
 
 namespace fixed_containers::enum_map_customize
@@ -149,9 +147,7 @@ private:
             std::conditional_t<IS_CONST, std::pair<const K&, const V&>, std::pair<const K&, V&>>;
 
         ConstOrMutableValueArray* values_;
-        // Needed for liveness
-        assignable_storage_detail::AssignableStorage<std::optional<ConstOrMutablePair>>
-            current_value_;
+        std::size_t current_index_;
 
         constexpr PairProvider() noexcept
           : PairProvider{nullptr}
@@ -160,7 +156,7 @@ private:
 
         constexpr PairProvider(ConstOrMutableValueArray* const values) noexcept
           : values_{values}
-          , current_value_{}
+          , current_index_{}
         {
         }
 
@@ -177,21 +173,17 @@ private:
         {
         }
 
-        constexpr void update_to_index(const std::size_t i) noexcept
-        {
-            current_value_.value.emplace(ENUM_VALUES[i], (*values_)[i].get());
-        }
+        constexpr void update_to_index(const std::size_t i) noexcept { current_index_ = i; }
 
-        constexpr const const_reference& get() const noexcept
+        constexpr const_reference get() const noexcept
             requires IS_CONST
         {
-            return current_value_.value.value();
+            return {ENUM_VALUES[current_index_], (*values_)[current_index_].get()};
         }
-        constexpr reference& get() const noexcept
+        constexpr reference get() const noexcept
             requires(not IS_CONST)
         {
-            // The function is tagged `const` and would add a `const` to the returned type.
-            return const_cast<reference&>(current_value_.value.value());
+            return {ENUM_VALUES[current_index_], (*values_)[current_index_].get()};
         }
     };
 

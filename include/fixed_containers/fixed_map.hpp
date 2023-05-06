@@ -1,6 +1,5 @@
 #pragma once
 
-#include "fixed_containers/assignable_storage.hpp"
 #include "fixed_containers/bidirectional_iterator.hpp"
 #include "fixed_containers/erase_if.hpp"
 #include "fixed_containers/fixed_red_black_tree.hpp"
@@ -10,7 +9,6 @@
 #include <algorithm>
 #include <cstddef>
 #include <functional>
-#include <optional>
 
 namespace fixed_containers::fixed_map_customize
 {
@@ -97,9 +95,6 @@ private:
 
         ConstOrMutableTree* tree_;
         NodeIndex current_index_;
-        // Needed for liveness
-        assignable_storage_detail::AssignableStorage<std::optional<ConstOrMutablePair>>
-            current_value_;
 
         constexpr PairProvider() noexcept
           : PairProvider{nullptr, MAXIMUM_SIZE}
@@ -110,12 +105,7 @@ private:
                                const NodeIndex& current_index) noexcept
           : tree_{tree}
           , current_index_{current_index}
-          , current_value_{}
         {
-            if (tree != nullptr)
-            {
-                update_storage();
-            }
         }
 
         constexpr PairProvider(const PairProvider&) = default;
@@ -142,8 +132,6 @@ private:
                 current_index_ = tree_->index_of_successor_at(current_index_);
                 current_index_ = replace_null_index_with_max_size_for_end_iterator(current_index_);
             }
-
-            update_storage();
         }
         constexpr void recede() noexcept
         {
@@ -155,20 +143,19 @@ private:
             {
                 current_index_ = tree_->index_of_predecessor_at(current_index_);
             }
-
-            update_storage();
         }
 
-        constexpr const const_reference& get() const noexcept
+        constexpr const_reference get() const noexcept
             requires IS_CONST
         {
-            return current_value_.value.value();
+            fixed_red_black_tree_detail::RedBlackTreeNodeView node = tree_->node_at(current_index_);
+            return {node.key(), node.value()};
         }
-        constexpr reference& get() const noexcept
+        constexpr reference get() const noexcept
             requires(not IS_CONST)
         {
-            // The function is tagged `const` and would add a `const` to the returned type.
-            return const_cast<reference&>(current_value_.value.value());
+            fixed_red_black_tree_detail::RedBlackTreeNodeView node = tree_->node_at(current_index_);
+            return {node.key(), node.value()};
         }
 
         constexpr bool operator==(const PairProvider& other) const noexcept
@@ -178,17 +165,6 @@ private:
         constexpr bool operator==(const PairProvider<!IS_CONST>& other) const noexcept
         {
             return tree_ == other.tree_ && current_index_ == other.current_index_;
-        }
-
-    private:
-        constexpr void update_storage() noexcept
-        {
-            if (current_index_ < MAXIMUM_SIZE && tree_->contains_at(current_index_))
-            {
-                fixed_red_black_tree_detail::RedBlackTreeNodeView node =
-                    tree_->node_at(current_index_);
-                current_value_.value.emplace(node.key(), node.value());
-            }
         }
     };
 
