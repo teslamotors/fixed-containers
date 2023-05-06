@@ -5,6 +5,13 @@ exports_files(["LICENSE"])
 package(default_visibility = ["//visibility:public"])
 
 cc_library(
+    name = "arrow_proxy",
+    hdrs = ["include/fixed_containers/arrow_proxy.hpp"],
+    includes = ["include"],
+    copts = ["-std=c++20"],
+)
+
+cc_library(
     name = "assignable_storage",
     hdrs = ["include/fixed_containers/assignable_storage.hpp"],
     includes = ["include"],
