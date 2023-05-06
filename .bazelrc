@@ -7,6 +7,10 @@ build --copt -ftemplate-backtrace-limit=0
 build:clang --copt -ftrivial-auto-var-init=pattern
 #build:clang --copt -stdlib=libc++
 
+build:san --copt -fsanitize=address,undefined
+build:san --linkopt -fsanitize=address,undefined
+build:san --linkopt -fsanitize-link-c++-runtime
+
 ### DIAGNOSTICS
 build:clang  --copt -Weverything
 # Disables C++98 to C++17 compatibility enforcement
