@@ -55,6 +55,9 @@ if(${USING_CLANG})
         #
         -Wno-global-constructors
 
+        # ArrowProxy pattern + https://quuxplusone.github.io/blog/2020/08/26/wrange-loop-analysis/
+        -Wno-range-loop-bind-reference
+
         # due to gtest
         -Wno-covered-switch-default # v1.11.0 fails (needs new release). bazel points to a newer commit with the fix.
         -Wno-exit-time-destructors

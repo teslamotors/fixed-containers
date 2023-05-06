@@ -32,6 +32,8 @@ build:clang --copt -Wno-weak-template-vtables
 #
 build:clang --copt -Wno-global-constructors
 build --copt -Wno-padded
+# ArrowProxy pattern + https://quuxplusone.github.io/blog/2020/08/26/wrange-loop-analysis/
+build:clang --copt -Wno-range-loop-bind-reference
 # due to gtest
 build:clang --copt -Wno-exit-time-destructors
 build:clang --copt -Wno-used-but-marked-unused
