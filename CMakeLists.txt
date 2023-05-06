@@ -55,6 +55,9 @@ if(${USING_CLANG})
         #
         -Wno-global-constructors
 
+        # Due to the ArrowProxy pattern
+        -Wno-range-loop-bind-reference
+
         # due to gtest
         -Wno-covered-switch-default # v1.11.0 fails (needs new release). bazel points to a newer commit with the fix.
         -Wno-exit-time-destructors

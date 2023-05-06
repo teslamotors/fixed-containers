@@ -32,6 +32,8 @@ build:clang --copt -Wno-weak-template-vtables
 #
 build:clang --copt -Wno-global-constructors
 build --copt -Wno-padded
+# Due to the ArrowProxy pattern
+build:clang --copt -Wno-range-loop-bind-reference
 # due to gtest
 build:clang --copt -Wno-exit-time-destructors
 build:clang --copt -Wno-used-but-marked-unused
