@@ -66,3 +66,9 @@ jobs:
 
       - name: Build
         run: cmake --build build -j4
+
+      - name: Test and coverage
+        working-directory: ./build
+        run: |
+          ctest --build-config Debug
+          gcovr -j 4 --delete --root ../ --print-summary --xml-pretty --xml coverage.xml . --gcov-executable gcov
