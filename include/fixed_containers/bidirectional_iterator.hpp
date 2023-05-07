@@ -1,5 +1,6 @@
 #pragma once
 
+#include "fixed_containers/arrow_proxy.hpp"
 #include "fixed_containers/iterator_utils.hpp"
 
 #include <cstddef>
@@ -45,10 +46,14 @@ class BidirectionalIterator
                                                  ConstReferenceProvider,
                                                  MutableReferenceProvider>;
 
+    using ReturnedType = decltype(std::declval<ReferenceProvider>().get());
+    static constexpr bool SAFE_LIFETIME = std::is_reference_v<ReturnedType>;
+
 public:
-    using reference = decltype(std::declval<ReferenceProvider>().get());
+    using reference = ReturnedType;
     using value_type = std::remove_cvref_t<reference>;
-    using pointer = std::add_pointer_t<reference>;
+    using pointer =
+        std::conditional_t<SAFE_LIFETIME, std::add_pointer_t<reference>, ArrowProxy<reference>>;
     using iterator = BidirectionalIterator;
     using iterator_category = std::bidirectional_iterator_tag;
     using difference_type = std::ptrdiff_t;
@@ -80,7 +85,17 @@ public:
 
     constexpr reference operator*() const noexcept { return reference_provider_.get(); }
 
-    constexpr pointer operator->() const noexcept { return &reference_provider_.get(); }
+    constexpr pointer operator->() const noexcept
+    {
+        if constexpr (SAFE_LIFETIME)
+        {
+            return &reference_provider_.get();
+        }
+        else
+        {
+            return {reference_provider_.get()};
+        }
+    }
 
     constexpr BidirectionalIterator& operator++() noexcept
     {

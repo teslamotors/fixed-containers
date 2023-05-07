@@ -60,25 +60,26 @@ static_assert(std::is_trivially_copyable_v<ES_2::iterator>);
 static_assert(std::is_trivially_copyable_v<ES_2::reverse_iterator>);
 static_assert(std::is_trivially_copyable_v<ES_2::const_reverse_iterator>);
 
-static_assert(std::is_same_v<std::iter_value_t<ES_1::iterator>,
-                             fixed_containers::PairView<const TestEnum1, int>>);
-static_assert(std::is_same_v<std::iter_reference_t<ES_1::iterator>,
-                             fixed_containers::PairView<const TestEnum1, int>&>);
+static_assert(std::is_same_v<std::iter_value_t<ES_1::iterator>, PairView<const TestEnum1, int>>);
+static_assert(
+    std::is_same_v<std::iter_reference_t<ES_1::iterator>, PairView<const TestEnum1, int>>);
 static_assert(std::is_same_v<std::iter_difference_t<ES_1::iterator>, std::ptrdiff_t>);
 static_assert(std::is_same_v<typename std::iterator_traits<ES_1::iterator>::pointer,
-                             fixed_containers::PairView<const TestEnum1, int>*>);
+                             ArrowProxy<PairView<const TestEnum1, int>>>);
 static_assert(std::is_same_v<typename std::iterator_traits<ES_1::iterator>::iterator_category,
                              std::bidirectional_iterator_tag>);
 
-static_assert(std::is_same_v<std::iter_value_t<ES_1::const_iterator>,
-                             fixed_containers::PairView<const TestEnum1, const int>>);
+static_assert(
+    std::is_same_v<std::iter_value_t<ES_1::const_iterator>, PairView<const TestEnum1, const int>>);
 static_assert(std::is_same_v<std::iter_reference_t<ES_1::const_iterator>,
-                             fixed_containers::PairView<const TestEnum1, const int> const&>);
+                             PairView<const TestEnum1, const int>>);
 static_assert(std::is_same_v<std::iter_difference_t<ES_1::const_iterator>, std::ptrdiff_t>);
 static_assert(std::is_same_v<typename std::iterator_traits<ES_1::const_iterator>::pointer,
-                             fixed_containers::PairView<const TestEnum1, const int> const*>);
+                             ArrowProxy<PairView<const TestEnum1, const int>>>);
 static_assert(std::is_same_v<typename std::iterator_traits<ES_1::const_iterator>::iterator_category,
                              std::bidirectional_iterator_tag>);
+
+static_assert(std::is_same_v<ES_1::reference, ES_1::iterator::reference>);
 
 using STD_MAP_INT_INT = std::map<int, int>;
 static_assert(ranges::bidirectional_iterator<STD_MAP_INT_INT::iterator>);
@@ -828,37 +829,47 @@ TEST(EnumMap, IteratorTypes)
     constexpr auto s1 = []()
     {
         EnumMap<TestEnum1, int> s{{TestEnum1::TWO, 20}, {TestEnum1::FOUR, 40}};
-
-        for (const auto& key_and_value : s)
+        for (const auto& key_and_value : s)  // "-Wrange-loop-bind-reference"
         {
             static_assert(
                 std::is_same_v<decltype(key_and_value), const PairView<const TestEnum1, int>&>);
             // key_and_value.second() = 5;  // Not allowed
         }
 
+        // cannot do this
+        // error: non-const lvalue reference to type 'PairView<...>' cannot bind to a temporary of
+        // type 'PairView<...>'
+        /*
         for (auto& key_and_value : s)
         {
             static_assert(std::is_same_v<decltype(key_and_value), PairView<const TestEnum1, int>&>);
             key_and_value.second() = 5;  // Allowed
         }
+         */
 
         for (auto&& key_and_value : s)
         {
-            static_assert(std::is_same_v<decltype(key_and_value), PairView<const TestEnum1, int>&>);
+            static_assert(
+                std::is_same_v<decltype(key_and_value), PairView<const TestEnum1, int>&&>);
             key_and_value.second() = 5;  // Allowed
         }
 
-        for (const auto& [key, value] : s)
+        for (const auto& [key, value] : s)  // "-Wrange-loop-bind-reference"
         {
             static_assert(std::is_same_v<decltype(key), const TestEnum1&>);
             static_assert(std::is_same_v<decltype(value), const int&>);
         }
 
+        // cannot do this
+        // error: non-const lvalue reference to type 'PairView<...>' cannot bind to a temporary of
+        // type 'PairView<...>'
+        /*
         for (auto& [key, value] : s)
         {
             static_assert(std::is_same_v<decltype(key), const TestEnum1&>);
             static_assert(std::is_same_v<decltype(value), int&>);
         }
+         */
 
         for (auto&& [key, value] : s)
         {
@@ -869,13 +880,17 @@ TEST(EnumMap, IteratorTypes)
         return s;
     }();
 
-    static_assert(
-        std::is_same_v<decltype(*s1.begin()), const PairView<const TestEnum1, const int>&>);
+    const auto lvalue_it = s1.begin();
+    static_assert(std::is_same_v<decltype(*lvalue_it), PairView<const TestEnum1, const int>>);
+    static_assert(std::is_same_v<decltype(*s1.begin()), PairView<const TestEnum1, const int>>);
 
     EnumMap<TestEnum1, int> s_non_const{};
-    static_assert(std::is_same_v<decltype(*s_non_const.begin()), PairView<const TestEnum1, int>&>);
+    auto lvalue_it_of_non_const = s_non_const.begin();
+    static_assert(
+        std::is_same_v<decltype(*lvalue_it_of_non_const), PairView<const TestEnum1, int>>);
+    static_assert(std::is_same_v<decltype(*s_non_const.begin()), PairView<const TestEnum1, int>>);
 
-    for (const auto& key_and_value : s1)
+    for (const auto& key_and_value : s1)  // "-Wrange-loop-bind-reference"
     {
         static_assert(
             std::is_same_v<decltype(key_and_value), const PairView<const TestEnum1, const int>&>);
@@ -1106,14 +1121,13 @@ TEST(EnumMap, IteratorDereferenceLiveness)
     }
 
     {
-        /*
         // this test needs ubsan/asan
         EnumMap<TestEnum1, int> m = {{TestEnum1::ONE, 2}};
-        decltype(m)::reference ref = *m.begin();  // Dangling!!
+        decltype(m)::reference ref = *m.begin();  // Fine
         EXPECT_EQ(TestEnum1::ONE, ref.first());
         EXPECT_EQ(2, ref.second());
-         */
-    } {
+    }
+    {
         // this test needs ubsan/asan
         EnumMap<TestEnum1, int> m = {{TestEnum1::ONE, 2}};
         auto ref = *m.begin();  // Fine
@@ -1124,7 +1138,7 @@ TEST(EnumMap, IteratorDereferenceLiveness)
         /*
         // this test needs ubsan/asan
         EnumMap<TestEnum1, int> m = {{TestEnum1::ONE, 2}};
-        auto& ref = *m.begin();  // Dangling!!
+        auto& ref = *m.begin();  // Fails to compile, instead of allowing dangling pointers
         EXPECT_EQ(TestEnum1::ONE, ref.first());
         EXPECT_EQ(2, ref.second());
          */
@@ -1296,7 +1310,8 @@ TEST(EnumMap, Ranges)
     auto f = s1 | ranges::views::filter([](const auto& v) -> bool { return v.second() == 10; });
 
     EXPECT_EQ(1, ranges::distance(f));
-    int first_entry = f.begin()->second();
+    int first_entry = (*f.begin()).second();  // Can't use arrow with range-v3 because it requires
+                                              // l-value. Note that std::ranges works
     EXPECT_EQ(10, first_entry);
 }
 

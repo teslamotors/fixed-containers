@@ -72,8 +72,8 @@ public:
     using key_type = K;
     using mapped_type = V;
     using value_type = std::pair<const K, V>;
-    using reference = PairView<const K, V>&;
-    using const_reference = const PairView<const K, const V>&;
+    using reference = PairView<const K, V>;
+    using const_reference = PairView<const K, const V>;
     using pointer = std::add_pointer_t<reference>;
     using const_pointer = std::add_pointer_t<const_reference>;
 
@@ -88,14 +88,11 @@ private:
     struct PairProvider
     {
         using ConstOrMutableTree = std::conditional_t<IS_CONST, const Tree, Tree>;
-        using ConstOrMutablePairView =
-            std::conditional_t<IS_CONST,
-                               pair_view_detail::AssignablePairView<const K, const V>,
-                               pair_view_detail::AssignablePairView<const K, V>>;
+        using ConstOrMutablePair =
+            std::conditional_t<IS_CONST, std::pair<const K&, const V&>, std::pair<const K&, V&>>;
 
         ConstOrMutableTree* tree_;
         NodeIndex current_index_;
-        ConstOrMutablePairView storage_;  // Needed for liveness
 
         constexpr PairProvider() noexcept
           : PairProvider{nullptr, MAXIMUM_SIZE}
@@ -106,12 +103,7 @@ private:
                                const NodeIndex& current_index) noexcept
           : tree_{tree}
           , current_index_{current_index}
-          , storage_{nullptr, nullptr}
         {
-            if (tree != nullptr)
-            {
-                update_storage();
-            }
         }
 
         constexpr PairProvider(const PairProvider&) = default;
@@ -138,8 +130,6 @@ private:
                 current_index_ = tree_->index_of_successor_at(current_index_);
                 current_index_ = replace_null_index_with_max_size_for_end_iterator(current_index_);
             }
-
-            update_storage();
         }
         constexpr void recede() noexcept
         {
@@ -151,22 +141,19 @@ private:
             {
                 current_index_ = tree_->index_of_predecessor_at(current_index_);
             }
-
-            update_storage();
         }
 
         constexpr const_reference get() const noexcept
             requires IS_CONST
         {
-            return storage_;
+            fixed_red_black_tree_detail::RedBlackTreeNodeView node = tree_->node_at(current_index_);
+            return {&node.key(), &node.value()};
         }
         constexpr reference get() const noexcept
             requires(not IS_CONST)
         {
-            // The function is tagged `const` and would add a `const` to the returned type.
-            // This is usually fine, but PairView intentionally propagates its constness to each of
-            // its views. Therefore, remove the `const`.
-            return const_cast<reference>(static_cast<const PairView<const K, V>&>(storage_));
+            fixed_red_black_tree_detail::RedBlackTreeNodeView node = tree_->node_at(current_index_);
+            return {&node.key(), &node.value()};
         }
 
         constexpr bool operator==(const PairProvider& other) const noexcept
@@ -176,17 +163,6 @@ private:
         constexpr bool operator==(const PairProvider<!IS_CONST>& other) const noexcept
         {
             return tree_ == other.tree_ && current_index_ == other.current_index_;
-        }
-
-    private:
-        constexpr void update_storage() noexcept
-        {
-            if (current_index_ < MAXIMUM_SIZE && tree_->contains_at(current_index_))
-            {
-                fixed_red_black_tree_detail::RedBlackTreeNodeView node =
-                    tree_->node_at(current_index_);
-                storage_ = ConstOrMutablePairView{&node.key(), &node.value()};
-            }
         }
     };
 

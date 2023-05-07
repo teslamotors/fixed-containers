@@ -121,8 +121,8 @@ public:
     using key_type = K;
     using mapped_type = V;
     using value_type = std::pair<const K, V>;
-    using reference = PairView<const K, V>&;
-    using const_reference = const PairView<const K, const V>&;
+    using reference = PairView<const K, V>;
+    using const_reference = PairView<const K, const V>;
     using pointer = std::add_pointer_t<reference>;
     using const_pointer = std::add_pointer_t<const_reference>;
 
@@ -141,13 +141,11 @@ private:
     {
         using ConstOrMutableValueArray =
             std::conditional_t<IS_CONST, const ValueArrayType, ValueArrayType>;
-        using ConstOrMutablePairView =
-            std::conditional_t<IS_CONST,
-                               pair_view_detail::AssignablePairView<const K, const V>,
-                               pair_view_detail::AssignablePairView<const K, V>>;
+        using ConstOrMutablePair =
+            std::conditional_t<IS_CONST, std::pair<const K&, const V&>, std::pair<const K&, V&>>;
 
         ConstOrMutableValueArray* values_;
-        ConstOrMutablePairView current_;  // Needed for liveness
+        std::size_t current_index_;
 
         constexpr PairProvider() noexcept
           : PairProvider{nullptr}
@@ -156,13 +154,13 @@ private:
 
         constexpr PairProvider(ConstOrMutableValueArray* const values) noexcept
           : values_{values}
-          , current_{nullptr, nullptr}
+          , current_index_{}
         {
         }
 
         constexpr PairProvider(const PairProvider&) = default;
         constexpr PairProvider(PairProvider&&) noexcept = default;
-        constexpr PairProvider& operator=(const PairProvider&) = default;
+        constexpr PairProvider& operator=(const PairProvider& other) = default;
         constexpr PairProvider& operator=(PairProvider&&) noexcept = default;
 
         // https://github.com/llvm/llvm-project/issues/62555
@@ -173,23 +171,17 @@ private:
         {
         }
 
-        constexpr void update_to_index(const std::size_t i) noexcept
-        {
-            current_ = ConstOrMutablePairView{&ENUM_VALUES[i], &((*values_)[i].get())};
-        }
+        constexpr void update_to_index(const std::size_t i) noexcept { current_index_ = i; }
 
         constexpr const_reference get() const noexcept
             requires IS_CONST
         {
-            return current_;
+            return {&ENUM_VALUES[current_index_], &(*values_)[current_index_].get()};
         }
         constexpr reference get() const noexcept
             requires(not IS_CONST)
         {
-            // The function is tagged `const` and would add a `const` to the returned type.
-            // This is usually fine, but PairView intentionally propagates its constness to each of
-            // its views. Therefore, remove the `const`.
-            return const_cast<reference>(static_cast<const PairView<const K, V>&>(current_));
+            return {&ENUM_VALUES[current_index_], &(*values_)[current_index_].get()};
         }
     };
 

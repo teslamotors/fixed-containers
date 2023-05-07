@@ -16,6 +16,7 @@ cc_library(
     hdrs = ["include/fixed_containers/bidirectional_iterator.hpp"],
     includes = ["include"],
     deps = [
+        ":arrow_proxy",
         ":iterator_utils",
     ],
     copts = ["-std=c++20"],
@@ -201,7 +202,8 @@ cc_library(
     hdrs = ["include/fixed_containers/index_range_predicate_iterator.hpp"],
     includes = ["include"],
     deps = [
-        ":iterator_utils"
+        ":arrow_proxy",
+        ":iterator_utils",
     ],
     copts = ["-std=c++20"],
 )
