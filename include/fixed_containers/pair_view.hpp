@@ -48,8 +48,12 @@ public:
     // (std::pair<const K, V>), so PairView's operators are deleted to match that behavior. This
     // will cause algorithms like std::remove to fail to compile for fixed_container maps as it does
     // for std::map. See https://en.cppreference.com/w/cpp/algorithm/remove#Notes for more info.
-    constexpr PairView& operator=(const PairView&) requires ALLOW_PUBLIC_ASSIGNMENT = default;
-    constexpr PairView& operator=(PairView&&) noexcept requires ALLOW_PUBLIC_ASSIGNMENT = default;
+    constexpr PairView& operator=(const PairView&)
+        requires ALLOW_PUBLIC_ASSIGNMENT
+    = default;
+    constexpr PairView& operator=(PairView&&) noexcept
+        requires ALLOW_PUBLIC_ASSIGNMENT
+    = default;
 
     constexpr PairView(const PairView&) = default;
     constexpr PairView(PairView&&) noexcept = default;
@@ -149,21 +153,21 @@ template <std::size_t N, class Tp1, class Tp2>
 [[nodiscard]] constexpr auto get(fixed_containers::PairView<Tp1, Tp2>&& in) noexcept ->
     typename tuple_element<N, fixed_containers::PairView<Tp1, Tp2>>::type&&
 {
-    return std::forward<Tp1>(std::move(in).template get<N>());
+    return std::move(in).template get<N>();
 }
 
 template <std::size_t N, class Tp1, class Tp2>
 [[nodiscard]] constexpr auto get(const fixed_containers::PairView<Tp1, Tp2>& in) noexcept -> const
-    typename tuple_element<N, fixed_containers::PairView<Tp1, Tp2>>::type&
+    typename tuple_element<N, const fixed_containers::PairView<Tp1, Tp2>>::type&
 {
     return in.template get<N>();
 }
 
 template <std::size_t N, class Tp1, class Tp2>
 [[nodiscard]] constexpr auto get(const fixed_containers::PairView<Tp1, Tp2>&& in) noexcept -> const
-    typename tuple_element<N, fixed_containers::PairView<Tp1, Tp2>>::type&&
+    typename tuple_element<N, const fixed_containers::PairView<Tp1, Tp2>>::type&&
 {
-    return std::forward<const Tp1>(std::move(in).template get<N>());
+    return std::move(in).template get<N>();
 }
 
 }  // namespace std

@@ -6,16 +6,81 @@
 
 namespace fixed_containers
 {
+
 TEST(PairView, std_get)
 {
     {
-        std::pair<int, int> s;
-        static_cast<void>(std::get<1>(s));
+        int first_value = 5;
+        std::string second_value = "blah";
+        PairView<int, std::string> s{&first_value, &second_value};
+        static_assert(std::is_same_v<int&, decltype(std::get<0>(s))>);
+        static_assert(std::is_same_v<std::string&, decltype(std::get<1>(s))>);
+        EXPECT_EQ(5, std::get<0>(s));
+        EXPECT_EQ("blah", std::get<1>(s));
+
+        PairView<int, std::string>& mutable_ref = s;
+        static_assert(std::is_same_v<int&, decltype(std::get<0>(mutable_ref))>);
+        static_assert(std::is_same_v<std::string&, decltype(std::get<1>(mutable_ref))>);
+        EXPECT_EQ(5, std::get<0>(mutable_ref));
+        EXPECT_EQ("blah", std::get<1>(mutable_ref));
+
+        const PairView<int, std::string>& const_ref = s;
+        static_assert(std::is_same_v<const int&, decltype(std::get<0>(const_ref))>);
+        static_assert(std::is_same_v<const std::string&, decltype(std::get<1>(const_ref))>);
+        EXPECT_EQ(5, std::get<0>(const_ref));
+        EXPECT_EQ("blah", std::get<1>(const_ref));
+
+        // r-value
+        static_assert(std::is_same_v<int&, decltype(std::get<0>(PairView<int, std::string>{s}))>);
+        static_assert(
+            std::is_same_v<std::string&, decltype(std::get<1>(PairView<int, std::string>{s}))>);
+        EXPECT_EQ(5, std::get<0>(PairView<int, std::string>{s}));
+        EXPECT_EQ("blah", std::get<1>(PairView<int, std::string>{s}));
+
+        using CostRvalue = const PairView<int, std::string>&&;
+        static_assert(
+            std::is_same_v<const int&, decltype(std::get<0>(static_cast<CostRvalue>(s)))>);
+        static_assert(
+            std::is_same_v<const std::string&, decltype(std::get<1>(static_cast<CostRvalue>(s)))>);
+        EXPECT_EQ(5, std::get<0>(static_cast<CostRvalue>(s)));
+        EXPECT_EQ("blah", std::get<1>(static_cast<CostRvalue>(s)));
     }
 
     {
-        PairView<int, int> s;
-        static_cast<void>(std::get<1>(s));
+        int first_value = 5;
+        std::string second_value = "blah";
+        std::pair<int&, std::string&> s{first_value, second_value};
+        static_assert(std::is_same_v<int&, decltype(std::get<0>(s))>);
+        static_assert(std::is_same_v<std::string&, decltype(std::get<1>(s))>);
+        EXPECT_EQ(5, std::get<0>(s));
+        EXPECT_EQ("blah", std::get<1>(s));
+
+        std::pair<int&, std::string&> mutable_ref = s;
+        static_assert(std::is_same_v<int&, decltype(std::get<0>(mutable_ref))>);
+        static_assert(std::is_same_v<std::string&, decltype(std::get<1>(mutable_ref))>);
+        EXPECT_EQ(5, std::get<0>(mutable_ref));
+        EXPECT_EQ("blah", std::get<1>(mutable_ref));
+
+        const std::pair<int&, std::string&>& const_ref = s;
+        static_assert(std::is_same_v<int&, decltype(std::get<0>(const_ref))>);
+        static_assert(std::is_same_v<std::string&, decltype(std::get<1>(const_ref))>);
+        EXPECT_EQ(5, std::get<0>(const_ref));
+        EXPECT_EQ("blah", std::get<1>(const_ref));
+
+        // r-value
+        static_assert(
+            std::is_same_v<int&, decltype(std::get<0>(std::pair<int&, std::string&>{s}))>);
+        static_assert(
+            std::is_same_v<std::string&, decltype(std::get<1>(std::pair<int&, std::string&>{s}))>);
+        EXPECT_EQ(5, std::get<0>(std::pair<int&, std::string&>{s}));
+        EXPECT_EQ("blah", std::get<1>(std::pair<int&, std::string&>{s}));
+
+        using CostRvalue = const std::pair<int&, std::string&>&&;
+        static_assert(std::is_same_v<int&, decltype(std::get<0>(static_cast<CostRvalue>(s)))>);
+        static_assert(
+            std::is_same_v<std::string&, decltype(std::get<1>(static_cast<CostRvalue>(s)))>);
+        EXPECT_EQ(5, std::get<0>(static_cast<CostRvalue>(s)));
+        EXPECT_EQ("blah", std::get<1>(static_cast<CostRvalue>(s)));
     }
 }
 
