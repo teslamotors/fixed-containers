@@ -472,12 +472,13 @@ private:
     {
         return i == NULL_INDEX ? NULL_INDEX : tree_storage().right_index(i);
     }
-    [[nodiscard]] constexpr Color color_of(const NodeIndex& i) const
+    [[nodiscard]] constexpr NodeColor color_of(const NodeIndex& i) const
     {
-        if (i == NULL_INDEX) return BLACK;  // null nodes are treated as BLACK
+        // null nodes are treated as COLOR_BLACK
+        if (i == NULL_INDEX) return COLOR_BLACK;
         return tree_storage().color(i);
     }
-    constexpr void set_color(const NodeIndex& i, const Color& color)
+    constexpr void set_color(const NodeIndex& i, const NodeColor& color)
     {
         if (i == NULL_INDEX) return;
         tree_storage().set_color(i, color);
@@ -556,19 +557,19 @@ private:
     constexpr void fix_after_insertion(const NodeIndex& index_of_newly_added)
     {
         NodeIndex i = index_of_newly_added;
-        tree_storage().set_color(i, RED);
+        tree_storage().set_color(i, COLOR_RED);
 
         while (i != NULL_INDEX && i != root_index() &&
-               tree_storage_at(tree_storage_at(i).parent_index()).color() == RED)
+               tree_storage_at(tree_storage_at(i).parent_index()).color() == COLOR_RED)
         {
             if (parent_index_of(i) == left_index_of(parent_index_of(parent_index_of(i))))
             {
                 const NodeIndex uncle_index = right_index_of(parent_index_of(parent_index_of(i)));
-                if (color_of(uncle_index) == RED)
+                if (color_of(uncle_index) == COLOR_RED)
                 {
-                    set_color(parent_index_of(i), BLACK);
-                    set_color(uncle_index, BLACK);
-                    set_color(parent_index_of(parent_index_of(i)), RED);
+                    set_color(parent_index_of(i), COLOR_BLACK);
+                    set_color(uncle_index, COLOR_BLACK);
+                    set_color(parent_index_of(parent_index_of(i)), COLOR_RED);
                     i = parent_index_of(parent_index_of(i));
                 }
                 else
@@ -578,19 +579,19 @@ private:
                         i = parent_index_of(i);
                         rotate_left(i);
                     }
-                    set_color(parent_index_of(i), BLACK);
-                    set_color(parent_index_of(parent_index_of(i)), RED);
+                    set_color(parent_index_of(i), COLOR_BLACK);
+                    set_color(parent_index_of(parent_index_of(i)), COLOR_RED);
                     rotate_right(parent_index_of(parent_index_of(i)));
                 }
             }
             else
             {
                 const NodeIndex uncle_index = left_index_of(parent_index_of(parent_index_of(i)));
-                if (color_of(uncle_index) == RED)
+                if (color_of(uncle_index) == COLOR_RED)
                 {
-                    set_color(parent_index_of(i), BLACK);
-                    set_color(uncle_index, BLACK);
-                    set_color(parent_index_of(parent_index_of(i)), RED);
+                    set_color(parent_index_of(i), COLOR_BLACK);
+                    set_color(uncle_index, COLOR_BLACK);
+                    set_color(parent_index_of(parent_index_of(i)), COLOR_RED);
                     i = parent_index_of(parent_index_of(i));
                 }
                 else
@@ -600,14 +601,14 @@ private:
                         i = parent_index_of(i);
                         rotate_right(i);
                     }
-                    set_color(parent_index_of(i), BLACK);
-                    set_color(parent_index_of(parent_index_of(i)), RED);
+                    set_color(parent_index_of(i), COLOR_BLACK);
+                    set_color(parent_index_of(parent_index_of(i)), COLOR_RED);
                     rotate_left(parent_index_of(parent_index_of(i)));
                 }
             }
         }
 
-        tree_storage_at(root_index()).set_color(BLACK);
+        tree_storage_at(root_index()).set_color(COLOR_BLACK);
     }
 
     constexpr SuccessorIndexAndRepositionedIndex delete_at_and_return_successor_and_repositioned(
@@ -681,7 +682,7 @@ private:
             node_to_delete.set_left_index(NULL_INDEX);
             node_to_delete.set_right_index(NULL_INDEX);
 
-            if (node_to_delete.color() == BLACK)
+            if (node_to_delete.color() == COLOR_BLACK)
             {
                 fix_after_deletion(replacement_node_index);
             }
@@ -690,7 +691,7 @@ private:
         {
             // If there are no children
             RedBlackTreeNodeView node_to_delete = tree_storage_at(index_to_delete);
-            if (node_to_delete.color() == BLACK)
+            if (node_to_delete.color() == COLOR_BLACK)
             {
                 fix_after_deletion(index_to_delete);
             }
@@ -731,38 +732,38 @@ private:
     {
         NodeIndex i = index_of_deleted;
 
-        while (i != root_index() && color_of(i) == BLACK)
+        while (i != root_index() && color_of(i) == COLOR_BLACK)
         {
             if (i == left_index_of(parent_index_of(i)))
             {
                 NodeIndex sibling_index = right_index_of(parent_index_of(i));
 
-                if (color_of(sibling_index) == RED)
+                if (color_of(sibling_index) == COLOR_RED)
                 {
-                    set_color(sibling_index, BLACK);
-                    set_color(parent_index_of(i), RED);
+                    set_color(sibling_index, COLOR_BLACK);
+                    set_color(parent_index_of(i), COLOR_RED);
                     rotate_left(parent_index_of(i));
                     sibling_index = right_index_of(parent_index_of(i));
                 }
 
-                if (color_of(left_index_of(sibling_index)) == BLACK &&
-                    color_of(right_index_of(sibling_index)) == BLACK)
+                if (color_of(left_index_of(sibling_index)) == COLOR_BLACK &&
+                    color_of(right_index_of(sibling_index)) == COLOR_BLACK)
                 {
-                    set_color(sibling_index, RED);
+                    set_color(sibling_index, COLOR_RED);
                     i = parent_index_of(i);
                 }
                 else
                 {
-                    if (color_of(right_index_of(sibling_index)) == BLACK)
+                    if (color_of(right_index_of(sibling_index)) == COLOR_BLACK)
                     {
-                        set_color(left_index_of(sibling_index), BLACK);
-                        set_color(sibling_index, RED);
+                        set_color(left_index_of(sibling_index), COLOR_BLACK);
+                        set_color(sibling_index, COLOR_RED);
                         rotate_right(sibling_index);
                         sibling_index = right_index_of(parent_index_of(i));
                     }
                     set_color(sibling_index, color_of(parent_index_of(i)));
-                    set_color(parent_index_of(i), BLACK);
-                    set_color(right_index_of(sibling_index), BLACK);
+                    set_color(parent_index_of(i), COLOR_BLACK);
+                    set_color(right_index_of(sibling_index), COLOR_BLACK);
                     rotate_left(parent_index_of(i));
                     i = root_index();
                 }
@@ -771,39 +772,39 @@ private:
             {
                 NodeIndex sibling_index = left_index_of(parent_index_of(i));
 
-                if (color_of(sibling_index) == RED)
+                if (color_of(sibling_index) == COLOR_RED)
                 {
-                    set_color(sibling_index, BLACK);
-                    set_color(parent_index_of(i), RED);
+                    set_color(sibling_index, COLOR_BLACK);
+                    set_color(parent_index_of(i), COLOR_RED);
                     rotate_right(parent_index_of(i));
                     sibling_index = left_index_of(parent_index_of(i));
                 }
 
-                if (color_of(right_index_of(sibling_index)) == BLACK &&
-                    color_of(left_index_of(sibling_index)) == BLACK)
+                if (color_of(right_index_of(sibling_index)) == COLOR_BLACK &&
+                    color_of(left_index_of(sibling_index)) == COLOR_BLACK)
                 {
-                    set_color(sibling_index, RED);
+                    set_color(sibling_index, COLOR_RED);
                     i = parent_index_of(i);
                 }
                 else
                 {
-                    if (color_of(left_index_of(sibling_index)) == BLACK)
+                    if (color_of(left_index_of(sibling_index)) == COLOR_BLACK)
                     {
-                        set_color(right_index_of(sibling_index), BLACK);
-                        set_color(sibling_index, RED);
+                        set_color(right_index_of(sibling_index), COLOR_BLACK);
+                        set_color(sibling_index, COLOR_RED);
                         rotate_left(sibling_index);
                         sibling_index = left_index_of(parent_index_of(i));
                     }
                     set_color(sibling_index, color_of(parent_index_of(i)));
-                    set_color(parent_index_of(i), BLACK);
-                    set_color(left_index_of(sibling_index), BLACK);
+                    set_color(parent_index_of(i), COLOR_BLACK);
+                    set_color(left_index_of(sibling_index), COLOR_BLACK);
                     rotate_right(parent_index_of(i));
                     i = root_index();
                 }
             }
         }
 
-        set_color(i, BLACK);
+        set_color(i, COLOR_BLACK);
     }
 
     constexpr void fixup_repositioned_index(NodeIndex& i,

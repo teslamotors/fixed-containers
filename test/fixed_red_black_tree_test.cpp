@@ -50,8 +50,11 @@ static_assert(TriviallyMoveAssignable<ES_1>);
 static_assert(IsStructuralType<ES_1>);
 
 template <typename K>
-constexpr CompactRedBlackTreeNode<K> make_node(
-    const K& key, NodeIndex parent_index, NodeIndex left_index, NodeIndex right_index, Color color)
+constexpr CompactRedBlackTreeNode<K> make_node(const K& key,
+                                               NodeIndex parent_index,
+                                               NodeIndex left_index,
+                                               NodeIndex right_index,
+                                               NodeColor color)
 {
     CompactRedBlackTreeNode<K> out{key};
     out.set_parent_index(parent_index);
@@ -67,7 +70,7 @@ constexpr CompactRedBlackTreeNode<K, V> make_node(const K& key,
                                                   NodeIndex parent_index,
                                                   NodeIndex left_index,
                                                   NodeIndex right_index,
-                                                  Color color)
+                                                  NodeColor color)
 {
     CompactRedBlackTreeNode<K, V> out{key, value};
     out.set_parent_index(parent_index);
@@ -198,7 +201,7 @@ TEST(NodeIndexWithColorEmbeddedInTheMostSignificantBit, Basic)
         constexpr auto default_value = []()
         { return NodeIndexWithColorEmbeddedInTheMostSignificantBit{}; }();
         static_assert(consteval_compare::equal<NULL_INDEX, default_value.get_index()>);
-        static_assert(consteval_compare::equal<BLACK, default_value.get_color()>);
+        static_assert(consteval_compare::equal<COLOR_BLACK, default_value.get_color()>);
     }
 
     {
@@ -206,22 +209,22 @@ TEST(NodeIndexWithColorEmbeddedInTheMostSignificantBit, Basic)
         {
             NodeIndexWithColorEmbeddedInTheMostSignificantBit ret{};
             ret.set_index(365);
-            ret.set_color(BLACK);
+            ret.set_color(COLOR_BLACK);
             return ret;
         }();
         constexpr auto set_value_with_red = []()
         {
             NodeIndexWithColorEmbeddedInTheMostSignificantBit ret{};
             ret.set_index(365);
-            ret.set_color(RED);
+            ret.set_color(COLOR_RED);
             return ret;
         }();
 
         static_assert(consteval_compare::equal<365, set_value_with_black.get_index()>);
-        static_assert(consteval_compare::equal<BLACK, set_value_with_black.get_color()>);
+        static_assert(consteval_compare::equal<COLOR_BLACK, set_value_with_black.get_color()>);
 
         static_assert(consteval_compare::equal<365, set_value_with_red.get_index()>);
-        static_assert(consteval_compare::equal<RED, set_value_with_red.get_color()>);
+        static_assert(consteval_compare::equal<COLOR_RED, set_value_with_red.get_color()>);
     }
 
     {
@@ -229,22 +232,22 @@ TEST(NodeIndexWithColorEmbeddedInTheMostSignificantBit, Basic)
         {
             NodeIndexWithColorEmbeddedInTheMostSignificantBit ret{};
             ret.set_index(0);
-            ret.set_color(BLACK);
+            ret.set_color(COLOR_BLACK);
             return ret;
         }();
         constexpr auto set_min_value_with_red = []()
         {
             NodeIndexWithColorEmbeddedInTheMostSignificantBit ret{};
             ret.set_index(0);
-            ret.set_color(RED);
+            ret.set_color(COLOR_RED);
             return ret;
         }();
 
         static_assert(consteval_compare::equal<0, set_min_value_with_black.get_index()>);
-        static_assert(consteval_compare::equal<BLACK, set_min_value_with_black.get_color()>);
+        static_assert(consteval_compare::equal<COLOR_BLACK, set_min_value_with_black.get_color()>);
 
         static_assert(consteval_compare::equal<0, set_min_value_with_red.get_index()>);
-        static_assert(consteval_compare::equal<RED, set_min_value_with_red.get_color()>);
+        static_assert(consteval_compare::equal<COLOR_RED, set_min_value_with_red.get_color()>);
     }
 
     {
@@ -253,22 +256,22 @@ TEST(NodeIndexWithColorEmbeddedInTheMostSignificantBit, Basic)
         {
             NodeIndexWithColorEmbeddedInTheMostSignificantBit ret{};
             ret.set_index(MAX_INDEX);
-            ret.set_color(BLACK);
+            ret.set_color(COLOR_BLACK);
             return ret;
         }();
         constexpr auto set_max_value_with_red = []()
         {
             NodeIndexWithColorEmbeddedInTheMostSignificantBit ret{};
             ret.set_index(MAX_INDEX);
-            ret.set_color(RED);
+            ret.set_color(COLOR_RED);
             return ret;
         }();
 
         static_assert(consteval_compare::equal<NULL_INDEX, set_max_value_with_black.get_index()>);
-        static_assert(consteval_compare::equal<BLACK, set_max_value_with_black.get_color()>);
+        static_assert(consteval_compare::equal<COLOR_BLACK, set_max_value_with_black.get_color()>);
 
         static_assert(consteval_compare::equal<NULL_INDEX, set_max_value_with_red.get_index()>);
-        static_assert(consteval_compare::equal<RED, set_max_value_with_red.get_color()>);
+        static_assert(consteval_compare::equal<COLOR_RED, set_max_value_with_red.get_color()>);
 
         NodeIndexWithColorEmbeddedInTheMostSignificantBit ret{};
         EXPECT_DEATH(ret.set_index(MAX_INDEX + 1), "");
@@ -387,8 +390,8 @@ TEST(FixedRedBlackTreeSet, NoValue)
         ASSERT_EQ(0, find_height(bst));
         // Position 0 associated with (15, 15)
 
-        ASSERT_TRUE(
-            are_equal(make_node(15, NULL_INDEX, NULL_INDEX, NULL_INDEX, BLACK), bst.node_at(0)));
+        ASSERT_TRUE(are_equal(make_node(15, NULL_INDEX, NULL_INDEX, NULL_INDEX, COLOR_BLACK),
+                              bst.node_at(0)));
     }
 
     {
@@ -403,8 +406,9 @@ TEST(FixedRedBlackTreeSet, NoValue)
          *           5R
          */
 
-        ASSERT_TRUE(are_equal(make_node(15, NULL_INDEX, 1, NULL_INDEX, BLACK), bst.node_at(0)));
-        ASSERT_TRUE(are_equal(make_node(5, 0, NULL_INDEX, NULL_INDEX, RED), bst.node_at(1)));
+        ASSERT_TRUE(
+            are_equal(make_node(15, NULL_INDEX, 1, NULL_INDEX, COLOR_BLACK), bst.node_at(0)));
+        ASSERT_TRUE(are_equal(make_node(5, 0, NULL_INDEX, NULL_INDEX, COLOR_RED), bst.node_at(1)));
     }
 
     {
@@ -419,9 +423,9 @@ TEST(FixedRedBlackTreeSet, NoValue)
          *             /   \
          *           1R     15R
          */
-        ASSERT_TRUE(are_equal(make_node(15, 1, NULL_INDEX, NULL_INDEX, RED), bst.node_at(0)));
-        ASSERT_TRUE(are_equal(make_node(5, NULL_INDEX, 2, 0, BLACK), bst.node_at(1)));
-        ASSERT_TRUE(are_equal(make_node(1, 1, NULL_INDEX, NULL_INDEX, RED), bst.node_at(2)));
+        ASSERT_TRUE(are_equal(make_node(15, 1, NULL_INDEX, NULL_INDEX, COLOR_RED), bst.node_at(0)));
+        ASSERT_TRUE(are_equal(make_node(5, NULL_INDEX, 2, 0, COLOR_BLACK), bst.node_at(1)));
+        ASSERT_TRUE(are_equal(make_node(1, 1, NULL_INDEX, NULL_INDEX, COLOR_RED), bst.node_at(2)));
     }
 }
 
@@ -435,7 +439,7 @@ TEST(FixedRedBlackTree, InsertionExample1)
         ASSERT_EQ(0, find_height(bst));
         // Position 0 associated with (15, 15)
 
-        ASSERT_TRUE(are_equal(make_node(15, 150, NULL_INDEX, NULL_INDEX, NULL_INDEX, BLACK),
+        ASSERT_TRUE(are_equal(make_node(15, 150, NULL_INDEX, NULL_INDEX, NULL_INDEX, COLOR_BLACK),
                               bst.node_at(0)));
     }
 
@@ -452,8 +456,9 @@ TEST(FixedRedBlackTree, InsertionExample1)
          */
 
         ASSERT_TRUE(
-            are_equal(make_node(15, 150, NULL_INDEX, 1, NULL_INDEX, BLACK), bst.node_at(0)));
-        ASSERT_TRUE(are_equal(make_node(5, 50, 0, NULL_INDEX, NULL_INDEX, RED), bst.node_at(1)));
+            are_equal(make_node(15, 150, NULL_INDEX, 1, NULL_INDEX, COLOR_BLACK), bst.node_at(0)));
+        ASSERT_TRUE(
+            are_equal(make_node(5, 50, 0, NULL_INDEX, NULL_INDEX, COLOR_RED), bst.node_at(1)));
     }
 
     {
@@ -468,9 +473,11 @@ TEST(FixedRedBlackTree, InsertionExample1)
          *             /   \
          *           1R     15R
          */
-        ASSERT_TRUE(are_equal(make_node(15, 150, 1, NULL_INDEX, NULL_INDEX, RED), bst.node_at(0)));
-        ASSERT_TRUE(are_equal(make_node(5, 50, NULL_INDEX, 2, 0, BLACK), bst.node_at(1)));
-        ASSERT_TRUE(are_equal(make_node(1, 10, 1, NULL_INDEX, NULL_INDEX, RED), bst.node_at(2)));
+        ASSERT_TRUE(
+            are_equal(make_node(15, 150, 1, NULL_INDEX, NULL_INDEX, COLOR_RED), bst.node_at(0)));
+        ASSERT_TRUE(are_equal(make_node(5, 50, NULL_INDEX, 2, 0, COLOR_BLACK), bst.node_at(1)));
+        ASSERT_TRUE(
+            are_equal(make_node(1, 10, 1, NULL_INDEX, NULL_INDEX, COLOR_RED), bst.node_at(2)));
     }
 }
 
@@ -500,14 +507,18 @@ TEST(FixedRedBlackTree, InsertionExample2)
          *           9R     13R      23R
          */
 
-        ASSERT_TRUE(are_equal(make_node(8, 80, NULL_INDEX, 1, 2, BLACK), bst.node_at(0)));
-        ASSERT_TRUE(are_equal(make_node(5, 50, 0, NULL_INDEX, NULL_INDEX, BLACK), bst.node_at(1)));
-        ASSERT_TRUE(are_equal(make_node(15, 150, 0, 3, 4, RED), bst.node_at(2)));
-        ASSERT_TRUE(are_equal(make_node(12, 120, 2, 5, 6, BLACK), bst.node_at(3)));
-        ASSERT_TRUE(are_equal(make_node(19, 190, 2, NULL_INDEX, 7, BLACK), bst.node_at(4)));
-        ASSERT_TRUE(are_equal(make_node(9, 90, 3, NULL_INDEX, NULL_INDEX, RED), bst.node_at(5)));
-        ASSERT_TRUE(are_equal(make_node(13, 130, 3, NULL_INDEX, NULL_INDEX, RED), bst.node_at(6)));
-        ASSERT_TRUE(are_equal(make_node(23, 230, 4, NULL_INDEX, NULL_INDEX, RED), bst.node_at(7)));
+        ASSERT_TRUE(are_equal(make_node(8, 80, NULL_INDEX, 1, 2, COLOR_BLACK), bst.node_at(0)));
+        ASSERT_TRUE(
+            are_equal(make_node(5, 50, 0, NULL_INDEX, NULL_INDEX, COLOR_BLACK), bst.node_at(1)));
+        ASSERT_TRUE(are_equal(make_node(15, 150, 0, 3, 4, COLOR_RED), bst.node_at(2)));
+        ASSERT_TRUE(are_equal(make_node(12, 120, 2, 5, 6, COLOR_BLACK), bst.node_at(3)));
+        ASSERT_TRUE(are_equal(make_node(19, 190, 2, NULL_INDEX, 7, COLOR_BLACK), bst.node_at(4)));
+        ASSERT_TRUE(
+            are_equal(make_node(9, 90, 3, NULL_INDEX, NULL_INDEX, COLOR_RED), bst.node_at(5)));
+        ASSERT_TRUE(
+            are_equal(make_node(13, 130, 3, NULL_INDEX, NULL_INDEX, COLOR_RED), bst.node_at(6)));
+        ASSERT_TRUE(
+            are_equal(make_node(23, 230, 4, NULL_INDEX, NULL_INDEX, COLOR_RED), bst.node_at(7)));
     }
 }
 
@@ -529,9 +540,11 @@ TEST(FixedRedBlackTree, Insertion_FocusOnTheRight)
          *           1R      5R
          */
 
-        ASSERT_TRUE(are_equal(make_node(3, 30, NULL_INDEX, 1, 2, BLACK), bst.node_at(0)));
-        ASSERT_TRUE(are_equal(make_node(1, 10, 0, NULL_INDEX, NULL_INDEX, RED), bst.node_at(1)));
-        ASSERT_TRUE(are_equal(make_node(5, 50, 0, NULL_INDEX, NULL_INDEX, RED), bst.node_at(2)));
+        ASSERT_TRUE(are_equal(make_node(3, 30, NULL_INDEX, 1, 2, COLOR_BLACK), bst.node_at(0)));
+        ASSERT_TRUE(
+            are_equal(make_node(1, 10, 0, NULL_INDEX, NULL_INDEX, COLOR_RED), bst.node_at(1)));
+        ASSERT_TRUE(
+            are_equal(make_node(5, 50, 0, NULL_INDEX, NULL_INDEX, COLOR_RED), bst.node_at(2)));
     }
 
     // color-flip
@@ -551,9 +564,10 @@ TEST(FixedRedBlackTree, Insertion_FocusOnTheRight)
          *                       7R
          */
 
-        ASSERT_TRUE(are_equal(make_node(3, 30, NULL_INDEX, 1, 2, BLACK), bst.node_at(0)));
-        ASSERT_TRUE(are_equal(make_node(1, 10, 0, NULL_INDEX, NULL_INDEX, BLACK), bst.node_at(1)));
-        ASSERT_TRUE(are_equal(make_node(5, 50, 0, NULL_INDEX, 3, BLACK), bst.node_at(2)));
+        ASSERT_TRUE(are_equal(make_node(3, 30, NULL_INDEX, 1, 2, COLOR_BLACK), bst.node_at(0)));
+        ASSERT_TRUE(
+            are_equal(make_node(1, 10, 0, NULL_INDEX, NULL_INDEX, COLOR_BLACK), bst.node_at(1)));
+        ASSERT_TRUE(are_equal(make_node(5, 50, 0, NULL_INDEX, 3, COLOR_BLACK), bst.node_at(2)));
     }
     // right-left rotation
     {
@@ -573,11 +587,14 @@ TEST(FixedRedBlackTree, Insertion_FocusOnTheRight)
          *                5R    7R
          */
 
-        ASSERT_TRUE(are_equal(make_node(3, 30, NULL_INDEX, 1, 4, BLACK), bst.node_at(0)));
-        ASSERT_TRUE(are_equal(make_node(1, 10, 0, NULL_INDEX, NULL_INDEX, BLACK), bst.node_at(1)));
-        ASSERT_TRUE(are_equal(make_node(5, 50, 4, NULL_INDEX, NULL_INDEX, RED), bst.node_at(2)));
-        ASSERT_TRUE(are_equal(make_node(7, 70, 4, NULL_INDEX, NULL_INDEX, RED), bst.node_at(3)));
-        ASSERT_TRUE(are_equal(make_node(6, 60, 0, 2, 3, BLACK), bst.node_at(4)));
+        ASSERT_TRUE(are_equal(make_node(3, 30, NULL_INDEX, 1, 4, COLOR_BLACK), bst.node_at(0)));
+        ASSERT_TRUE(
+            are_equal(make_node(1, 10, 0, NULL_INDEX, NULL_INDEX, COLOR_BLACK), bst.node_at(1)));
+        ASSERT_TRUE(
+            are_equal(make_node(5, 50, 4, NULL_INDEX, NULL_INDEX, COLOR_RED), bst.node_at(2)));
+        ASSERT_TRUE(
+            are_equal(make_node(7, 70, 4, NULL_INDEX, NULL_INDEX, COLOR_RED), bst.node_at(3)));
+        ASSERT_TRUE(are_equal(make_node(6, 60, 0, 2, 3, COLOR_BLACK), bst.node_at(4)));
     }
 
     // color-flip
@@ -601,12 +618,15 @@ TEST(FixedRedBlackTree, Insertion_FocusOnTheRight)
          *                         8R
          */
 
-        ASSERT_TRUE(are_equal(make_node(3, 30, NULL_INDEX, 1, 4, BLACK), bst.node_at(0)));
-        ASSERT_TRUE(are_equal(make_node(1, 10, 0, NULL_INDEX, NULL_INDEX, BLACK), bst.node_at(1)));
-        ASSERT_TRUE(are_equal(make_node(5, 50, 4, NULL_INDEX, NULL_INDEX, BLACK), bst.node_at(2)));
-        ASSERT_TRUE(are_equal(make_node(7, 70, 4, NULL_INDEX, 5, BLACK), bst.node_at(3)));
-        ASSERT_TRUE(are_equal(make_node(6, 60, 0, 2, 3, RED), bst.node_at(4)));
-        ASSERT_TRUE(are_equal(make_node(8, 80, 3, NULL_INDEX, NULL_INDEX, RED), bst.node_at(5)));
+        ASSERT_TRUE(are_equal(make_node(3, 30, NULL_INDEX, 1, 4, COLOR_BLACK), bst.node_at(0)));
+        ASSERT_TRUE(
+            are_equal(make_node(1, 10, 0, NULL_INDEX, NULL_INDEX, COLOR_BLACK), bst.node_at(1)));
+        ASSERT_TRUE(
+            are_equal(make_node(5, 50, 4, NULL_INDEX, NULL_INDEX, COLOR_BLACK), bst.node_at(2)));
+        ASSERT_TRUE(are_equal(make_node(7, 70, 4, NULL_INDEX, 5, COLOR_BLACK), bst.node_at(3)));
+        ASSERT_TRUE(are_equal(make_node(6, 60, 0, 2, 3, COLOR_RED), bst.node_at(4)));
+        ASSERT_TRUE(
+            are_equal(make_node(8, 80, 3, NULL_INDEX, NULL_INDEX, COLOR_RED), bst.node_at(5)));
     }
 
     // left rotation
@@ -631,13 +651,17 @@ TEST(FixedRedBlackTree, Insertion_FocusOnTheRight)
          *                    7R   9R
          */
 
-        ASSERT_TRUE(are_equal(make_node(3, 30, NULL_INDEX, 1, 4, BLACK), bst.node_at(0)));
-        ASSERT_TRUE(are_equal(make_node(1, 10, 0, NULL_INDEX, NULL_INDEX, BLACK), bst.node_at(1)));
-        ASSERT_TRUE(are_equal(make_node(5, 50, 4, NULL_INDEX, NULL_INDEX, BLACK), bst.node_at(2)));
-        ASSERT_TRUE(are_equal(make_node(7, 70, 5, NULL_INDEX, NULL_INDEX, RED), bst.node_at(3)));
-        ASSERT_TRUE(are_equal(make_node(6, 60, 0, 2, 5, RED), bst.node_at(4)));
-        ASSERT_TRUE(are_equal(make_node(8, 80, 4, 3, 6, BLACK), bst.node_at(5)));
-        ASSERT_TRUE(are_equal(make_node(9, 90, 5, NULL_INDEX, NULL_INDEX, RED), bst.node_at(6)));
+        ASSERT_TRUE(are_equal(make_node(3, 30, NULL_INDEX, 1, 4, COLOR_BLACK), bst.node_at(0)));
+        ASSERT_TRUE(
+            are_equal(make_node(1, 10, 0, NULL_INDEX, NULL_INDEX, COLOR_BLACK), bst.node_at(1)));
+        ASSERT_TRUE(
+            are_equal(make_node(5, 50, 4, NULL_INDEX, NULL_INDEX, COLOR_BLACK), bst.node_at(2)));
+        ASSERT_TRUE(
+            are_equal(make_node(7, 70, 5, NULL_INDEX, NULL_INDEX, COLOR_RED), bst.node_at(3)));
+        ASSERT_TRUE(are_equal(make_node(6, 60, 0, 2, 5, COLOR_RED), bst.node_at(4)));
+        ASSERT_TRUE(are_equal(make_node(8, 80, 4, 3, 6, COLOR_BLACK), bst.node_at(5)));
+        ASSERT_TRUE(
+            are_equal(make_node(9, 90, 5, NULL_INDEX, NULL_INDEX, COLOR_RED), bst.node_at(6)));
     }
 
     // color flip + left rotation
@@ -663,14 +687,18 @@ TEST(FixedRedBlackTree, Insertion_FocusOnTheRight)
          *                          10R
          */
 
-        ASSERT_TRUE(are_equal(make_node(3, 30, 4, 1, 2, RED), bst.node_at(0)));
-        ASSERT_TRUE(are_equal(make_node(1, 10, 0, NULL_INDEX, NULL_INDEX, BLACK), bst.node_at(1)));
-        ASSERT_TRUE(are_equal(make_node(5, 50, 0, NULL_INDEX, NULL_INDEX, BLACK), bst.node_at(2)));
-        ASSERT_TRUE(are_equal(make_node(7, 70, 5, NULL_INDEX, NULL_INDEX, BLACK), bst.node_at(3)));
-        ASSERT_TRUE(are_equal(make_node(6, 60, NULL_INDEX, 0, 5, BLACK), bst.node_at(4)));
-        ASSERT_TRUE(are_equal(make_node(8, 80, 4, 3, 6, RED), bst.node_at(5)));
-        ASSERT_TRUE(are_equal(make_node(9, 90, 5, NULL_INDEX, 7, BLACK), bst.node_at(6)));
-        ASSERT_TRUE(are_equal(make_node(10, 100, 6, NULL_INDEX, NULL_INDEX, RED), bst.node_at(7)));
+        ASSERT_TRUE(are_equal(make_node(3, 30, 4, 1, 2, COLOR_RED), bst.node_at(0)));
+        ASSERT_TRUE(
+            are_equal(make_node(1, 10, 0, NULL_INDEX, NULL_INDEX, COLOR_BLACK), bst.node_at(1)));
+        ASSERT_TRUE(
+            are_equal(make_node(5, 50, 0, NULL_INDEX, NULL_INDEX, COLOR_BLACK), bst.node_at(2)));
+        ASSERT_TRUE(
+            are_equal(make_node(7, 70, 5, NULL_INDEX, NULL_INDEX, COLOR_BLACK), bst.node_at(3)));
+        ASSERT_TRUE(are_equal(make_node(6, 60, NULL_INDEX, 0, 5, COLOR_BLACK), bst.node_at(4)));
+        ASSERT_TRUE(are_equal(make_node(8, 80, 4, 3, 6, COLOR_RED), bst.node_at(5)));
+        ASSERT_TRUE(are_equal(make_node(9, 90, 5, NULL_INDEX, 7, COLOR_BLACK), bst.node_at(6)));
+        ASSERT_TRUE(
+            are_equal(make_node(10, 100, 6, NULL_INDEX, NULL_INDEX, COLOR_RED), bst.node_at(7)));
     }
 }
 
@@ -693,9 +721,11 @@ TEST(FixedRedBlackTree, Insertion_FocusOnTheLeft)
          *           15R      19R
          */
 
-        ASSERT_TRUE(are_equal(make_node(17, 170, NULL_INDEX, 2, 1, BLACK), bst.node_at(0)));
-        ASSERT_TRUE(are_equal(make_node(19, 190, 0, NULL_INDEX, NULL_INDEX, RED), bst.node_at(1)));
-        ASSERT_TRUE(are_equal(make_node(15, 150, 0, NULL_INDEX, NULL_INDEX, RED), bst.node_at(2)));
+        ASSERT_TRUE(are_equal(make_node(17, 170, NULL_INDEX, 2, 1, COLOR_BLACK), bst.node_at(0)));
+        ASSERT_TRUE(
+            are_equal(make_node(19, 190, 0, NULL_INDEX, NULL_INDEX, COLOR_RED), bst.node_at(1)));
+        ASSERT_TRUE(
+            are_equal(make_node(15, 150, 0, NULL_INDEX, NULL_INDEX, COLOR_RED), bst.node_at(2)));
     }
 
     // color-flip
@@ -715,11 +745,12 @@ TEST(FixedRedBlackTree, Insertion_FocusOnTheLeft)
          *        13R
          */
 
-        ASSERT_TRUE(are_equal(make_node(17, 170, NULL_INDEX, 2, 1, BLACK), bst.node_at(0)));
+        ASSERT_TRUE(are_equal(make_node(17, 170, NULL_INDEX, 2, 1, COLOR_BLACK), bst.node_at(0)));
         ASSERT_TRUE(
-            are_equal(make_node(19, 190, 0, NULL_INDEX, NULL_INDEX, BLACK), bst.node_at(1)));
-        ASSERT_TRUE(are_equal(make_node(15, 150, 0, 3, NULL_INDEX, BLACK), bst.node_at(2)));
-        ASSERT_TRUE(are_equal(make_node(13, 130, 2, NULL_INDEX, NULL_INDEX, RED), bst.node_at(3)));
+            are_equal(make_node(19, 190, 0, NULL_INDEX, NULL_INDEX, COLOR_BLACK), bst.node_at(1)));
+        ASSERT_TRUE(are_equal(make_node(15, 150, 0, 3, NULL_INDEX, COLOR_BLACK), bst.node_at(2)));
+        ASSERT_TRUE(
+            are_equal(make_node(13, 130, 2, NULL_INDEX, NULL_INDEX, COLOR_RED), bst.node_at(3)));
     }
     // left-right rotation
     {
@@ -739,12 +770,14 @@ TEST(FixedRedBlackTree, Insertion_FocusOnTheLeft)
          *        13R   15B
          */
 
-        ASSERT_TRUE(are_equal(make_node(17, 170, NULL_INDEX, 4, 1, BLACK), bst.node_at(0)));
+        ASSERT_TRUE(are_equal(make_node(17, 170, NULL_INDEX, 4, 1, COLOR_BLACK), bst.node_at(0)));
         ASSERT_TRUE(
-            are_equal(make_node(19, 190, 0, NULL_INDEX, NULL_INDEX, BLACK), bst.node_at(1)));
-        ASSERT_TRUE(are_equal(make_node(15, 150, 4, NULL_INDEX, NULL_INDEX, RED), bst.node_at(2)));
-        ASSERT_TRUE(are_equal(make_node(13, 130, 4, NULL_INDEX, NULL_INDEX, RED), bst.node_at(3)));
-        ASSERT_TRUE(are_equal(make_node(14, 140, 0, 3, 2, BLACK), bst.node_at(4)));
+            are_equal(make_node(19, 190, 0, NULL_INDEX, NULL_INDEX, COLOR_BLACK), bst.node_at(1)));
+        ASSERT_TRUE(
+            are_equal(make_node(15, 150, 4, NULL_INDEX, NULL_INDEX, COLOR_RED), bst.node_at(2)));
+        ASSERT_TRUE(
+            are_equal(make_node(13, 130, 4, NULL_INDEX, NULL_INDEX, COLOR_RED), bst.node_at(3)));
+        ASSERT_TRUE(are_equal(make_node(14, 140, 0, 3, 2, COLOR_BLACK), bst.node_at(4)));
     }
 
     // color-flip
@@ -768,14 +801,15 @@ TEST(FixedRedBlackTree, Insertion_FocusOnTheLeft)
          *     12R
          */
 
-        ASSERT_TRUE(are_equal(make_node(17, 170, NULL_INDEX, 4, 1, BLACK), bst.node_at(0)));
+        ASSERT_TRUE(are_equal(make_node(17, 170, NULL_INDEX, 4, 1, COLOR_BLACK), bst.node_at(0)));
         ASSERT_TRUE(
-            are_equal(make_node(19, 190, 0, NULL_INDEX, NULL_INDEX, BLACK), bst.node_at(1)));
+            are_equal(make_node(19, 190, 0, NULL_INDEX, NULL_INDEX, COLOR_BLACK), bst.node_at(1)));
         ASSERT_TRUE(
-            are_equal(make_node(15, 150, 4, NULL_INDEX, NULL_INDEX, BLACK), bst.node_at(2)));
-        ASSERT_TRUE(are_equal(make_node(13, 130, 4, 5, NULL_INDEX, BLACK), bst.node_at(3)));
-        ASSERT_TRUE(are_equal(make_node(14, 140, 0, 3, 2, RED), bst.node_at(4)));
-        ASSERT_TRUE(are_equal(make_node(12, 120, 3, NULL_INDEX, NULL_INDEX, RED), bst.node_at(5)));
+            are_equal(make_node(15, 150, 4, NULL_INDEX, NULL_INDEX, COLOR_BLACK), bst.node_at(2)));
+        ASSERT_TRUE(are_equal(make_node(13, 130, 4, 5, NULL_INDEX, COLOR_BLACK), bst.node_at(3)));
+        ASSERT_TRUE(are_equal(make_node(14, 140, 0, 3, 2, COLOR_RED), bst.node_at(4)));
+        ASSERT_TRUE(
+            are_equal(make_node(12, 120, 3, NULL_INDEX, NULL_INDEX, COLOR_RED), bst.node_at(5)));
     }
 
     // right rotation
@@ -800,15 +834,17 @@ TEST(FixedRedBlackTree, Insertion_FocusOnTheLeft)
          *     11R   13R
          */
 
-        ASSERT_TRUE(are_equal(make_node(17, 170, NULL_INDEX, 4, 1, BLACK), bst.node_at(0)));
+        ASSERT_TRUE(are_equal(make_node(17, 170, NULL_INDEX, 4, 1, COLOR_BLACK), bst.node_at(0)));
         ASSERT_TRUE(
-            are_equal(make_node(19, 190, 0, NULL_INDEX, NULL_INDEX, BLACK), bst.node_at(1)));
+            are_equal(make_node(19, 190, 0, NULL_INDEX, NULL_INDEX, COLOR_BLACK), bst.node_at(1)));
         ASSERT_TRUE(
-            are_equal(make_node(15, 150, 4, NULL_INDEX, NULL_INDEX, BLACK), bst.node_at(2)));
-        ASSERT_TRUE(are_equal(make_node(13, 130, 5, NULL_INDEX, NULL_INDEX, RED), bst.node_at(3)));
-        ASSERT_TRUE(are_equal(make_node(14, 140, 0, 5, 2, RED), bst.node_at(4)));
-        ASSERT_TRUE(are_equal(make_node(12, 120, 4, 6, 3, BLACK), bst.node_at(5)));
-        ASSERT_TRUE(are_equal(make_node(11, 110, 5, NULL_INDEX, NULL_INDEX, RED), bst.node_at(6)));
+            are_equal(make_node(15, 150, 4, NULL_INDEX, NULL_INDEX, COLOR_BLACK), bst.node_at(2)));
+        ASSERT_TRUE(
+            are_equal(make_node(13, 130, 5, NULL_INDEX, NULL_INDEX, COLOR_RED), bst.node_at(3)));
+        ASSERT_TRUE(are_equal(make_node(14, 140, 0, 5, 2, COLOR_RED), bst.node_at(4)));
+        ASSERT_TRUE(are_equal(make_node(12, 120, 4, 6, 3, COLOR_BLACK), bst.node_at(5)));
+        ASSERT_TRUE(
+            are_equal(make_node(11, 110, 5, NULL_INDEX, NULL_INDEX, COLOR_RED), bst.node_at(6)));
     }
 
     // color flip + right rotation
@@ -834,17 +870,18 @@ TEST(FixedRedBlackTree, Insertion_FocusOnTheLeft)
          *     10R
          */
 
-        ASSERT_TRUE(are_equal(make_node(17, 170, 4, 2, 1, RED), bst.node_at(0)));
+        ASSERT_TRUE(are_equal(make_node(17, 170, 4, 2, 1, COLOR_RED), bst.node_at(0)));
         ASSERT_TRUE(
-            are_equal(make_node(19, 190, 0, NULL_INDEX, NULL_INDEX, BLACK), bst.node_at(1)));
+            are_equal(make_node(19, 190, 0, NULL_INDEX, NULL_INDEX, COLOR_BLACK), bst.node_at(1)));
         ASSERT_TRUE(
-            are_equal(make_node(15, 150, 0, NULL_INDEX, NULL_INDEX, BLACK), bst.node_at(2)));
+            are_equal(make_node(15, 150, 0, NULL_INDEX, NULL_INDEX, COLOR_BLACK), bst.node_at(2)));
         ASSERT_TRUE(
-            are_equal(make_node(13, 130, 5, NULL_INDEX, NULL_INDEX, BLACK), bst.node_at(3)));
-        ASSERT_TRUE(are_equal(make_node(14, 140, NULL_INDEX, 5, 0, BLACK), bst.node_at(4)));
-        ASSERT_TRUE(are_equal(make_node(12, 120, 4, 6, 3, RED), bst.node_at(5)));
-        ASSERT_TRUE(are_equal(make_node(11, 110, 5, 7, NULL_INDEX, BLACK), bst.node_at(6)));
-        ASSERT_TRUE(are_equal(make_node(10, 100, 6, NULL_INDEX, NULL_INDEX, RED), bst.node_at(7)));
+            are_equal(make_node(13, 130, 5, NULL_INDEX, NULL_INDEX, COLOR_BLACK), bst.node_at(3)));
+        ASSERT_TRUE(are_equal(make_node(14, 140, NULL_INDEX, 5, 0, COLOR_BLACK), bst.node_at(4)));
+        ASSERT_TRUE(are_equal(make_node(12, 120, 4, 6, 3, COLOR_RED), bst.node_at(5)));
+        ASSERT_TRUE(are_equal(make_node(11, 110, 5, 7, NULL_INDEX, COLOR_BLACK), bst.node_at(6)));
+        ASSERT_TRUE(
+            are_equal(make_node(10, 100, 6, NULL_INDEX, NULL_INDEX, COLOR_RED), bst.node_at(7)));
     }
 }
 
@@ -872,16 +909,20 @@ TEST(FixedRedBlackTree, SwapNodes)
         //        bst[17] = 170;  // Position 0
         //        bst[19] = 190;  // Position 1
         //        bst[15] = 150;  // Position 2
-        ASSERT_TRUE(are_equal(make_node(17, 170, NULL_INDEX, 2, 1, BLACK), bst.node_at(0)));
-        ASSERT_TRUE(are_equal(make_node(19, 190, 0, NULL_INDEX, NULL_INDEX, RED), bst.node_at(1)));
-        ASSERT_TRUE(are_equal(make_node(15, 150, 0, NULL_INDEX, NULL_INDEX, RED), bst.node_at(2)));
+        ASSERT_TRUE(are_equal(make_node(17, 170, NULL_INDEX, 2, 1, COLOR_BLACK), bst.node_at(0)));
+        ASSERT_TRUE(
+            are_equal(make_node(19, 190, 0, NULL_INDEX, NULL_INDEX, COLOR_RED), bst.node_at(1)));
+        ASSERT_TRUE(
+            are_equal(make_node(15, 150, 0, NULL_INDEX, NULL_INDEX, COLOR_RED), bst.node_at(2)));
         Ops::swap_nodes_including_key_and_value(bst, 1, 2);
         //        bst[17] = 170;  // Position 0
         //        bst[15] = 150;  // Position 1
         //        bst[19] = 190;  // Position 2
-        ASSERT_TRUE(are_equal(make_node(17, 170, NULL_INDEX, 1, 2, BLACK), bst.node_at(0)));
-        ASSERT_TRUE(are_equal(make_node(15, 150, 0, NULL_INDEX, NULL_INDEX, RED), bst.node_at(1)));
-        ASSERT_TRUE(are_equal(make_node(19, 190, 0, NULL_INDEX, NULL_INDEX, RED), bst.node_at(2)));
+        ASSERT_TRUE(are_equal(make_node(17, 170, NULL_INDEX, 1, 2, COLOR_BLACK), bst.node_at(0)));
+        ASSERT_TRUE(
+            are_equal(make_node(15, 150, 0, NULL_INDEX, NULL_INDEX, COLOR_RED), bst.node_at(1)));
+        ASSERT_TRUE(
+            are_equal(make_node(19, 190, 0, NULL_INDEX, NULL_INDEX, COLOR_RED), bst.node_at(2)));
 
         Ops::swap_nodes_including_key_and_value(bst, 2, 1);
         auto original_bst = get_new_swap_test_base_tree();
@@ -901,16 +942,20 @@ TEST(FixedRedBlackTree, SwapNodes)
         //        bst[17] = 170;  // Position 0
         //        bst[19] = 190;  // Position 1
         //        bst[15] = 150;  // Position 2
-        ASSERT_TRUE(are_equal(make_node(17, 170, NULL_INDEX, 2, 1, BLACK), bst.node_at(0)));
-        ASSERT_TRUE(are_equal(make_node(19, 190, 0, NULL_INDEX, NULL_INDEX, RED), bst.node_at(1)));
-        ASSERT_TRUE(are_equal(make_node(15, 150, 0, NULL_INDEX, NULL_INDEX, RED), bst.node_at(2)));
+        ASSERT_TRUE(are_equal(make_node(17, 170, NULL_INDEX, 2, 1, COLOR_BLACK), bst.node_at(0)));
+        ASSERT_TRUE(
+            are_equal(make_node(19, 190, 0, NULL_INDEX, NULL_INDEX, COLOR_RED), bst.node_at(1)));
+        ASSERT_TRUE(
+            are_equal(make_node(15, 150, 0, NULL_INDEX, NULL_INDEX, COLOR_RED), bst.node_at(2)));
         Ops::swap_nodes_including_key_and_value(bst, 2, 0);
         //        bst[15] = 150;  // Position 0
         //        bst[19] = 190;  // Position 1
         //        bst[17] = 170;  // Position 2
-        ASSERT_TRUE(are_equal(make_node(15, 150, 2, NULL_INDEX, NULL_INDEX, RED), bst.node_at(0)));
-        ASSERT_TRUE(are_equal(make_node(19, 190, 2, NULL_INDEX, NULL_INDEX, RED), bst.node_at(1)));
-        ASSERT_TRUE(are_equal(make_node(17, 170, NULL_INDEX, 0, 1, BLACK), bst.node_at(2)));
+        ASSERT_TRUE(
+            are_equal(make_node(15, 150, 2, NULL_INDEX, NULL_INDEX, COLOR_RED), bst.node_at(0)));
+        ASSERT_TRUE(
+            are_equal(make_node(19, 190, 2, NULL_INDEX, NULL_INDEX, COLOR_RED), bst.node_at(1)));
+        ASSERT_TRUE(are_equal(make_node(17, 170, NULL_INDEX, 0, 1, COLOR_BLACK), bst.node_at(2)));
 
         Ops::swap_nodes_including_key_and_value(bst, 0, 2);
         auto original_bst = get_new_swap_test_base_tree();
@@ -930,16 +975,20 @@ TEST(FixedRedBlackTree, SwapNodes)
         //        bst[17] = 170;  // Position 0
         //        bst[19] = 190;  // Position 1
         //        bst[15] = 150;  // Position 2
-        ASSERT_TRUE(are_equal(make_node(17, 170, NULL_INDEX, 2, 1, BLACK), bst.node_at(0)));
-        ASSERT_TRUE(are_equal(make_node(19, 190, 0, NULL_INDEX, NULL_INDEX, RED), bst.node_at(1)));
-        ASSERT_TRUE(are_equal(make_node(15, 150, 0, NULL_INDEX, NULL_INDEX, RED), bst.node_at(2)));
+        ASSERT_TRUE(are_equal(make_node(17, 170, NULL_INDEX, 2, 1, COLOR_BLACK), bst.node_at(0)));
+        ASSERT_TRUE(
+            are_equal(make_node(19, 190, 0, NULL_INDEX, NULL_INDEX, COLOR_RED), bst.node_at(1)));
+        ASSERT_TRUE(
+            are_equal(make_node(15, 150, 0, NULL_INDEX, NULL_INDEX, COLOR_RED), bst.node_at(2)));
         Ops::swap_nodes_including_key_and_value(bst, 1, 0);
         //        bst[19] = 190;  // Position 0
         //        bst[17] = 170;  // Position 1
         //        bst[15] = 150;  // Position 2
-        ASSERT_TRUE(are_equal(make_node(19, 190, 1, NULL_INDEX, NULL_INDEX, RED), bst.node_at(0)));
-        ASSERT_TRUE(are_equal(make_node(17, 170, NULL_INDEX, 2, 0, BLACK), bst.node_at(1)));
-        ASSERT_TRUE(are_equal(make_node(15, 150, 1, NULL_INDEX, NULL_INDEX, RED), bst.node_at(2)));
+        ASSERT_TRUE(
+            are_equal(make_node(19, 190, 1, NULL_INDEX, NULL_INDEX, COLOR_RED), bst.node_at(0)));
+        ASSERT_TRUE(are_equal(make_node(17, 170, NULL_INDEX, 2, 0, COLOR_BLACK), bst.node_at(1)));
+        ASSERT_TRUE(
+            are_equal(make_node(15, 150, 1, NULL_INDEX, NULL_INDEX, COLOR_RED), bst.node_at(2)));
 
         Ops::swap_nodes_including_key_and_value(bst, 0, 1);
         auto original_bst = get_new_swap_test_base_tree();
@@ -981,14 +1030,18 @@ TEST(FixedRedBlackTree, Deletion)
          */
 
         ASSERT_EQ(3, find_height(bst));
-        ASSERT_TRUE(are_equal(make_node(3, 30, 4, 1, 2, RED), bst.node_at(0)));
-        ASSERT_TRUE(are_equal(make_node(1, 10, 0, NULL_INDEX, NULL_INDEX, BLACK), bst.node_at(1)));
-        ASSERT_TRUE(are_equal(make_node(5, 50, 0, NULL_INDEX, NULL_INDEX, BLACK), bst.node_at(2)));
-        ASSERT_TRUE(are_equal(make_node(7, 70, 5, NULL_INDEX, NULL_INDEX, BLACK), bst.node_at(3)));
-        ASSERT_TRUE(are_equal(make_node(6, 60, NULL_INDEX, 0, 5, BLACK), bst.node_at(4)));
-        ASSERT_TRUE(are_equal(make_node(8, 80, 4, 3, 6, RED), bst.node_at(5)));
-        ASSERT_TRUE(are_equal(make_node(9, 90, 5, NULL_INDEX, 7, BLACK), bst.node_at(6)));
-        ASSERT_TRUE(are_equal(make_node(10, 100, 6, NULL_INDEX, NULL_INDEX, RED), bst.node_at(7)));
+        ASSERT_TRUE(are_equal(make_node(3, 30, 4, 1, 2, COLOR_RED), bst.node_at(0)));
+        ASSERT_TRUE(
+            are_equal(make_node(1, 10, 0, NULL_INDEX, NULL_INDEX, COLOR_BLACK), bst.node_at(1)));
+        ASSERT_TRUE(
+            are_equal(make_node(5, 50, 0, NULL_INDEX, NULL_INDEX, COLOR_BLACK), bst.node_at(2)));
+        ASSERT_TRUE(
+            are_equal(make_node(7, 70, 5, NULL_INDEX, NULL_INDEX, COLOR_BLACK), bst.node_at(3)));
+        ASSERT_TRUE(are_equal(make_node(6, 60, NULL_INDEX, 0, 5, COLOR_BLACK), bst.node_at(4)));
+        ASSERT_TRUE(are_equal(make_node(8, 80, 4, 3, 6, COLOR_RED), bst.node_at(5)));
+        ASSERT_TRUE(are_equal(make_node(9, 90, 5, NULL_INDEX, 7, COLOR_BLACK), bst.node_at(6)));
+        ASSERT_TRUE(
+            are_equal(make_node(10, 100, 6, NULL_INDEX, NULL_INDEX, COLOR_RED), bst.node_at(7)));
     }
 
     // Last entry + no children
@@ -1023,13 +1076,17 @@ TEST(FixedRedBlackTree, Deletion)
          */
 
         ASSERT_EQ(2, find_height(bst));
-        ASSERT_TRUE(are_equal(make_node(3, 30, 4, 1, 2, RED), bst.node_at(0)));
-        ASSERT_TRUE(are_equal(make_node(1, 10, 0, NULL_INDEX, NULL_INDEX, BLACK), bst.node_at(1)));
-        ASSERT_TRUE(are_equal(make_node(5, 50, 0, NULL_INDEX, NULL_INDEX, BLACK), bst.node_at(2)));
-        ASSERT_TRUE(are_equal(make_node(7, 70, 5, NULL_INDEX, NULL_INDEX, BLACK), bst.node_at(3)));
-        ASSERT_TRUE(are_equal(make_node(6, 60, NULL_INDEX, 0, 5, BLACK), bst.node_at(4)));
-        ASSERT_TRUE(are_equal(make_node(8, 80, 4, 3, 6, RED), bst.node_at(5)));
-        ASSERT_TRUE(are_equal(make_node(9, 90, 5, NULL_INDEX, NULL_INDEX, BLACK), bst.node_at(6)));
+        ASSERT_TRUE(are_equal(make_node(3, 30, 4, 1, 2, COLOR_RED), bst.node_at(0)));
+        ASSERT_TRUE(
+            are_equal(make_node(1, 10, 0, NULL_INDEX, NULL_INDEX, COLOR_BLACK), bst.node_at(1)));
+        ASSERT_TRUE(
+            are_equal(make_node(5, 50, 0, NULL_INDEX, NULL_INDEX, COLOR_BLACK), bst.node_at(2)));
+        ASSERT_TRUE(
+            are_equal(make_node(7, 70, 5, NULL_INDEX, NULL_INDEX, COLOR_BLACK), bst.node_at(3)));
+        ASSERT_TRUE(are_equal(make_node(6, 60, NULL_INDEX, 0, 5, COLOR_BLACK), bst.node_at(4)));
+        ASSERT_TRUE(are_equal(make_node(8, 80, 4, 3, 6, COLOR_RED), bst.node_at(5)));
+        ASSERT_TRUE(
+            are_equal(make_node(9, 90, 5, NULL_INDEX, NULL_INDEX, COLOR_BLACK), bst.node_at(6)));
     }
 
     // non-last entry, no children, is a left child
@@ -1066,13 +1123,16 @@ TEST(FixedRedBlackTree, Deletion)
          */
 
         ASSERT_EQ(3, find_height(bst));
-        ASSERT_TRUE(are_equal(make_node(3, 30, 4, NULL_INDEX, 2, BLACK), bst.node_at(0)));
-        ASSERT_TRUE(are_equal(make_node(5, 50, 0, NULL_INDEX, NULL_INDEX, RED), bst.node_at(2)));
-        ASSERT_TRUE(are_equal(make_node(7, 70, 5, NULL_INDEX, NULL_INDEX, BLACK), bst.node_at(3)));
-        ASSERT_TRUE(are_equal(make_node(6, 60, NULL_INDEX, 0, 5, BLACK), bst.node_at(4)));
-        ASSERT_TRUE(are_equal(make_node(8, 80, 4, 3, 6, RED), bst.node_at(5)));
-        ASSERT_TRUE(are_equal(make_node(9, 90, 5, NULL_INDEX, 7, BLACK), bst.node_at(6)));
-        ASSERT_TRUE(are_equal(make_node(10, 100, 6, NULL_INDEX, NULL_INDEX, RED), bst.node_at(7)));
+        ASSERT_TRUE(are_equal(make_node(3, 30, 4, NULL_INDEX, 2, COLOR_BLACK), bst.node_at(0)));
+        ASSERT_TRUE(
+            are_equal(make_node(5, 50, 0, NULL_INDEX, NULL_INDEX, COLOR_RED), bst.node_at(2)));
+        ASSERT_TRUE(
+            are_equal(make_node(7, 70, 5, NULL_INDEX, NULL_INDEX, COLOR_BLACK), bst.node_at(3)));
+        ASSERT_TRUE(are_equal(make_node(6, 60, NULL_INDEX, 0, 5, COLOR_BLACK), bst.node_at(4)));
+        ASSERT_TRUE(are_equal(make_node(8, 80, 4, 3, 6, COLOR_RED), bst.node_at(5)));
+        ASSERT_TRUE(are_equal(make_node(9, 90, 5, NULL_INDEX, 7, COLOR_BLACK), bst.node_at(6)));
+        ASSERT_TRUE(
+            are_equal(make_node(10, 100, 6, NULL_INDEX, NULL_INDEX, COLOR_RED), bst.node_at(7)));
     }
 
     // non-last entry, no children, is a right child
@@ -1109,13 +1169,16 @@ TEST(FixedRedBlackTree, Deletion)
          */
 
         ASSERT_EQ(3, find_height(bst));
-        ASSERT_TRUE(are_equal(make_node(3, 30, 4, 1, NULL_INDEX, BLACK), bst.node_at(0)));
-        ASSERT_TRUE(are_equal(make_node(1, 10, 0, NULL_INDEX, NULL_INDEX, RED), bst.node_at(1)));
-        ASSERT_TRUE(are_equal(make_node(7, 70, 5, NULL_INDEX, NULL_INDEX, BLACK), bst.node_at(3)));
-        ASSERT_TRUE(are_equal(make_node(6, 60, NULL_INDEX, 0, 5, BLACK), bst.node_at(4)));
-        ASSERT_TRUE(are_equal(make_node(8, 80, 4, 3, 6, RED), bst.node_at(5)));
-        ASSERT_TRUE(are_equal(make_node(9, 90, 5, NULL_INDEX, 7, BLACK), bst.node_at(6)));
-        ASSERT_TRUE(are_equal(make_node(10, 100, 6, NULL_INDEX, NULL_INDEX, RED), bst.node_at(7)));
+        ASSERT_TRUE(are_equal(make_node(3, 30, 4, 1, NULL_INDEX, COLOR_BLACK), bst.node_at(0)));
+        ASSERT_TRUE(
+            are_equal(make_node(1, 10, 0, NULL_INDEX, NULL_INDEX, COLOR_RED), bst.node_at(1)));
+        ASSERT_TRUE(
+            are_equal(make_node(7, 70, 5, NULL_INDEX, NULL_INDEX, COLOR_BLACK), bst.node_at(3)));
+        ASSERT_TRUE(are_equal(make_node(6, 60, NULL_INDEX, 0, 5, COLOR_BLACK), bst.node_at(4)));
+        ASSERT_TRUE(are_equal(make_node(8, 80, 4, 3, 6, COLOR_RED), bst.node_at(5)));
+        ASSERT_TRUE(are_equal(make_node(9, 90, 5, NULL_INDEX, 7, COLOR_BLACK), bst.node_at(6)));
+        ASSERT_TRUE(
+            are_equal(make_node(10, 100, 6, NULL_INDEX, NULL_INDEX, COLOR_RED), bst.node_at(7)));
     }
 
     // only has right child
@@ -1150,14 +1213,17 @@ TEST(FixedRedBlackTree, Deletion)
          */
 
         ASSERT_EQ(2, find_height(bst));
-        ASSERT_TRUE(are_equal(make_node(3, 30, 4, 1, 2, RED), bst.node_at(0)));
-        ASSERT_TRUE(are_equal(make_node(1, 10, 0, NULL_INDEX, NULL_INDEX, BLACK), bst.node_at(1)));
-        ASSERT_TRUE(are_equal(make_node(5, 50, 0, NULL_INDEX, NULL_INDEX, BLACK), bst.node_at(2)));
-        ASSERT_TRUE(are_equal(make_node(7, 70, 5, NULL_INDEX, NULL_INDEX, BLACK), bst.node_at(3)));
-        ASSERT_TRUE(are_equal(make_node(6, 60, NULL_INDEX, 0, 5, BLACK), bst.node_at(4)));
-        ASSERT_TRUE(are_equal(make_node(8, 80, 4, 3, 7, RED), bst.node_at(5)));
+        ASSERT_TRUE(are_equal(make_node(3, 30, 4, 1, 2, COLOR_RED), bst.node_at(0)));
         ASSERT_TRUE(
-            are_equal(make_node(10, 100, 5, NULL_INDEX, NULL_INDEX, BLACK), bst.node_at(7)));
+            are_equal(make_node(1, 10, 0, NULL_INDEX, NULL_INDEX, COLOR_BLACK), bst.node_at(1)));
+        ASSERT_TRUE(
+            are_equal(make_node(5, 50, 0, NULL_INDEX, NULL_INDEX, COLOR_BLACK), bst.node_at(2)));
+        ASSERT_TRUE(
+            are_equal(make_node(7, 70, 5, NULL_INDEX, NULL_INDEX, COLOR_BLACK), bst.node_at(3)));
+        ASSERT_TRUE(are_equal(make_node(6, 60, NULL_INDEX, 0, 5, COLOR_BLACK), bst.node_at(4)));
+        ASSERT_TRUE(are_equal(make_node(8, 80, 4, 3, 7, COLOR_RED), bst.node_at(5)));
+        ASSERT_TRUE(
+            are_equal(make_node(10, 100, 5, NULL_INDEX, NULL_INDEX, COLOR_BLACK), bst.node_at(7)));
     }
 
     // Only has left child
@@ -1195,14 +1261,18 @@ TEST(FixedRedBlackTree, Deletion)
          */
 
         ASSERT_EQ(3, find_height(bst));
-        ASSERT_TRUE(are_equal(make_node(3, 30, 4, 8, 2, RED), bst.node_at(0)));
-        ASSERT_TRUE(are_equal(make_node(5, 50, 0, NULL_INDEX, NULL_INDEX, BLACK), bst.node_at(2)));
-        ASSERT_TRUE(are_equal(make_node(7, 70, 5, NULL_INDEX, NULL_INDEX, BLACK), bst.node_at(3)));
-        ASSERT_TRUE(are_equal(make_node(6, 60, NULL_INDEX, 0, 5, BLACK), bst.node_at(4)));
-        ASSERT_TRUE(are_equal(make_node(8, 80, 4, 3, 6, RED), bst.node_at(5)));
-        ASSERT_TRUE(are_equal(make_node(9, 90, 5, NULL_INDEX, 7, BLACK), bst.node_at(6)));
-        ASSERT_TRUE(are_equal(make_node(10, 100, 6, NULL_INDEX, NULL_INDEX, RED), bst.node_at(7)));
-        ASSERT_TRUE(are_equal(make_node(0, 42, 0, NULL_INDEX, NULL_INDEX, BLACK), bst.node_at(8)));
+        ASSERT_TRUE(are_equal(make_node(3, 30, 4, 8, 2, COLOR_RED), bst.node_at(0)));
+        ASSERT_TRUE(
+            are_equal(make_node(5, 50, 0, NULL_INDEX, NULL_INDEX, COLOR_BLACK), bst.node_at(2)));
+        ASSERT_TRUE(
+            are_equal(make_node(7, 70, 5, NULL_INDEX, NULL_INDEX, COLOR_BLACK), bst.node_at(3)));
+        ASSERT_TRUE(are_equal(make_node(6, 60, NULL_INDEX, 0, 5, COLOR_BLACK), bst.node_at(4)));
+        ASSERT_TRUE(are_equal(make_node(8, 80, 4, 3, 6, COLOR_RED), bst.node_at(5)));
+        ASSERT_TRUE(are_equal(make_node(9, 90, 5, NULL_INDEX, 7, COLOR_BLACK), bst.node_at(6)));
+        ASSERT_TRUE(
+            are_equal(make_node(10, 100, 6, NULL_INDEX, NULL_INDEX, COLOR_RED), bst.node_at(7)));
+        ASSERT_TRUE(
+            are_equal(make_node(0, 42, 0, NULL_INDEX, NULL_INDEX, COLOR_BLACK), bst.node_at(8)));
     }
 
     // Two children and is not the root
@@ -1237,14 +1307,17 @@ TEST(FixedRedBlackTree, Deletion)
          */
 
         ASSERT_EQ(2, find_height(bst));
-        ASSERT_TRUE(are_equal(make_node(3, 30, 4, 1, 2, RED), bst.node_at(0)));
-        ASSERT_TRUE(are_equal(make_node(1, 10, 0, NULL_INDEX, NULL_INDEX, BLACK), bst.node_at(1)));
-        ASSERT_TRUE(are_equal(make_node(5, 50, 0, NULL_INDEX, NULL_INDEX, BLACK), bst.node_at(2)));
-        ASSERT_TRUE(are_equal(make_node(7, 70, 6, NULL_INDEX, NULL_INDEX, BLACK), bst.node_at(3)));
-        ASSERT_TRUE(are_equal(make_node(6, 60, NULL_INDEX, 0, 6, BLACK), bst.node_at(4)));
-        ASSERT_TRUE(are_equal(make_node(9, 90, 4, 3, 7, RED), bst.node_at(6)));
+        ASSERT_TRUE(are_equal(make_node(3, 30, 4, 1, 2, COLOR_RED), bst.node_at(0)));
         ASSERT_TRUE(
-            are_equal(make_node(10, 100, 6, NULL_INDEX, NULL_INDEX, BLACK), bst.node_at(7)));
+            are_equal(make_node(1, 10, 0, NULL_INDEX, NULL_INDEX, COLOR_BLACK), bst.node_at(1)));
+        ASSERT_TRUE(
+            are_equal(make_node(5, 50, 0, NULL_INDEX, NULL_INDEX, COLOR_BLACK), bst.node_at(2)));
+        ASSERT_TRUE(
+            are_equal(make_node(7, 70, 6, NULL_INDEX, NULL_INDEX, COLOR_BLACK), bst.node_at(3)));
+        ASSERT_TRUE(are_equal(make_node(6, 60, NULL_INDEX, 0, 6, COLOR_BLACK), bst.node_at(4)));
+        ASSERT_TRUE(are_equal(make_node(9, 90, 4, 3, 7, COLOR_RED), bst.node_at(6)));
+        ASSERT_TRUE(
+            are_equal(make_node(10, 100, 6, NULL_INDEX, NULL_INDEX, COLOR_BLACK), bst.node_at(7)));
     }
 
     // Two children and is the root
@@ -1279,14 +1352,17 @@ TEST(FixedRedBlackTree, Deletion)
          */
 
         ASSERT_EQ(2, find_height(bst));
-        ASSERT_TRUE(are_equal(make_node(3, 30, 3, 1, 2, RED), bst.node_at(0)));
-        ASSERT_TRUE(are_equal(make_node(1, 10, 0, NULL_INDEX, NULL_INDEX, BLACK), bst.node_at(1)));
-        ASSERT_TRUE(are_equal(make_node(5, 50, 0, NULL_INDEX, NULL_INDEX, BLACK), bst.node_at(2)));
-        ASSERT_TRUE(are_equal(make_node(7, 70, NULL_INDEX, 0, 6, BLACK), bst.node_at(3)));
-        ASSERT_TRUE(are_equal(make_node(8, 80, 6, NULL_INDEX, NULL_INDEX, BLACK), bst.node_at(5)));
-        ASSERT_TRUE(are_equal(make_node(9, 90, 3, 5, 7, RED), bst.node_at(6)));
+        ASSERT_TRUE(are_equal(make_node(3, 30, 3, 1, 2, COLOR_RED), bst.node_at(0)));
         ASSERT_TRUE(
-            are_equal(make_node(10, 100, 6, NULL_INDEX, NULL_INDEX, BLACK), bst.node_at(7)));
+            are_equal(make_node(1, 10, 0, NULL_INDEX, NULL_INDEX, COLOR_BLACK), bst.node_at(1)));
+        ASSERT_TRUE(
+            are_equal(make_node(5, 50, 0, NULL_INDEX, NULL_INDEX, COLOR_BLACK), bst.node_at(2)));
+        ASSERT_TRUE(are_equal(make_node(7, 70, NULL_INDEX, 0, 6, COLOR_BLACK), bst.node_at(3)));
+        ASSERT_TRUE(
+            are_equal(make_node(8, 80, 6, NULL_INDEX, NULL_INDEX, COLOR_BLACK), bst.node_at(5)));
+        ASSERT_TRUE(are_equal(make_node(9, 90, 3, 5, 7, COLOR_RED), bst.node_at(6)));
+        ASSERT_TRUE(
+            are_equal(make_node(10, 100, 6, NULL_INDEX, NULL_INDEX, COLOR_BLACK), bst.node_at(7)));
     }
 }
 
@@ -1304,8 +1380,8 @@ TEST(FixedRedBlackTree, Deletion_CornerCases)
          *               5B
          */
         ASSERT_EQ(0, find_height(bst));
-        ASSERT_TRUE(
-            are_equal(make_node(5, 50, NULL_INDEX, NULL_INDEX, NULL_INDEX, BLACK), bst.node_at(0)));
+        ASSERT_TRUE(are_equal(make_node(5, 50, NULL_INDEX, NULL_INDEX, NULL_INDEX, COLOR_BLACK),
+                              bst.node_at(0)));
 
         bst.delete_node(5);
         ASSERT_EQ(0, bst.size());
@@ -1327,15 +1403,17 @@ TEST(FixedRedBlackTree, Deletion_CornerCases)
          */
 
         ASSERT_EQ(1, find_height(bst));
-        ASSERT_TRUE(are_equal(make_node(5, 50, NULL_INDEX, 1, NULL_INDEX, BLACK), bst.node_at(0)));
-        ASSERT_TRUE(are_equal(make_node(1, 10, 0, NULL_INDEX, NULL_INDEX, RED), bst.node_at(1)));
+        ASSERT_TRUE(
+            are_equal(make_node(5, 50, NULL_INDEX, 1, NULL_INDEX, COLOR_BLACK), bst.node_at(0)));
+        ASSERT_TRUE(
+            are_equal(make_node(1, 10, 0, NULL_INDEX, NULL_INDEX, COLOR_RED), bst.node_at(1)));
 
         bst.delete_node(5);
         ASSERT_EQ(1, bst.size());
         ASSERT_EQ(0, find_height(bst));
         ASSERT_EQ(1, bst.root_index());
-        ASSERT_TRUE(
-            are_equal(make_node(1, 10, NULL_INDEX, NULL_INDEX, NULL_INDEX, BLACK), bst.node_at(1)));
+        ASSERT_TRUE(are_equal(make_node(1, 10, NULL_INDEX, NULL_INDEX, NULL_INDEX, COLOR_BLACK),
+                              bst.node_at(1)));
     }
 
     // Delete root while it only has a right child
@@ -1352,15 +1430,17 @@ TEST(FixedRedBlackTree, Deletion_CornerCases)
          */
 
         ASSERT_EQ(1, find_height(bst));
-        ASSERT_TRUE(are_equal(make_node(5, 50, NULL_INDEX, NULL_INDEX, 1, BLACK), bst.node_at(0)));
-        ASSERT_TRUE(are_equal(make_node(9, 90, 0, NULL_INDEX, NULL_INDEX, RED), bst.node_at(1)));
+        ASSERT_TRUE(
+            are_equal(make_node(5, 50, NULL_INDEX, NULL_INDEX, 1, COLOR_BLACK), bst.node_at(0)));
+        ASSERT_TRUE(
+            are_equal(make_node(9, 90, 0, NULL_INDEX, NULL_INDEX, COLOR_RED), bst.node_at(1)));
 
         bst.delete_node(5);
         ASSERT_EQ(1, bst.size());
         ASSERT_EQ(0, find_height(bst));
         ASSERT_EQ(1, bst.root_index());
-        ASSERT_TRUE(
-            are_equal(make_node(9, 90, NULL_INDEX, NULL_INDEX, NULL_INDEX, BLACK), bst.node_at(1)));
+        ASSERT_TRUE(are_equal(make_node(9, 90, NULL_INDEX, NULL_INDEX, NULL_INDEX, COLOR_BLACK),
+                              bst.node_at(1)));
     }
 
     // Delete root that is not in position 0 of the array while it only has a left child
@@ -1377,16 +1457,20 @@ TEST(FixedRedBlackTree, Deletion_CornerCases)
          *           1R     5R
          */
         ASSERT_EQ(1, find_height(bst));
-        ASSERT_TRUE(are_equal(make_node(5, 50, 1, NULL_INDEX, NULL_INDEX, RED), bst.node_at(0)));
-        ASSERT_TRUE(are_equal(make_node(3, 30, NULL_INDEX, 2, 0, BLACK), bst.node_at(1)));
-        ASSERT_TRUE(are_equal(make_node(1, 10, 1, NULL_INDEX, NULL_INDEX, RED), bst.node_at(2)));
+        ASSERT_TRUE(
+            are_equal(make_node(5, 50, 1, NULL_INDEX, NULL_INDEX, COLOR_RED), bst.node_at(0)));
+        ASSERT_TRUE(are_equal(make_node(3, 30, NULL_INDEX, 2, 0, COLOR_BLACK), bst.node_at(1)));
+        ASSERT_TRUE(
+            are_equal(make_node(1, 10, 1, NULL_INDEX, NULL_INDEX, COLOR_RED), bst.node_at(2)));
 
         bst.delete_node(5);
         ASSERT_EQ(2, bst.size());
         ASSERT_EQ(1, find_height(bst));
         ASSERT_EQ(1, bst.root_index());
-        ASSERT_TRUE(are_equal(make_node(3, 30, NULL_INDEX, 2, NULL_INDEX, BLACK), bst.node_at(1)));
-        ASSERT_TRUE(are_equal(make_node(1, 10, 1, NULL_INDEX, NULL_INDEX, RED), bst.node_at(2)));
+        ASSERT_TRUE(
+            are_equal(make_node(3, 30, NULL_INDEX, 2, NULL_INDEX, COLOR_BLACK), bst.node_at(1)));
+        ASSERT_TRUE(
+            are_equal(make_node(1, 10, 1, NULL_INDEX, NULL_INDEX, COLOR_RED), bst.node_at(2)));
 
         /*
          *               3B
@@ -1398,8 +1482,8 @@ TEST(FixedRedBlackTree, Deletion_CornerCases)
         ASSERT_EQ(1, bst.size());
         ASSERT_EQ(0, find_height(bst));
         ASSERT_EQ(2, bst.root_index());
-        ASSERT_TRUE(
-            are_equal(make_node(1, 10, NULL_INDEX, NULL_INDEX, NULL_INDEX, BLACK), bst.node_at(2)));
+        ASSERT_TRUE(are_equal(make_node(1, 10, NULL_INDEX, NULL_INDEX, NULL_INDEX, COLOR_BLACK),
+                              bst.node_at(2)));
     }
 
     // Delete root that is not in position 0 of the array while it only has a right child
@@ -1417,16 +1501,20 @@ TEST(FixedRedBlackTree, Deletion_CornerCases)
          */
 
         ASSERT_EQ(1, find_height(bst));
-        ASSERT_TRUE(are_equal(make_node(5, 50, 1, NULL_INDEX, NULL_INDEX, RED), bst.node_at(0)));
-        ASSERT_TRUE(are_equal(make_node(9, 90, NULL_INDEX, 0, 2, BLACK), bst.node_at(1)));
-        ASSERT_TRUE(are_equal(make_node(13, 130, 1, NULL_INDEX, NULL_INDEX, RED), bst.node_at(2)));
+        ASSERT_TRUE(
+            are_equal(make_node(5, 50, 1, NULL_INDEX, NULL_INDEX, COLOR_RED), bst.node_at(0)));
+        ASSERT_TRUE(are_equal(make_node(9, 90, NULL_INDEX, 0, 2, COLOR_BLACK), bst.node_at(1)));
+        ASSERT_TRUE(
+            are_equal(make_node(13, 130, 1, NULL_INDEX, NULL_INDEX, COLOR_RED), bst.node_at(2)));
 
         bst.delete_node(5);
         ASSERT_EQ(2, bst.size());
         ASSERT_EQ(1, find_height(bst));
         ASSERT_EQ(1, bst.root_index());
-        ASSERT_TRUE(are_equal(make_node(9, 90, NULL_INDEX, NULL_INDEX, 2, BLACK), bst.node_at(1)));
-        ASSERT_TRUE(are_equal(make_node(13, 130, 1, NULL_INDEX, NULL_INDEX, RED), bst.node_at(2)));
+        ASSERT_TRUE(
+            are_equal(make_node(9, 90, NULL_INDEX, NULL_INDEX, 2, COLOR_BLACK), bst.node_at(1)));
+        ASSERT_TRUE(
+            are_equal(make_node(13, 130, 1, NULL_INDEX, NULL_INDEX, COLOR_RED), bst.node_at(2)));
 
         /*
          *               9B
@@ -1438,7 +1526,7 @@ TEST(FixedRedBlackTree, Deletion_CornerCases)
         ASSERT_EQ(1, bst.size());
         ASSERT_EQ(0, find_height(bst));
         ASSERT_EQ(2, bst.root_index());
-        ASSERT_TRUE(are_equal(make_node(13, 130, NULL_INDEX, NULL_INDEX, NULL_INDEX, BLACK),
+        ASSERT_TRUE(are_equal(make_node(13, 130, NULL_INDEX, NULL_INDEX, NULL_INDEX, COLOR_BLACK),
                               bst.node_at(2)));
     }
 }

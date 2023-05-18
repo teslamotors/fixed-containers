@@ -10,9 +10,9 @@ namespace fixed_containers::fixed_red_black_tree_detail
 using NodeIndex = std::size_t;
 static constexpr NodeIndex NULL_INDEX = (std::numeric_limits<NodeIndex>::max)();
 
-using Color = bool;
-constexpr Color BLACK = false;
-constexpr Color RED = true;
+using NodeColor = bool;
+constexpr NodeColor COLOR_BLACK = false;
+constexpr NodeColor COLOR_RED = true;
 
 struct EmptyValue
 {
@@ -40,12 +40,12 @@ public:  // Public so this type is a structural type and can thus be used in tem
 
 public:
     constexpr NodeIndexWithColorEmbeddedInTheMostSignificantBit()
-      : NodeIndexWithColorEmbeddedInTheMostSignificantBit{NULL_INDEX, BLACK}
+      : NodeIndexWithColorEmbeddedInTheMostSignificantBit{NULL_INDEX, COLOR_BLACK}
     {
     }
 
     constexpr NodeIndexWithColorEmbeddedInTheMostSignificantBit(const NodeIndex& index,
-                                                                const Color& color)
+                                                                const NodeColor& color)
       : IMPLEMENTATION_DETAIL_DO_NOT_USE_index_and_color_{}
     {
         set_index(index);
@@ -71,9 +71,12 @@ public:
         index_and_color() = (index_and_color() & MASK) | j;
     }
 
-    [[nodiscard]] constexpr Color get_color() const { return (index_and_color() & MASK) == MASK; }
+    [[nodiscard]] constexpr NodeColor get_color() const
+    {
+        return (index_and_color() & MASK) == MASK;
+    }
 
-    constexpr void set_color(const Color c)
+    constexpr void set_color(const NodeColor c)
     {
         index_and_color() = (~MASK & index_and_color()) |
                             (static_cast<NodeIndex>(c) << SHIFT_TO_MOST_SIGNIFICANT_BIT);

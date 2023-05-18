@@ -13,7 +13,7 @@ concept IsFixedRedBlackTreeStorage =
     IsFixedIndexBasedStorage<StorageType> && requires(const StorageType& const_s,
                                                       std::remove_const_t<StorageType>& mutable_s,
                                                       const NodeIndex& i,
-                                                      Color color) {
+                                                      NodeColor color) {
         typename StorageType::KeyType;
         typename StorageType::ValueType;
         StorageType::HAS_ASSOCIATED_VALUE;
@@ -123,11 +123,11 @@ public:
         return storage().at(i).set_parent_index(s);
     }
 
-    [[nodiscard]] constexpr Color color(const NodeIndex& i) const
+    [[nodiscard]] constexpr NodeColor color(const NodeIndex& i) const
     {
         return storage().at(i).color();
     }
-    constexpr void set_color(const NodeIndex& i, const Color& c)
+    constexpr void set_color(const NodeIndex& i, const NodeColor& c)
     {
         return storage().at(i).set_color(c);
     }

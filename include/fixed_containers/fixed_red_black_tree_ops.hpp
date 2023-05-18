@@ -65,7 +65,7 @@ class FixedRedBlackTreeOps
             node_i,
             node_j,
             [](RedBlackTreeNodeView<TreeStorage> node) { return node.color(); },
-            [](RedBlackTreeNodeView<TreeStorage> node, Color c) { node.set_color(c); });
+            [](RedBlackTreeNodeView<TreeStorage> node, NodeColor c) { node.set_color(c); });
     }
 
 public:

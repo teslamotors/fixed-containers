@@ -15,8 +15,10 @@ enum class RedBlackTreeNodeColorCompactness : bool
 };
 
 template <class T>
-concept IsRedBlackTreeNode = requires(
-    const T& const_s, std::remove_const_t<T>& mutable_s, const NodeIndex& i, const Color& c) {
+concept IsRedBlackTreeNode = requires(const T& const_s,
+                                      std::remove_const_t<T>& mutable_s,
+                                      const NodeIndex& i,
+                                      const NodeColor& c) {
     typename T::KeyType;
     typename T::ValueType;
     T::HAS_ASSOCIATED_VALUE;
@@ -58,7 +60,7 @@ public:  // Public so this type is a structural type and can thus be used in tem
     NodeIndex IMPLEMENTATION_DETAIL_DO_NOT_USE_parent_index_ = NULL_INDEX;
     NodeIndex IMPLEMENTATION_DETAIL_DO_NOT_USE_left_index_ = NULL_INDEX;
     NodeIndex IMPLEMENTATION_DETAIL_DO_NOT_USE_right_index_ = NULL_INDEX;
-    Color IMPLEMENTATION_DETAIL_DO_NOT_USE_color_ = BLACK;
+    NodeColor IMPLEMENTATION_DETAIL_DO_NOT_USE_color_ = COLOR_BLACK;
 
 public:
     template <typename... Args>
@@ -107,8 +109,14 @@ public:
     {
         IMPLEMENTATION_DETAIL_DO_NOT_USE_right_index_ = i;
     }
-    [[nodiscard]] constexpr Color color() const { return IMPLEMENTATION_DETAIL_DO_NOT_USE_color_; }
-    constexpr void set_color(const Color& c) { IMPLEMENTATION_DETAIL_DO_NOT_USE_color_ = c; }
+    [[nodiscard]] constexpr NodeColor color() const
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_color_;
+    }
+    constexpr void set_color(const NodeColor& c)
+    {
+        IMPLEMENTATION_DETAIL_DO_NOT_USE_color_ = c;
+    }
 };
 
 template <class K>
@@ -124,7 +132,7 @@ public:  // Public so this type is a structural type and can thus be used in tem
     NodeIndex IMPLEMENTATION_DETAIL_DO_NOT_USE_parent_index_ = NULL_INDEX;
     NodeIndex IMPLEMENTATION_DETAIL_DO_NOT_USE_left_index_ = NULL_INDEX;
     NodeIndex IMPLEMENTATION_DETAIL_DO_NOT_USE_right_index_ = NULL_INDEX;
-    Color IMPLEMENTATION_DETAIL_DO_NOT_USE_color_ = BLACK;
+    NodeColor IMPLEMENTATION_DETAIL_DO_NOT_USE_color_ = COLOR_BLACK;
 
 public:
     explicit constexpr DefaultRedBlackTreeNode(const K& k) noexcept
@@ -163,8 +171,14 @@ public:
     {
         IMPLEMENTATION_DETAIL_DO_NOT_USE_right_index_ = i;
     }
-    [[nodiscard]] constexpr Color color() const { return IMPLEMENTATION_DETAIL_DO_NOT_USE_color_; }
-    constexpr void set_color(const Color& c) { IMPLEMENTATION_DETAIL_DO_NOT_USE_color_ = c; }
+    [[nodiscard]] constexpr NodeColor color() const
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_color_;
+    }
+    constexpr void set_color(const NodeColor& c)
+    {
+        IMPLEMENTATION_DETAIL_DO_NOT_USE_color_ = c;
+    }
 };
 
 // boost::container::map has the option to embed the color in one of the pointers
@@ -235,11 +249,11 @@ public:
     {
         IMPLEMENTATION_DETAIL_DO_NOT_USE_right_index_ = i;
     }
-    [[nodiscard]] constexpr Color color() const
+    [[nodiscard]] constexpr NodeColor color() const
     {
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_parent_index_and_color_.get_color();
     }
-    constexpr void set_color(const Color& c)
+    constexpr void set_color(const NodeColor& c)
     {
         IMPLEMENTATION_DETAIL_DO_NOT_USE_parent_index_and_color_.set_color(c);
     }
@@ -297,11 +311,11 @@ public:
     {
         IMPLEMENTATION_DETAIL_DO_NOT_USE_right_index_ = i;
     }
-    [[nodiscard]] constexpr Color color() const
+    [[nodiscard]] constexpr NodeColor color() const
     {
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_parent_index_and_color_.get_color();
     }
-    constexpr void set_color(const Color& c)
+    constexpr void set_color(const NodeColor& c)
     {
         IMPLEMENTATION_DETAIL_DO_NOT_USE_parent_index_and_color_.set_color(c);
     }
@@ -368,8 +382,8 @@ public:
         return storage->set_parent_index(i, s);
     }
 
-    [[nodiscard]] constexpr Color color() const { return storage->color(i); }
-    constexpr void set_color(const Color& c)
+    [[nodiscard]] constexpr NodeColor color() const { return storage->color(i); }
+    constexpr void set_color(const NodeColor& c)
         requires IS_MUTABLE
     {
         return storage->set_color(i, c);
