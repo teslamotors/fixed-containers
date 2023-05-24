@@ -30,7 +30,7 @@ jobs:
           git submodule foreach git pull origin master
           ./vcpkg/bootstrap-vcpkg.sh
 
-      - name: Setup Cache
+      - name: Setup Caches
         uses: actions/cache@v2
         with:
           key: ${{ runner.os }}-${{ github.workflow }}-${{ env.BUILD_TYPE }}-${{ hashFiles('**/CMakeLists.txt') }}-${{ hashFiles('./vcpkg.json')}}
