@@ -226,6 +226,13 @@ cc_library(
 )
 
 cc_library(
+    name = "pair",
+    hdrs = ["include/fixed_containers/pair.hpp"],
+    includes = ["include"],
+    copts = ["-std=c++20"],
+)
+
+cc_library(
     name = "pair_view",
     hdrs = ["include/fixed_containers/pair_view.hpp"],
     includes = ["include"],
@@ -525,6 +532,18 @@ cc_test(
         ":fixed_map",
         ":fixed_set",
         ":fixed_vector",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
+    ],
+    copts = ["-std=c++20"],
+)
+
+cc_test(
+    name = "pair_test",
+    srcs = ["test/pair_test.cpp"],
+    deps = [
+        ":concepts",
+        ":pair",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
