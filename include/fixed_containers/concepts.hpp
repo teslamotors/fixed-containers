@@ -139,4 +139,12 @@ concept InputIterator =
 // `std::string_view` or `const char*` without having to convert them to `std::string`.
 template <class T>
 concept IsTransparent = requires() { typename T::is_transparent; };
+
+template <class T>
+concept HasValueType = requires() { typename T::value_type; };
+
+template <auto... /*VALUES_TO_BE_PRINTED*/>
+struct CompileTimeValuePrinter
+{
+};
 }  // namespace fixed_containers

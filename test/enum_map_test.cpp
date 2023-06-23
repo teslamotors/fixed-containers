@@ -267,6 +267,67 @@ TEST(EnumMap, CreateWithAllEntries)
     EXPECT_DEATH(get_map_with_duplicate_entries(), "");
 }
 
+TEST(EnumMap, CreateWithAllEntriesWithCompileTimeErrorReporting)
+{
+    // Manual test. Removing one or more entries should cause a static_assert that prints the
+    // missing value(s)
+    // Sample compilation error message:
+    /*
+     error: static assertion failed due to requirement
+    'static_cast<void>(fixed_containers::CompileTimeValuePrinter<fixed_containers::rich_enums::TestEnum1::TWO>{})
+    ,
+    static_cast<void>(fixed_containers::CompileTimeValuePrinter<fixed_containers::rich_enums::TestEnum1::THREE>{})
+    , HAS_MISSING_ENTRIES': Found missing entries.
+     */
+#if defined(__GNUC__) and __GNUC__ < 12 and !defined(__clang__)
+    constexpr auto s1 =
+        EnumMap<TestEnum1, int>::create_with_all_entries<Pair{TestEnum1::ONE, 42},
+                                                         Pair{TestEnum1::TWO, 7},
+                                                         Pair{TestEnum1::THREE, 42},
+                                                         Pair{TestEnum1::FOUR, 7}>();
+    (void)s1;
+    constexpr auto s2 =
+        EnumMap<TestEnum1, int>::create_with_all_entries<std::array<Pair<const TestEnum1, int>, 4>{{
+            {TestEnum1::ONE, 42},
+            {TestEnum1::TWO, 7},
+            {TestEnum1::THREE, 42},
+            {TestEnum1::FOUR, 7},
+        }}>();
+    (void)s2;
+
+    constexpr auto s3 =
+        EnumMap<TestRichEnum1, int>::create_with_all_entries<Pair{TestRichEnum1::C_ONE(), 42},
+                                                             Pair{TestRichEnum1::C_TWO(), 7},
+                                                             Pair{TestRichEnum1::C_THREE(), 42},
+                                                             Pair{TestRichEnum1::C_FOUR(), 7}>();
+    (void)s3;
+#else
+    constexpr auto s1 =
+        EnumMap<TestEnum1, int>::create_with_all_entries<std::pair{TestEnum1::ONE, 42},
+                                                         std::pair{TestEnum1::TWO, 7},
+                                                         std::pair{TestEnum1::THREE, 42},
+                                                         std::pair{TestEnum1::FOUR, 7}>();
+    (void)s1;
+    constexpr auto s2 =
+        EnumMap<TestEnum1,
+                int>::create_with_all_entries<std::array<std::pair<const TestEnum1, int>, 4>{{
+            {TestEnum1::ONE, 42},
+            {TestEnum1::TWO, 7},
+            {TestEnum1::THREE, 42},
+            {TestEnum1::FOUR, 7},
+        }}>();
+    (void)s2;
+
+    constexpr auto s3 =
+        EnumMap<TestRichEnum1,
+                int>::create_with_all_entries<std::pair{TestRichEnum1::C_ONE(), 42},
+                                              std::pair{TestRichEnum1::C_TWO(), 7},
+                                              std::pair{TestRichEnum1::C_THREE(), 42},
+                                              std::pair{TestRichEnum1::C_FOUR(), 7}>();
+    (void)s3;
+#endif
+}
+
 TEST(EnumMap, MaxSize)
 {
     constexpr EnumMap<TestEnum1, int> s1{{TestEnum1::TWO, 20}, {TestEnum1::FOUR, 40}};

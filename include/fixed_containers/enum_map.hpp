@@ -3,8 +3,10 @@
 #include "fixed_containers/concepts.hpp"
 #include "fixed_containers/enum_utils.hpp"
 #include "fixed_containers/erase_if.hpp"
+#include "fixed_containers/fixed_vector.hpp"
 #include "fixed_containers/index_range_predicate_iterator.hpp"
 #include "fixed_containers/optional_storage.hpp"
+#include "fixed_containers/pair.hpp"
 #include "fixed_containers/preconditions.hpp"
 #include "fixed_containers/source_location.hpp"
 #include "fixed_containers/type_name.hpp"
@@ -246,6 +248,54 @@ public:
                                                          const std_transition::source_location& loc)
     {
         return create_with_all_entries<std::initializer_list<value_type>, EnumMapType>(pairs, loc);
+    }
+
+    template <class EnumMapType, auto COLLECTION_OF_PAIRS>
+        requires(HasValueType<decltype(COLLECTION_OF_PAIRS)>)
+    static consteval auto create_with_all_entries()
+    {
+        constexpr EnumMapType OUTPUT{COLLECTION_OF_PAIRS.begin(), COLLECTION_OF_PAIRS.end()};
+        constexpr FixedVector<const K*, ENUM_COUNT> MISSING_ENTRIES = [&OUTPUT]()
+        {
+            FixedVector<const K*, ENUM_COUNT> out{};
+            for (const K& key : ENUM_VALUES)
+            {
+                if (!OUTPUT.contains(key))
+                {
+                    out.push_back(&key);
+                }
+            }
+            return out;
+        }();
+
+        [&MISSING_ENTRIES]<std::size_t... I>(std::index_sequence<I...>) -> void
+        {
+            // Extracted into a variable so it doesn't appear in the static_assert message.
+            constexpr bool HAS_MISSING_ENTRIES = MISSING_ENTRIES.empty();
+            static_assert(
+                (static_cast<void>(CompileTimeValuePrinter<(rich_enums_detail::get_backing_enum(
+                                       *MISSING_ENTRIES.at(I)))...>{}),
+                 HAS_MISSING_ENTRIES),
+                "\nFound missing entries.");
+        }(std::make_index_sequence<MISSING_ENTRIES.size()>{});
+        return OUTPUT;
+    }
+
+    template <class EnumMapType, auto Arg0, auto... Args>
+        requires(not HasValueType<decltype(Arg0)>)
+    static consteval auto create_with_all_entries()
+    {
+        using T1 = typename decltype(Arg0)::first_type;
+        using T2 = typename decltype(Arg0)::second_type;
+
+#if defined(__GNUC__) and __GNUC__ < 12 and !defined(__clang__)
+        using PairType = Pair<T1, T2>;
+#else
+        using PairType = std::pair<T1, T2>;
+#endif
+
+        constexpr std::array<PairType, 1 + sizeof...(Args)> AS_ARRAY{Arg0, Args...};
+        return create_with_all_entries<EnumMapType, AS_ARRAY>();
     }
 
     static constexpr std::size_t max_size() noexcept { return ENUM_COUNT; }
@@ -707,6 +757,32 @@ public:
         return Base::template create_with_all_entries<EnumMapType>(pairs, loc);
     }
 
+    template <class EnumMapType, auto COLLECTION_OF_PAIRS>
+        requires(HasValueType<decltype(COLLECTION_OF_PAIRS)>)
+    static consteval auto create_with_all_entries()
+    {
+        return Base::template create_with_all_entries<EnumMapType, COLLECTION_OF_PAIRS>();
+    }
+    template <auto COLLECTION_OF_PAIRS>
+        requires(HasValueType<decltype(COLLECTION_OF_PAIRS)>)
+    static consteval auto create_with_all_entries()
+    {
+        return create_with_all_entries<Self, COLLECTION_OF_PAIRS>();
+    }
+
+    template <class EnumMapType, auto Arg0, auto... Args>
+        requires(not HasValueType<decltype(Arg0)>)
+    static consteval auto create_with_all_entries()
+    {
+        return Base::template create_with_all_entries<EnumMapType, Arg0, Args...>();
+    }
+    template <auto Arg0, auto... Args>
+        requires(not HasValueType<decltype(Arg0)>)
+    static consteval auto create_with_all_entries()
+    {
+        return create_with_all_entries<Self, Arg0, Args...>();
+    }
+
     constexpr EnumMap() noexcept
       : Base()
     {
@@ -855,6 +931,31 @@ public:
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
         return Base::template create_with_all_entries<EnumMapType>(pairs, loc);
+    }
+
+    template <class EnumMapType, auto COLLECTION_OF_PAIRS>
+        requires(HasValueType<decltype(COLLECTION_OF_PAIRS)>)
+    static consteval auto create_with_all_entries()
+    {
+        return Base::template create_with_all_entries<EnumMapType, COLLECTION_OF_PAIRS>();
+    }
+    template <auto COLLECTION_OF_PAIRS>
+        requires(HasValueType<decltype(COLLECTION_OF_PAIRS)>)
+    static consteval auto create_with_all_entries()
+    {
+        return create_with_all_entries<Self, COLLECTION_OF_PAIRS>();
+    }
+    template <class EnumMapType, auto Arg0, auto... Args>
+        requires(not HasValueType<decltype(Arg0)>)
+    static consteval auto create_with_all_entries()
+    {
+        return Base::template create_with_all_entries<EnumMapType, Arg0, Args...>();
+    }
+    template <auto Arg0, auto... Args>
+        requires(not HasValueType<decltype(Arg0)>)
+    static consteval auto create_with_all_entries()
+    {
+        return create_with_all_entries<Self, Arg0, Args...>();
     }
 
     constexpr EnumMap() noexcept

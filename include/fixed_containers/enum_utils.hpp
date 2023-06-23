@@ -231,6 +231,21 @@ concept IsRichEnumStorage = requires(const T& const_s, const T& const_s2) {
     } -> std::same_as<const typename T::UnderlyingType&>;
 };
 
+template <typename T>
+constexpr auto get_backing_enum(const T& key)
+{
+    if constexpr (is_enum<T>)
+    {
+        return key;
+    }
+    else if constexpr (is_rich_enum<T>)
+    {
+        return key.backing_enum();
+    }
+
+    assert(false);
+}
+
 template <class T>
 class StructuralTypeOptional
 {
