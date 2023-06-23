@@ -227,10 +227,10 @@ TEST(EnumMap, CreateWithAllEntries)
 
     constexpr auto get_map_with_missing_entries = []
     {
-        const auto s2 = EnumMap<TestEnum1, int>::create_with_all_entries({
-            {TestEnum1::ONE, 42},
-            {TestEnum1::THREE, 42},
-            {TestEnum1::FOUR, 7},
+        const auto s2 = EnumMap<TestEnum1, int>::create_with_all_entries(std::array{
+            std::pair{TestEnum1::ONE, 42},
+            std::pair{TestEnum1::THREE, 42},
+            std::pair{TestEnum1::FOUR, 7},
         });
         return s2;
     };

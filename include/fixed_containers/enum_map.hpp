@@ -220,8 +220,8 @@ public:
         return output;
     }
 
-    template <class EnumMapType>
-    static constexpr EnumMapType create_with_all_entries(std::initializer_list<value_type> pairs,
+    template <class CollectionOfPairs, class EnumMapType>
+    static constexpr EnumMapType create_with_all_entries(const CollectionOfPairs& pairs,
                                                          const std_transition::source_location& loc)
     {
         EnumMapType output{};
@@ -240,6 +240,12 @@ public:
         }
 
         return output;
+    }
+    template <class EnumMapType>
+    static constexpr EnumMapType create_with_all_entries(std::initializer_list<value_type> pairs,
+                                                         const std_transition::source_location& loc)
+    {
+        return create_with_all_entries<std::initializer_list<value_type>, EnumMapType>(pairs, loc);
     }
 
     static constexpr std::size_t max_size() noexcept { return ENUM_COUNT; }
@@ -685,6 +691,14 @@ public:
         return Base::template create_with_keys<Container, EnumMapType>(sp, value);
     }
 
+    template <class CollectionOfPairs, class EnumMapType = Self>
+    static constexpr EnumMapType create_with_all_entries(
+        const CollectionOfPairs& pairs,
+        const std_transition::source_location& loc = std_transition::source_location::current())
+    {
+        return Base::template create_with_all_entries<CollectionOfPairs, EnumMapType>(pairs, loc);
+    }
+
     template <class EnumMapType = Self>
     static constexpr EnumMapType create_with_all_entries(
         std::initializer_list<value_type> pairs,
@@ -825,6 +839,14 @@ public:
     static constexpr EnumMapType create_with_keys(const Container& sp, const V& value = V())
     {
         return Base::template create_with_keys<Container, EnumMapType>(sp, value);
+    }
+
+    template <class CollectionOfPairs, class EnumMapType = Self>
+    static constexpr EnumMapType create_with_all_entries(
+        const CollectionOfPairs& pairs,
+        const std_transition::source_location& loc = std_transition::source_location::current())
+    {
+        return Base::template create_with_all_entries<CollectionOfPairs, EnumMapType>(pairs, loc);
     }
 
     template <class EnumMapType = Self>
