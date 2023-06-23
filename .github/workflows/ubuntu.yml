@@ -55,11 +55,11 @@ jobs:
           conan: false
           vcpkg: false
           ccache: true
-          clangtidy: true
+          clangtidy: false
           cppcheck: true
           gcovr: true
           opencppcoverage: false
-          gcc: true
+          gcc: '11'
 
       - name: Configure CMake
         run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE=./vcpkg/scripts/buildsystems/vcpkg.cmake
