@@ -12,7 +12,7 @@ static_assert(NotTriviallyCopyable<std::pair<int, int>>);
 static_assert(TriviallyCopyable<std::pair<int, int>>);
 #endif
 
-#if defined(__GNUC__) and __GNUC__ < 12 and !defined(__clang__)
+#if defined(_GLIBCXX_RELEASE) and _GLIBCXX_RELEASE < 12
 static_assert(IsNotStructuralType<std::pair<int, int>>);
 #else
 static_assert(IsStructuralType<std::pair<int, int>>);

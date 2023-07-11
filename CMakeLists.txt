@@ -34,6 +34,7 @@ else()
 endif()
 if(${USING_CLANG})
     target_compile_options(project_options INTERFACE -ftrivial-auto-var-init=pattern)
+    #target_compile_options(project_options INTERFACE --gcc-install-dir=/usr/bin/../lib/gcc/x86_64-linux-gnu/11)
 endif()
 target_compile_features(project_options INTERFACE cxx_std_${CMAKE_CXX_STANDARD})
 

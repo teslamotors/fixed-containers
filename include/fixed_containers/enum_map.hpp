@@ -288,7 +288,7 @@ public:
         using T1 = typename decltype(Arg0)::first_type;
         using T2 = typename decltype(Arg0)::second_type;
 
-#if defined(__GNUC__) and __GNUC__ < 12 and !defined(__clang__)
+#if defined(_GLIBCXX_RELEASE) and _GLIBCXX_RELEASE < 12
         using PairType = Pair<T1, T2>;
 #else
         using PairType = std::pair<T1, T2>;

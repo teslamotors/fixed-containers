@@ -279,7 +279,7 @@ TEST(EnumMap, CreateWithAllEntriesWithCompileTimeErrorReporting)
     static_cast<void>(fixed_containers::CompileTimeValuePrinter<fixed_containers::rich_enums::TestEnum1::THREE>{})
     , HAS_MISSING_ENTRIES': Found missing entries.
      */
-#if defined(__GNUC__) and __GNUC__ < 12 and !defined(__clang__)
+#if defined(_GLIBCXX_RELEASE) and _GLIBCXX_RELEASE < 12
     constexpr auto s1 =
         EnumMap<TestEnum1, int>::create_with_all_entries<Pair{TestEnum1::ONE, 42},
                                                          Pair{TestEnum1::TWO, 7},
