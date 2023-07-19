@@ -625,7 +625,7 @@ TEST(FixedVector, PushBackAll_Popback_Empty)
     EXPECT_DEATH(v1.pop_back(), "");
 }
 
-TEST(FixedVector, Accessor)
+TEST(FixedVector, BracketOperator)
 {
     {
         constexpr auto v1 = []()
@@ -658,12 +658,6 @@ TEST(FixedVector, Accessor)
         EXPECT_EQ(v3[0], 0);
         EXPECT_EQ(v3[1], 901);
         EXPECT_EQ(v3[2], 2);
-    }
-
-    {
-        FixedVector<MockNonTrivialInt, 5> v{};
-        v.resize(5);
-        EXPECT_EQ(v.size(), 5);
     }
 }
 
@@ -1202,6 +1196,12 @@ TEST(FixedVector, Resize)
     v3.resize(5, 3);
 
     EXPECT_TRUE(are_equal(v3, std::array<int, 5>{{0, 1, 3, 3, 3}}));
+
+    {
+        FixedVector<MockNonTrivialInt, 5> v{};
+        v.resize(5);
+        EXPECT_EQ(v.size(), 5);
+    }
 }
 
 TEST(FixedVector, Resize_ExceedCapacity)
