@@ -27,10 +27,9 @@ public:
     [[nodiscard]] constexpr bool is_base_depth() const { return depth_ == 0; }
     [[nodiscard]] constexpr bool is_null_depth() const { return depth_ == -1; }
 
-    constexpr void update_depth(const char* const fmt)
+    constexpr void update_depth(const std::string_view fmt)
     {
-        std::string_view fmt_as_string_view{fmt};
-        const char special_char = fmt_as_string_view.at(fmt_as_string_view.size() - 2);
+        const char special_char = fmt.at(fmt.size() - 2);
         if (special_char == '{')
         {
             ++depth_;
