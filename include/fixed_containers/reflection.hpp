@@ -23,7 +23,11 @@ class DepthTracker
     int depth_{-1};
 
 public:
-    [[nodiscard]] constexpr bool is_base_depth() const { return depth_ == 0; }
+    [[nodiscard]] constexpr int depth() const
+    {
+        assert(depth_ != -1);
+        return depth_;
+    }
     [[nodiscard]] constexpr bool is_null_depth() const { return depth_ == -1; }
 
     constexpr void update_depth(const std::string_view fmt)
@@ -45,43 +49,58 @@ class FieldEntry
 private:
     std::string_view field_type_name_;
     std::string_view field_name_;
+    int depth_;
 
 public:
     constexpr FieldEntry(const std::string_view& field_type_name,
-                         const std::string_view& field_name) noexcept
+                         const std::string_view& field_name,
+                         const int depth) noexcept
       : field_type_name_{field_type_name}
       , field_name_{field_name}
+      , depth_{depth}
     {
     }
 
 public:
     [[nodiscard]] constexpr std::string_view field_type_name() const { return field_type_name_; }
     [[nodiscard]] constexpr std::string_view field_name() const { return field_name_; }
+    [[nodiscard]] constexpr int depth() const { return depth_; }
 };
 
-template <typename T>
-constexpr std::size_t field_count_of(const T& instance)
+template <typename T, typename Func>
+constexpr void for_each_field_entry(const T& instance, Func func)
 {
-    auto converter = []<typename... Args>(in_out<std::size_t> output,
-                                          in_out<DepthTracker> depth_tracker,
-                                          const char* const fmt,
-                                          Args&&... args)
+    auto converter = [&func]<typename... Args>(
+                         in_out<DepthTracker> depth_tracker, const char* const fmt, Args&&... args)
     {
         depth_tracker->update_depth(fmt);
 
         if constexpr (sizeof...(args) >= 3)
         {
-            if (depth_tracker->is_base_depth())
-            {
-                ++(*output);
-            }
+            auto as_tuple = std::tuple{std::forward<Args>(args)...};
+            func(FieldEntry{/*field_type_name*/ std::get<1>(as_tuple),
+                            /*field_name*/ std::get<2>(as_tuple),
+                            depth_tracker->depth()});
         }
     };
 
-    std::size_t counter = 0;
     DepthTracker depth_tracker{};
-    __builtin_dump_struct(&instance, converter, in_out{counter}, in_out{depth_tracker});
+    __builtin_dump_struct(&instance, converter, in_out{depth_tracker});
     assert(depth_tracker.is_null_depth());
+}
+
+template <typename T>
+constexpr std::size_t field_count_of(const T& instance)
+{
+    std::size_t counter = 0;
+    for_each_field_entry(instance,
+                         [&counter](const FieldEntry& field_entry)
+                         {
+                             if (field_entry.depth() == 0)
+                             {
+                                 ++counter;
+                             }
+                         });
     return counter;
 }
 
@@ -95,29 +114,15 @@ constexpr std::size_t field_count_of()
 template <std::size_t MAXIMUM_FIELD_COUNT = 16, typename T>
 constexpr auto field_info_of(const T& instance) -> FixedVector<FieldEntry, MAXIMUM_FIELD_COUNT>
 {
-    auto converter =
-        []<typename... Args>(in_out<FixedVector<FieldEntry, MAXIMUM_FIELD_COUNT>> output,
-                             in_out<DepthTracker> depth_tracker,
-                             const char* const fmt,
-                             Args&&... args)
-    {
-        depth_tracker->update_depth(fmt);
-
-        auto as_tuple = std::tuple{std::forward<Args>(args)...};
-        if constexpr (sizeof...(args) >= 3)
-        {
-            if (depth_tracker->is_base_depth())
-            {
-                output->emplace_back(/*field_type_name*/ std::get<1>(as_tuple),
-                                     /*field_name*/ std::get<2>(as_tuple));
-            }
-        }
-    };
-
     FixedVector<FieldEntry, MAXIMUM_FIELD_COUNT> output{};
-    DepthTracker depth_tracker{};
-    __builtin_dump_struct(&instance, converter, in_out{output}, in_out{depth_tracker});
-    assert(depth_tracker.is_null_depth());
+    for_each_field_entry(instance,
+                         [&output](const FieldEntry& field_entry)
+                         {
+                             if (field_entry.depth() == 0)
+                             {
+                                 output.push_back(field_entry);
+                             }
+                         });
     return output;
 }
 
