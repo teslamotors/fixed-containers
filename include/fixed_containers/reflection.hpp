@@ -40,21 +40,21 @@ public:
     }
 };
 
-class FieldInfo
+class FieldEntry
 {
 private:
     std::string_view field_type_name_;
     std::string_view field_name_;
 
 public:
-    constexpr FieldInfo() noexcept
+    constexpr FieldEntry() noexcept
       : field_type_name_{}
       , field_name_{}
     {
     }
 
-    constexpr FieldInfo(const std::string_view& field_type_name,
-                        const std::string_view& field_name) noexcept
+    constexpr FieldEntry(const std::string_view& field_type_name,
+                         const std::string_view& field_name) noexcept
       : field_type_name_{field_type_name}
       , field_name_{field_name}
     {
@@ -99,10 +99,10 @@ constexpr std::size_t field_count_of()
 }
 
 template <std::size_t MAXIMUM_FIELD_COUNT = 16, typename T>
-constexpr auto field_info_of(const T& instance) -> FixedVector<FieldInfo, MAXIMUM_FIELD_COUNT>
+constexpr auto field_info_of(const T& instance) -> FixedVector<FieldEntry, MAXIMUM_FIELD_COUNT>
 {
     auto converter =
-        []<typename... Args>(in_out<FixedVector<FieldInfo, MAXIMUM_FIELD_COUNT>> output,
+        []<typename... Args>(in_out<FixedVector<FieldEntry, MAXIMUM_FIELD_COUNT>> output,
                              in_out<DepthTracker> depth_tracker,
                              const char* const fmt,
                              Args&&... args)
@@ -120,7 +120,7 @@ constexpr auto field_info_of(const T& instance) -> FixedVector<FieldInfo, MAXIMU
         }
     };
 
-    FixedVector<FieldInfo, MAXIMUM_FIELD_COUNT> output{};
+    FixedVector<FieldEntry, MAXIMUM_FIELD_COUNT> output{};
     DepthTracker depth_tracker{};
     __builtin_dump_struct(&instance, converter, in_out{output}, in_out{depth_tracker});
     assert(depth_tracker.is_null_depth());
