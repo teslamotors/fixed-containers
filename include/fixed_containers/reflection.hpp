@@ -47,12 +47,6 @@ private:
     std::string_view field_name_;
 
 public:
-    constexpr FieldEntry() noexcept
-      : field_type_name_{}
-      , field_name_{}
-    {
-    }
-
     constexpr FieldEntry(const std::string_view& field_type_name,
                          const std::string_view& field_name) noexcept
       : field_type_name_{field_type_name}
