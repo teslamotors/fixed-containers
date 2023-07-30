@@ -6,6 +6,7 @@
 
 #include <array>
 #include <cassert>
+#include <concepts>
 #include <string_view>
 #include <tuple>
 
@@ -67,7 +68,7 @@ public:
     [[nodiscard]] constexpr int depth() const { return depth_; }
 };
 
-template <typename T, typename Func>
+template <typename T, std::invocable<FieldEntry> Func>
 constexpr void for_each_field_entry(const T& instance, Func func)
 {
     auto converter = [&func]<typename... Args>(
