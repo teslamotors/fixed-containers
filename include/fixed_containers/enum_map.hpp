@@ -718,21 +718,6 @@ class EnumMap : public enum_map_detail::EnumMapBase<K, V, CheckingType>
     using Base = enum_map_detail::EnumMapBase<K, V, CheckingType>;
 
 public:
-    using key_type = typename Base::key_type;
-    using mapped_type = typename Base::mapped_type;
-    using value_type = typename Base::value_type;
-    using reference = typename Base::reference;
-    using const_reference = typename Base::const_reference;
-    using pointer = typename Base::pointer;
-    using const_pointer = typename Base::const_pointer;
-    using const_iterator = typename Base::const_iterator;
-    using iterator = typename Base::iterator;
-    using const_reverse_iterator = typename Base::const_reverse_iterator;
-    using reverse_iterator = typename Base::reverse_iterator;
-    using size_type = typename Base::size_type;
-    using difference_type = typename Base::difference_type;
-
-public:
     using Builder = enum_map_detail::EnumMapBuilder<K, V, EnumMap<K, V, CheckingType>>;
 
     template <class Container, class EnumMapType = Self>
@@ -751,7 +736,7 @@ public:
 
     template <class EnumMapType = Self>
     static constexpr EnumMapType create_with_all_entries(
-        std::initializer_list<value_type> pairs,
+        std::initializer_list<typename Base::value_type> pairs,
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
         return Base::template create_with_all_entries<EnumMapType>(pairs, loc);
@@ -792,7 +777,7 @@ public:
       : Base(first, last)
     {
     }
-    constexpr EnumMap(std::initializer_list<value_type> list) noexcept
+    constexpr EnumMap(std::initializer_list<typename Base::value_type> list) noexcept
       : Base(list)
     {
     }
@@ -894,21 +879,6 @@ class EnumMap<K, V, CheckingType> : public enum_map_detail::EnumMapBase<K, V, Ch
     using Base = enum_map_detail::EnumMapBase<K, V, CheckingType>;
 
 public:
-    using key_type = typename Base::key_type;
-    using mapped_type = typename Base::mapped_type;
-    using value_type = typename Base::value_type;
-    using reference = typename Base::reference;
-    using const_reference = typename Base::const_reference;
-    using pointer = typename Base::pointer;
-    using const_pointer = typename Base::const_pointer;
-    using const_iterator = typename Base::const_iterator;
-    using iterator = typename Base::iterator;
-    using const_reverse_iterator = typename Base::const_reverse_iterator;
-    using reverse_iterator = typename Base::reverse_iterator;
-    using size_type = typename Base::size_type;
-    using difference_type = typename Base::difference_type;
-
-public:
     using Builder = enum_map_detail::EnumMapBuilder<K, V, Self>;
 
     template <class Container, class EnumMapType = Self>
@@ -927,7 +897,7 @@ public:
 
     template <class EnumMapType = Self>
     static constexpr EnumMapType create_with_all_entries(
-        std::initializer_list<value_type> pairs,
+        std::initializer_list<typename Base::value_type> pairs,
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
         return Base::template create_with_all_entries<EnumMapType>(pairs, loc);
@@ -967,7 +937,7 @@ public:
       : Base(first, last)
     {
     }
-    constexpr EnumMap(std::initializer_list<value_type> list) noexcept
+    constexpr EnumMap(std::initializer_list<typename Base::value_type> list) noexcept
       : Base(list)
     {
     }
