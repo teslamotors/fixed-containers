@@ -1294,6 +1294,13 @@ TEST(FixedMap, Ranges)
     EXPECT_EQ(10, first_entry);
 }
 
+TEST(FixedMap, ClassTemplateArgumentDeduction)
+{
+    // Compile-only test
+    FixedMap a = FixedMap<int, int, 5>{};
+    (void)a;
+}
+
 TEST(FixedMap, NonDefaultConstructible)
 {
     {
@@ -1732,3 +1739,14 @@ INSTANTIATE_TYPED_TEST_SUITE_P(FixedMap,
                                NameProviderForTypeParameterizedTest);
 
 }  // namespace fixed_containers
+
+namespace another_namespace_unrelated_to_the_fixed_containers_namespace
+{
+TEST(FixedMap, ArgumentDependentLookup)
+{
+    // Compile-only test
+    fixed_containers::FixedMap<int, int, 5> a{};
+    erase_if(a, [](auto&&) { return true; });
+    is_full(a);
+}
+}  // namespace another_namespace_unrelated_to_the_fixed_containers_namespace

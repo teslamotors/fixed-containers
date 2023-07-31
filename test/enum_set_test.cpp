@@ -633,6 +633,13 @@ TEST(EnumSet, Ranges)
     EXPECT_EQ(TestRichEnum1::C_FOUR(), *f.begin());
 }
 
+TEST(EnumSet, ClassTemplateArgumentDeduction)
+{
+    // Compile-only test
+    EnumSet a = EnumSet<TestEnum1>{};
+    (void)a;
+}
+
 TEST(EnumSet, SetIntersection)
 {
     constexpr EnumSet<TestEnum1> s1 = []()
@@ -678,3 +685,13 @@ TEST(EnumSet, UsageAsTemplateParameter)
 }
 
 }  // namespace fixed_containers
+
+namespace another_namespace_unrelated_to_the_fixed_containers_namespace
+{
+TEST(EnumSet, ArgumentDependentLookup)
+{
+    // Compile-only test
+    fixed_containers::EnumSet<fixed_containers::TestEnum1> a{};
+    erase_if(a, [](fixed_containers::TestEnum1) { return true; });
+}
+}  // namespace another_namespace_unrelated_to_the_fixed_containers_namespace

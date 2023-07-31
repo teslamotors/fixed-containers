@@ -1867,6 +1867,13 @@ TEST(FixedVector, NonTriviallyCopyableMoveAssignment)
     EXPECT_TRUE(are_equal(v2, std::array<MockNonTrivialInt, 2>{1, 2}));
 }
 
+TEST(FixedVector, ClassTemplateArgumentDeduction)
+{
+    // Compile-only test
+    FixedVector a = FixedVector<int, 5>{};
+    (void)a;
+}
+
 namespace
 {
 template <FixedVector<int, 5> /*MY_VEC*/>
@@ -2102,3 +2109,15 @@ INSTANTIATE_TYPED_TEST_SUITE_P(FixedVector,
                                NameProviderForTypeParameterizedTest);
 
 }  // namespace fixed_containers
+
+namespace another_namespace_unrelated_to_the_fixed_containers_namespace
+{
+TEST(FixedVector, ArgumentDependentLookup)
+{
+    // Compile-only test
+    fixed_containers::FixedVector<int, 5> a{};
+    erase(a, 5);
+    erase_if(a, [](int) { return true; });
+    is_full(a);
+}
+}  // namespace another_namespace_unrelated_to_the_fixed_containers_namespace

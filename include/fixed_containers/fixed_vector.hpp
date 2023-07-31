@@ -1026,8 +1026,47 @@ template <typename T,
           std::size_t MAXIMUM_SIZE,
           fixed_vector_customize::FixedVectorChecking CheckingType =
               fixed_vector_customize::AbortChecking<T, MAXIMUM_SIZE>>
-using FixedVector =
-    fixed_vector_detail::specializations::FixedVector<T, MAXIMUM_SIZE, CheckingType>;
+class FixedVector
+  : public fixed_vector_detail::specializations::FixedVector<T, MAXIMUM_SIZE, CheckingType>
+{
+    using Base = fixed_vector_detail::specializations::FixedVector<T, MAXIMUM_SIZE, CheckingType>;
+
+public:
+    using Builder =
+        fixed_vector_detail::FixedVectorBuilder<T, FixedVector<T, MAXIMUM_SIZE, CheckingType>>;
+
+    constexpr FixedVector() noexcept
+      : Base()
+    {
+    }
+    constexpr FixedVector(std::initializer_list<T> list,
+                          const std_transition::source_location& loc =
+                              std_transition::source_location::current()) noexcept
+      : Base(list, loc)
+    {
+    }
+    constexpr FixedVector(std::size_t count,
+                          const T& value,
+                          const std_transition::source_location& loc =
+                              std_transition::source_location::current()) noexcept
+      : Base(count, value, loc)
+    {
+    }
+    constexpr explicit FixedVector(std::size_t count,
+                                   const std_transition::source_location& loc =
+                                       std_transition::source_location::current()) noexcept
+      : Base(count, loc)
+    {
+    }
+    template <InputIterator InputIt>
+    constexpr FixedVector(InputIt first,
+                          InputIt last,
+                          const std_transition::source_location& loc =
+                              std_transition::source_location::current()) noexcept
+      : Base(first, last, loc)
+    {
+    }
+};
 
 template <typename T, std::size_t MAXIMUM_SIZE, typename CheckingType>
 constexpr typename FixedVector<T, MAXIMUM_SIZE, CheckingType>::size_type is_full(

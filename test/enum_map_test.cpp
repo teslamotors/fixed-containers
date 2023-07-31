@@ -1378,6 +1378,13 @@ TEST(EnumMap, Ranges)
     EXPECT_EQ(10, first_entry);
 }
 
+TEST(EnumMap, ClassTemplateArgumentDeduction)
+{
+    // Compile-only test
+    EnumMap a = EnumMap<TestEnum1, int>{};
+    (void)a;
+}
+
 TEST(EnumMap, NonDefaultConstructible)
 {
     {
@@ -1812,3 +1819,13 @@ INSTANTIATE_TYPED_TEST_SUITE_P(EnumMap,
                                NameProviderForTypeParameterizedTest);
 
 }  // namespace fixed_containers
+
+namespace another_namespace_unrelated_to_the_fixed_containers_namespace
+{
+TEST(EnumMap, ArgumentDependentLookup)
+{
+    // Compile-only test
+    fixed_containers::EnumMap<fixed_containers::TestEnum1, int> a{};
+    erase_if(a, [](auto&&) { return true; });
+}
+}  // namespace another_namespace_unrelated_to_the_fixed_containers_namespace

@@ -576,6 +576,13 @@ TEST(FixedSet, Ranges)
     EXPECT_EQ(4, *f.begin());
 }
 
+TEST(FixedSet, ClassTemplateArgumentDeduction)
+{
+    // Compile-only test
+    FixedSet a = FixedSet<int, 5>{};
+    (void)a;
+}
+
 TEST(FixedSet, SetIntersection)
 {
     constexpr FixedSet<int, 10> s1 = []()
@@ -619,3 +626,14 @@ TEST(FixedSet, UsageAsTemplateParameter)
 }
 
 }  // namespace fixed_containers
+
+namespace another_namespace_unrelated_to_the_fixed_containers_namespace
+{
+TEST(FixedSet, ArgumentDependentLookup)
+{
+    // Compile-only test
+    fixed_containers::FixedSet<int, 5> a{};
+    erase_if(a, [](int) { return true; });
+    is_full(a);
+}
+}  // namespace another_namespace_unrelated_to_the_fixed_containers_namespace

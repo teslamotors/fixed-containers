@@ -957,7 +957,75 @@ template <class K,
           class V,
           enum_map_customize::EnumMapChecking<K> CheckingType =
               enum_map_customize::AbortChecking<K, V>>
-using EnumMap = enum_map_detail::specializations::EnumMap<K, V, CheckingType>;
+class EnumMap : public enum_map_detail::specializations::EnumMap<K, V, CheckingType>
+{
+    using Self = EnumMap<K, V, CheckingType>;
+    using Base = enum_map_detail::specializations::EnumMap<K, V, CheckingType>;
+
+public:
+    using Builder = enum_map_detail::EnumMapBuilder<K, V, Self>;
+
+    template <class Container, class EnumMapType = Self>
+    static constexpr EnumMapType create_with_keys(const Container& sp, const V& value = V())
+    {
+        return Base::template create_with_keys<Container, EnumMapType>(sp, value);
+    }
+
+    template <class CollectionOfPairs, class EnumMapType = Self>
+    static constexpr EnumMapType create_with_all_entries(
+        const CollectionOfPairs& pairs,
+        const std_transition::source_location& loc = std_transition::source_location::current())
+    {
+        return Base::template create_with_all_entries<CollectionOfPairs, EnumMapType>(pairs, loc);
+    }
+
+    template <class EnumMapType = Self>
+    static constexpr EnumMapType create_with_all_entries(
+        std::initializer_list<typename Base::value_type> pairs,
+        const std_transition::source_location& loc = std_transition::source_location::current())
+    {
+        return Base::template create_with_all_entries<EnumMapType>(pairs, loc);
+    }
+
+    template <class EnumMapType, auto COLLECTION_OF_PAIRS>
+        requires(HasValueType<decltype(COLLECTION_OF_PAIRS)>)
+    static consteval auto create_with_all_entries()
+    {
+        return Base::template create_with_all_entries<EnumMapType, COLLECTION_OF_PAIRS>();
+    }
+    template <auto COLLECTION_OF_PAIRS>
+        requires(HasValueType<decltype(COLLECTION_OF_PAIRS)>)
+    static consteval auto create_with_all_entries()
+    {
+        return create_with_all_entries<Self, COLLECTION_OF_PAIRS>();
+    }
+    template <class EnumMapType, auto Arg0, auto... Args>
+        requires(not HasValueType<decltype(Arg0)>)
+    static consteval auto create_with_all_entries()
+    {
+        return Base::template create_with_all_entries<EnumMapType, Arg0, Args...>();
+    }
+    template <auto Arg0, auto... Args>
+        requires(not HasValueType<decltype(Arg0)>)
+    static consteval auto create_with_all_entries()
+    {
+        return create_with_all_entries<Self, Arg0, Args...>();
+    }
+
+    constexpr EnumMap() noexcept
+      : Base()
+    {
+    }
+    template <InputIterator InputIt>
+    constexpr EnumMap(InputIt first, InputIt last)
+      : Base(first, last)
+    {
+    }
+    constexpr EnumMap(std::initializer_list<typename Base::value_type> list) noexcept
+      : Base(list)
+    {
+    }
+};
 
 template <class K, class V, enum_map_customize::EnumMapChecking<K> CheckingType, class Predicate>
 constexpr typename EnumMap<K, V, CheckingType>::size_type erase_if(EnumMap<K, V, CheckingType>& c,
