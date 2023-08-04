@@ -17,11 +17,11 @@ public:
     using reference = typename container_type::reference;
     using const_reference = typename container_type::const_reference;
 
-    container_type data_{};
+    container_type IMPLEMENTATION_DETAIL_DO_NOT_USE_data_{};
 
 public:
     constexpr FixedStack()
-      : data_{}
+      : IMPLEMENTATION_DETAIL_DO_NOT_USE_data_{}
     {
     }
 
@@ -30,49 +30,52 @@ public:
                          InputIt last,
                          const std_transition::source_location& loc =
                              std_transition::source_location::current()) noexcept
-      : data_(first, last, loc)
+      : IMPLEMENTATION_DETAIL_DO_NOT_USE_data_(first, last, loc)
     {
     }
 
 public:
     [[nodiscard]] constexpr std::size_t max_size() const noexcept { return MAXIMUM_SIZE; }
-    [[nodiscard]] constexpr std::size_t size() const noexcept { return data_.size(); }
+    [[nodiscard]] constexpr std::size_t size() const noexcept
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_data_.size();
+    }
     [[nodiscard]] constexpr bool empty() const noexcept { return size() == 0; }
 
     constexpr reference top(
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
-        return data_.back(loc);
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_data_.back(loc);
     }
     constexpr const_reference top(const std_transition::source_location& loc =
                                       std_transition::source_location::current()) const
     {
-        return data_.back(loc);
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_data_.back(loc);
     }
 
     constexpr void push(
         const value_type& value,
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
-        data_.push_back(value, loc);
+        IMPLEMENTATION_DETAIL_DO_NOT_USE_data_.push_back(value, loc);
     }
     constexpr void push(
         value_type&& value,
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
-        data_.push_back(std::move(value), loc);
+        IMPLEMENTATION_DETAIL_DO_NOT_USE_data_.push_back(std::move(value), loc);
     }
 
     template <class... Args>
     constexpr decltype(auto) emplace(Args&&... args)
     {
-        data_.emplace_back(std::forward<Args>(args)...);
+        IMPLEMENTATION_DETAIL_DO_NOT_USE_data_.emplace_back(std::forward<Args>(args)...);
     }
 
     constexpr void pop(
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
-        data_.pop_back(loc);
+        IMPLEMENTATION_DETAIL_DO_NOT_USE_data_.pop_back(loc);
     }
 };
 

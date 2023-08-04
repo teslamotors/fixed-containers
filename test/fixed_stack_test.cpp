@@ -18,8 +18,12 @@ static_assert(ConstexprDefaultConstructible<std::stack<int, FixedVector<int, 5>>
 static_assert(!ConstexprDefaultConstructible<std::stack<int, FixedVector<int, 5>>>);
 #endif
 
-static_assert(TriviallyCopyable<FixedStack<int, 5>>);
-static_assert(ConstexprDefaultConstructible<FixedStack<int, 5>>);
+using StackType = FixedStack<int, 5>;
+static_assert(TriviallyCopyable<StackType>);
+static_assert(NotTrivial<StackType>);
+static_assert(StandardLayout<StackType>);
+static_assert(IsStructuralType<StackType>);
+static_assert(ConstexprDefaultConstructible<StackType>);
 
 TEST(FixedStack, DefaultConstructor)
 {
