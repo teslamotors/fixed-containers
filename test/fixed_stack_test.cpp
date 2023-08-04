@@ -21,9 +21,31 @@ static_assert(!ConstexprDefaultConstructible<std::stack<int, FixedVector<int, 5>
 static_assert(TriviallyCopyable<FixedStack<int, 5>>);
 static_assert(ConstexprDefaultConstructible<FixedStack<int, 5>>);
 
-TEST(FixedDeque, DefaultConstructor)
+TEST(FixedStack, DefaultConstructor)
 {
     constexpr FixedStack<int, 8> v1{};
     (void)v1;
 }
+
+TEST(FixedStack, MaxSize)
+{
+    {
+        constexpr FixedStack<int, 3> v1{};
+        static_assert(v1.max_size() == 3);
+    }
+
+    {
+        FixedStack<int, 3> v1{};
+        EXPECT_EQ(3, v1.max_size());
+    }
+}
+
+TEST(FixedStack, Empty)
+{
+    constexpr auto v1 = []() { return FixedStack<int, 7>{}; }();
+
+    static_assert(v1.empty());
+    static_assert(v1.max_size() == 7);
+}
+
 }  // namespace fixed_containers::fixed_stack_detail

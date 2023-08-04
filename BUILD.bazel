@@ -191,6 +191,7 @@ cc_library(
     hdrs = ["include/fixed_containers/fixed_stack.hpp"],
     includes = ["include"],
     deps = [
+        ":fixed_vector",
     ],
     copts = ["-std=c++20"],
 )
