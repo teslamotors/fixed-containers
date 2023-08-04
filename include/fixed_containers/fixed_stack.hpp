@@ -5,7 +5,7 @@
 
 #include <cstddef>
 
-namespace fixed_containers::fixed_stack_detail
+namespace fixed_containers
 {
 template <typename T, std::size_t MAXIMUM_SIZE>
 class FixedStack
@@ -79,4 +79,4 @@ public:
     }
 };
 
-}  // namespace fixed_containers::fixed_stack_detail
+}  // namespace fixed_containers

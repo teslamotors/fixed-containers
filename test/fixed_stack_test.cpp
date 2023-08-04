@@ -7,7 +7,7 @@
 
 #include <stack>
 
-namespace fixed_containers::fixed_stack_detail
+namespace fixed_containers
 {
 // std::stack would be preferable, but it is not always constexpr
 // The spec has it as non-constexpr as of C++23, including construction.
@@ -133,4 +133,4 @@ TEST(FixedStack, Pop)
     static_assert(s1.size() == 1);
 }
 
-}  // namespace fixed_containers::fixed_stack_detail
+}  // namespace fixed_containers

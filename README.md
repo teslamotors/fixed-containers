@@ -20,6 +20,7 @@ Header-only C++20 library that provides containers with the following properties
 * `FixedVector` - Vector implementation with `std::vector` API and "fixed container" properties
 * `FixedMap`/`FixedSet` - Red-Black Tree map/set implementation with `std::map`/`std::set` API and "fixed container" properties.
 * `EnumMap`/`EnumSet` - For enum keys only, Map/Set implementation with `std::map`/`std::set` API and "fixed container" properties. O(1) lookups.
+* `FixedStack` - Stack implementation with `std::stack` API and "fixed container" properties
 * `StringLiteral` - Compile-time null-terminated literal string.
 * Rich enums - `enum` & `class` hybrid.
 
@@ -134,6 +135,21 @@ More examples can be found [here](test/enums_test_common.hpp).
     constexpr auto s2 = EnumSet<Color>::all(); // full set
     constexpr auto s3 = EnumSet<Color>::none(); // empty set
     constexpr auto s4 = EnumSet<Color>::complement_of(s2); // empty set
+    ```
+
+- FixedStack
+    ```C++
+    constexpr FixedStack<int, 3> s1 = []()
+    {
+        FixedStack<int, 3> v1{};
+        int my_int = 77;
+        v1.push(my_int);
+        v1.push(99);
+        return v1;
+    }();
+
+    static_assert(s1.top() == 99);
+    static_assert(s1.size() == 2);
     ```
 
 - StringLiteral
