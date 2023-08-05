@@ -329,6 +329,7 @@ cc_library(
     includes = ["include"],
     deps = [
         ":concepts",
+        ":fixed_stack",
         ":fixed_vector",
         ":in_out",
     ],
