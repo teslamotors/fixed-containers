@@ -12,6 +12,7 @@
 #include <range/v3/view/filter.hpp>
 #include <range/v3/view/transform.hpp>
 
+#include <algorithm>
 #include <array>
 #include <span>
 #include <vector>
@@ -130,26 +131,6 @@ struct ComplexStruct
     std::array<int, 2> b;
     int c;
 };
-
-template <class FixedVectorType, class OtherType>
-constexpr bool are_equal(const FixedVectorType& vec, const OtherType& other)
-{
-    if (vec.size() != other.size())
-    {
-        return false;
-    }
-
-    const std::size_t vec_size = vec.size();
-    for (std::size_t i = 0; i < vec_size; i++)
-    {
-        if (vec.at(i) != other.at(i))
-        {
-            return false;
-        }
-    }
-
-    return true;
-}
 
 }  // namespace
 
@@ -315,7 +296,7 @@ TEST(FixedVector, Builder_FluentSyntaxWithNoExtraCopies)
                                 .build();
 
         static_assert(s1.size() == 8);
-        static_assert(are_equal(s1, std::array{2, 4, 12, 2, 4, 12, 22, 24}));
+        static_assert(std::ranges::equal(s1, std::array{2, 4, 12, 2, 4, 12, 22, 24}));
     }
 
     {
@@ -331,7 +312,7 @@ TEST(FixedVector, Builder_FluentSyntaxWithNoExtraCopies)
                       .build();
 
         EXPECT_EQ(8, s1.size());
-        EXPECT_TRUE(are_equal(s1, std::array{2, 4, 12, 2, 4, 12, 22, 24}));
+        EXPECT_TRUE(std::ranges::equal(s1, std::array{2, 4, 12, 2, 4, 12, 22, 24}));
     }
 }
 
@@ -363,13 +344,13 @@ TEST(FixedVector, Builder_MultipleOuts)
             // out1 should be unaffected by out2's addition of extra elements
             constexpr FixedVector<int, 17> s1 = s_all[0];
             static_assert(s1.size() == 1);
-            static_assert(are_equal(s1, std::array{12}));
+            static_assert(std::ranges::equal(s1, std::array{12}));
         }
 
         {
             constexpr FixedVector<int, 17> s2 = s_all[1];
             static_assert(s2.size() == 9);
-            static_assert(are_equal(s2, std::array{12, 2, 4, 12, 2, 4, 12, 22, 24}));
+            static_assert(std::ranges::equal(s2, std::array{12, 2, 4, 12, 2, 4, 12, 22, 24}));
         }
     }
 
@@ -399,13 +380,13 @@ TEST(FixedVector, Builder_MultipleOuts)
             // out1 should be unaffected by out2's addition of extra elements
             FixedVector<int, 17> s1 = s_all[0];
             EXPECT_EQ(1, s1.size());
-            EXPECT_TRUE(are_equal(s1, std::array{12}));
+            EXPECT_TRUE(std::ranges::equal(s1, std::array{12}));
         }
 
         {
             FixedVector<int, 17> s2 = s_all[1];
             EXPECT_EQ(9, s2.size());
-            EXPECT_TRUE(are_equal(s2, std::array{12, 2, 4, 12, 2, 4, 12, 22, 24}));
+            EXPECT_TRUE(std::ranges::equal(s2, std::array{12, 2, 4, 12, 2, 4, 12, 22, 24}));
         }
     }
 }
@@ -422,8 +403,8 @@ TEST(FixedVector, Initializer)
     static_assert(v2[1] == 55);
     static_assert(v2.size() == 2);
 
-    EXPECT_TRUE(are_equal(v1, std::array{77, 99}));
-    EXPECT_TRUE(are_equal(v2, std::array{66, 55}));
+    EXPECT_TRUE(std::ranges::equal(v1, std::array{77, 99}));
+    EXPECT_TRUE(std::ranges::equal(v2, std::array{66, 55}));
 }
 
 TEST(FixedVector, MaxSizeDeduction)
@@ -451,14 +432,14 @@ TEST(FixedVector, CountConstructor)
         constexpr FixedVector<int, 8> v1(5);
         static_assert(v1.size() == 5);
         static_assert(v1.max_size() == 8);
-        static_assert(are_equal(v1, std::array{0, 0, 0, 0, 0}));
+        static_assert(std::ranges::equal(v1, std::array{0, 0, 0, 0, 0}));
     }
 
     {
         constexpr FixedVector<int, 8> v2(5, 3);
         static_assert(v2.size() == 5);
         static_assert(v2.max_size() == 8);
-        static_assert(are_equal(v2, std::array{3, 3, 3, 3, 3}));
+        static_assert(std::ranges::equal(v2, std::array{3, 3, 3, 3, 3}));
     }
 
     // NonAssignable<T>
@@ -486,7 +467,7 @@ TEST(FixedVector, InputIteratorConstructor)
     MockIntStream stream{3};
     FixedVector<int, 14> v{stream.begin(), stream.end()};
     ASSERT_EQ(3, v.size());
-    EXPECT_TRUE(are_equal(v, std::array{3, 2, 1}));
+    EXPECT_TRUE(std::ranges::equal(v, std::array{3, 2, 1}));
 }
 
 TEST(FixedVector, PushBack)
@@ -526,7 +507,7 @@ TEST(FixedVector, EmplaceBack)
             return v;
         }();
 
-        static_assert(are_equal(v1, std::array{0, 1, 2, 3, 4}));
+        static_assert(std::ranges::equal(v1, std::array{0, 1, 2, 3, 4}));
     }
     {
         auto v1 = []()
@@ -537,7 +518,7 @@ TEST(FixedVector, EmplaceBack)
             return v;
         }();
 
-        EXPECT_TRUE(are_equal(v1, std::array{0, 1, 2, 3, 4}));
+        EXPECT_TRUE(std::ranges::equal(v1, std::array{0, 1, 2, 3, 4}));
     }
     {
         FixedVector<ComplexStruct, 11> v2{};
@@ -616,7 +597,7 @@ TEST(FixedVector, Popback)
 
     FixedVector<int, 17> v2{10, 11, 12};
     v2.pop_back();
-    EXPECT_TRUE(are_equal(v2, std::array{10, 11}));
+    EXPECT_TRUE(std::ranges::equal(v2, std::array{10, 11}));
 }
 
 TEST(FixedVector, PushBackAll_Popback_Empty)
@@ -1087,7 +1068,7 @@ TEST(FixedVector, ReverseIteratorBase)
         return v;
     }();
 
-    static_assert(are_equal(v1, std::array<int, 2>{1, 3}));
+    static_assert(std::ranges::equal(v1, std::array<int, 2>{1, 3}));
 }
 
 TEST(FixedVector, IterationBasic)
@@ -1188,14 +1169,14 @@ TEST(FixedVector, Resize)
     FixedVector<int, 8> v3{0, 1, 2, 3};
     v3.resize(6);
 
-    EXPECT_TRUE(are_equal(v3, std::array<int, 6>{{0, 1, 2, 3, 0, 0}}));
+    EXPECT_TRUE(std::ranges::equal(v3, std::array<int, 6>{{0, 1, 2, 3, 0, 0}}));
 
     v3.resize(2);
-    EXPECT_TRUE(are_equal(v3, std::array<int, 2>{{0, 1}}));
+    EXPECT_TRUE(std::ranges::equal(v3, std::array<int, 2>{{0, 1}}));
 
     v3.resize(5, 3);
 
-    EXPECT_TRUE(are_equal(v3, std::array<int, 5>{{0, 1, 3, 3, 3}}));
+    EXPECT_TRUE(std::ranges::equal(v3, std::array<int, 5>{{0, 1, 3, 3, 3}}));
 
     {
         FixedVector<MockNonTrivialInt, 5> v{};
@@ -1246,7 +1227,7 @@ TEST(FixedVector, Full)
         return v;
     }();
 
-    static_assert(are_equal(v1, std::array<int, 4>{100, 100, 100, 100}));
+    static_assert(std::ranges::equal(v1, std::array<int, 4>{100, 100, 100, 100}));
     static_assert(is_full(v1));
     static_assert(v1.size() == 4);
     static_assert(v1.max_size() == 4);
@@ -1316,7 +1297,7 @@ TEST(FixedVector, Emplace)
             return v;
         }();
 
-        static_assert(are_equal(v1, std::array{0, 4, 3, 1, 2}));
+        static_assert(std::ranges::equal(v1, std::array{0, 4, 3, 1, 2}));
     }
     {
         auto v1 = []()
@@ -1327,7 +1308,7 @@ TEST(FixedVector, Emplace)
             return v;
         }();
 
-        EXPECT_TRUE(are_equal(v1, std::array{0, 4, 3, 1, 2}));
+        EXPECT_TRUE(std::ranges::equal(v1, std::array{0, 4, 3, 1, 2}));
     }
     {
         FixedVector<ComplexStruct, 11> v2{};
@@ -1349,7 +1330,7 @@ TEST(FixedVector, AssignValue)
             return v;
         }();
 
-        static_assert(are_equal(v1, std::array<int, 5>{100, 100, 100, 100, 100}));
+        static_assert(std::ranges::equal(v1, std::array<int, 5>{100, 100, 100, 100, 100}));
         static_assert(v1.size() == 5);
     }
 
@@ -1362,7 +1343,7 @@ TEST(FixedVector, AssignValue)
             return v;
         }();
 
-        static_assert(are_equal(v2, std::array<int, 2>{300, 300}));
+        static_assert(std::ranges::equal(v2, std::array<int, 2>{300, 300}));
         static_assert(v2.size() == 2);
         static_assert(v2.max_size() == 7);
     }
@@ -1377,7 +1358,7 @@ TEST(FixedVector, AssignValue)
         }();
 
         EXPECT_EQ(2, v3.size());
-        EXPECT_TRUE(are_equal(v3, std::array<int, 2>{300, 300}));
+        EXPECT_TRUE(std::ranges::equal(v3, std::array<int, 2>{300, 300}));
     }
 }
 
@@ -1392,7 +1373,7 @@ TEST(FixedVector, AssignRange)
             return v;
         }();
 
-        static_assert(are_equal(v1, std::array<int, 2>{300, 300}));
+        static_assert(std::ranges::equal(v1, std::array<int, 2>{300, 300}));
         static_assert(v1.size() == 2);
         static_assert(v1.max_size() == 7);
     }
@@ -1405,7 +1386,7 @@ TEST(FixedVector, AssignRange)
             return v;
         }();
 
-        EXPECT_TRUE(are_equal(v2, std::array<int, 2>{300, 300}));
+        EXPECT_TRUE(std::ranges::equal(v2, std::array<int, 2>{300, 300}));
         EXPECT_EQ(2, v2.size());
     }
 }
@@ -1433,7 +1414,7 @@ TEST(FixedVector, AssignInitializerList)
             return v;
         }();
 
-        static_assert(are_equal(v1, std::array<int, 2>{300, 300}));
+        static_assert(std::ranges::equal(v1, std::array<int, 2>{300, 300}));
         static_assert(v1.size() == 2);
         static_assert(v1.max_size() == 7);
     }
@@ -1445,7 +1426,7 @@ TEST(FixedVector, AssignInitializerList)
             return v;
         }();
 
-        EXPECT_TRUE(are_equal(v2, std::array<int, 2>{300, 300}));
+        EXPECT_TRUE(std::ranges::equal(v2, std::array<int, 2>{300, 300}));
         EXPECT_EQ(2, v2.size());
     }
 }
@@ -1462,7 +1443,7 @@ TEST(FixedVector, InsertValue)
             return v;
         }();
 
-        static_assert(are_equal(v1, std::array<int, 6>{100, 0, 500, 1, 2, 3}));
+        static_assert(std::ranges::equal(v1, std::array<int, 6>{100, 0, 500, 1, 2, 3}));
         static_assert(v1.size() == 6);
         static_assert(v1.max_size() == 7);
     }
@@ -1477,7 +1458,7 @@ TEST(FixedVector, InsertValue)
             return v;
         }();
 
-        static_assert(are_equal(v2, std::array<int, 5>{100, 0, 500, 1, 2}));
+        static_assert(std::ranges::equal(v2, std::array<int, 5>{100, 0, 500, 1, 2}));
         static_assert(v2.size() == 5);
         static_assert(v2.max_size() == 5);
     }
@@ -1486,22 +1467,22 @@ TEST(FixedVector, InsertValue)
     {
         FixedVector<MockNonTrivialInt, 8> v3{};
         v3.insert(v3.begin(), 0);
-        EXPECT_TRUE(are_equal(v3, std::array<MockNonTrivialInt, 1>{{0}}));
+        EXPECT_TRUE(std::ranges::equal(v3, std::array<MockNonTrivialInt, 1>{{0}}));
         v3.insert(v3.begin(), 1);
-        EXPECT_TRUE(are_equal(v3, std::array<MockNonTrivialInt, 2>{{1, 0}}));
+        EXPECT_TRUE(std::ranges::equal(v3, std::array<MockNonTrivialInt, 2>{{1, 0}}));
         v3.insert(v3.begin(), 2);
-        EXPECT_TRUE(are_equal(v3, std::array<MockNonTrivialInt, 3>{{2, 1, 0}}));
+        EXPECT_TRUE(std::ranges::equal(v3, std::array<MockNonTrivialInt, 3>{{2, 1, 0}}));
         const MockNonTrivialInt value = 3;
         v3.insert(v3.end(), value);
-        EXPECT_TRUE(are_equal(v3, std::array<MockNonTrivialInt, 4>{{2, 1, 0, 3}}));
+        EXPECT_TRUE(std::ranges::equal(v3, std::array<MockNonTrivialInt, 4>{{2, 1, 0, 3}}));
         v3.insert(v3.begin() + 2, 4);
-        EXPECT_TRUE(are_equal(v3, std::array<MockNonTrivialInt, 5>{{2, 1, 4, 0, 3}}));
+        EXPECT_TRUE(std::ranges::equal(v3, std::array<MockNonTrivialInt, 5>{{2, 1, 4, 0, 3}}));
         v3.insert(v3.begin() + 3, 5);
-        EXPECT_TRUE(are_equal(v3, std::array<MockNonTrivialInt, 6>{{2, 1, 4, 5, 0, 3}}));
+        EXPECT_TRUE(std::ranges::equal(v3, std::array<MockNonTrivialInt, 6>{{2, 1, 4, 5, 0, 3}}));
         auto v4 = v3;
         v3.clear();
         v3.insert(v3.end(), v4.begin(), v4.end());
-        EXPECT_TRUE(are_equal(v3, std::array<MockNonTrivialInt, 6>{{2, 1, 4, 5, 0, 3}}));
+        EXPECT_TRUE(std::ranges::equal(v3, std::array<MockNonTrivialInt, 6>{{2, 1, 4, 5, 0, 3}}));
     }
 }
 
@@ -1522,7 +1503,7 @@ TEST(FixedVector, InsertIterator)
             return v;
         }();
 
-        static_assert(are_equal(v1, std::array<int, 6>{0, 1, 100, 500, 2, 3}));
+        static_assert(std::ranges::equal(v1, std::array<int, 6>{0, 1, 100, 500, 2, 3}));
         static_assert(v1.size() == 6);
         static_assert(v1.max_size() == 7);
     }
@@ -1536,7 +1517,7 @@ TEST(FixedVector, InsertIterator)
             return v;
         }();
 
-        static_assert(are_equal(v2, std::array<int, 5>{0, 1, 100, 500, 2}));
+        static_assert(std::ranges::equal(v2, std::array<int, 5>{0, 1, 100, 500, 2}));
         static_assert(v2.size() == 5);
         static_assert(v2.max_size() == 5);
     }
@@ -1545,7 +1526,7 @@ TEST(FixedVector, InsertIterator)
         std::array<int, 2> a{100, 500};
         FixedVector<int, 7> v{0, 1, 2, 3};
         auto it = v.insert(v.begin() + 2, a.begin(), a.end());
-        EXPECT_TRUE(are_equal(v, std::array<int, 6>{0, 1, 100, 500, 2, 3}));
+        EXPECT_TRUE(std::ranges::equal(v, std::array<int, 6>{0, 1, 100, 500, 2, 3}));
         EXPECT_EQ(it, v.begin() + 2);
     }
 }
@@ -1556,7 +1537,7 @@ TEST(FixedVector, InsertInputIterator)
     FixedVector<int, 14> v{10, 20, 30, 40};
     auto it = v.insert(v.begin() + 2, stream.begin(), stream.end());
     ASSERT_EQ(7, v.size());
-    EXPECT_TRUE(are_equal(v, std::array{10, 20, 3, 2, 1, 30, 40}));
+    EXPECT_TRUE(std::ranges::equal(v, std::array{10, 20, 3, 2, 1, 30, 40}));
     EXPECT_EQ(it, v.begin() + 2);
 }
 
@@ -1585,7 +1566,7 @@ TEST(FixedVector, InsertInitializerList)
             return v;
         }();
 
-        static_assert(are_equal(v1, std::array<int, 5>{0, 1, 100, 500, 2}));
+        static_assert(std::ranges::equal(v1, std::array<int, 5>{0, 1, 100, 500, 2}));
         static_assert(v1.size() == 5);
         static_assert(v1.max_size() == 5);
     }
@@ -1593,7 +1574,7 @@ TEST(FixedVector, InsertInitializerList)
     {
         FixedVector<int, 7> v{0, 1, 2, 3};
         auto it = v.insert(v.begin() + 2, {100, 500});
-        EXPECT_TRUE(are_equal(v, std::array<int, 6>{0, 1, 100, 500, 2, 3}));
+        EXPECT_TRUE(std::ranges::equal(v, std::array<int, 6>{0, 1, 100, 500, 2, 3}));
         EXPECT_EQ(it, v.begin() + 2);
     }
 }
@@ -1607,7 +1588,7 @@ TEST(FixedVector, EraseRange)
         return v;
     }();
 
-    static_assert(are_equal(v1, std::array<int, 4>{0, 1, 4, 5}));
+    static_assert(std::ranges::equal(v1, std::array<int, 4>{0, 1, 4, 5}));
     static_assert(v1.size() == 4);
     static_assert(v1.max_size() == 8);
 
@@ -1616,7 +1597,7 @@ TEST(FixedVector, EraseRange)
     auto it = v2.erase(v2.begin() + 1, v2.cbegin() + 3);
     EXPECT_EQ(it, v2.begin() + 1);
     EXPECT_EQ(*it, 5);
-    EXPECT_TRUE(are_equal(v2, std::array<int, 4>{{2, 5, 0, 3}}));
+    EXPECT_TRUE(std::ranges::equal(v2, std::array<int, 4>{{2, 5, 0, 3}}));
 }
 
 TEST(FixedVector, EraseOne)
@@ -1629,7 +1610,7 @@ TEST(FixedVector, EraseOne)
         return v;
     }();
 
-    static_assert(are_equal(v1, std::array<int, 4>{1, 2, 4, 5}));
+    static_assert(std::ranges::equal(v1, std::array<int, 4>{1, 2, 4, 5}));
     static_assert(v1.size() == 4);
     static_assert(v1.max_size() == 8);
 
@@ -1638,17 +1619,17 @@ TEST(FixedVector, EraseOne)
     auto it = v2.erase(v2.begin());
     EXPECT_EQ(it, v2.begin());
     EXPECT_EQ(*it, 1);
-    EXPECT_TRUE(are_equal(v2, std::array<int, 5>{{1, 4, 5, 0, 3}}));
+    EXPECT_TRUE(std::ranges::equal(v2, std::array<int, 5>{{1, 4, 5, 0, 3}}));
     it += 2;
     it = v2.erase(it);
     EXPECT_EQ(it, v2.begin() + 2);
     EXPECT_EQ(*it, 0);
-    EXPECT_TRUE(are_equal(v2, std::array<int, 4>{{1, 4, 0, 3}}));
+    EXPECT_TRUE(std::ranges::equal(v2, std::array<int, 4>{{1, 4, 0, 3}}));
     ++it;
     it = v2.erase(it);
     EXPECT_EQ(it, v2.cend());
     EXPECT_EQ(*it, 3);
-    EXPECT_TRUE(are_equal(v2, std::array<int, 3>{{1, 4, 0}}));
+    EXPECT_TRUE(std::ranges::equal(v2, std::array<int, 3>{{1, 4, 0}}));
 }
 
 TEST(FixedVector, Erase_Empty)
@@ -1682,7 +1663,7 @@ TEST(FixedVector, EraseFreeFunction)
         return v;
     }();
 
-    static_assert(are_equal(v1, std::array<int, 5>{0, 1, 2, 4, 5}));
+    static_assert(std::ranges::equal(v1, std::array<int, 5>{0, 1, 2, 4, 5}));
 }
 
 TEST(FixedVector, EraseIf)
@@ -1696,7 +1677,7 @@ TEST(FixedVector, EraseIf)
         return v;
     }();
 
-    static_assert(are_equal(v1, std::array<int, 3>{1, 3, 5}));
+    static_assert(std::ranges::equal(v1, std::array<int, 3>{1, 3, 5}));
 }
 
 TEST(FixedVector, Front)
@@ -1708,7 +1689,7 @@ TEST(FixedVector, Front)
     }();
 
     static_assert(v1.front() == 99);
-    static_assert(are_equal(v1, std::array<int, 3>{99, 1, 2}));
+    static_assert(std::ranges::equal(v1, std::array<int, 3>{99, 1, 2}));
     static_assert(v1.size() == 3);
 
     FixedVector<int, 8> v2{100, 101, 102};
@@ -1740,7 +1721,7 @@ TEST(FixedVector, Back)
     }();
 
     static_assert(v1.back() == 77);
-    static_assert(are_equal(v1, std::array<int, 3>{0, 1, 77}));
+    static_assert(std::ranges::equal(v1, std::array<int, 3>{0, 1, 77}));
     static_assert(v1.size() == 3);
 
     FixedVector<int, 8> v2{100, 101, 102};
@@ -1817,8 +1798,8 @@ TEST(FixedVector, NonTriviallyCopyableCopyConstructor)
 
     FixedVector<MockNonTrivialInt, 11> v2{v1};
 
-    EXPECT_TRUE(are_equal(v1, std::array<MockNonTrivialInt, 2>{1, 2}));
-    EXPECT_TRUE(are_equal(v2, std::array<MockNonTrivialInt, 2>{1, 2}));
+    EXPECT_TRUE(std::ranges::equal(v1, std::array<MockNonTrivialInt, 2>{1, 2}));
+    EXPECT_TRUE(std::ranges::equal(v2, std::array<MockNonTrivialInt, 2>{1, 2}));
 }
 
 TEST(FixedVector, NonTriviallyCopyableCopyAssignment)
@@ -1829,13 +1810,13 @@ TEST(FixedVector, NonTriviallyCopyableCopyAssignment)
 
     FixedVector<MockNonTrivialInt, 11> v2 = v1;
 
-    EXPECT_TRUE(are_equal(v1, std::array<MockNonTrivialInt, 2>{1, 2}));
-    EXPECT_TRUE(are_equal(v2, std::array<MockNonTrivialInt, 2>{1, 2}));
+    EXPECT_TRUE(std::ranges::equal(v1, std::array<MockNonTrivialInt, 2>{1, 2}));
+    EXPECT_TRUE(std::ranges::equal(v2, std::array<MockNonTrivialInt, 2>{1, 2}));
 
     // Self-assignment
     auto& v3 = v2;
     v2 = v3;
-    EXPECT_TRUE(are_equal(v2, std::array<MockNonTrivialInt, 2>{1, 2}));
+    EXPECT_TRUE(std::ranges::equal(v2, std::array<MockNonTrivialInt, 2>{1, 2}));
 }
 
 TEST(FixedVector, NonTriviallyCopyableMoveConstructor)
@@ -1847,7 +1828,7 @@ TEST(FixedVector, NonTriviallyCopyableMoveConstructor)
     FixedVector<MockNonTrivialInt, 11> v2{std::move(v1)};
 
     // Formally,v1 is in an unspecified-state
-    EXPECT_TRUE(are_equal(v2, std::array<MockNonTrivialInt, 2>{1, 2}));
+    EXPECT_TRUE(std::ranges::equal(v2, std::array<MockNonTrivialInt, 2>{1, 2}));
 }
 
 TEST(FixedVector, NonTriviallyCopyableMoveAssignment)
@@ -1859,12 +1840,12 @@ TEST(FixedVector, NonTriviallyCopyableMoveAssignment)
     FixedVector<MockNonTrivialInt, 11> v2 = std::move(v1);
 
     // Formally,v1 is in an unspecified-state
-    EXPECT_TRUE(are_equal(v2, std::array<MockNonTrivialInt, 2>{1, 2}));
+    EXPECT_TRUE(std::ranges::equal(v2, std::array<MockNonTrivialInt, 2>{1, 2}));
 
     // Self-assignment
     auto& v3 = v2;
     v2 = std::move(v3);
-    EXPECT_TRUE(are_equal(v2, std::array<MockNonTrivialInt, 2>{1, 2}));
+    EXPECT_TRUE(std::ranges::equal(v2, std::array<MockNonTrivialInt, 2>{1, 2}));
 }
 
 TEST(FixedVector, ClassTemplateArgumentDeduction)
