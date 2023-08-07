@@ -391,7 +391,7 @@ TEST(FixedVector, Builder_MultipleOuts)
     }
 }
 
-TEST(FixedVector, Initializer)
+TEST(FixedVector, InitializerConstructor)
 {
     constexpr FixedVector<int, 3> v1{77, 99};
     static_assert(v1[0] == 77);

@@ -142,6 +142,48 @@ public:
         insert(end(), first, last, loc);
     }
 
+    constexpr void resize(
+        size_type count,
+        const std_transition::source_location& loc = std_transition::source_location::current())
+    {
+        this->resize(count, T{}, loc);
+    }
+    constexpr void resize(
+        size_type count,
+        const value_type& v,
+        const std_transition::source_location& loc = std_transition::source_location::current())
+    {
+        check_target_size(count, loc);
+
+        // Reinitialize the new members if we are enlarging
+        while (size() < count)
+        {
+            place_at(size(), v);
+            increment_size();
+        }
+        // Destroy extras if we are making it smaller.
+        while (size() > count)
+        {
+            decrement_size();
+            destroy_at(size());
+        }
+    }
+
+    constexpr void push_back(
+        const value_type& v,
+        const std_transition::source_location& loc = std_transition::source_location::current())
+    {
+        check_not_full(loc);
+        this->push_back_internal(v);
+    }
+    constexpr void push_back(
+        value_type&& v,
+        const std_transition::source_location& loc = std_transition::source_location::current())
+    {
+        check_not_full(loc);
+        this->push_back_internal(std::move(v));
+    }
+
     template <InputIterator InputIt>
     constexpr iterator insert(
         const_iterator it,
@@ -159,6 +201,43 @@ public:
     {
         return insert_internal(
             std::random_access_iterator_tag{}, it, ilist.begin(), ilist.end(), loc);
+    }
+
+    constexpr iterator erase(const_iterator first,
+                             const_iterator last,
+                             const std_transition::source_location& loc =
+                                 std_transition::source_location::current()) noexcept
+    {
+        if (preconditions::test(first <= last))
+        {
+            Checking::invalid_argument("first > last, range is invalid", loc);
+        }
+
+        const std::size_t read_start = this->index_of(last);
+        const std::size_t write_start = this->index_of(first);
+
+        std::size_t entry_count_to_move = size() - read_start;
+        const std::size_t entry_count_to_remove = read_start - write_start;
+
+        // Clean out the gap
+        destroy_index_range(write_start, write_start + entry_count_to_remove);
+
+        // Do the move
+        for (std::size_t i = 0; i < entry_count_to_move; ++i)
+        {
+            place_at(write_start + i,
+                     std::move(optional_storage_detail::get(array_unchecked_at(read_start + i))));
+            destroy_at(read_start + i);
+        }
+
+        decrement_size(entry_count_to_remove);
+        return iterator{this->begin() + static_cast<difference_type>(write_start)};
+    }
+    constexpr iterator erase(const_iterator it,
+                             const std_transition::source_location& loc =
+                                 std_transition::source_location::current()) noexcept
+    {
+        return erase(it, it + 1, loc);
     }
 
     constexpr iterator begin() noexcept { return create_iterator(0); }
@@ -184,6 +263,53 @@ public:
     [[nodiscard]] constexpr std::size_t max_size() const noexcept { return MAXIMUM_SIZE; }
     [[nodiscard]] constexpr std::size_t size() const noexcept { return index_j_ - index_i_; }
     [[nodiscard]] constexpr bool empty() const noexcept { return size() == 0; }
+
+    template <std::size_t MAXIMUM_SIZE_2, fixed_deque_customize::FixedDequeChecking CheckingType2>
+    constexpr bool operator==(const FixedDeque<T, MAXIMUM_SIZE_2, CheckingType2>& other) const
+    {
+        if constexpr (MAXIMUM_SIZE == MAXIMUM_SIZE_2)
+        {
+            if (this == &other)
+            {
+                return true;
+            }
+        }
+
+        if (this->size() != other.size())
+        {
+            return false;
+        }
+
+        for (std::size_t i = 0; i < this->size(); i++)
+        {
+            if (this->unchecked_at(i) != other.at(i))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    template <std::size_t MAXIMUM_SIZE_2, fixed_deque_customize::FixedDequeChecking CheckingType2>
+    constexpr auto operator<=>(const FixedDeque<T, MAXIMUM_SIZE_2, CheckingType2>& other) const
+    {
+        using OrderingType = decltype(std::declval<T>() <=> std::declval<T>());
+        const std::size_t min_size = (std::min)(this->size(), other.size());
+        for (std::size_t i = 0; i < min_size; i++)
+        {
+            if (unchecked_at(i) < other.at(i))
+            {
+                return OrderingType::less;
+            }
+            if (unchecked_at(i) > other.at(i))
+            {
+                return OrderingType::greater;
+            }
+        }
+
+        return this->size() <=> other.size();
+    }
 
     constexpr reference operator[](size_type i) noexcept
     {
@@ -266,10 +392,22 @@ private:
             destroy_at(read_end - i);
         }
 
-        index_j_ = (index_j_ + n) % MAXIMUM_SIZE;
+        increment_size(n);
 
         return read_start;
     }
+
+    constexpr void push_back_internal(const value_type& v)
+    {
+        place_at(size(), v);
+        increment_size();
+    }
+    constexpr void push_back_internal(value_type&& v)
+    {
+        place_at(size(), std::move(v));
+        increment_size();
+    }
+
     template <InputIterator InputIt>
     constexpr iterator insert_internal(std::forward_iterator_tag,
                                        const_iterator it,
@@ -345,6 +483,13 @@ private:
         return static_cast<std::size_t>(it - cbegin());
     }
 
+    constexpr void check_not_full(const std_transition::source_location& loc) const
+    {
+        if (preconditions::test(size() < MAXIMUM_SIZE))
+        {
+            Checking::length_error(MAXIMUM_SIZE + 1, loc);
+        }
+    }
     constexpr void check_not_empty(const std_transition::source_location& loc) const
     {
         if (preconditions::test(!empty()))
@@ -355,6 +500,26 @@ private:
 
     // [WORKAROUND-1] - Needed by the non-trivially-copyable flavor of FixedDeque
 protected:
+    constexpr void increment_size(const std::size_t n = 1)
+    {
+        index_j_ = (index_j_ + n) % (MAXIMUM_SIZE + 1);
+    }
+    constexpr void decrement_size(const std::size_t n = 1)
+    {
+        index_j_ = (index_j_ - n) % (MAXIMUM_SIZE + 1);
+    }
+
+    constexpr const OptionalT& array_unchecked_at(const std::size_t i) const { return array_[i]; }
+    constexpr OptionalT& array_unchecked_at(const std::size_t i) { return array_[i]; }
+    constexpr const T& unchecked_at(const std::size_t i) const
+    {
+        return optional_storage_detail::get(array_[i]);
+    }
+    constexpr T& unchecked_at(const std::size_t i)
+    {
+        return optional_storage_detail::get(array_[i]);
+    }
+
     constexpr void destroy_at(std::size_t)
         requires TriviallyDestructible<T>
     {
@@ -363,6 +528,19 @@ protected:
         requires NotTriviallyDestructible<T>
     {
         array_[i].value.~T();
+    }
+
+    constexpr void destroy_index_range(std::size_t, std::size_t)
+        requires TriviallyDestructible<T>
+    {
+    }
+    constexpr void destroy_index_range(std::size_t from_inclusive, std::size_t to_exclusive)
+        requires NotTriviallyDestructible<T>
+    {
+        for (std::size_t i = from_inclusive; i < to_exclusive; i++)
+        {
+            destroy_at(i);
+        }
     }
 
     // NOTE for the following functions:
