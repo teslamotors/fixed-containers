@@ -8,6 +8,7 @@
 #include <array>
 #include <cassert>
 #include <concepts>
+#include <optional>
 #include <string_view>
 #include <tuple>
 
@@ -32,8 +33,6 @@ struct FieldAsString
     std::string_view name;
 };
 
-inline constexpr std::string_view NULL_FIELD_TYPE_NAME{};
-
 template <std::size_t MAXIMUM_LAYERS = 32>
 class LayerTracker
 {
@@ -55,9 +54,9 @@ public:
     {
         return nesting_stack_.top();
     }
-    [[nodiscard]] constexpr std::string_view current_providing_base_class() const
+    [[nodiscard]] constexpr std::optional<std::string_view> current_providing_base_class() const
     {
-        return inheritance_stack_.empty() ? NULL_FIELD_TYPE_NAME : inheritance_stack_.top();
+        return inheritance_stack_.empty() ? std::nullopt : std::optional{inheritance_stack_.top()};
     }
 
     template <typename... Args>
@@ -124,12 +123,12 @@ class FieldEntry
 private:
     FieldAsString field_;
     FieldAsString enclosing_field_;
-    std::string_view providing_base_class_name_;
+    std::optional<std::string_view> providing_base_class_name_;
 
 public:
     constexpr FieldEntry(const FieldAsString& field,
                          const FieldAsString& enclosing_field,
-                         std::string_view providing_base_class_name) noexcept
+                         const std::optional<std::string_view>& providing_base_class_name) noexcept
       : field_{field}
       , enclosing_field_(enclosing_field)
       , providing_base_class_name_(providing_base_class_name)
@@ -147,7 +146,7 @@ public:
     {
         return enclosing_field_.name;
     }
-    [[nodiscard]] constexpr std::string_view providing_base_class_name() const
+    [[nodiscard]] constexpr std::optional<std::string_view> providing_base_class_name() const
     {
         return providing_base_class_name_;
     }

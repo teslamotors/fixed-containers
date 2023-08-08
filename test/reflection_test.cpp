@@ -95,14 +95,14 @@ TEST(Reflection, Example)
     static_assert(FIELD_INFO.at(0).enclosing_field_type_name() ==
                   "fixed_containers::(anonymous namespace)::MyColors");
     static_assert(FIELD_INFO.at(0).enclosing_field_name() == "");
-    static_assert(FIELD_INFO.at(0).providing_base_class_name() == "");
+    static_assert(!FIELD_INFO.at(0).providing_base_class_name().has_value());
 
     static_assert(FIELD_INFO.at(1).field_type_name() == "double[17]");
     static_assert(FIELD_INFO.at(1).field_name() == "red");
     static_assert(FIELD_INFO.at(1).enclosing_field_type_name() ==
                   "fixed_containers::(anonymous namespace)::MyColors");
     static_assert(FIELD_INFO.at(1).enclosing_field_name() == "");
-    static_assert(FIELD_INFO.at(1).providing_base_class_name() == "");
+    static_assert(!FIELD_INFO.at(1).providing_base_class_name().has_value());
 
     static_assert(FIELD_INFO.at(2).field_type_name() ==
                   pick_compiler_specific_string(
@@ -111,7 +111,7 @@ TEST(Reflection, Example)
     static_assert(FIELD_INFO.at(2).enclosing_field_type_name() ==
                   "fixed_containers::(anonymous namespace)::MyColors");
     static_assert(FIELD_INFO.at(2).enclosing_field_name() == "");
-    static_assert(FIELD_INFO.at(2).providing_base_class_name() == "");
+    static_assert(!FIELD_INFO.at(2).providing_base_class_name().has_value());
 
     static_assert(FIELD_INFO.at(3).field_type_name() ==
                   pick_compiler_specific_string(
@@ -120,7 +120,7 @@ TEST(Reflection, Example)
     static_assert(FIELD_INFO.at(3).enclosing_field_type_name() ==
                   "fixed_containers::(anonymous namespace)::MyColors");
     static_assert(FIELD_INFO.at(3).enclosing_field_name() == "");
-    static_assert(FIELD_INFO.at(3).providing_base_class_name() == "");
+    static_assert(!FIELD_INFO.at(3).providing_base_class_name().has_value());
 }
 
 TEST(Reflection, RecursiveExample)
@@ -137,14 +137,14 @@ TEST(Reflection, RecursiveExample)
     static_assert(FIELD_INFO.at(0).enclosing_field_type_name() ==
                   "fixed_containers::(anonymous namespace)::MyColors");
     static_assert(FIELD_INFO.at(0).enclosing_field_name() == "");
-    static_assert(FIELD_INFO.at(0).providing_base_class_name() == "");
+    static_assert(!FIELD_INFO.at(0).providing_base_class_name().has_value());
 
     static_assert(FIELD_INFO.at(1).field_type_name() == "double[17]");
     static_assert(FIELD_INFO.at(1).field_name() == "red");
     static_assert(FIELD_INFO.at(1).enclosing_field_type_name() ==
                   "fixed_containers::(anonymous namespace)::MyColors");
     static_assert(FIELD_INFO.at(1).enclosing_field_name() == "");
-    static_assert(FIELD_INFO.at(1).providing_base_class_name() == "");
+    static_assert(!FIELD_INFO.at(1).providing_base_class_name().has_value());
 
     static_assert(FIELD_INFO.at(2).field_type_name() ==
                   pick_compiler_specific_string(
@@ -153,7 +153,7 @@ TEST(Reflection, RecursiveExample)
     static_assert(FIELD_INFO.at(2).enclosing_field_type_name() ==
                   "fixed_containers::(anonymous namespace)::MyColors");
     static_assert(FIELD_INFO.at(2).enclosing_field_name() == "");
-    static_assert(FIELD_INFO.at(2).providing_base_class_name() == "");
+    static_assert(!FIELD_INFO.at(2).providing_base_class_name().has_value());
 
     {
         static_assert(FIELD_INFO.at(3).field_type_name() == "int");
@@ -162,7 +162,7 @@ TEST(Reflection, RecursiveExample)
                       pick_compiler_specific_string(
                           "fixed_containers::(anonymous namespace)::BaseStruct", "BaseStruct"));
         static_assert(FIELD_INFO.at(3).enclosing_field_name() == "green");
-        static_assert(FIELD_INFO.at(3).providing_base_class_name() == "");
+        static_assert(!FIELD_INFO.at(3).providing_base_class_name().has_value());
 
         static_assert(FIELD_INFO.at(4).field_type_name() == "int");
         static_assert(FIELD_INFO.at(4).field_name() == "b");
@@ -170,7 +170,7 @@ TEST(Reflection, RecursiveExample)
                       pick_compiler_specific_string(
                           "fixed_containers::(anonymous namespace)::BaseStruct", "BaseStruct"));
         static_assert(FIELD_INFO.at(4).enclosing_field_name() == "green");
-        static_assert(FIELD_INFO.at(4).providing_base_class_name() == "");
+        static_assert(!FIELD_INFO.at(4).providing_base_class_name().has_value());
     }
 
     static_assert(FIELD_INFO.at(5).field_type_name() ==
@@ -180,7 +180,7 @@ TEST(Reflection, RecursiveExample)
     static_assert(FIELD_INFO.at(5).enclosing_field_type_name() ==
                   "fixed_containers::(anonymous namespace)::MyColors");
     static_assert(FIELD_INFO.at(5).enclosing_field_name() == "");
-    static_assert(FIELD_INFO.at(5).providing_base_class_name() == "");
+    static_assert(!FIELD_INFO.at(5).providing_base_class_name().has_value());
 
     {
         static_assert(FIELD_INFO.at(6).field_type_name() == "int");
@@ -207,7 +207,7 @@ TEST(Reflection, RecursiveExample)
                       pick_compiler_specific_string(
                           "fixed_containers::(anonymous namespace)::ChildStruct", "ChildStruct"));
         static_assert(FIELD_INFO.at(8).enclosing_field_name() == "purple");
-        static_assert(FIELD_INFO.at(8).providing_base_class_name() == "");
+        static_assert(!FIELD_INFO.at(8).providing_base_class_name().has_value());
 
         static_assert(FIELD_INFO.at(9).field_type_name() == "int");
         static_assert(FIELD_INFO.at(9).field_name() == "d");
@@ -215,7 +215,7 @@ TEST(Reflection, RecursiveExample)
                       pick_compiler_specific_string(
                           "fixed_containers::(anonymous namespace)::ChildStruct", "ChildStruct"));
         static_assert(FIELD_INFO.at(9).enclosing_field_name() == "purple");
-        static_assert(FIELD_INFO.at(9).providing_base_class_name() == "");
+        static_assert(!FIELD_INFO.at(9).providing_base_class_name().has_value());
     }
 }
 
@@ -238,7 +238,7 @@ TEST(Reflection, NonConstexprDefaultConstructible)
         FIELD_INFO.at(0).enclosing_field_type_name() ==
         "fixed_containers::(anonymous namespace)::NonConstexprDefaultConstructibleWithFields");
     static_assert(FIELD_INFO.at(0).enclosing_field_name() == "");
-    static_assert(FIELD_INFO.at(0).providing_base_class_name() == "");
+    static_assert(!FIELD_INFO.at(0).providing_base_class_name().has_value());
 
     static_assert(FIELD_INFO.at(1).field_type_name() == "double");
     static_assert(FIELD_INFO.at(1).field_name() == "b");
@@ -246,7 +246,7 @@ TEST(Reflection, NonConstexprDefaultConstructible)
         FIELD_INFO.at(1).enclosing_field_type_name() ==
         "fixed_containers::(anonymous namespace)::NonConstexprDefaultConstructibleWithFields");
     static_assert(FIELD_INFO.at(1).enclosing_field_name() == "");
-    static_assert(FIELD_INFO.at(1).providing_base_class_name() == "");
+    static_assert(!FIELD_INFO.at(1).providing_base_class_name().has_value());
 }
 
 }  // namespace fixed_containers
