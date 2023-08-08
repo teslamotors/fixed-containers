@@ -76,7 +76,7 @@ constexpr std::string_view pick_compiler_specific_string([[maybe_unused]] const 
 TEST(Reflection, DebuggingHelper)
 {
     using enum reflection_detail::RecursionType;
-    auto foo = reflection_detail::field_info_of<RECURSIVE, MyColors>();
+    auto foo = reflection_detail::field_info_of<RECURSIVE_DEPTH_FIRST_ORDER, MyColors>();
     // std::cout << foo.size() << std::endl;
     (void)foo;
 }
@@ -128,9 +128,11 @@ TEST(Reflection, RecursiveExample)
     using enum reflection_detail::RecursionType;
 
     static_assert(
-        consteval_compare::equal<10, reflection_detail::field_count_of<RECURSIVE, MyColors>()>);
+        consteval_compare::
+            equal<10, reflection_detail::field_count_of<RECURSIVE_DEPTH_FIRST_ORDER, MyColors>()>);
 
-    constexpr auto FIELD_INFO = reflection_detail::field_info_of<RECURSIVE, MyColors>();
+    constexpr auto FIELD_INFO =
+        reflection_detail::field_info_of<RECURSIVE_DEPTH_FIRST_ORDER, MyColors>();
 
     static_assert(FIELD_INFO.at(0).field_type_name() == "int");
     static_assert(FIELD_INFO.at(0).field_name() == "yellow");

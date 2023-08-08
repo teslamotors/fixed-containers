@@ -181,7 +181,7 @@ constexpr void for_each_field_entry(const T& instance, Func func)
 enum class RecursionType
 {
     NON_RECURSIVE,
-    RECURSIVE,
+    RECURSIVE_DEPTH_FIRST_ORDER,
 };
 
 template <RecursionType RECURSION_TYPE, typename T>
@@ -191,7 +191,7 @@ constexpr std::size_t field_count_of(const T& instance)
     for_each_field_entry(instance,
                          [&counter](const FieldEntry& field_entry)
                          {
-                             if (RECURSION_TYPE == RecursionType::RECURSIVE or
+                             if (RECURSION_TYPE == RecursionType::RECURSIVE_DEPTH_FIRST_ORDER or
                                  field_entry.enclosing_field_name().empty())
                              {
                                  ++counter;
@@ -214,7 +214,7 @@ constexpr auto field_info_of(const T& instance) -> FixedVector<FieldEntry, MAXIM
     for_each_field_entry(instance,
                          [&output](const FieldEntry& field_entry)
                          {
-                             if (RECURSION_TYPE == RecursionType::RECURSIVE or
+                             if (RECURSION_TYPE == RecursionType::RECURSIVE_DEPTH_FIRST_ORDER or
                                  field_entry.enclosing_field_name().empty())
                              {
                                  output.push_back(field_entry);
