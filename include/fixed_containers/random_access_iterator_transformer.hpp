@@ -116,7 +116,7 @@ public:
     constexpr Self operator--(int) & noexcept
     {
         Self tmp = *this;
-        iterator_--;
+        std::advance(iterator_, -1);
         return tmp;
     }
 
