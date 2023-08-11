@@ -795,11 +795,11 @@ protected:
     }
     constexpr const T& unchecked_at(const std::size_t i) const
     {
-        return optional_storage_detail::get(IMPLEMENTATION_DETAIL_DO_NOT_USE_array_[i]);
+        return optional_storage_detail::get(array_unchecked_at(i));
     }
     constexpr T& unchecked_at(const std::size_t i)
     {
-        return optional_storage_detail::get(IMPLEMENTATION_DETAIL_DO_NOT_USE_array_[i]);
+        return optional_storage_detail::get(array_unchecked_at(i));
     }
 
     constexpr void destroy_at(std::size_t)
