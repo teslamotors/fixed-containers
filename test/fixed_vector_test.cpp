@@ -876,7 +876,7 @@ TEST(FixedVector, IteratorAssignment)
     FixedVector<int, 8>::iterator it;              // Default construction
     FixedVector<int, 8>::const_iterator const_it;  // Default construction
 
-    const_it = it;  // Non-const needs to assignable to const
+    const_it = it;  // Non-const needs to be assignable to const
 }
 
 TEST(FixedVector, TrivialIterators)
@@ -956,7 +956,7 @@ TEST(FixedVector, NonTrivialIterators)
         {
         }
         int i_;
-        std::vector<int> v_;  // unused, but makes S non-trivial
+        MockNonTrivialInt v_;  // unused, but makes S non-trivial
     };
     static_assert(!std::is_trivially_copyable_v<S>);
     {
@@ -1649,6 +1649,9 @@ TEST(FixedVector, Erase_Empty)
         // Don't Expect Death
         v1.erase(std::remove_if(v1.begin(), v1.end(), [&](const auto&) { return true; }), v1.end());
 
+        // The iterator pos must be valid and dereferenceable. Thus the end() iterator (which is
+        // valid, but is not dereferenceable) cannot be used as a value for pos.
+        // https://en.cppreference.com/w/cpp/container/vector/erase
         EXPECT_DEATH(v1.erase(v1.begin()), "");
     }
 }
@@ -1700,7 +1703,7 @@ TEST(FixedVector, Front)
     EXPECT_EQ(v2_const_ref.front(), 777);  // const variant
 }
 
-TEST(FixedVector, Front_EmptyVector)
+TEST(FixedVector, Front_EmptyContainer)
 {
     {
         const FixedVector<int, 3> v{};
@@ -1732,7 +1735,7 @@ TEST(FixedVector, Back)
     EXPECT_EQ(v2_const_ref.back(), 999);  // const variant
 }
 
-TEST(FixedVector, Back_EmptyVector)
+TEST(FixedVector, Back_EmptyContainer)
 {
     {
         const FixedVector<int, 3> v{};

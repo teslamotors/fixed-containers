@@ -142,7 +142,9 @@ cc_library(
     hdrs = ["include/fixed_containers/fixed_deque.hpp"],
     includes = ["include"],
     deps = [
+        ":algorithm",
         ":consteval_compare",
+        ":integer_range",
         ":iterator_utils",
         ":optional_storage",
         ":preconditions",
@@ -251,8 +253,10 @@ cc_library(
     hdrs = ["include/fixed_containers/fixed_vector.hpp"],
     includes = ["include"],
     deps = [
+        ":algorithm",
         ":concepts",
         ":consteval_compare",
+        ":integer_range",
         ":iterator_utils",
         ":optional_storage",
         ":preconditions",
