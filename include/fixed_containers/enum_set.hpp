@@ -272,6 +272,17 @@ public:
         }
     }
 
+    template <class... Args>
+    constexpr std::pair<const_iterator, bool> emplace(Args&&... args)
+    {
+        return insert(K{std::forward<Args>(args)...});
+    }
+    template <class... Args>
+    constexpr iterator emplace_hint(const_iterator hint, Args&&... args)
+    {
+        return insert(hint, K{std::forward<Args>(args)...});
+    }
+
     constexpr const_iterator erase(const_iterator pos) noexcept
     {
         assert(pos != cend());

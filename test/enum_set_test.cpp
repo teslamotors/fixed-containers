@@ -348,6 +348,64 @@ TEST(EnumSet, Insert_Iterators)
     static_assert(std::is_same_v<decltype(*s_non_const.begin()), const TestEnum1&>);
 }
 
+TEST(EnumSet, Emplace)
+{
+    {
+        constexpr EnumSet<TestEnum1> s = []()
+        {
+            EnumSet<TestEnum1> s1{};
+            s1.emplace(TestEnum1::TWO);
+            const TestEnum1 key = TestEnum1::TWO;
+            s1.emplace(key);
+            return s1;
+        }();
+
+        static_assert(consteval_compare::equal<1, s.size()>);
+        static_assert(s.contains(TestEnum1::TWO));
+    }
+
+    {
+        EnumSet<TestEnum1> s1{};
+
+        {
+            auto [it, was_inserted] = s1.emplace(TestEnum1::TWO);
+
+            ASSERT_EQ(1, s1.size());
+            ASSERT_TRUE(!s1.contains(TestEnum1::ONE));
+            ASSERT_TRUE(s1.contains(TestEnum1::TWO));
+            ASSERT_TRUE(!s1.contains(TestEnum1::THREE));
+            ASSERT_TRUE(!s1.contains(TestEnum1::FOUR));
+            ASSERT_TRUE(s1.contains(TestEnum1::TWO));
+            ASSERT_TRUE(was_inserted);
+            ASSERT_EQ(TestEnum1::TWO, *it);
+        }
+
+        {
+            auto [it, was_inserted] = s1.emplace(TestEnum1::TWO);
+            ASSERT_EQ(1, s1.size());
+            ASSERT_TRUE(!s1.contains(TestEnum1::ONE));
+            ASSERT_TRUE(s1.contains(TestEnum1::TWO));
+            ASSERT_TRUE(!s1.contains(TestEnum1::THREE));
+            ASSERT_TRUE(!s1.contains(TestEnum1::FOUR));
+            ASSERT_TRUE(s1.contains(TestEnum1::TWO));
+            ASSERT_FALSE(was_inserted);
+            ASSERT_EQ(TestEnum1::TWO, *it);
+        }
+
+        {
+            auto [it, was_inserted] = s1.emplace(TestEnum1::TWO);
+            ASSERT_EQ(1, s1.size());
+            ASSERT_TRUE(!s1.contains(TestEnum1::ONE));
+            ASSERT_TRUE(s1.contains(TestEnum1::TWO));
+            ASSERT_TRUE(!s1.contains(TestEnum1::THREE));
+            ASSERT_TRUE(!s1.contains(TestEnum1::FOUR));
+            ASSERT_TRUE(s1.contains(TestEnum1::TWO));
+            ASSERT_FALSE(was_inserted);
+            ASSERT_EQ(TestEnum1::TWO, *it);
+        }
+    }
+}
+
 TEST(EnumSet, Clear)
 {
     constexpr auto s1 = []()

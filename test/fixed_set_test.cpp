@@ -322,6 +322,73 @@ TEST(FixedSet, Insert_Iterators)
     static_assert(std::is_same_v<decltype(*s_non_const.begin()), const int&>);
 }
 
+TEST(FixedSet, Emplace)
+{
+    {
+        constexpr FixedSet<int, 10> s = []()
+        {
+            FixedSet<int, 10> s1{};
+            s1.emplace(2);
+            const int key = 2;
+            s1.emplace(key);
+            return s1;
+        }();
+
+        static_assert(consteval_compare::equal<1, s.size()>);
+        static_assert(s.contains(2));
+    }
+
+    {
+        FixedSet<int, 10> s1{};
+
+        {
+            auto [it, was_inserted] = s1.emplace(2);
+
+            ASSERT_EQ(1, s1.size());
+            ASSERT_TRUE(!s1.contains(1));
+            ASSERT_TRUE(s1.contains(2));
+            ASSERT_TRUE(!s1.contains(3));
+            ASSERT_TRUE(!s1.contains(4));
+            ASSERT_TRUE(s1.contains(2));
+            ASSERT_TRUE(was_inserted);
+            ASSERT_EQ(2, *it);
+        }
+
+        {
+            auto [it, was_inserted] = s1.emplace(2);
+            ASSERT_EQ(1, s1.size());
+            ASSERT_TRUE(!s1.contains(1));
+            ASSERT_TRUE(s1.contains(2));
+            ASSERT_TRUE(!s1.contains(3));
+            ASSERT_TRUE(!s1.contains(4));
+            ASSERT_TRUE(s1.contains(2));
+            ASSERT_FALSE(was_inserted);
+            ASSERT_EQ(2, *it);
+        }
+    }
+}
+
+TEST(FixedSet, Emplace_ExceedsCapacity)
+{
+    {
+        FixedSet<int, 2> s1{};
+        s1.emplace(2);
+        s1.emplace(4);
+        s1.emplace(4);
+        s1.emplace(4);
+        EXPECT_DEATH(s1.emplace(6), "");
+    }
+    {
+        FixedSet<int, 2> s1{};
+        s1.emplace(2);
+        s1.emplace(4);
+        s1.emplace(4);
+        s1.emplace(4);
+        int key = 6;
+        EXPECT_DEATH(s1.emplace(key), "");
+    }
+}
+
 TEST(FixedSet, Clear)
 {
     constexpr auto s1 = []()
