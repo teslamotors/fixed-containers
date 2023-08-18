@@ -59,11 +59,12 @@ cc_library(
     hdrs = ["include/fixed_containers/enum_map.hpp"],
     includes = ["include"],
     deps = [
+        ":bidirectional_iterator",
         ":concepts",
         ":enum_utils",
         ":erase_if",
+        ":filtered_integer_range_iterator",
         ":fixed_vector",
-        ":index_range_predicate_iterator",
         ":optional_storage",
         ":pair",
         ":preconditions",
@@ -78,10 +79,11 @@ cc_library(
     hdrs = ["include/fixed_containers/enum_set.hpp"],
     includes = ["include"],
     deps = [
+        ":bidirectional_iterator",
         ":concepts",
         ":enum_utils",
         ":erase_if",
-        ":index_range_predicate_iterator",
+        ":filtered_integer_range_iterator",
     ],
     copts = ["-std=c++20"],
 )
