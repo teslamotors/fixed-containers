@@ -262,6 +262,13 @@ cc_library(
 )
 
 cc_library(
+    name = "int_math",
+    hdrs = ["include/fixed_containers/int_math.hpp"],
+    includes = ["include"],
+    copts = ["-std=c++20"],
+)
+
+cc_library(
     name = "integer_range",
     hdrs = ["include/fixed_containers/integer_range.hpp"],
     includes = ["include"],
@@ -648,6 +655,17 @@ cc_test(
     srcs = ["test/in_out_test.cpp"],
     deps = [
         ":in_out",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
+    ],
+    copts = ["-std=c++20"],
+)
+
+cc_test(
+    name = "int_math_test",
+    srcs = ["test/int_math_test.cpp"],
+    deps = [
+        ":int_math",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
