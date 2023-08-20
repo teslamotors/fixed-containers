@@ -27,12 +27,30 @@ struct AlwaysTruePredicate
     constexpr bool operator()(const std::size_t /*i*/) const { return true; }
 };
 
+struct SpecificValuePredicate
+{
+    std::size_t some_field;
+    constexpr bool operator()(const std::size_t i) const { return i == some_field; }
+};
+static_assert(SpecificValuePredicate{5}(5));
+static_assert(!SpecificValuePredicate{5}(7));
+
 // std::filter'ed std::range is not trivially copyable
 static_assert(TriviallyCopyable<std::ranges::iota_view<int, int>>);
 static_assert(NotTriviallyCopyable<decltype(std::ranges::iota_view<std::size_t, std::size_t>{} |
                                             std::views::filter([](int) { return true; }))>);
 
 static_assert(TriviallyCopyable<FilteredIntegerRangeIterator<AlwaysTruePredicate>>);
+
+static_assert(sizeof(FilteredIntegerRangeIterator<AlwaysTruePredicate,
+                                                  IteratorDirection::FORWARD,
+                                                  IntegerRange>) == 32);
+static_assert(sizeof(FilteredIntegerRangeIterator<AlwaysTruePredicate,
+                                                  IteratorDirection::FORWARD,
+                                                  CompileTimeIntegerRange<0, 3>>) == 16);
+static_assert(sizeof(FilteredIntegerRangeIterator<SpecificValuePredicate,
+                                                  IteratorDirection::FORWARD,
+                                                  CompileTimeIntegerRange<0, 3>>) == 24);
 
 }  // namespace
 
