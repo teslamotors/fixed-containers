@@ -121,15 +121,17 @@ private:
     {
         const std::array<bool, ENUM_COUNT>* array_set_;
         constexpr bool operator()(const std::size_t i) const { return (*array_set_)[i]; }
+        constexpr bool operator==(const IndexPredicate&) const = default;
     };
 
-    struct ReferenceProvider
+    class ReferenceProvider
     {
         FilteredIntegerRangeIterator<IndexPredicate,
                                      IteratorDirection::FORWARD,
                                      CompileTimeIntegerRange<0, ENUM_COUNT>>
             present_indices_;
 
+    public:
         constexpr ReferenceProvider()
           : ReferenceProvider(nullptr, ENUM_COUNT)
         {

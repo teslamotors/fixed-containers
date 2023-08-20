@@ -72,10 +72,22 @@ private:
     using Tree = fixed_red_black_tree_detail::
         FixedRedBlackTreeSet<K, MAXIMUM_SIZE, Compare, COMPACTNESS, StorageTemplate>;
 
-    struct ReferenceProvider
+    class ReferenceProvider
     {
-        const Tree* tree_{nullptr};
-        NodeIndex current_index_{MAXIMUM_SIZE};
+        const Tree* tree_;
+        NodeIndex current_index_;
+
+    public:
+        constexpr ReferenceProvider() noexcept
+          : ReferenceProvider{nullptr, MAXIMUM_SIZE}
+        {
+        }
+
+        constexpr ReferenceProvider(const Tree* const tree, const NodeIndex& current_index) noexcept
+          : tree_{tree}
+          , current_index_{current_index}
+        {
+        }
 
         constexpr void advance() noexcept
         {
@@ -106,10 +118,7 @@ private:
             return tree_->node_at(current_index_).key();
         }
 
-        constexpr bool operator==(const ReferenceProvider& other) const noexcept
-        {
-            return current_index_ == other.current_index_;
-        }
+        constexpr bool operator==(const ReferenceProvider& other) const noexcept = default;
     };
 
     template <IteratorDirection DIRECTION>

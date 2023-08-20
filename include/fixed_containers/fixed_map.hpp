@@ -84,15 +84,16 @@ private:
         FixedRedBlackTree<K, V, MAXIMUM_SIZE, Compare, COMPACTNESS, StorageTemplate>;
 
     template <bool IS_CONST>
-    struct PairProvider
+    class PairProvider
     {
+        friend class PairProvider<!IS_CONST>;
         using ConstOrMutableTree = std::conditional_t<IS_CONST, const Tree, Tree>;
-        using ConstOrMutablePair =
-            std::conditional_t<IS_CONST, std::pair<const K&, const V&>, std::pair<const K&, V&>>;
 
+    private:
         ConstOrMutableTree* tree_;
         NodeIndex current_index_;
 
+    public:
         constexpr PairProvider() noexcept
           : PairProvider{nullptr, MAXIMUM_SIZE}
         {
@@ -142,24 +143,14 @@ private:
             }
         }
 
-        constexpr const_reference get() const noexcept
-            requires IS_CONST
-        {
-            fixed_red_black_tree_detail::RedBlackTreeNodeView node = tree_->node_at(current_index_);
-            return {node.key(), node.value()};
-        }
-        constexpr reference get() const noexcept
-            requires(not IS_CONST)
+        constexpr std::conditional_t<IS_CONST, const_reference, reference> get() const noexcept
         {
             fixed_red_black_tree_detail::RedBlackTreeNodeView node = tree_->node_at(current_index_);
             return {node.key(), node.value()};
         }
 
-        constexpr bool operator==(const PairProvider& other) const noexcept
-        {
-            return tree_ == other.tree_ && current_index_ == other.current_index_;
-        }
-        constexpr bool operator==(const PairProvider<!IS_CONST>& other) const noexcept
+        template <bool IS_CONST2>
+        constexpr bool operator==(const PairProvider<IS_CONST2>& other) const noexcept
         {
             return tree_ == other.tree_ && current_index_ == other.current_index_;
         }

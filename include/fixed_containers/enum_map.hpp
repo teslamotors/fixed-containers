@@ -142,22 +142,24 @@ private:
     {
         const std::array<bool, ENUM_COUNT>* array_set_;
         constexpr bool operator()(const std::size_t i) const { return (*array_set_)[i]; }
+        constexpr bool operator==(const IndexPredicate&) const = default;
     };
 
     template <bool IS_CONST>
-    struct PairProvider
+    class PairProvider
     {
+        friend class PairProvider<!IS_CONST>;
         using ConstOrMutableValueArray =
             std::conditional_t<IS_CONST, const ValueArrayType, ValueArrayType>;
-        using ConstOrMutablePair =
-            std::conditional_t<IS_CONST, std::pair<const K&, const V&>, std::pair<const K&, V&>>;
 
+    private:
         FilteredIntegerRangeIterator<IndexPredicate,
                                      IteratorDirection::FORWARD,
                                      CompileTimeIntegerRange<0, ENUM_COUNT>>
             present_indices_;
         ConstOrMutableValueArray* values_;
 
+    public:
         constexpr PairProvider() noexcept
           : PairProvider{nullptr, nullptr, ENUM_COUNT}
         {
@@ -188,17 +190,16 @@ private:
         constexpr void advance() noexcept { ++present_indices_; }
         constexpr void recede() noexcept { --present_indices_; }
 
-        constexpr const_reference get() const noexcept
-            requires IS_CONST
+        constexpr std::conditional_t<IS_CONST, const_reference, reference> get() const noexcept
         {
             return {ENUM_VALUES[*present_indices_], (*values_)[*present_indices_].get()};
         }
-        constexpr reference get() const noexcept
-            requires(not IS_CONST)
+
+        template <bool IS_CONST2>
+        constexpr bool operator==(const PairProvider<IS_CONST2>& other) const noexcept
         {
-            return {ENUM_VALUES[*present_indices_], (*values_)[*present_indices_].get()};
+            return values_ == other.values_ && present_indices_ == other.present_indices_;
         }
-        constexpr bool operator==(const PairProvider&) const = default;
     };
 
     template <IteratorConstness CONSTNESS, IteratorDirection DIRECTION>
