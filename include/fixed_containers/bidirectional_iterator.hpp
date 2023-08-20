@@ -1,6 +1,7 @@
 #pragma once
 
 #include "fixed_containers/arrow_proxy.hpp"
+#include "fixed_containers/concepts.hpp"
 #include "fixed_containers/iterator_utils.hpp"
 
 #include <cstddef>
@@ -10,11 +11,13 @@
 namespace fixed_containers
 {
 template <class P>
-concept NextAndPreviousProvider = requires(P p, P other) {
+concept NextAndPreviousProvider = DefaultConstructible<P> && requires(P p, P other) {
     p.advance();
-    p.get();
     p.recede();
-    p == other;
+    p.get();
+    {
+        p == other
+    } -> std::same_as<bool>;
 };
 
 template <NextAndPreviousProvider ConstReferenceProvider,
@@ -24,6 +27,11 @@ template <NextAndPreviousProvider ConstReferenceProvider,
 class BidirectionalIterator
 {
     static constexpr IteratorConstness NEGATED_CONSTNESS = IteratorConstness(!bool(CONSTNESS));
+
+    using Self = BidirectionalIterator<ConstReferenceProvider,
+                                       MutableReferenceProvider,
+                                       CONSTNESS,
+                                       DIRECTION>;
 
     // Sibling has the same parameters, but different const-ness
     using Sibling = BidirectionalIterator<ConstReferenceProvider,
@@ -54,7 +62,7 @@ public:
     using value_type = std::remove_cvref_t<reference>;
     using pointer =
         std::conditional_t<SAFE_LIFETIME, std::add_pointer_t<reference>, ArrowProxy<reference>>;
-    using iterator = BidirectionalIterator;
+    using iterator = Self;
     using iterator_category = std::bidirectional_iterator_tag;
     using difference_type = std::ptrdiff_t;
 
@@ -97,33 +105,33 @@ public:
         }
     }
 
-    constexpr BidirectionalIterator& operator++() noexcept
+    constexpr Self& operator++() noexcept
     {
         advance();
         return *this;
     }
 
-    constexpr BidirectionalIterator operator++(int) & noexcept
+    constexpr Self operator++(int) & noexcept
     {
-        BidirectionalIterator tmp = *this;
+        Self tmp = *this;
         advance();
         return tmp;
     }
 
-    constexpr BidirectionalIterator& operator--() noexcept
+    constexpr Self& operator--() noexcept
     {
         recede();
         return *this;
     }
 
-    constexpr BidirectionalIterator operator--(int) & noexcept
+    constexpr Self operator--(int) & noexcept
     {
-        BidirectionalIterator tmp = *this;
+        Self tmp = *this;
         recede();
         return tmp;
     }
 
-    constexpr bool operator==(const BidirectionalIterator& other) const noexcept
+    constexpr bool operator==(const Self& other) const noexcept
     {
         return reference_provider_ == other.reference_provider_;
     }
