@@ -446,6 +446,14 @@ TEST(FixedSet, EraseIterator)
     static_assert(s1.contains(4));
 }
 
+TEST(FixedSet, EraseIterator_Ambiguity)
+{
+    // If the iterator has extraneous auto-conversions, it might cause ambiguity between the various
+    // overloads
+    FixedSet<std::string, 5> s1{};
+    s1.erase("");
+}
+
 TEST(FixedSet, EraseIterator_InvalidIterator)
 {
     FixedSet<int, 10> s{2, 4};

@@ -75,8 +75,11 @@ public:
     {
     }
 
-    explicit constexpr BidirectionalIterator(const ReferenceProvider& reference_provider) noexcept
-      : reference_provider_(reference_provider)
+    template <typename First, typename... Args>
+        requires(!std::same_as<Self, std::decay_t<First>> &&
+                 !std::same_as<Sibling, std::decay_t<First>>)
+    explicit constexpr BidirectionalIterator(First&& first, Args&&... args) noexcept
+      : reference_provider_(std::forward<First>(first), std::forward<Args>(args)...)
     {
         if constexpr (DIRECTION == IteratorDirection::REVERSE)
         {
