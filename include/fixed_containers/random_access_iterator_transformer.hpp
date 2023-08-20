@@ -91,7 +91,7 @@ public:
 
     constexpr reference operator[](difference_type off) const
     {
-        return unary_function_(iterator_[off]);
+        return unary_function_(*std::next(iterator_, off));
     }
 
     constexpr Self& operator++() noexcept
