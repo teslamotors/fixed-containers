@@ -7,6 +7,7 @@
 #include <array>
 #include <cstddef>
 #include <ranges>
+#include <vector>
 
 namespace fixed_containers
 {
@@ -414,38 +415,44 @@ TEST(FilteredIntegerRangeIterator, ReverseDecrement)
 
 TEST(FilteredIntegerRangeIterator, ReverseIteratorBase)
 {
-    using ItType = FilteredIntegerRangeIterator<AlwaysTruePredicate, IteratorDirection::FORWARD>;
     using ReverseItType =
         FilteredIntegerRangeIterator<AlwaysTruePredicate, IteratorDirection::REVERSE>;
 
     // https://stackoverflow.com/questions/1830158/how-to-call-erase-with-a-reverse-iterator
     {
-        static_assert(0 == *ItType{IntegerRange::closed_open(0, 3), 0, {}});
-        // Can't call std::next on the rend iterator, instead call std::prev on the base
-        static_assert(0 ==
-                      *std::prev(ReverseItType{IntegerRange::closed_open(0, 3), 0, {}}.base()));
-
-        static_assert(1 == *ItType{IntegerRange::closed_open(0, 3), 1, {}});
-        static_assert(1 ==
-                      *std::next(ReverseItType{IntegerRange::closed_open(0, 3), 1, {}}).base());
-
-        static_assert(2 == *ItType{IntegerRange::closed_open(0, 3), 2, {}});
-        static_assert(2 ==
-                      *std::next(ReverseItType{IntegerRange::closed_open(0, 3), 2, {}}).base());
+        std::vector<int> a{{0, 1, 2}};
+        auto it = a.rbegin();
+        ASSERT_EQ(2, *it);
+        ASSERT_EQ(2, *std::prev(it.base()));
+        ASSERT_EQ(2, *std::next(it).base());
     }
+
     {
-        static_assert(3 == *ItType{IntegerRange::closed_open(3, 6), 3, {}});
-        // Can't call std::next on the rend iterator, instead call std::prev on the base
-        static_assert(3 ==
-                      *std::prev(ReverseItType{IntegerRange::closed_open(3, 6), 3, {}}.base()));
+        {
+            static constexpr ReverseItType REVERSE_IT{IntegerRange::closed_open(0, 3), 3, {}};
+            static_assert(2 == *REVERSE_IT);
+            static_assert(2 == *std::prev(REVERSE_IT.base()));
+            static_assert(2 == *std::next(REVERSE_IT).base());
+        }
+        {
+            static constexpr ReverseItType REVERSE_IT{IntegerRange::closed_open(0, 3), 2, {}};
+            static_assert(1 == *REVERSE_IT);
+            static_assert(1 == *std::prev(REVERSE_IT.base()));
+            static_assert(1 == *std::next(REVERSE_IT).base());
+        }
 
-        static_assert(4 == *ItType{IntegerRange::closed_open(3, 6), 4, {}});
-        static_assert(4 ==
-                      *std::next(ReverseItType{IntegerRange::closed_open(3, 6), 4, {}}).base());
-
-        static_assert(5 == *ItType{IntegerRange::closed_open(3, 6), 5, {}});
-        static_assert(5 ==
-                      *std::next(ReverseItType{IntegerRange::closed_open(3, 6), 5, {}}).base());
+        {
+            static constexpr ReverseItType REVERSE_IT{IntegerRange::closed_open(3, 6), 6, {}};
+            static_assert(5 == *REVERSE_IT);
+            static_assert(5 == *std::prev(REVERSE_IT.base()));
+            static_assert(5 == *std::next(REVERSE_IT).base());
+        }
+        {
+            static constexpr ReverseItType REVERSE_IT{IntegerRange::closed_open(3, 6), 4, {}};
+            static_assert(3 == *REVERSE_IT);
+            static_assert(3 == *std::prev(REVERSE_IT.base()));
+            static_assert(3 == *std::next(REVERSE_IT).base());
+        }
     }
 }
 

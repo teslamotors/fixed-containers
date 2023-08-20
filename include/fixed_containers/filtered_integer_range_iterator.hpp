@@ -107,11 +107,7 @@ public:
     constexpr ReverseBase base() const noexcept
         requires(DIRECTION == IteratorDirection::REVERSE)
     {
-        // Adjustment of 2 because:
-        // 1 for the relationship between base and reverse iterator, see:
-        // https://stackoverflow.com/questions/1830158/how-to-call-erase-with-a-reverse-iterator
-        // 1 more because of the `-1 `adjustment done in this class for reverse iteration
-        return {integer_range_, current_index_ + 2, predicate_};
+        return {integer_range_, current_index_ + 1, predicate_};
     }
 
 private:
