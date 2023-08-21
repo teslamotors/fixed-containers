@@ -168,7 +168,9 @@ private:
         constexpr PairProvider(const std::array<bool, ENUM_COUNT>* array_set_,
                                ConstOrMutableValueArray* const values,
                                const std::size_t current_index) noexcept
-          : present_indices_{{}, current_index, IndexPredicate{array_set_}}
+          : present_indices_{CompileTimeIntegerRange<0, ENUM_COUNT>{},
+                             current_index,
+                             IndexPredicate{array_set_}}
           , values_{values}
         {
         }

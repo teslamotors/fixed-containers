@@ -110,6 +110,7 @@ cc_library(
     hdrs = ["include/fixed_containers/filtered_integer_range_iterator.hpp"],
     includes = ["include"],
     deps = [
+        ":bidirectional_iterator",
         ":integer_range",
         ":iterator_utils",
     ],

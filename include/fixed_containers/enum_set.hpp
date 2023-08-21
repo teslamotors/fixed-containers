@@ -139,7 +139,8 @@ private:
 
         constexpr ReferenceProvider(const std::array<bool, ENUM_COUNT>* array_set,
                                     const std::size_t current_index)
-          : present_indices_{{}, current_index, IndexPredicate{array_set}}
+          : present_indices_{
+                CompileTimeIntegerRange<0, ENUM_COUNT>{}, current_index, IndexPredicate{array_set}}
         {
         }
 

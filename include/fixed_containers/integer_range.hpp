@@ -58,6 +58,12 @@ private:
     std::size_t start_inclusive_;
     std::size_t end_exclusive_;
 
+public:
+    constexpr IntegerRange()
+      : IntegerRange(0, 0)
+    {
+    }
+
 private:
     constexpr IntegerRange(const std::size_t start_inclusive_inclusive,
                            const std::size_t end_exclusive)
