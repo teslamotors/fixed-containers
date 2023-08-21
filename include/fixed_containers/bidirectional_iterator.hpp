@@ -11,7 +11,7 @@
 namespace fixed_containers
 {
 template <class P>
-concept NextAndPreviousProvider = DefaultConstructible<P> && requires(P p, P other) {
+concept BidirectionalEntryProvider = DefaultConstructible<P> && requires(P p, P other) {
     p.advance();
     p.recede();
     p.get();
@@ -20,8 +20,8 @@ concept NextAndPreviousProvider = DefaultConstructible<P> && requires(P p, P oth
     } -> std::same_as<bool>;
 };
 
-template <NextAndPreviousProvider ConstReferenceProvider,
-          NextAndPreviousProvider MutableReferenceProvider,
+template <BidirectionalEntryProvider ConstReferenceProvider,
+          BidirectionalEntryProvider MutableReferenceProvider,
           IteratorConstness CONSTNESS,
           IteratorDirection DIRECTION>
 class BidirectionalIterator

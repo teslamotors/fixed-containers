@@ -55,7 +55,7 @@ static_assert(NotTriviallyCopyable<decltype(std::ranges::iota_view<std::size_t, 
 
 static_assert(TriviallyCopyable<FilteredIntegerRangeIterator<AlwaysTruePredicate>>);
 
-static_assert(NextAndPreviousProvider<FilteredIntegerRangeReferenceProvider<AlwaysTruePredicate>>);
+static_assert(BidirectionalEntryProvider<FilteredIntegerRangeReferenceProvider<AlwaysTruePredicate>>);
 
 static_assert(FilteredIntegerRangeReferenceProvider<AlwaysTruePredicate>{} ==
               FilteredIntegerRangeReferenceProvider<AlwaysTruePredicate>{});
