@@ -37,7 +37,12 @@ public:
         return START_INCLUSIVE <= i && i < END_EXCLUSIVE;
     }
 
-    constexpr bool operator==(const CompileTimeIntegerRange& other) const = default;
+    template <std::size_t START_INCLUSIVE2, std::size_t END_EXCLUSIVE2>
+    constexpr bool operator==(
+        const CompileTimeIntegerRange<START_INCLUSIVE2, END_EXCLUSIVE2>&) const
+    {
+        return START_INCLUSIVE == START_INCLUSIVE2 && END_EXCLUSIVE == END_EXCLUSIVE2;
+    }
 };
 
 class IntegerRange

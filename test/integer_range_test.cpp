@@ -23,6 +23,9 @@ TEST(IntegerRange, GenericIntegerRange)
     static_assert(IntegerRange::closed_open(0, 3).contains(1));
     static_assert(IntegerRange::closed_open(0, 3).contains(2));
     static_assert(!IntegerRange::closed_open(0, 3).contains(3));
+
+    static_assert(IntegerRange::closed_open(0, 3) == IntegerRange::closed_open(0, 3));
+    static_assert(IntegerRange::closed_open(1, 3) != IntegerRange::closed_open(0, 3));
 }
 
 TEST(IntegerRange, CompileTimeIntegerRange)
@@ -33,6 +36,9 @@ TEST(IntegerRange, CompileTimeIntegerRange)
     static_assert(IntegerRange::closed_open<0, 3>().contains(1));
     static_assert(IntegerRange::closed_open<0, 3>().contains(2));
     static_assert(!IntegerRange::closed_open<0, 3>().contains(3));
+
+    static_assert(IntegerRange::closed_open<0, 3>() == IntegerRange::closed_open<0, 3>());
+    static_assert(IntegerRange::closed_open<1, 3>() != IntegerRange::closed_open<0, 3>());
 }
 
 }  // namespace fixed_containers
