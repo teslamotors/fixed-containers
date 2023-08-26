@@ -97,4 +97,16 @@ public:
 
     constexpr bool operator==(const IntegerRange& other) const = default;
 };
+
+struct StartingIntegerAndDistance
+{
+    std::size_t start{};
+    std::size_t distance{};
+
+    [[nodiscard]] constexpr IntegerRange to_range() const
+    {
+        return IntegerRange::closed_open(start, start + distance);
+    }
+};
+
 }  // namespace fixed_containers
