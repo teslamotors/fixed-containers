@@ -21,6 +21,10 @@ concept IsIntegerRange = requires(const T t, const T t2, std::size_t i) {
     } -> std::same_as<bool>;
 
     {
+        t.distance()
+    } -> std::same_as<std::size_t>;
+
+    {
         t == t2
     } -> std::same_as<bool>;
 };
@@ -36,6 +40,7 @@ public:
     {
         return START_INCLUSIVE <= i && i < END_EXCLUSIVE;
     }
+    [[nodiscard]] constexpr std::size_t distance() const { return END_EXCLUSIVE - START_INCLUSIVE; }
 
     template <std::size_t START_INCLUSIVE2, std::size_t END_EXCLUSIVE2>
     constexpr bool operator==(
@@ -85,6 +90,11 @@ public:
     {
         return start_inclusive_ <= i && i < end_exclusive_;
     }
+    [[nodiscard]] constexpr std::size_t distance() const
+    {
+        return end_exclusive_ - start_inclusive_;
+    }
+
     constexpr bool operator==(const IntegerRange& other) const = default;
 };
 }  // namespace fixed_containers
