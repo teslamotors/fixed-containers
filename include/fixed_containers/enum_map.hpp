@@ -153,9 +153,7 @@ private:
             std::conditional_t<IS_CONST, const ValueArrayType, ValueArrayType>;
 
     private:
-        FilteredIntegerRangeIterator<IndexPredicate,
-                                     IteratorDirection::FORWARD,
-                                     CompileTimeIntegerRange<0, ENUM_COUNT>>
+        FilteredIntegerRangeEntryProvider<IndexPredicate, CompileTimeIntegerRange<0, ENUM_COUNT>>
             present_indices_;
         ConstOrMutableValueArray* values_;
 
@@ -189,12 +187,13 @@ private:
         {
         }
 
-        constexpr void advance() noexcept { ++present_indices_; }
-        constexpr void recede() noexcept { --present_indices_; }
+        constexpr void advance() noexcept { present_indices_.advance(); }
+        constexpr void recede() noexcept { present_indices_.recede(); }
 
         constexpr std::conditional_t<IS_CONST, const_reference, reference> get() const noexcept
         {
-            return {ENUM_VALUES[*present_indices_], (*values_)[*present_indices_].get()};
+            const std::size_t i = present_indices_.get();
+            return {ENUM_VALUES[i], (*values_)[i].get()};
         }
 
         template <bool IS_CONST2>

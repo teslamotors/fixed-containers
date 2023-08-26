@@ -126,9 +126,7 @@ private:
 
     class ReferenceProvider
     {
-        FilteredIntegerRangeIterator<IndexPredicate,
-                                     IteratorDirection::FORWARD,
-                                     CompileTimeIntegerRange<0, ENUM_COUNT>>
+        FilteredIntegerRangeEntryProvider<IndexPredicate, CompileTimeIntegerRange<0, ENUM_COUNT>>
             present_indices_;
 
     public:
@@ -144,9 +142,12 @@ private:
         {
         }
 
-        constexpr void advance() noexcept { ++present_indices_; }
-        constexpr void recede() noexcept { --present_indices_; }
-        constexpr const_reference get() const noexcept { return ENUM_VALUES[*present_indices_]; }
+        constexpr void advance() noexcept { present_indices_.advance(); }
+        constexpr void recede() noexcept { present_indices_.recede(); }
+        constexpr const_reference get() const noexcept
+        {
+            return ENUM_VALUES[present_indices_.get()];
+        }
         constexpr bool operator==(const ReferenceProvider&) const = default;
     };
 
