@@ -133,6 +133,8 @@ if(BUILD_TESTS)
         add_test(NAME ${TEST_TARGET} COMMAND ${TEST_TARGET})
     endmacro()
 
+    add_executable(circular_integer_range_iterator_test test/circular_integer_range_iterator_test.cpp)
+    add_test_dependencies(circular_integer_range_iterator_test)
     add_executable(comparison_chain_test test/comparison_chain_test.cpp)
     add_test_dependencies(comparison_chain_test)
     add_executable(concepts_test test/concepts_test.cpp)
