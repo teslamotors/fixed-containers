@@ -143,12 +143,13 @@ cc_library(
     includes = ["include"],
     deps = [
         ":algorithm",
+        ":circular_integer_range_iterator",
         ":consteval_compare",
         ":integer_range",
         ":iterator_utils",
         ":optional_storage",
         ":preconditions",
-        ":random_access_iterator_transformer",
+        ":random_access_iterator",
         ":source_location",
         ":string_literal",
         ":type_name",
@@ -588,6 +589,7 @@ cc_test(
     deps = [
         ":fixed_deque",
         ":mock_testing_types",
+        ":test_utilities_common",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
