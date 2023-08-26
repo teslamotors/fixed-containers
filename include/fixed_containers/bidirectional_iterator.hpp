@@ -20,41 +20,39 @@ concept BidirectionalEntryProvider = DefaultConstructible<P> && requires(P p, P 
     } -> std::same_as<bool>;
 };
 
-template <BidirectionalEntryProvider ConstReferenceProvider,
-          BidirectionalEntryProvider MutableReferenceProvider,
+template <BidirectionalEntryProvider ConstEntryProvider,
+          BidirectionalEntryProvider MutableEntryProvider,
           IteratorConstness CONSTNESS,
           IteratorDirection DIRECTION>
 class BidirectionalIterator
 {
     static constexpr IteratorConstness NEGATED_CONSTNESS = IteratorConstness(!bool(CONSTNESS));
 
-    using Self = BidirectionalIterator<ConstReferenceProvider,
-                                       MutableReferenceProvider,
-                                       CONSTNESS,
-                                       DIRECTION>;
+    using Self =
+        BidirectionalIterator<ConstEntryProvider, MutableEntryProvider, CONSTNESS, DIRECTION>;
 
     // Sibling has the same parameters, but different const-ness
-    using Sibling = BidirectionalIterator<ConstReferenceProvider,
-                                          MutableReferenceProvider,
+    using Sibling = BidirectionalIterator<ConstEntryProvider,
+                                          MutableEntryProvider,
                                           NEGATED_CONSTNESS,
                                           DIRECTION>;
 
     // Give Sibling access to private members
-    friend class BidirectionalIterator<ConstReferenceProvider,
-                                       MutableReferenceProvider,
+    friend class BidirectionalIterator<ConstEntryProvider,
+                                       MutableEntryProvider,
                                        NEGATED_CONSTNESS,
                                        DIRECTION>;
 
-    using ReverseBase = BidirectionalIterator<ConstReferenceProvider,
-                                              MutableReferenceProvider,
+    using ReverseBase = BidirectionalIterator<ConstEntryProvider,
+                                              MutableEntryProvider,
                                               CONSTNESS,
                                               IteratorDirection(!bool(DIRECTION))>;
 
-    using ReferenceProvider = std::conditional_t<CONSTNESS == IteratorConstness::CONSTANT_ITERATOR,
-                                                 ConstReferenceProvider,
-                                                 MutableReferenceProvider>;
+    using EntryProvider = std::conditional_t<CONSTNESS == IteratorConstness::CONSTANT_ITERATOR,
+                                             ConstEntryProvider,
+                                             MutableEntryProvider>;
 
-    using ReturnedType = decltype(std::declval<ReferenceProvider>().get());
+    using ReturnedType = decltype(std::declval<EntryProvider>().get());
     static constexpr bool SAFE_LIFETIME = std::is_reference_v<ReturnedType>;
 
 public:
@@ -67,11 +65,11 @@ public:
     using difference_type = std::ptrdiff_t;
 
 private:
-    ReferenceProvider reference_provider_;
+    EntryProvider reference_provider_;
 
 public:
     constexpr BidirectionalIterator() noexcept
-      : BidirectionalIterator{ReferenceProvider{}}
+      : BidirectionalIterator{EntryProvider{}}
     {
     }
 
