@@ -12,7 +12,7 @@
 namespace fixed_containers
 {
 template <typename IndexPredicate, IsIntegerRange IntegerRangeType = IntegerRange>
-class FilteredIntegerRangeReferenceProvider
+class FilteredIntegerRangeEntryProvider
 {
 private:
     IndexPredicate predicate_;
@@ -20,14 +20,14 @@ private:
     std::size_t current_index_;
 
 public:
-    constexpr FilteredIntegerRangeReferenceProvider() noexcept
-      : FilteredIntegerRangeReferenceProvider{{}, {}, {}}
+    constexpr FilteredIntegerRangeEntryProvider() noexcept
+      : FilteredIntegerRangeEntryProvider{{}, {}, {}}
     {
     }
 
-    constexpr FilteredIntegerRangeReferenceProvider(const IntegerRangeType& integer_range,
-                                                    const std::size_t current_index,
-                                                    const IndexPredicate& predicate) noexcept
+    constexpr FilteredIntegerRangeEntryProvider(const IntegerRangeType& integer_range,
+                                                const std::size_t current_index,
+                                                const IndexPredicate& predicate) noexcept
       : predicate_{predicate}
       , integer_range_{integer_range}
       , current_index_{current_index}
@@ -82,7 +82,7 @@ public:
         return current_index_;
     }
 
-    constexpr bool operator==(const FilteredIntegerRangeReferenceProvider& other) const noexcept =
+    constexpr bool operator==(const FilteredIntegerRangeEntryProvider& other) const noexcept =
         default;
 };
 
@@ -90,8 +90,8 @@ template <typename IndexPredicate,
           IteratorDirection DIRECTION = IteratorDirection::FORWARD,
           IsIntegerRange IntegerRangeType = IntegerRange>
 using FilteredIntegerRangeIterator =
-    BidirectionalIterator<FilteredIntegerRangeReferenceProvider<IndexPredicate, IntegerRangeType>,
-                          FilteredIntegerRangeReferenceProvider<IndexPredicate, IntegerRangeType>,
+    BidirectionalIterator<FilteredIntegerRangeEntryProvider<IndexPredicate, IntegerRangeType>,
+                          FilteredIntegerRangeEntryProvider<IndexPredicate, IntegerRangeType>,
                           IteratorConstness::CONSTANT_ITERATOR,
                           DIRECTION>;
 }  // namespace fixed_containers

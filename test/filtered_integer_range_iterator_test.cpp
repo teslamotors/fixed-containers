@@ -55,10 +55,10 @@ static_assert(NotTriviallyCopyable<decltype(std::ranges::iota_view<std::size_t, 
 
 static_assert(TriviallyCopyable<FilteredIntegerRangeIterator<AlwaysTruePredicate>>);
 
-static_assert(BidirectionalEntryProvider<FilteredIntegerRangeReferenceProvider<AlwaysTruePredicate>>);
+static_assert(BidirectionalEntryProvider<FilteredIntegerRangeEntryProvider<AlwaysTruePredicate>>);
 
-static_assert(FilteredIntegerRangeReferenceProvider<AlwaysTruePredicate>{} ==
-              FilteredIntegerRangeReferenceProvider<AlwaysTruePredicate>{});
+static_assert(FilteredIntegerRangeEntryProvider<AlwaysTruePredicate>{} ==
+              FilteredIntegerRangeEntryProvider<AlwaysTruePredicate>{});
 
 static_assert(sizeof(FilteredIntegerRangeIterator<AlwaysTruePredicate,
                                                   IteratorDirection::FORWARD,
