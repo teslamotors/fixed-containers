@@ -264,7 +264,7 @@ public:
                                   std_transition::source_location::current()) noexcept
       : FixedVectorBase()
     {
-        insert(end(), first, last, loc);
+        insert(cend(), first, last, loc);
     }
 
     /**
@@ -422,7 +422,7 @@ public:
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
         this->clear();
-        this->insert(end(), first, last, loc);
+        this->insert(cend(), first, last, loc);
     }
 
     constexpr void assign(
@@ -430,7 +430,7 @@ public:
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
         this->clear();
-        this->insert(end(), ilist, loc);
+        this->insert(cend(), ilist, loc);
     }
 
     /**

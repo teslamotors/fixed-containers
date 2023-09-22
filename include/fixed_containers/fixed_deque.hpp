@@ -141,7 +141,7 @@ public:
                              std_transition::source_location::current()) noexcept
       : FixedDeque()
     {
-        insert(end(), first, last, loc);
+        insert(cend(), first, last, loc);
     }
 
     constexpr void resize(
