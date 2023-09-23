@@ -17,8 +17,7 @@ template <class T>
 concept FixedStringChecking = requires(std::size_t i,
                                        std::size_t s,
                                        const StringLiteral& error_message,
-                                       const std_transition::source_location& loc)
-{
+                                       const std_transition::source_location& loc) {
     T::out_of_range(i, s, loc);  // ~ std::out_of_range
 };
 
@@ -34,7 +33,7 @@ struct AbortChecking
 };
 }  // namespace fixed_containers::fixed_string_customize
 
-namespace fixed_containers::fixed_string_detail
+namespace fixed_containers
 {
 template <std::size_t MAXIMUM_LENGTH,
           fixed_string_customize::FixedStringChecking CheckingType =
@@ -137,13 +136,13 @@ public:
 private:
     constexpr void null_terminate() { IMPLEMENTATION_DETAIL_DO_NOT_USE_data_.at(length()) = '\0'; }
 };
-}  // namespace fixed_containers::fixed_string_detail
+}  // namespace fixed_containers
 
 namespace std
 {
 template <std::size_t MAXIMUM_LENGTH,
           fixed_containers::fixed_string_customize::FixedStringChecking CheckingType>
-struct tuple_size<fixed_containers::fixed_string_detail::FixedString<MAXIMUM_LENGTH, CheckingType>>
+struct tuple_size<fixed_containers::FixedString<MAXIMUM_LENGTH, CheckingType>>
   : std::integral_constant<std::size_t, 0>
 {
     static_assert(fixed_containers::AlwaysFalseV<decltype(MAXIMUM_LENGTH), CheckingType>,

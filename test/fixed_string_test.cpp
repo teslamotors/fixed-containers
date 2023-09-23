@@ -5,7 +5,7 @@
 
 #include <gtest/gtest.h>
 
-namespace fixed_containers::fixed_string_detail
+namespace fixed_containers
 {
 namespace
 {
@@ -192,4 +192,4 @@ TEST(FixedString, Data)
     }
 }
 
-}  // namespace fixed_containers::fixed_string_detail
+}  // namespace fixed_containers
