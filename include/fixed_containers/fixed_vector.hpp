@@ -291,14 +291,14 @@ public:
         // Reinitialize the new members if we are enlarging
         while (size() < count)
         {
-            place_at(size(), v);
+            place_at(end_index(), v);
             increment_size();
         }
         // Destroy extras if we are making it smaller.
         while (size() > count)
         {
             decrement_size();
-            destroy_at(size());
+            destroy_at(end_index());
         }
     }
 
@@ -328,7 +328,7 @@ public:
     constexpr reference emplace_back(Args&&... args)
     {
         check_not_full(std_transition::source_location::current());
-        emplace_at(size(), std::forward<Args>(args)...);
+        emplace_at(end_index(), std::forward<Args>(args)...);
         increment_size();
         return this->back();
     }
@@ -341,7 +341,7 @@ public:
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
         check_not_empty(loc);
-        destroy_at(size() - 1);
+        destroy_at(back_index());
         decrement_size();
     }
 
@@ -533,25 +533,25 @@ public:
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
         check_not_empty(loc);
-        return unchecked_at(0);
+        return unchecked_at(front_index());
     }
     constexpr const_reference front(const std_transition::source_location& loc =
                                         std_transition::source_location::current()) const
     {
         check_not_empty(loc);
-        return unchecked_at(0);
+        return unchecked_at(front_index());
     }
     constexpr reference back(
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
         check_not_empty(loc);
-        return unchecked_at(size() - 1);
+        return unchecked_at(back_index());
     }
     constexpr const_reference back(const std_transition::source_location& loc =
                                        std_transition::source_location::current()) const
     {
         check_not_empty(loc);
-        return unchecked_at(size() - 1);
+        return unchecked_at(back_index());
     }
 
     constexpr value_type* data() noexcept
@@ -566,12 +566,15 @@ public:
     /**
      * Iterators
      */
-    constexpr iterator begin() noexcept { return create_iterator(0); }
+    constexpr iterator begin() noexcept { return create_iterator(front_index()); }
     constexpr const_iterator begin() const noexcept { return cbegin(); }
-    constexpr const_iterator cbegin() const noexcept { return create_const_iterator(0); }
-    constexpr iterator end() noexcept { return create_iterator(size()); }
+    constexpr const_iterator cbegin() const noexcept
+    {
+        return create_const_iterator(front_index());
+    }
+    constexpr iterator end() noexcept { return create_iterator(end_index()); }
     constexpr const_iterator end() const noexcept { return cend(); }
-    constexpr const_iterator cend() const noexcept { return create_const_iterator(size()); }
+    constexpr const_iterator cend() const noexcept { return create_const_iterator(end_index()); }
 
     constexpr reverse_iterator rbegin() noexcept { return reverse_iterator(end()); }
     constexpr const_reverse_iterator rbegin() const noexcept { return crbegin(); }
@@ -670,13 +673,13 @@ private:
 
     constexpr void push_back_internal(const value_type& v)
     {
-        place_at(size(), v);
+        place_at(end_index(), v);
         increment_size();
     }
 
     constexpr void push_back_internal(value_type&& v)
     {
-        place_at(size(), std::move(v));
+        place_at(end_index(), std::move(v));
         increment_size();
     }
 
@@ -772,6 +775,10 @@ private:
 
     // [WORKAROUND-1] - Needed by the non-trivially-copyable flavor of FixedVector
 protected:
+    [[nodiscard]] constexpr std::size_t front_index() const { return 0; }
+    [[nodiscard]] constexpr std::size_t back_index() const { return end_index() - 1; }
+    [[nodiscard]] constexpr std::size_t end_index() const { return size(); }
+
     constexpr void increment_size(const std::size_t n = 1)
     {
         IMPLEMENTATION_DETAIL_DO_NOT_USE_size_ += n;
