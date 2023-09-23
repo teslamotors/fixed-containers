@@ -115,15 +115,15 @@ private:
         }
     }
 
-private:
-    std::array<OptionalT, MAXIMUM_SIZE> array_;
-    std::size_t index_i_;
-    std::size_t index_j_;
+public:
+    std::array<OptionalT, MAXIMUM_SIZE> IMPLEMENTATION_DETAIL_DO_NOT_USE_array_;
+    std::size_t IMPLEMENTATION_DETAIL_DO_NOT_USE_index_i_;
+    std::size_t IMPLEMENTATION_DETAIL_DO_NOT_USE_index_j_;
 
 public:
     constexpr FixedDeque() noexcept
-      : index_i_(0)
-      , index_j_(0)
+      : IMPLEMENTATION_DETAIL_DO_NOT_USE_index_i_(0)
+      , IMPLEMENTATION_DETAIL_DO_NOT_USE_index_j_(0)
     // Don't initialize the array
     {
     }
@@ -264,7 +264,11 @@ public:
     }
 
     [[nodiscard]] constexpr std::size_t max_size() const noexcept { return MAXIMUM_SIZE; }
-    [[nodiscard]] constexpr std::size_t size() const noexcept { return index_j_ - index_i_; }
+    [[nodiscard]] constexpr std::size_t size() const noexcept
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_index_j_ -
+               IMPLEMENTATION_DETAIL_DO_NOT_USE_index_i_;
+    }
     [[nodiscard]] constexpr bool empty() const noexcept { return size() == 0; }
 
     template <std::size_t MAXIMUM_SIZE_2, fixed_deque_customize::FixedDequeChecking CheckingType2>
@@ -335,7 +339,7 @@ public:
         {
             Checking::out_of_range(i, size(), loc);
         }
-        return array_[i].value;
+        return unchecked_at(i);
     }
     constexpr const_reference at(size_type i,
                                  const std_transition::source_location& loc =
@@ -345,32 +349,32 @@ public:
         {
             Checking::out_of_range(i, size(), loc);
         }
-        return array_[i].value;
+        return unchecked_at(i);
     }
 
     constexpr reference front(
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
         check_not_empty(loc);
-        return array_[0].value;
+        return unchecked_at(0);
     }
     constexpr const_reference front(const std_transition::source_location& loc =
                                         std_transition::source_location::current()) const
     {
         check_not_empty(loc);
-        return array_[0].value;
+        return unchecked_at(0);
     }
     constexpr reference back(
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
         check_not_empty(loc);
-        return array_[size() - 1].value;
+        return unchecked_at(size() - 1);
     }
     constexpr const_reference back(const std_transition::source_location& loc =
                                        std_transition::source_location::current()) const
     {
         check_not_empty(loc);
-        return array_[size() - 1].value;
+        return unchecked_at(size() - 1);
     }
 
 private:
@@ -391,7 +395,7 @@ private:
 
         for (std::size_t i = 0; i < value_count_to_move; i++)
         {
-            place_at(write_end - i, std::move(array_[read_end - i].value));
+            place_at(write_end - i, std::move(unchecked_at(read_end - i)));
             destroy_at(read_end - i);
         }
 
@@ -459,20 +463,23 @@ private:
         const std::size_t write_index = this->index_of(it);
         std::rotate(
             create_iterator(write_index), create_iterator(size()), create_iterator(new_size));
-        index_j_ = (index_i_ + new_size) % MAXIMUM_SIZE;
+        IMPLEMENTATION_DETAIL_DO_NOT_USE_index_j_ =
+            (IMPLEMENTATION_DETAIL_DO_NOT_USE_index_i_ + new_size) % MAXIMUM_SIZE;
 
         return begin() + static_cast<difference_type>(write_index);
     }
 
     constexpr iterator create_iterator(const std::size_t start_index) noexcept
     {
-        auto array_it = std::next(std::begin(array_), static_cast<difference_type>(start_index));
+        auto array_it = std::next(std::begin(IMPLEMENTATION_DETAIL_DO_NOT_USE_array_),
+                                  static_cast<difference_type>(start_index));
         return iterator{array_it, Mapper{}};
     }
 
     constexpr const_iterator create_const_iterator(const std::size_t start_index) const noexcept
     {
-        auto array_it = std::next(std::begin(array_), static_cast<difference_type>(start_index));
+        auto array_it = std::next(std::begin(IMPLEMENTATION_DETAIL_DO_NOT_USE_array_),
+                                  static_cast<difference_type>(start_index));
         return const_iterator{array_it, Mapper{}};
     }
 
@@ -505,22 +512,30 @@ private:
 protected:
     constexpr void increment_size(const std::size_t n = 1)
     {
-        index_j_ = (index_j_ + n) % (MAXIMUM_SIZE + 1);
+        IMPLEMENTATION_DETAIL_DO_NOT_USE_index_j_ =
+            (IMPLEMENTATION_DETAIL_DO_NOT_USE_index_j_ + n) % (MAXIMUM_SIZE + 1);
     }
     constexpr void decrement_size(const std::size_t n = 1)
     {
-        index_j_ = (index_j_ - n) % (MAXIMUM_SIZE + 1);
+        IMPLEMENTATION_DETAIL_DO_NOT_USE_index_j_ =
+            (IMPLEMENTATION_DETAIL_DO_NOT_USE_index_j_ - n) % (MAXIMUM_SIZE + 1);
     }
 
-    constexpr const OptionalT& array_unchecked_at(const std::size_t i) const { return array_[i]; }
-    constexpr OptionalT& array_unchecked_at(const std::size_t i) { return array_[i]; }
+    constexpr const OptionalT& array_unchecked_at(const std::size_t i) const
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_[i];
+    }
+    constexpr OptionalT& array_unchecked_at(const std::size_t i)
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_[i];
+    }
     constexpr const T& unchecked_at(const std::size_t i) const
     {
-        return optional_storage_detail::get(array_[i]);
+        return optional_storage_detail::get(array_unchecked_at(i));
     }
     constexpr T& unchecked_at(const std::size_t i)
     {
-        return optional_storage_detail::get(array_[i]);
+        return optional_storage_detail::get(array_unchecked_at(i));
     }
 
     constexpr void destroy_at(std::size_t)
@@ -530,7 +545,7 @@ protected:
     constexpr void destroy_at(std::size_t i)
         requires NotTriviallyDestructible<T>
     {
-        std::destroy_at(&array_[i].value);
+        std::destroy_at(&array_unchecked_at(i).value);
     }
 
     constexpr void destroy_index_range(std::size_t, std::size_t)

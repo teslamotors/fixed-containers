@@ -11,6 +11,16 @@ namespace fixed_containers
 {
 namespace
 {
+// Static assert for expected type properties
+namespace trivially_copyable_vector
+{
+using DequeType = FixedDeque<int, 5>;
+static_assert(TriviallyCopyable<DequeType>);
+static_assert(NotTrivial<DequeType>);
+static_assert(StandardLayout<DequeType>);
+static_assert(IsStructuralType<DequeType>);
+}  // namespace trivially_copyable_vector
+
 void const_ref(const int&) {}
 void const_span_ref(const std::span<int>&) {}
 void const_span_of_const_ref(const std::span<const int>&) {}
@@ -933,6 +943,34 @@ TEST(FixedDeque, Back_EmptyVector)
         FixedDeque<int, 3> v{};
         EXPECT_DEATH(v.back(), "");
     }
+}
+
+TEST(FixedDeque, ClassTemplateArgumentDeduction)
+{
+    // Compile-only test
+    FixedDeque a = FixedDeque<int, 5>{};
+    (void)a;
+}
+
+namespace
+{
+template <FixedDeque<int, 5> /*MY_DEQUE*/>
+struct FixedDequeInstanceCanBeUsedAsATemplateParameter
+{
+};
+
+template <FixedDeque<int, 5> /*MY_DEQUE*/>
+constexpr void fixed_deque_instance_can_be_used_as_a_template_parameter()
+{
+}
+}  // namespace
+
+TEST(FixedDeque, UsageAsTemplateParameter)
+{
+    static constexpr FixedDeque<int, 5> VEC1{};
+    fixed_deque_instance_can_be_used_as_a_template_parameter<VEC1>();
+    FixedDequeInstanceCanBeUsedAsATemplateParameter<VEC1> my_struct{};
+    static_cast<void>(my_struct);
 }
 
 }  // namespace fixed_containers
