@@ -530,7 +530,7 @@ protected:
     constexpr void destroy_at(std::size_t i)
         requires NotTriviallyDestructible<T>
     {
-        array_[i].value.~T();
+        std::destroy_at(&array_[i].value);
     }
 
     constexpr void destroy_index_range(std::size_t, std::size_t)
