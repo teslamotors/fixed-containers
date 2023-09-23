@@ -13,6 +13,7 @@
 #include <cstddef>
 #include <initializer_list>
 #include <iterator>
+#include <memory>
 #include <type_traits>
 
 namespace fixed_containers::fixed_deque_customize
@@ -545,44 +546,13 @@ protected:
         }
     }
 
-    // NOTE for the following functions:
-    // By default we would want to use placement new as it is more efficient.
-    // However, placement new is not constexpr at this time, there we want
-    // to use simple assignment for constexpr context. However, since non-assignable
-    // types would fail to compile with an assignment, we need to guard the assignment with
-    // constraints.
     constexpr void place_at(const std::size_t i, const value_type& v)
-        requires TriviallyCopyAssignable<T> && TriviallyDestructible<T>
     {
-        if (std::is_constant_evaluated())
-        {
-            this->array_[i] = OptionalT(v);
-        }
-        else
-        {
-            new (&array_[i]) OptionalT(v);
-        }
+        std::construct_at(&array_unchecked_at(i), v);
     }
-    /*not-constexpr*/ void place_at(const std::size_t i, const value_type& v)
-    {
-        new (&array_[i]) OptionalT(v);
-    }
-
     constexpr void place_at(const std::size_t i, value_type&& v)
-        requires TriviallyMoveAssignable<T> && TriviallyDestructible<T>
     {
-        if (std::is_constant_evaluated())
-        {
-            this->array_[i] = OptionalT(std::move(v));
-        }
-        else
-        {
-            new (&array_[i]) OptionalT(std::move(v));
-        }
-    }
-    /*not-constexpr*/ void place_at(const std::size_t i, value_type&& v)
-    {
-        new (&array_[i]) OptionalT(std::move(v));
+        std::construct_at(&array_unchecked_at(i), std::move(v));
     }
 };
 
