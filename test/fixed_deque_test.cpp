@@ -103,6 +103,36 @@ TEST(FixedDeque, InitializerConstructor)
     EXPECT_TRUE(std::ranges::equal(v2, std::array{66, 55}));
 }
 
+TEST(FixedDeque, CountConstructor)
+{
+    // Caution: Using braces calls initializer list ctor!
+    {
+        constexpr FixedDeque<int, 8> v{5};
+        static_assert(v.size() == 1);
+    }
+
+    // Use parens to get the count ctor!
+    {
+        constexpr FixedDeque<int, 8> v1(5);
+        static_assert(v1.size() == 5);
+        static_assert(v1.max_size() == 8);
+        static_assert(std::ranges::equal(v1, std::array{0, 0, 0, 0, 0}));
+    }
+
+    {
+        constexpr FixedDeque<int, 8> v2(5, 3);
+        static_assert(v2.size() == 5);
+        static_assert(v2.max_size() == 8);
+        static_assert(std::ranges::equal(v2, std::array{3, 3, 3, 3, 3}));
+    }
+
+    // NonAssignable<T>
+    {
+        FixedDeque<MockNonAssignable, 8> v{5};
+        ASSERT_EQ(5, v.size());
+    }
+}
+
 TEST(FixedDeque, IteratorConstructor)
 {
     constexpr FixedDeque<int, 3> v1{77, 99};

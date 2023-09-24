@@ -210,10 +210,31 @@ public:
     {
     }
 
+    constexpr FixedDeque(std::size_t count,
+                         const T& value,
+                         const std_transition::source_location& loc =
+                             std_transition::source_location::current()) noexcept
+      : FixedDeque()
+    {
+        check_target_size(count, loc);
+        set_size(count);
+        for (std::size_t i = 0; i < count; i++)
+        {
+            place_at(i, value);
+        }
+    }
+
     constexpr FixedDeque(std::initializer_list<T> list,
                          const std_transition::source_location& loc =
                              std_transition::source_location::current()) noexcept
       : FixedDeque(list.begin(), list.end(), loc)
+    {
+    }
+
+    constexpr explicit FixedDeque(std::size_t count,
+                                  const std_transition::source_location& loc =
+                                      std_transition::source_location::current()) noexcept
+      : FixedDeque(count, T(), loc)
     {
     }
 
