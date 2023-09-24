@@ -355,9 +355,9 @@ public:
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
         check_not_full(loc);
-        const std::size_t index = this->advance_all_after_iterator_by_n(it, 1);
-        place_at(index, v);
-        return create_iterator(index);
+        auto entry_it = advance_all_after_iterator_by_n(it, 1);
+        std::construct_at(&*entry_it, v);
+        return entry_it;
     }
     constexpr iterator insert(
         const_iterator it,
@@ -365,9 +365,9 @@ public:
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
         check_not_full(loc);
-        const std::size_t index = this->advance_all_after_iterator_by_n(it, 1);
-        place_at(index, std::move(v));
-        return create_iterator(index);
+        auto entry_it = advance_all_after_iterator_by_n(it, 1);
+        std::construct_at(&*entry_it, std::move(v));
+        return entry_it;
     }
     template <InputIterator InputIt>
     constexpr iterator insert(
@@ -396,9 +396,9 @@ public:
     constexpr iterator emplace(const_iterator it, Args&&... args)
     {
         check_not_full(std_transition::source_location::current());
-        const std::size_t index = this->advance_all_after_iterator_by_n(it, 1);
-        emplace_at(index, std::forward<Args>(args)...);
-        return create_iterator(index);
+        auto entry_it = advance_all_after_iterator_by_n(it, 1);
+        std::construct_at(&*entry_it, std::forward<Args>(args)...);
+        return entry_it;
     }
 
     /**
@@ -648,13 +648,7 @@ public:
     }
 
 private:
-    /*
-     * Helper for insert
-     * Moves everything ahead of a given const_iterator n spots forward, and
-     * returns the index to insert something at that place. Increments size.
-     */
-    constexpr std::size_t advance_all_after_iterator_by_n(const const_iterator it,
-                                                          const std::size_t n)
+    constexpr iterator advance_all_after_iterator_by_n(const const_iterator it, const std::size_t n)
     {
         const std::size_t read_start = index_of(it);
         const std::size_t write_start = read_start + n;
@@ -667,7 +661,7 @@ private:
 
         increment_size(n);
 
-        return read_start;
+        return read_start_it;
     }
 
     constexpr void push_back_internal(const value_type& v)
@@ -691,10 +685,8 @@ private:
     {
         const auto entry_count_to_add = static_cast<std::size_t>(std::distance(first, last));
         check_target_size(size() + entry_count_to_add, loc);
-        const std::size_t write_index =
-            this->advance_all_after_iterator_by_n(it, entry_count_to_add);
 
-        auto write_it = create_iterator(write_index);
+        auto write_it = advance_all_after_iterator_by_n(it, entry_count_to_add);
         for (auto w_it = write_it; first != last; std::advance(first, 1), std::advance(w_it, 1))
         {
             std::construct_at(&*w_it, *first);
