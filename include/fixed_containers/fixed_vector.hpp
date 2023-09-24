@@ -245,13 +245,6 @@ public:
         }
     }
 
-    constexpr FixedVectorBase(std::initializer_list<T> list,
-                              const std_transition::source_location& loc =
-                                  std_transition::source_location::current()) noexcept
-      : FixedVectorBase(list.begin(), list.end(), loc)
-    {
-    }
-
     constexpr explicit FixedVectorBase(std::size_t count,
                                        const std_transition::source_location& loc =
                                            std_transition::source_location::current()) noexcept
@@ -267,6 +260,13 @@ public:
       : FixedVectorBase()
     {
         insert(cend(), first, last, loc);
+    }
+
+    constexpr FixedVectorBase(std::initializer_list<T> list,
+                              const std_transition::source_location& loc =
+                                  std_transition::source_location::current()) noexcept
+      : FixedVectorBase(list.begin(), list.end(), loc)
+    {
     }
 
     /**
@@ -861,12 +861,6 @@ public:
       : Base()
     {
     }
-    constexpr FixedVector(std::initializer_list<T> list,
-                          const std_transition::source_location& loc =
-                              std_transition::source_location::current()) noexcept
-      : Base(list, loc)
-    {
-    }
     constexpr FixedVector(std::size_t count,
                           const T& value,
                           const std_transition::source_location& loc =
@@ -886,6 +880,12 @@ public:
                           const std_transition::source_location& loc =
                               std_transition::source_location::current()) noexcept
       : Base(first, last, loc)
+    {
+    }
+    constexpr FixedVector(std::initializer_list<T> list,
+                          const std_transition::source_location& loc =
+                              std_transition::source_location::current()) noexcept
+      : Base(list, loc)
     {
     }
 
@@ -966,12 +966,6 @@ public:
       : Base()
     {
     }
-    constexpr FixedVector(std::initializer_list<T> list,
-                          const std_transition::source_location& loc =
-                              std_transition::source_location::current()) noexcept
-      : Base(list, loc)
-    {
-    }
     constexpr FixedVector(std::size_t count,
                           const T& value,
                           const std_transition::source_location& loc =
@@ -991,6 +985,12 @@ public:
                           const std_transition::source_location& loc =
                               std_transition::source_location::current()) noexcept
       : Base(first, last, loc)
+    {
+    }
+    constexpr FixedVector(std::initializer_list<T> list,
+                          const std_transition::source_location& loc =
+                              std_transition::source_location::current()) noexcept
+      : Base(list, loc)
     {
     }
 };

@@ -229,13 +229,6 @@ public:
         }
     }
 
-    constexpr FixedDequeBase(std::initializer_list<T> list,
-                             const std_transition::source_location& loc =
-                                 std_transition::source_location::current()) noexcept
-      : FixedDequeBase(list.begin(), list.end(), loc)
-    {
-    }
-
     constexpr explicit FixedDequeBase(std::size_t count,
                                       const std_transition::source_location& loc =
                                           std_transition::source_location::current()) noexcept
@@ -251,6 +244,13 @@ public:
       : FixedDequeBase()
     {
         insert(cend(), first, last, loc);
+    }
+
+    constexpr FixedDequeBase(std::initializer_list<T> list,
+                             const std_transition::source_location& loc =
+                                 std_transition::source_location::current()) noexcept
+      : FixedDequeBase(list.begin(), list.end(), loc)
+    {
     }
 
     constexpr void resize(
@@ -877,12 +877,6 @@ public:
       : Base()
     {
     }
-    constexpr FixedDeque(std::initializer_list<T> list,
-                         const std_transition::source_location& loc =
-                             std_transition::source_location::current()) noexcept
-      : Base(list, loc)
-    {
-    }
     constexpr FixedDeque(std::size_t count,
                          const T& value,
                          const std_transition::source_location& loc =
@@ -902,6 +896,12 @@ public:
                          const std_transition::source_location& loc =
                              std_transition::source_location::current()) noexcept
       : Base(first, last, loc)
+    {
+    }
+    constexpr FixedDeque(std::initializer_list<T> list,
+                         const std_transition::source_location& loc =
+                             std_transition::source_location::current()) noexcept
+      : Base(list, loc)
     {
     }
 
@@ -979,12 +979,6 @@ public:
       : Base()
     {
     }
-    constexpr FixedDeque(std::initializer_list<T> list,
-                         const std_transition::source_location& loc =
-                             std_transition::source_location::current()) noexcept
-      : Base(list, loc)
-    {
-    }
     constexpr FixedDeque(std::size_t count,
                          const T& value,
                          const std_transition::source_location& loc =
@@ -1004,6 +998,12 @@ public:
                          const std_transition::source_location& loc =
                              std_transition::source_location::current()) noexcept
       : Base(first, last, loc)
+    {
+    }
+    constexpr FixedDeque(std::initializer_list<T> list,
+                         const std_transition::source_location& loc =
+                             std_transition::source_location::current()) noexcept
+      : Base(list, loc)
     {
     }
 };
@@ -1034,12 +1034,6 @@ public:
       : Base()
     {
     }
-    constexpr FixedDeque(std::initializer_list<T> list,
-                         const std_transition::source_location& loc =
-                             std_transition::source_location::current()) noexcept
-      : Base(list, loc)
-    {
-    }
     constexpr FixedDeque(std::size_t count,
                          const T& value,
                          const std_transition::source_location& loc =
@@ -1059,6 +1053,12 @@ public:
                          const std_transition::source_location& loc =
                              std_transition::source_location::current()) noexcept
       : Base(first, last, loc)
+    {
+    }
+    constexpr FixedDeque(std::initializer_list<T> list,
+                         const std_transition::source_location& loc =
+                             std_transition::source_location::current()) noexcept
+      : Base(list, loc)
     {
     }
 };

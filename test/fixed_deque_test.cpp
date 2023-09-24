@@ -88,22 +88,6 @@ TEST(FixedDeque, DefaultConstructor)
     (void)v1;
 }
 
-TEST(FixedDeque, InitializerConstructor)
-{
-    constexpr FixedDeque<int, 3> v1{77, 99};
-    static_assert(v1[0] == 77);
-    static_assert(v1[1] == 99);
-    static_assert(v1.size() == 2);
-
-    constexpr FixedDeque<int, 3> v2{{66, 55}};
-    static_assert(v2[0] == 66);
-    static_assert(v2[1] == 55);
-    static_assert(v2.size() == 2);
-
-    EXPECT_TRUE(std::ranges::equal(v1, std::array{77, 99}));
-    EXPECT_TRUE(std::ranges::equal(v2, std::array{66, 55}));
-}
-
 TEST(FixedDeque, CountConstructor)
 {
     // Caution: Using braces calls initializer list ctor!
@@ -165,6 +149,22 @@ TEST(FixedDeque, InputIteratorConstructor)
     FixedDeque<int, 14> v{stream.begin(), stream.end()};
     ASSERT_EQ(3, v.size());
     EXPECT_TRUE(std::ranges::equal(v, std::array{3, 2, 1}));
+}
+
+TEST(FixedDeque, InitializerConstructor)
+{
+    constexpr FixedDeque<int, 3> v1{77, 99};
+    static_assert(v1[0] == 77);
+    static_assert(v1[1] == 99);
+    static_assert(v1.size() == 2);
+
+    constexpr FixedDeque<int, 3> v2{{66, 55}};
+    static_assert(v2[0] == 66);
+    static_assert(v2[1] == 55);
+    static_assert(v2.size() == 2);
+
+    EXPECT_TRUE(std::ranges::equal(v1, std::array{77, 99}));
+    EXPECT_TRUE(std::ranges::equal(v2, std::array{66, 55}));
 }
 
 TEST(FixedDeque, PushBack)
