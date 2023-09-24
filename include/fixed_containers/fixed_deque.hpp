@@ -1063,4 +1063,62 @@ public:
     }
 };
 
+template <typename T, std::size_t MAXIMUM_SIZE, typename CheckingType>
+constexpr typename FixedDeque<T, MAXIMUM_SIZE, CheckingType>::size_type is_full(
+    const FixedDeque<T, MAXIMUM_SIZE, CheckingType>& c)
+{
+    return c.size() >= c.max_size();
+}
+
+template <typename T, std::size_t MAXIMUM_SIZE, typename CheckingType, typename U>
+constexpr typename FixedDeque<T, MAXIMUM_SIZE, CheckingType>::size_type erase(
+    FixedDeque<T, MAXIMUM_SIZE, CheckingType>& c, const U& value)
+{
+    const auto original_size = c.size();
+    c.erase(std::remove(c.begin(), c.end(), value), c.end());
+    return original_size - c.size();
+}
+
+template <typename T, std::size_t MAXIMUM_SIZE, typename CheckingType, typename Predicate>
+constexpr typename FixedDeque<T, MAXIMUM_SIZE, CheckingType>::size_type erase_if(
+    FixedDeque<T, MAXIMUM_SIZE, CheckingType>& c, Predicate predicate)
+{
+    const auto original_size = c.size();
+    c.erase(std::remove_if(c.begin(), c.end(), predicate), c.end());
+    return original_size - c.size();
+}
+
+/**
+ * Construct a FixedDeque with its capacity being deduced from the number of items being passed.
+ */
+template <typename T,
+          fixed_deque_customize::FixedDequeChecking CheckingType,
+          std::size_t MAXIMUM_SIZE,
+          // Exposing this as a template parameter is useful for customization (for example with
+          // child classes that set the CheckingType)
+          typename FixedDequeType = FixedDeque<T, MAXIMUM_SIZE, CheckingType>>
+[[nodiscard]] constexpr FixedDequeType make_fixed_deque(
+    const T (&list)[MAXIMUM_SIZE],
+    const std_transition::source_location& loc =
+        std_transition::source_location::current()) noexcept
+{
+    FixedDequeType deque{};
+    for (const auto& item : list)
+    {
+        deque.push_back(item, loc);
+    }
+    return deque;
+}
+
+template <typename T, std::size_t MAXIMUM_SIZE>
+[[nodiscard]] constexpr auto make_fixed_deque(
+    const T (&list)[MAXIMUM_SIZE],
+    const std_transition::source_location& loc =
+        std_transition::source_location::current()) noexcept
+{
+    using CheckingType = fixed_deque_customize::AbortChecking<T, MAXIMUM_SIZE>;
+    using FixedDequeType = FixedDeque<T, MAXIMUM_SIZE, CheckingType>;
+    return make_fixed_deque<T, CheckingType, MAXIMUM_SIZE, FixedDequeType>(list, loc);
+}
+
 }  // namespace fixed_containers

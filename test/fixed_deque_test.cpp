@@ -134,6 +134,18 @@ TEST(FixedDeque, CountConstructor)
     }
 }
 
+TEST(FixedDeque, MaxSizeDeduction)
+{
+    constexpr auto v1 = make_fixed_deque({10, 11, 12, 13, 14});
+    static_assert(v1.size() == 5);
+    static_assert(v1.max_size() == 5);
+    static_assert(v1[0] == 10);
+    static_assert(v1[1] == 11);
+    static_assert(v1[2] == 12);
+    static_assert(v1[3] == 13);
+    static_assert(v1[4] == 14);
+}
+
 TEST(FixedDeque, IteratorConstructor)
 {
     constexpr FixedDeque<int, 3> v1{77, 99};
@@ -280,6 +292,29 @@ TEST(FixedDeque, Empty)
 
         static_assert(v1.empty());
         static_assert(v1.max_size() == 7);
+    };
+
+    run_test(FixedDequeInitialStateFirstIndex{});
+    run_test(FixedDequeInitialStateLastIndex{});
+}
+
+TEST(FixedDeque, Full)
+{
+    auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
+    {
+        constexpr auto v1 = []()
+        {
+            auto v = Factory::template create<int, 4>();
+            v.assign(4, 100);
+            return v;
+        }();
+
+        static_assert(std::ranges::equal(v1, std::array<int, 4>{100, 100, 100, 100}));
+        static_assert(is_full(v1));
+        static_assert(v1.size() == 4);
+        static_assert(v1.max_size() == 4);
+
+        EXPECT_TRUE(is_full(v1));
     };
 
     run_test(FixedDequeInitialStateFirstIndex{});
@@ -1567,6 +1602,45 @@ TEST(FixedDeque, Erase_Empty)
     run_test(FixedDequeInitialStateLastIndex{});
 }
 
+TEST(FixedDeque, EraseFreeFunction)
+{
+    auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
+    {
+        constexpr auto v1 = []()
+        {
+            auto v = Factory::template create<int, 8>({3, 0, 1, 2, 3, 4, 5, 3});
+            std::size_t removed_count = fixed_containers::erase(v, 3);
+            assert_or_abort(3 == removed_count);
+            return v;
+        }();
+
+        static_assert(std::ranges::equal(v1, std::array<int, 5>{0, 1, 2, 4, 5}));
+    };
+
+    run_test(FixedDequeInitialStateFirstIndex{});
+    run_test(FixedDequeInitialStateLastIndex{});
+}
+
+TEST(FixedDeque, EraseIf)
+{
+    auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
+    {
+        constexpr auto v1 = []()
+        {
+            auto v = Factory::template create<int, 8>({0, 1, 2, 3, 4, 5});
+            std::size_t removed_count =
+                fixed_containers::erase_if(v, [](const int& a) { return (a % 2) == 0; });
+            assert_or_abort(3 == removed_count);
+            return v;
+        }();
+
+        static_assert(std::ranges::equal(v1, std::array<int, 3>{1, 3, 5}));
+    };
+
+    run_test(FixedDequeInitialStateFirstIndex{});
+    run_test(FixedDequeInitialStateLastIndex{});
+}
+
 TEST(FixedDeque, Front)
 {
     auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
@@ -1897,3 +1971,15 @@ INSTANTIATE_TYPED_TEST_SUITE_P(FixedDeque,
                                NameProviderForTypeParameterizedTest);
 
 }  // namespace fixed_containers
+
+namespace another_namespace_unrelated_to_the_fixed_containers_namespace
+{
+TEST(FixedDeque, ArgumentDependentLookup)
+{
+    // Compile-only test
+    fixed_containers::FixedDeque<int, 5> a{};
+    erase(a, 5);
+    erase_if(a, [](int) { return true; });
+    is_full(a);
+}
+}  // namespace another_namespace_unrelated_to_the_fixed_containers_namespace
