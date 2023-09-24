@@ -664,18 +664,6 @@ private:
         return read_start_it;
     }
 
-    constexpr void push_back_internal(const value_type& v)
-    {
-        place_at(end_index(), v);
-        increment_size();
-    }
-
-    constexpr void push_back_internal(value_type&& v)
-    {
-        place_at(end_index(), std::move(v));
-        increment_size();
-    }
-
     template <InputIterator InputIt>
     constexpr iterator insert_internal(std::forward_iterator_tag,
                                        const_iterator it,
@@ -764,8 +752,6 @@ private:
         }
     }
 
-    // [WORKAROUND-1] - Needed by the non-trivially-copyable flavor of FixedVector
-protected:
     [[nodiscard]] constexpr std::size_t front_index() const { return 0; }
     [[nodiscard]] constexpr std::size_t back_index() const { return end_index() - 1; }
     [[nodiscard]] constexpr std::size_t end_index() const { return size(); }
@@ -840,6 +826,20 @@ protected:
     {
         optional_storage_detail::construct_at(&array_unchecked_at(i), std::forward<Args>(args)...);
     }
+
+    // [WORKAROUND-1] - Needed by the non-trivially-copyable flavor of FixedVector
+protected:
+    constexpr void push_back_internal(const value_type& v)
+    {
+        place_at(end_index(), v);
+        increment_size();
+    }
+
+    constexpr void push_back_internal(value_type&& v)
+    {
+        place_at(end_index(), std::move(v));
+        increment_size();
+    }
 };
 
 }  // namespace fixed_containers::fixed_vector_detail
@@ -903,24 +903,17 @@ public:
     = default;
 
     constexpr FixedVector(const FixedVector& other)
-      : FixedVector()
+      : FixedVector(other.begin(), other.end())
     {
-        const std::size_t sz = other.size();
-        this->set_size(sz);
-        for (std::size_t i = 0; i < sz; i++)
-        {
-            this->place_at(i, other.array_unchecked_at(i).value);
-        }
     }
     constexpr FixedVector(FixedVector&& other) noexcept
       : FixedVector()
     {
-        const std::size_t sz = other.size();
-        this->set_size(sz);
-        for (std::size_t i = 0; i < sz; i++)
+        for (T& entry : other)
         {
-            this->place_at(i, std::move(other.array_unchecked_at(i).value));
+            this->push_back_internal(std::move(entry));
         }
+
         // Clear the moved-out-of-vector. This is consistent with both std::vector
         // as well as the trivial move constructor of this class.
         other.clear();
@@ -932,13 +925,7 @@ public:
             return *this;
         }
 
-        this->clear();
-        const std::size_t sz = other.size();
-        this->set_size(sz);
-        for (std::size_t i = 0; i < sz; i++)
-        {
-            this->place_at(i, other.array_unchecked_at(i).value);
-        }
+        this->assign(other.begin(), other.end());
         return *this;
     }
     constexpr FixedVector& operator=(FixedVector&& other) noexcept
@@ -949,11 +936,9 @@ public:
         }
 
         this->clear();
-        const std::size_t sz = other.size();
-        this->set_size(sz);
-        for (std::size_t i = 0; i < sz; i++)
+        for (T& entry : other)
         {
-            this->place_at(i, std::move(other.array_unchecked_at(i).value));
+            this->push_back_internal(std::move(entry));
         }
         // The trivial assignment operator does not `other.clear()`, so don't do it here either for
         // consistency across FixedVectors. std::vector<T> does clear it, so behavior is different.
