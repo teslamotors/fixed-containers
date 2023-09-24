@@ -581,7 +581,7 @@ TEST(FixedVector, ExceedCapacity)
     EXPECT_DEATH(v1.push_back(value), "");
 }
 
-TEST(FixedVector, Popback)
+TEST(FixedVector, PopBack)
 {
     constexpr auto v1 = []()
     {
@@ -600,7 +600,7 @@ TEST(FixedVector, Popback)
     EXPECT_TRUE(std::ranges::equal(v2, std::array{10, 11}));
 }
 
-TEST(FixedVector, PushBackAll_Popback_Empty)
+TEST(FixedVector, PopBack_Empty)
 {
     FixedVector<int, 5> v1{};
     EXPECT_DEATH(v1.pop_back(), "");
