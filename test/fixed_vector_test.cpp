@@ -689,34 +689,12 @@ TEST(FixedVector, At_OutOfBounds)
 
 TEST(FixedVector, Equality)
 {
-    constexpr auto v1 = []()
-    {
-        FixedVector<int, 12> v{0, 1, 2};
-        return v;
-    }();
-
-    constexpr auto v2 = []() {  // Capacity difference should not affect equality
-        FixedVector<int, 11> v{0, 1, 2};
-        return v;
-    }();
-
-    constexpr auto v3 = []()
-    {
-        FixedVector<int, 12> v{0, 101, 2};
-        return v;
-    }();
-
-    constexpr auto v4 = []()
-    {
-        FixedVector<int, 12> v{0, 1};
-        return v;
-    }();
-
-    constexpr auto v5 = []()
-    {
-        FixedVector<int, 12> v{0, 1, 2, 3, 4, 5};
-        return v;
-    }();
+    constexpr auto v1 = FixedVector<int, 12>{0, 1, 2};
+    // Capacity difference should not affect equality
+    constexpr auto v2 = FixedVector<int, 11>{0, 1, 2};
+    constexpr auto v3 = FixedVector<int, 12>{0, 101, 2};
+    constexpr auto v4 = FixedVector<int, 12>{0, 1};
+    constexpr auto v5 = FixedVector<int, 12>{0, 1, 2, 3, 4, 5};
 
     static_assert(v1 == v1);
     static_assert(v1 == v2);
