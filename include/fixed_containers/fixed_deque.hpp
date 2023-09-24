@@ -74,8 +74,11 @@ template <typename T,
 class FixedDeque
 {
     using OptionalT = optional_storage_detail::OptionalStorage<T>;
-    static_assert(IsNotReference<T>, "References are not allowed");
     static_assert(consteval_compare::equal<sizeof(OptionalT), sizeof(T)>);
+    // std::deque has the following restrictions too
+    static_assert(IsNotReference<T>, "References are not allowed");
+    static_assert(std::same_as<std::remove_cv_t<T>, T>,
+                  "Deque must have a non-const, non-volatile value_type");
     using Checking = CheckingType;
     using Array = std::array<OptionalT, MAXIMUM_SIZE>;
     using CircularIndexEntryProvider =
