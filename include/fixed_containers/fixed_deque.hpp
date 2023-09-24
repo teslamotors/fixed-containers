@@ -283,6 +283,44 @@ public:
         decrement_size();
     }
 
+    constexpr void push_front(
+        const value_type& v,
+        const std_transition::source_location& loc = std_transition::source_location::current())
+    {
+        check_not_full(loc);
+        decrement_start();
+        place_at(front_index(), v);
+        increment_size();
+    }
+    constexpr void push_front(
+        value_type&& v,
+        const std_transition::source_location& loc = std_transition::source_location::current())
+    {
+        check_not_full(loc);
+        decrement_start();
+        place_at(front_index(), std::move(v));
+        increment_size();
+    }
+
+    template <class... Args>
+    constexpr reference emplace_front(Args&&... args)
+    {
+        check_not_full(std_transition::source_location::current());
+        decrement_start();
+        emplace_at(front_index(), std::forward<Args>(args)...);
+        increment_size();
+        return this->front();
+    }
+
+    constexpr void pop_front(
+        const std_transition::source_location& loc = std_transition::source_location::current())
+    {
+        check_not_empty(loc);
+        destroy_at(front_index());
+        increment_start();
+        decrement_size();
+    }
+
     template <InputIterator InputIt>
     constexpr iterator insert(
         const_iterator it,
@@ -652,6 +690,16 @@ protected:
         return increment_index_with_wraparound(front_index(), size());
     }
 
+    constexpr void increment_start(const std::size_t n = 1)
+    {
+        IMPLEMENTATION_DETAIL_DO_NOT_USE_starting_index_and_size_.start =
+            increment_index_with_wraparound(front_index(), n);
+    }
+    constexpr void decrement_start(const std::size_t n = 1)
+    {
+        IMPLEMENTATION_DETAIL_DO_NOT_USE_starting_index_and_size_.start =
+            decrement_index_with_wraparound(front_index(), n);
+    }
     constexpr void increment_size(const std::size_t n = 1)
     {
         IMPLEMENTATION_DETAIL_DO_NOT_USE_starting_index_and_size_.distance += n;

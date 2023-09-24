@@ -292,6 +292,120 @@ TEST(FixedDeque, PopBack_Empty)
     run_test(FixedDequeInitialStateLastIndex{});
 }
 
+TEST(FixedDeque, PushFront)
+{
+    auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
+    {
+        constexpr auto v1 = []()
+        {
+            auto v = Factory::template create<int, 11>();
+            v.push_front(0);
+            const int value = 1;
+            v.push_front(value);
+            v.push_front(2);
+            return v;
+        }();
+
+        static_assert(v1[0] == 2);
+        static_assert(v1[1] == 1);
+        static_assert(v1[2] == 0);
+        static_assert(v1.size() == 3);
+
+        constexpr auto v2 = []()
+        {
+            auto aaa = Factory::template create<MockNonTrivialCopyConstructible, 5>();
+            aaa.push_front(MockNonTrivialCopyConstructible{});
+            return aaa;
+        }();
+        static_assert(v2.size() == 1);
+    };
+
+    run_test(FixedDequeInitialStateFirstIndex{});
+    run_test(FixedDequeInitialStateLastIndex{});
+}
+
+TEST(FixedDeque, EmplaceFront)
+{
+    auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
+    {
+        {
+            constexpr auto v1 = []()
+            {
+                auto v = Factory::template create<int, 11>({0, 1, 2});
+                v.emplace_front(3);
+                v.emplace_front(4);
+                return v;
+            }();
+
+            static_assert(std::ranges::equal(v1, std::array{4, 3, 0, 1, 2}));
+        }
+        {
+            auto v1 = []()
+            {
+                auto v = Factory::template create<int, 11>({0, 1, 2});
+                v.emplace_front(3);
+                v.emplace_front(4);
+                return v;
+            }();
+
+            EXPECT_TRUE(std::ranges::equal(v1, std::array{4, 3, 0, 1, 2}));
+        }
+        {
+            auto v2 = Factory::template create<ComplexStruct, 11>();
+            v2.emplace_front(1, 2, 3, 4);
+            auto ref = v2.emplace_front(101, 202, 303, 404);
+
+            EXPECT_EQ(ref.a, 101);
+            EXPECT_EQ(ref.c, 404);
+        }
+
+        {
+            auto v3 = Factory::template create<MockNonAssignable, 11>();
+            v3.emplace_front();  // Should compile
+        }
+    };
+
+    run_test(FixedDequeInitialStateFirstIndex{});
+    run_test(FixedDequeInitialStateLastIndex{});
+}
+
+TEST(FixedDeque, PopFront)
+{
+    auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
+    {
+        constexpr auto v1 = []()
+        {
+            auto v = Factory::template create<int, 11>({0, 1, 2});
+            v.pop_back();
+            return v;
+        }();
+
+        static_assert(v1[0] == 0);
+        static_assert(v1[1] == 1);
+        static_assert(v1.size() == 2);
+        static_assert(v1.max_size() == 11);
+
+        auto v2 = Factory::template create<int, 17>({10, 11, 12});
+        v2.pop_back();
+        EXPECT_TRUE(std::ranges::equal(v2, std::array{10, 11}));
+    };
+
+    run_test(FixedDequeInitialStateFirstIndex{});
+    run_test(FixedDequeInitialStateLastIndex{});
+}
+
+TEST(FixedDeque, PopFront_Empty)
+{
+    auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
+    {
+        auto v1 = Factory::template create<int, 5>();
+        EXPECT_DEATH(v1.pop_front(), "");
+    };
+
+    run_test(FixedDequeInitialStateFirstIndex{});
+    run_test(FixedDequeInitialStateLastIndex{});
+}
+
 TEST(FixedDeque, BracketOperator)
 {
     auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
