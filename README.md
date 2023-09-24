@@ -20,6 +20,7 @@ Header-only C++20 library that provides containers with the following properties
 * `FixedVector` - Vector implementation with `std::vector` API and "fixed container" properties
 * `FixedMap`/`FixedSet` - Red-Black Tree map/set implementation with `std::map`/`std::set` API and "fixed container" properties.
 * `EnumMap`/`EnumSet` - For enum keys only, Map/Set implementation with `std::map`/`std::set` API and "fixed container" properties. O(1) lookups.
+* `FixedDeque` - Deque implementation with `std::deque` API and "fixed container" properties
 * `FixedStack` - Stack implementation with `std::stack` API and "fixed container" properties
 * `StringLiteral` - Compile-time null-terminated literal string.
 * Rich enums - `enum` & `class` hybrid.
@@ -135,6 +136,23 @@ More examples can be found [here](test/enums_test_common.hpp).
     constexpr auto s2 = EnumSet<Color>::all(); // full set
     constexpr auto s3 = EnumSet<Color>::none(); // empty set
     constexpr auto s4 = EnumSet<Color>::complement_of(s2); // empty set
+    ```
+  
+- FixedDeque
+    ```C++
+    constexpr auto v1 = []()
+    {
+        FixedDeque<int, 11> v{};
+        v.push_back(0);
+        v.emplace_back(1);
+        v.push_front(2);
+        return v;
+    }();
+    static_assert(v1[0] == 2);
+    static_assert(v1[1] == 0);
+    static_assert(v1[2] == 1);
+    static_assert(v1.size() == 3);
+    static_assert(v1.capacity() == 11);
     ```
 
 - FixedStack
