@@ -22,6 +22,7 @@ Header-only C++20 library that provides containers with the following properties
 * `EnumMap`/`EnumSet` - For enum keys only, Map/Set implementation with `std::map`/`std::set` API and "fixed container" properties. O(1) lookups.
 * `FixedDeque` - Deque implementation with `std::deque` API and "fixed container" properties
 * `FixedStack` - Stack implementation with `std::stack` API and "fixed container" properties
+* `FixedString` - String implementation with `std::string` API and "fixed container" properties
 * `StringLiteral` - Compile-time null-terminated literal string.
 * Rich enums - `enum` & `class` hybrid.
 
@@ -168,6 +169,22 @@ More examples can be found [here](test/enums_test_common.hpp).
 
     static_assert(s1.top() == 99);
     static_assert(s1.size() == 2);
+    ```
+
+- FixedString
+    ```C++
+    constexpr auto v1 = []()
+    {
+        FixedString<11> v{"012"};
+        v.at(1) = 'b';
+
+        return v;
+    }();
+
+    static_assert(v1.at(0) == '0');
+    static_assert(v1.at(1) == 'b');
+    static_assert(v1.at(2) == '2');
+    static_assert(v1.size() == 3);
     ```
 
 - StringLiteral
