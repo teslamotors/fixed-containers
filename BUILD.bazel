@@ -588,6 +588,7 @@ cc_test(
     srcs = ["test/fixed_deque_test.cpp"],
     deps = [
         ":fixed_deque",
+        ":instance_counter",
         ":mock_testing_types",
         ":test_utilities_common",
         "@com_google_googletest//:gtest",

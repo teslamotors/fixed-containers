@@ -1,5 +1,6 @@
 #include "fixed_containers/fixed_deque.hpp"
 
+#include "instance_counter.hpp"
 #include "mock_testing_types.hpp"
 #include "test_utilities_common.hpp"
 
@@ -1681,5 +1682,218 @@ TEST(FixedDeque, UsageAsTemplateParameter)
     FixedDequeInstanceCanBeUsedAsATemplateParameter<VEC1> my_struct{};
     static_cast<void>(my_struct);
 }
+
+namespace
+{
+struct FixedDequeInstanceCounterUniquenessToken
+{
+};
+
+using InstanceCounterNonTrivialAssignment =
+    instance_counter::InstanceCounterNonTrivialAssignment<FixedDequeInstanceCounterUniquenessToken>;
+
+using FixedDequeOfInstanceCounterNonTrivial = FixedDeque<InstanceCounterNonTrivialAssignment, 5>;
+static_assert(!TriviallyCopyAssignable<FixedDequeOfInstanceCounterNonTrivial>);
+static_assert(!TriviallyMoveAssignable<FixedDequeOfInstanceCounterNonTrivial>);
+static_assert(!TriviallyDestructible<FixedDequeOfInstanceCounterNonTrivial>);
+
+using InstanceCounterTrivialAssignment =
+    instance_counter::InstanceCounterTrivialAssignment<FixedDequeInstanceCounterUniquenessToken>;
+
+using FixedDequeOfInstanceCounterTrivial = FixedDeque<InstanceCounterTrivialAssignment, 5>;
+static_assert(TriviallyCopyAssignable<FixedDequeOfInstanceCounterTrivial>);
+static_assert(TriviallyMoveAssignable<FixedDequeOfInstanceCounterTrivial>);
+static_assert(!TriviallyDestructible<FixedDequeOfInstanceCounterTrivial>);
+
+template <typename T>
+struct FixedDequeInstanceCheckFixture : public ::testing::Test
+{
+};
+TYPED_TEST_SUITE_P(FixedDequeInstanceCheckFixture);
+}  // namespace
+
+TYPED_TEST_P(FixedDequeInstanceCheckFixture, FixedDeque_InstanceCheck)
+{
+    using DequeOfInstanceCounterType = TypeParam;
+    using InstanceCounterType = typename DequeOfInstanceCounterType::value_type;
+    DequeOfInstanceCounterType v1{};
+
+    // Copy push_back()
+    ASSERT_EQ(0, InstanceCounterType::counter);
+    {  // IMPORTANT SCOPE, don't remove.
+        // This will be destroyed when we go out of scope
+        InstanceCounterType aa{};
+        ASSERT_EQ(1, InstanceCounterType::counter);
+        v1.push_back(aa);
+        ASSERT_EQ(2, InstanceCounterType::counter);
+        v1.clear();
+        ASSERT_EQ(1, InstanceCounterType::counter);
+    }
+    ASSERT_EQ(0, InstanceCounterType::counter);
+
+    // Double clear
+    {
+        v1.clear();
+        v1.clear();
+    }
+
+    // Move push_back()
+    ASSERT_EQ(0, InstanceCounterType::counter);
+    {  // IMPORTANT SCOPE, don't remove.
+        // This will be destroyed when we go out of scope
+        InstanceCounterType aa{};
+        ASSERT_EQ(1, InstanceCounterType::counter);
+        v1.push_back(std::move(aa));
+        ASSERT_EQ(2, InstanceCounterType::counter);
+        v1.clear();
+        ASSERT_EQ(1, InstanceCounterType::counter);
+        v1.push_back({});  // With temporary
+        ASSERT_EQ(2, InstanceCounterType::counter);
+    }
+    ASSERT_EQ(1, InstanceCounterType::counter);
+    v1.clear();
+    ASSERT_EQ(0, InstanceCounterType::counter);
+
+    {  // IMPORTANT SCOPE, don't remove.
+        // This will be destroyed when we go out of scope
+        InstanceCounterType item{};
+        ASSERT_EQ(1, InstanceCounterType::counter);
+        v1.push_back(item);
+        ASSERT_EQ(2, InstanceCounterType::counter);
+        v1.clear();
+        ASSERT_EQ(1, InstanceCounterType::counter);
+    }
+    ASSERT_EQ(0, InstanceCounterType::counter);
+
+    v1.emplace_back();
+    ASSERT_EQ(1, InstanceCounterType::counter);
+    v1.clear();
+    ASSERT_EQ(0, InstanceCounterType::counter);
+
+    v1.clear();
+    ASSERT_EQ(0, InstanceCounterType::counter);
+    v1.resize(10);  // increase
+    ASSERT_EQ(10, InstanceCounterType::counter);
+    v1.resize(5);  // decrease
+    ASSERT_EQ(5, InstanceCounterType::counter);
+    v1.clear();
+    ASSERT_EQ(0, InstanceCounterType::counter);
+
+    v1.assign(10, {});
+    ASSERT_EQ(10, InstanceCounterType::counter);
+    v1.erase(v1.begin());
+    ASSERT_EQ(9, InstanceCounterType::counter);
+    v1.erase(v1.begin() + 2, v1.begin() + 5);
+    ASSERT_EQ(6, InstanceCounterType::counter);
+    v1.erase(v1.begin(), v1.end());
+    ASSERT_EQ(0, InstanceCounterType::counter);
+
+    {  // IMPORTANT SCOPE, don't remove.
+        v1.assign(5, {});
+        ASSERT_EQ(5, InstanceCounterType::counter);
+        v1.insert(v1.begin() + 3, InstanceCounterType{});
+        ASSERT_EQ(6, InstanceCounterType::counter);
+        InstanceCounterType aa{};
+        ASSERT_EQ(7, InstanceCounterType::counter);
+        v1.insert(v1.begin(), aa);
+        ASSERT_EQ(8, InstanceCounterType::counter);
+        std::array<InstanceCounterType, 3> many{};
+        ASSERT_EQ(11, InstanceCounterType::counter);
+        v1.insert(v1.begin() + 3, many.begin(), many.end());
+        ASSERT_EQ(14, InstanceCounterType::counter);
+        v1.clear();
+        ASSERT_EQ(4, InstanceCounterType::counter);
+    }
+    ASSERT_EQ(0, InstanceCounterType::counter);
+
+    v1.assign(5, {});
+    ASSERT_EQ(5, InstanceCounterType::counter);
+    v1.emplace(v1.begin() + 2);
+    ASSERT_EQ(6, InstanceCounterType::counter);
+    v1.clear();
+    ASSERT_EQ(0, InstanceCounterType::counter);
+
+    v1.clear();
+    v1.emplace_back();
+    v1.emplace_back();
+    v1.emplace_back();
+    ASSERT_EQ(3, InstanceCounterType::counter);
+    v1[1] = {};
+    ASSERT_EQ(3, InstanceCounterType::counter);
+    v1.at(1) = {};
+    ASSERT_EQ(3, InstanceCounterType::counter);
+    v1.pop_back();
+    ASSERT_EQ(2, InstanceCounterType::counter);
+
+    {  // IMPORTANT SCOPE, don't remove.
+        DequeOfInstanceCounterType v2{v1};
+        ASSERT_EQ(4, InstanceCounterType::counter);
+    }
+    ASSERT_EQ(2, InstanceCounterType::counter);
+
+    {  // IMPORTANT SCOPE, don't remove.
+        DequeOfInstanceCounterType v2 = v1;
+        ASSERT_EQ(4, InstanceCounterType::counter);
+        v1 = v2;
+        ASSERT_EQ(4, InstanceCounterType::counter);
+    }
+    ASSERT_EQ(2, InstanceCounterType::counter);
+
+    {  // IMPORTANT SCOPE, don't remove.
+        DequeOfInstanceCounterType v2{std::move(v1)};
+        ASSERT_EQ(2, InstanceCounterType::counter);
+    }
+    ASSERT_EQ(0, InstanceCounterType::counter);
+
+    v1.emplace_back();
+    v1.emplace_back();
+    ASSERT_EQ(2, InstanceCounterType::counter);
+
+    {  // IMPORTANT SCOPE, don't remove.
+        DequeOfInstanceCounterType v2 = std::move(v1);
+        ASSERT_EQ(2, InstanceCounterType::counter);
+    }
+    ASSERT_EQ(0, InstanceCounterType::counter);
+
+    v1.clear();
+    v1.emplace_back();
+    v1.emplace_back();
+    ASSERT_EQ(2, InstanceCounterType::counter);
+
+    {  // IMPORTANT SCOPE, don't remove.
+        DequeOfInstanceCounterType v2{v1};
+        ASSERT_EQ(4, InstanceCounterType::counter);
+        v1 = std::move(v2);
+
+        // Intentional discrepancy between std::deque and FixedDeque. See implementation of
+        // non-trivial move assignment operator for explanation
+        if constexpr (std::is_same_v<DequeOfInstanceCounterType, std::deque<InstanceCounterType>>)
+        {
+            ASSERT_EQ(2, InstanceCounterType::counter);
+        }
+        else
+        {
+            ASSERT_EQ(4, InstanceCounterType::counter);
+        }
+    }
+    // Both std::deque and FixedDeque should be identical here
+    ASSERT_EQ(2, InstanceCounterType::counter);
+    v1.clear();
+    ASSERT_EQ(0, InstanceCounterType::counter);
+}
+
+REGISTER_TYPED_TEST_SUITE_P(FixedDequeInstanceCheckFixture, FixedDeque_InstanceCheck);
+
+// We want same semantics as std::deque, so run it with std::deque as well
+using FixedDequeInstanceCheckTypes =
+    testing::Types<std::deque<InstanceCounterNonTrivialAssignment>,
+                   std::deque<InstanceCounterTrivialAssignment>,
+                   FixedDeque<InstanceCounterNonTrivialAssignment, 17>,
+                   FixedDeque<InstanceCounterTrivialAssignment, 17>>;
+
+INSTANTIATE_TYPED_TEST_SUITE_P(FixedDeque,
+                               FixedDequeInstanceCheckFixture,
+                               FixedDequeInstanceCheckTypes,
+                               NameProviderForTypeParameterizedTest);
 
 }  // namespace fixed_containers

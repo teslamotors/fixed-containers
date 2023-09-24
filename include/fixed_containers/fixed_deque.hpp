@@ -65,13 +65,18 @@ struct AbortChecking
 };
 }  // namespace fixed_containers::fixed_deque_customize
 
-namespace fixed_containers
+namespace fixed_containers::fixed_deque_detail
 {
+// FixedDeque<T> should carry the properties of T. For example, if T fulfils
+// std::is_trivially_copy_assignable<T>, then so should FixedDeque<T>.
+// This is done with concepts. However, at the time of writing there is a compiler bug
+// that is preventing usage of concepts for destructors: https://bugs.llvm.org/show_bug.cgi?id=46269
+// [WORKAROUND-1] due to destructors: manually do the split with template specialization.
+// FixedDequeBase is only used for avoiding too much duplication for the destructor split
 template <typename T,
           std::size_t MAXIMUM_SIZE,
-          fixed_deque_customize::FixedDequeChecking CheckingType =
-              fixed_deque_customize::AbortChecking<T, MAXIMUM_SIZE>>
-class FixedDeque
+          fixed_deque_customize::FixedDequeChecking CheckingType>
+class FixedDequeBase
 {
     using OptionalT = optional_storage_detail::OptionalStorage<T>;
     static_assert(consteval_compare::equal<sizeof(OptionalT), sizeof(T)>);
@@ -204,17 +209,17 @@ public:
     StartingIntegerAndDistance IMPLEMENTATION_DETAIL_DO_NOT_USE_starting_index_and_size_;
 
 public:
-    constexpr FixedDeque() noexcept
+    constexpr FixedDequeBase() noexcept
       : IMPLEMENTATION_DETAIL_DO_NOT_USE_starting_index_and_size_{.start = 0, .distance = 0}
     // Don't initialize the array
     {
     }
 
-    constexpr FixedDeque(std::size_t count,
-                         const T& value,
-                         const std_transition::source_location& loc =
-                             std_transition::source_location::current()) noexcept
-      : FixedDeque()
+    constexpr FixedDequeBase(std::size_t count,
+                             const T& value,
+                             const std_transition::source_location& loc =
+                                 std_transition::source_location::current()) noexcept
+      : FixedDequeBase()
     {
         check_target_size(count, loc);
         set_size(count);
@@ -224,26 +229,26 @@ public:
         }
     }
 
-    constexpr FixedDeque(std::initializer_list<T> list,
-                         const std_transition::source_location& loc =
-                             std_transition::source_location::current()) noexcept
-      : FixedDeque(list.begin(), list.end(), loc)
+    constexpr FixedDequeBase(std::initializer_list<T> list,
+                             const std_transition::source_location& loc =
+                                 std_transition::source_location::current()) noexcept
+      : FixedDequeBase(list.begin(), list.end(), loc)
     {
     }
 
-    constexpr explicit FixedDeque(std::size_t count,
-                                  const std_transition::source_location& loc =
-                                      std_transition::source_location::current()) noexcept
-      : FixedDeque(count, T(), loc)
+    constexpr explicit FixedDequeBase(std::size_t count,
+                                      const std_transition::source_location& loc =
+                                          std_transition::source_location::current()) noexcept
+      : FixedDequeBase(count, T(), loc)
     {
     }
 
     template <InputIterator InputIt>
-    constexpr FixedDeque(InputIt first,
-                         InputIt last,
-                         const std_transition::source_location& loc =
-                             std_transition::source_location::current()) noexcept
-      : FixedDeque()
+    constexpr FixedDequeBase(InputIt first,
+                             InputIt last,
+                             const std_transition::source_location& loc =
+                                 std_transition::source_location::current()) noexcept
+      : FixedDequeBase()
     {
         insert(cend(), first, last, loc);
     }
@@ -514,7 +519,7 @@ public:
     [[nodiscard]] constexpr bool empty() const noexcept { return size() == 0; }
 
     template <std::size_t MAXIMUM_SIZE_2, fixed_deque_customize::FixedDequeChecking CheckingType2>
-    constexpr bool operator==(const FixedDeque<T, MAXIMUM_SIZE_2, CheckingType2>& other) const
+    constexpr bool operator==(const FixedDequeBase<T, MAXIMUM_SIZE_2, CheckingType2>& other) const
     {
         if constexpr (MAXIMUM_SIZE == MAXIMUM_SIZE_2)
         {
@@ -541,7 +546,7 @@ public:
     }
 
     template <std::size_t MAXIMUM_SIZE_2, fixed_deque_customize::FixedDequeChecking CheckingType2>
-    constexpr auto operator<=>(const FixedDeque<T, MAXIMUM_SIZE_2, CheckingType2>& other) const
+    constexpr auto operator<=>(const FixedDequeBase<T, MAXIMUM_SIZE_2, CheckingType2>& other) const
     {
         using OrderingType = decltype(std::declval<T>() <=> std::declval<T>());
         const std::size_t min_size = (std::min)(this->size(), other.size());
@@ -668,7 +673,7 @@ private:
     {
         const std::size_t original_size = size();
 
-        // Place everything at the end of the vector
+        // Place everything at the end of the deque
         for (; first != last && size() < max_size(); ++first)
         {
             push_back_internal(*first);
@@ -853,6 +858,208 @@ protected:
     {
         place_at(end_index(), std::move(v));
         increment_size();
+    }
+};
+
+}  // namespace fixed_containers::fixed_deque_detail
+
+namespace fixed_containers::fixed_deque_detail::specializations
+{
+template <typename T,
+          std::size_t MAXIMUM_SIZE,
+          fixed_deque_customize::FixedDequeChecking CheckingType>
+class FixedDeque : public fixed_deque_detail::FixedDequeBase<T, MAXIMUM_SIZE, CheckingType>
+{
+    using Base = fixed_deque_detail::FixedDequeBase<T, MAXIMUM_SIZE, CheckingType>;
+
+public:
+    constexpr FixedDeque() noexcept
+      : Base()
+    {
+    }
+    constexpr FixedDeque(std::initializer_list<T> list,
+                         const std_transition::source_location& loc =
+                             std_transition::source_location::current()) noexcept
+      : Base(list, loc)
+    {
+    }
+    constexpr FixedDeque(std::size_t count,
+                         const T& value,
+                         const std_transition::source_location& loc =
+                             std_transition::source_location::current()) noexcept
+      : Base(count, value, loc)
+    {
+    }
+    constexpr explicit FixedDeque(std::size_t count,
+                                  const std_transition::source_location& loc =
+                                      std_transition::source_location::current()) noexcept
+      : Base(count, loc)
+    {
+    }
+    template <InputIterator InputIt>
+    constexpr FixedDeque(InputIt first,
+                         InputIt last,
+                         const std_transition::source_location& loc =
+                             std_transition::source_location::current()) noexcept
+      : Base(first, last, loc)
+    {
+    }
+
+    constexpr FixedDeque(const FixedDeque& other)
+        requires TriviallyCopyConstructible<T>
+    = default;
+    constexpr FixedDeque(FixedDeque&& other) noexcept
+        requires TriviallyMoveConstructible<T>
+    = default;
+    constexpr FixedDeque& operator=(const FixedDeque& other)
+        requires TriviallyCopyAssignable<T>
+    = default;
+    constexpr FixedDeque& operator=(FixedDeque&& other) noexcept
+        requires TriviallyMoveAssignable<T>
+    = default;
+
+    constexpr FixedDeque(const FixedDeque& other)
+      : FixedDeque(other.begin(), other.end())
+    {
+    }
+    constexpr FixedDeque(FixedDeque&& other) noexcept
+      : FixedDeque()
+    {
+        for (T& entry : other)
+        {
+            this->push_back_internal(std::move(entry));
+        }
+
+        // Clear the moved-out-of-vector. This is consistent with both std::vector
+        // as well as the trivial move constructor of this class.
+        other.clear();
+    }
+    constexpr FixedDeque& operator=(const FixedDeque& other)
+    {
+        if (this == &other)
+        {
+            return *this;
+        }
+
+        this->assign(other.begin(), other.end());
+        return *this;
+    }
+    constexpr FixedDeque& operator=(FixedDeque&& other) noexcept
+    {
+        if (this == &other)
+        {
+            return *this;
+        }
+
+        this->clear();
+        for (T& entry : other)
+        {
+            this->push_back_internal(std::move(entry));
+        }
+        // The trivial assignment operator does not `other.clear()`, so don't do it here either for
+        // consistency across FixedDeques. std::vector<T> does clear it, so behavior is different.
+        // Both choices are fine, because the state of a moved object is intentionally unspecified
+        // as per the standard and use-after-move is undefined behavior.
+        return *this;
+    }
+
+    constexpr ~FixedDeque() noexcept { this->clear(); }
+};
+
+template <TriviallyCopyable T,
+          std::size_t MAXIMUM_SIZE,
+          fixed_deque_customize::FixedDequeChecking CheckingType>
+class FixedDeque<T, MAXIMUM_SIZE, CheckingType>
+  : public fixed_deque_detail::FixedDequeBase<T, MAXIMUM_SIZE, CheckingType>
+{
+    using Base = fixed_deque_detail::FixedDequeBase<T, MAXIMUM_SIZE, CheckingType>;
+
+public:
+    constexpr FixedDeque() noexcept
+      : Base()
+    {
+    }
+    constexpr FixedDeque(std::initializer_list<T> list,
+                         const std_transition::source_location& loc =
+                             std_transition::source_location::current()) noexcept
+      : Base(list, loc)
+    {
+    }
+    constexpr FixedDeque(std::size_t count,
+                         const T& value,
+                         const std_transition::source_location& loc =
+                             std_transition::source_location::current()) noexcept
+      : Base(count, value, loc)
+    {
+    }
+    constexpr explicit FixedDeque(std::size_t count,
+                                  const std_transition::source_location& loc =
+                                      std_transition::source_location::current()) noexcept
+      : Base(count, loc)
+    {
+    }
+    template <InputIterator InputIt>
+    constexpr FixedDeque(InputIt first,
+                         InputIt last,
+                         const std_transition::source_location& loc =
+                             std_transition::source_location::current()) noexcept
+      : Base(first, last, loc)
+    {
+    }
+};
+
+}  // namespace fixed_containers::fixed_deque_detail::specializations
+
+namespace fixed_containers
+{
+/**
+ * Fixed-capacity deque with maximum size that is declared at compile-time via
+ * template parameter. Properties:
+ *  - constexpr
+ *  - retains the properties of T (e.g. if T is trivially copyable, then so is FixedDeque<T>)
+ *  - no pointers stored (data layout is purely self-referential and can be serialized directly)
+ *  - no dynamic allocations
+ */
+template <typename T,
+          std::size_t MAXIMUM_SIZE,
+          fixed_deque_customize::FixedDequeChecking CheckingType =
+              fixed_deque_customize::AbortChecking<T, MAXIMUM_SIZE>>
+class FixedDeque
+  : public fixed_deque_detail::specializations::FixedDeque<T, MAXIMUM_SIZE, CheckingType>
+{
+    using Base = fixed_deque_detail::specializations::FixedDeque<T, MAXIMUM_SIZE, CheckingType>;
+
+public:
+    constexpr FixedDeque() noexcept
+      : Base()
+    {
+    }
+    constexpr FixedDeque(std::initializer_list<T> list,
+                         const std_transition::source_location& loc =
+                             std_transition::source_location::current()) noexcept
+      : Base(list, loc)
+    {
+    }
+    constexpr FixedDeque(std::size_t count,
+                         const T& value,
+                         const std_transition::source_location& loc =
+                             std_transition::source_location::current()) noexcept
+      : Base(count, value, loc)
+    {
+    }
+    constexpr explicit FixedDeque(std::size_t count,
+                                  const std_transition::source_location& loc =
+                                      std_transition::source_location::current()) noexcept
+      : Base(count, loc)
+    {
+    }
+    template <InputIterator InputIt>
+    constexpr FixedDeque(InputIt first,
+                         InputIt last,
+                         const std_transition::source_location& loc =
+                             std_transition::source_location::current()) noexcept
+      : Base(first, last, loc)
+    {
     }
 };
 
