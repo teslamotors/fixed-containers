@@ -1065,6 +1065,46 @@ TEST(FixedDeque, IterationBasic)
     run_test(FixedDequeInitialStateLastIndex{});
 }
 
+TEST(FixedDeque, Emplace)
+{
+    auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
+    {
+        {
+            constexpr auto v1 = []()
+            {
+                auto v = Factory::template create<int, 11>({0, 1, 2});
+                v.emplace(v.begin() + 1, 3);
+                v.emplace(v.begin() + 1, 4);
+                return v;
+            }();
+
+            static_assert(std::ranges::equal(v1, std::array{0, 4, 3, 1, 2}));
+        }
+        {
+            auto v1 = []()
+            {
+                auto v = Factory::template create<int, 11>({0, 1, 2});
+                v.emplace(v.begin() + 1, 3);
+                v.emplace(v.begin() + 1, 4);
+                return v;
+            }();
+
+            EXPECT_TRUE(std::ranges::equal(v1, std::array{0, 4, 3, 1, 2}));
+        }
+        {
+            auto v2 = Factory::template create<ComplexStruct, 11>();
+            v2.emplace_back(1, 2, 3, 4);
+            auto ref = v2.emplace_back(101, 202, 303, 404);
+
+            EXPECT_EQ(ref.a, 101);
+            EXPECT_EQ(ref.c, 404);
+        }
+    };
+
+    run_test(FixedDequeInitialStateFirstIndex{});
+    run_test(FixedDequeInitialStateLastIndex{});
+}
+
 TEST(FixedDeque, AssignValue)
 {
     auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
@@ -1200,6 +1240,81 @@ TEST(FixedDeque, AssignInitializerList)
             EXPECT_TRUE(std::ranges::equal(v2, std::array<int, 2>{300, 300}));
             EXPECT_EQ(2, v2.size());
         }
+    };
+
+    run_test(FixedDequeInitialStateFirstIndex{});
+    run_test(FixedDequeInitialStateLastIndex{});
+}
+
+TEST(FixedDeque, InsertValue)
+{
+    auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
+    {
+        {
+            constexpr auto v1 = []()
+            {
+                auto v = Factory::template create<int, 7>({0, 1, 2, 3});
+                v.insert(v.begin(), 100);
+                const int value = 500;
+                v.insert(v.begin() + 2, value);
+                return v;
+            }();
+
+            static_assert(std::ranges::equal(v1, std::array<int, 6>{100, 0, 500, 1, 2, 3}));
+            static_assert(v1.size() == 6);
+            static_assert(v1.max_size() == 7);
+        }
+        {
+            // For off-by-one issues, make the capacity just fit
+            constexpr auto v2 = []()
+            {
+                auto v = Factory::template create<int, 5>({0, 1, 2});
+                v.insert(v.begin(), 100);
+                const int value = 500;
+                v.insert(v.begin() + 2, value);
+                return v;
+            }();
+
+            static_assert(std::ranges::equal(v2, std::array<int, 5>{100, 0, 500, 1, 2}));
+            static_assert(v2.size() == 5);
+            static_assert(v2.max_size() == 5);
+        }
+
+        // NonTriviallyCopyable<T>
+        {
+            auto v3 = Factory::template create<MockNonTrivialInt, 8>();
+            v3.insert(v3.begin(), 0);
+            EXPECT_TRUE(std::ranges::equal(v3, std::array<MockNonTrivialInt, 1>{{0}}));
+            v3.insert(v3.begin(), 1);
+            EXPECT_TRUE(std::ranges::equal(v3, std::array<MockNonTrivialInt, 2>{{1, 0}}));
+            v3.insert(v3.begin(), 2);
+            EXPECT_TRUE(std::ranges::equal(v3, std::array<MockNonTrivialInt, 3>{{2, 1, 0}}));
+            const MockNonTrivialInt value = 3;
+            v3.insert(v3.end(), value);
+            EXPECT_TRUE(std::ranges::equal(v3, std::array<MockNonTrivialInt, 4>{{2, 1, 0, 3}}));
+            v3.insert(v3.begin() + 2, 4);
+            EXPECT_TRUE(std::ranges::equal(v3, std::array<MockNonTrivialInt, 5>{{2, 1, 4, 0, 3}}));
+            v3.insert(v3.begin() + 3, 5);
+            EXPECT_TRUE(
+                std::ranges::equal(v3, std::array<MockNonTrivialInt, 6>{{2, 1, 4, 5, 0, 3}}));
+            auto v4 = v3;
+            v3.clear();
+            v3.insert(v3.end(), v4.begin(), v4.end());
+            EXPECT_TRUE(
+                std::ranges::equal(v3, std::array<MockNonTrivialInt, 6>{{2, 1, 4, 5, 0, 3}}));
+        }
+    };
+
+    run_test(FixedDequeInitialStateFirstIndex{});
+    run_test(FixedDequeInitialStateLastIndex{});
+}
+
+TEST(FixedDeque, InsertValue_ExceedsCapacity)
+{
+    auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
+    {
+        auto v1 = Factory::template create<int, 4>({0, 1, 2, 3});
+        EXPECT_DEATH(v1.insert(v1.begin() + 1, 5), "");
     };
 
     run_test(FixedDequeInitialStateFirstIndex{});

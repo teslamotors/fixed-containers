@@ -321,6 +321,26 @@ public:
         decrement_size();
     }
 
+    constexpr iterator insert(
+        const_iterator it,
+        const value_type& v,
+        const std_transition::source_location& loc = std_transition::source_location::current())
+    {
+        check_not_full(loc);
+        auto entry_it = advance_all_after_iterator_by_n(it, 1);
+        std::construct_at(&*entry_it, v);
+        return entry_it;
+    }
+    constexpr iterator insert(
+        const_iterator it,
+        value_type&& v,
+        const std_transition::source_location& loc = std_transition::source_location::current())
+    {
+        check_not_full(loc);
+        auto entry_it = advance_all_after_iterator_by_n(it, 1);
+        std::construct_at(&*entry_it, std::move(v));
+        return entry_it;
+    }
     template <InputIterator InputIt>
     constexpr iterator insert(
         const_iterator it,
@@ -338,6 +358,15 @@ public:
     {
         return insert_internal(
             std::random_access_iterator_tag{}, it, ilist.begin(), ilist.end(), loc);
+    }
+
+    template <class... Args>
+    constexpr iterator emplace(const_iterator it, Args&&... args)
+    {
+        check_not_full(std_transition::source_location::current());
+        auto entry_it = advance_all_after_iterator_by_n(it, 1);
+        std::construct_at(&*entry_it, std::forward<Args>(args)...);
+        return entry_it;
     }
 
     constexpr void assign(
