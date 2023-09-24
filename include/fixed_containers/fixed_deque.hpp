@@ -620,17 +620,6 @@ private:
         return read_start_it;
     }
 
-    constexpr void push_back_internal(const value_type& v)
-    {
-        place_at(end_index(), v);
-        increment_size();
-    }
-    constexpr void push_back_internal(value_type&& v)
-    {
-        place_at(end_index(), std::move(v));
-        increment_size();
-    }
-
     template <InputIterator InputIt>
     constexpr iterator insert_internal(std::forward_iterator_tag,
                                        const_iterator it,
@@ -734,8 +723,6 @@ private:
         }
     }
 
-    // [WORKAROUND-1] - Needed by the non-trivially-copyable flavor of FixedDeque
-protected:
     [[nodiscard]] constexpr std::size_t front_index() const
     {
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_starting_index_and_size_.start;
@@ -832,6 +819,19 @@ protected:
     constexpr void emplace_at(const std::size_t i, Args&&... args)
     {
         optional_storage_detail::construct_at(&array_unchecked_at(i), std::forward<Args>(args)...);
+    }
+
+    // [WORKAROUND-1] - Needed by the non-trivially-copyable flavor of FixedDeque
+protected:
+    constexpr void push_back_internal(const value_type& v)
+    {
+        place_at(end_index(), v);
+        increment_size();
+    }
+    constexpr void push_back_internal(value_type&& v)
+    {
+        place_at(end_index(), std::move(v));
+        increment_size();
     }
 };
 
