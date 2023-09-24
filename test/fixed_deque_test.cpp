@@ -255,6 +255,26 @@ TEST(FixedDeque, Empty)
     run_test(FixedDequeInitialStateLastIndex{});
 }
 
+TEST(FixedDeque, Clear)
+{
+    auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
+    {
+        constexpr auto v1 = []()
+        {
+            auto v = Factory::template create<int, 7>({0, 1, 2});
+            v.assign(5, 100);
+            v.clear();
+            return v;
+        }();
+
+        static_assert(v1.empty());
+        static_assert(v1.max_size() == 7);
+    };
+
+    run_test(FixedDequeInitialStateFirstIndex{});
+    run_test(FixedDequeInitialStateLastIndex{});
+}
+
 TEST(FixedDeque, PopBack)
 {
     auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
@@ -1039,6 +1059,147 @@ TEST(FixedDeque, IterationBasic)
         EXPECT_EQ(ctr, 6);
 
         const_ref(v[0]);
+    };
+
+    run_test(FixedDequeInitialStateFirstIndex{});
+    run_test(FixedDequeInitialStateLastIndex{});
+}
+
+TEST(FixedDeque, AssignValue)
+{
+    auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
+    {
+        {
+            constexpr auto v1 = []()
+            {
+                auto v = Factory::template create<int, 7>({0, 1, 2});
+                v.assign(5, 100);
+                return v;
+            }();
+
+            static_assert(std::ranges::equal(v1, std::array<int, 5>{100, 100, 100, 100, 100}));
+            static_assert(v1.size() == 5);
+        }
+
+        {
+            constexpr auto v2 = []()
+            {
+                auto v = Factory::template create<int, 7>({0, 1, 2});
+                v.assign(5, 100);
+                v.assign(2, 300);
+                return v;
+            }();
+
+            static_assert(std::ranges::equal(v2, std::array<int, 2>{300, 300}));
+            static_assert(v2.size() == 2);
+            static_assert(v2.max_size() == 7);
+        }
+
+        {
+            auto v3 = []()
+            {
+                auto v = Factory::template create<int, 7>({0, 1, 2});
+                v.assign(5, 100);
+                v.assign(2, 300);
+                return v;
+            }();
+
+            EXPECT_EQ(2, v3.size());
+            EXPECT_TRUE(std::ranges::equal(v3, std::array<int, 2>{300, 300}));
+        }
+    };
+
+    run_test(FixedDequeInitialStateFirstIndex{});
+    run_test(FixedDequeInitialStateLastIndex{});
+}
+
+TEST(FixedDeque, AssignRange)
+{
+    auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
+    {
+        {
+            constexpr auto v1 = []()
+            {
+                std::array<int, 2> a{300, 300};
+                auto v = Factory::template create<int, 7>({0, 1, 2});
+                v.assign(a.begin(), a.end());
+                return v;
+            }();
+
+            static_assert(std::ranges::equal(v1, std::array<int, 2>{300, 300}));
+            static_assert(v1.size() == 2);
+            static_assert(v1.max_size() == 7);
+        }
+        {
+            auto v2 = []()
+            {
+                std::array<int, 2> a{300, 300};
+                auto v = Factory::template create<int, 7>({0, 1, 2});
+                v.assign(a.begin(), a.end());
+                return v;
+            }();
+
+            EXPECT_TRUE(std::ranges::equal(v2, std::array<int, 2>{300, 300}));
+            EXPECT_EQ(2, v2.size());
+        }
+    };
+
+    run_test(FixedDequeInitialStateFirstIndex{});
+    run_test(FixedDequeInitialStateLastIndex{});
+}
+
+TEST(FixedDeque, AssignValue_ExceedsCapacity)
+{
+    auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
+    {
+        auto v1 = Factory::template create<int, 3>({0, 1, 2});
+        EXPECT_DEATH(v1.assign(5, 100), "");
+    };
+
+    run_test(FixedDequeInitialStateFirstIndex{});
+    run_test(FixedDequeInitialStateLastIndex{});
+}
+
+TEST(FixedDeque, AssignRange_ExceedsCapacity)
+{
+    auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
+    {
+        auto v1 = Factory::template create<int, 3>({0, 1, 2});
+        std::array<int, 17> a{300, 300};
+        EXPECT_DEATH(v1.assign(a.begin(), a.end()), "");
+    };
+
+    run_test(FixedDequeInitialStateFirstIndex{});
+    run_test(FixedDequeInitialStateLastIndex{});
+}
+
+TEST(FixedDeque, AssignInitializerList)
+{
+    auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
+    {
+        {
+            constexpr auto v1 = []()
+            {
+                auto v = Factory::template create<int, 7>({0, 1, 2});
+                v.assign({300, 300});
+                return v;
+            }();
+
+            static_assert(std::ranges::equal(v1, std::array<int, 2>{300, 300}));
+            static_assert(v1.size() == 2);
+            static_assert(v1.max_size() == 7);
+        }
+        {
+            auto v2 = []()
+            {
+                auto v = Factory::template create<int, 7>({0, 1, 2});
+                v.assign({300, 300});
+                return v;
+            }();
+
+            EXPECT_TRUE(std::ranges::equal(v2, std::array<int, 2>{300, 300}));
+            EXPECT_EQ(2, v2.size());
+        }
     };
 
     run_test(FixedDequeInitialStateFirstIndex{});

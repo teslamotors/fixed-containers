@@ -340,6 +340,34 @@ public:
             std::random_access_iterator_tag{}, it, ilist.begin(), ilist.end(), loc);
     }
 
+    constexpr void assign(
+        size_type count,
+        const value_type& v,
+        const std_transition::source_location& loc = std_transition::source_location::current())
+    {
+        check_target_size(count, loc);
+        this->clear();
+        this->resize(count, v);
+    }
+
+    template <InputIterator InputIt>
+    constexpr void assign(
+        InputIt first,
+        InputIt last,
+        const std_transition::source_location& loc = std_transition::source_location::current())
+    {
+        this->clear();
+        this->insert(cend(), first, last, loc);
+    }
+
+    constexpr void assign(
+        std::initializer_list<T> ilist,
+        const std_transition::source_location& loc = std_transition::source_location::current())
+    {
+        this->clear();
+        this->insert(cend(), ilist, loc);
+    }
+
     constexpr iterator erase(const_iterator first,
                              const_iterator last,
                              const std_transition::source_location& loc =
@@ -378,6 +406,13 @@ public:
                                  std_transition::source_location::current()) noexcept
     {
         return erase(it, it + 1, loc);
+    }
+
+    constexpr void clear() noexcept
+    {
+        destroy_range(IMPLEMENTATION_DETAIL_DO_NOT_USE_starting_index_and_size_);
+        set_start(0);
+        set_size(0);
     }
 
     constexpr iterator begin() noexcept
@@ -699,6 +734,10 @@ protected:
     {
         IMPLEMENTATION_DETAIL_DO_NOT_USE_starting_index_and_size_.start =
             decrement_index_with_wraparound(front_index(), n);
+    }
+    constexpr void set_start(const std::size_t start)
+    {
+        IMPLEMENTATION_DETAIL_DO_NOT_USE_starting_index_and_size_.start = start;
     }
     constexpr void increment_size(const std::size_t n = 1)
     {
