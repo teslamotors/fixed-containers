@@ -266,6 +266,23 @@ public:
         this->push_back_internal(std::move(v));
     }
 
+    template <class... Args>
+    constexpr reference emplace_back(Args&&... args)
+    {
+        check_not_full(std_transition::source_location::current());
+        emplace_at(end_index(), std::forward<Args>(args)...);
+        increment_size();
+        return this->back();
+    }
+
+    constexpr void pop_back(
+        const std_transition::source_location& loc = std_transition::source_location::current())
+    {
+        check_not_empty(loc);
+        destroy_at(back_index());
+        decrement_size();
+    }
+
     template <InputIterator InputIt>
     constexpr iterator insert(
         const_iterator it,
@@ -698,6 +715,12 @@ protected:
     constexpr void place_at(const std::size_t i, value_type&& v)
     {
         std::construct_at(&array_unchecked_at(i), std::move(v));
+    }
+
+    template <class... Args>
+    constexpr void emplace_at(const std::size_t i, Args&&... args)
+    {
+        optional_storage_detail::construct_at(&array_unchecked_at(i), std::forward<Args>(args)...);
     }
 };
 
