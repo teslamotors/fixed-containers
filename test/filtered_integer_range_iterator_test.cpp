@@ -36,9 +36,12 @@ static_assert(SpecificValuePredicate{5}(5));
 static_assert(!SpecificValuePredicate{5}(7));
 
 // std::filter'ed std::range is not trivially copyable
+#if defined(__clang__) && __clang_major__ >= 16
+// clang 15 or lower fails to compile (tested with stdlib from gcc-12)
 static_assert(TriviallyCopyable<std::ranges::iota_view<int, int>>);
 static_assert(NotTriviallyCopyable<decltype(std::ranges::iota_view<std::size_t, std::size_t>{} |
                                             std::views::filter([](int) { return true; }))>);
+#endif
 
 static_assert(TriviallyCopyable<FilteredIntegerRangeIterator<AlwaysTruePredicate>>);
 
