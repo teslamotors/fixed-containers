@@ -485,11 +485,10 @@ public:
     /**
      * Erases all elements from the container. After this call, size() returns zero.
      */
-    constexpr FixedVectorBase& clear() noexcept
+    constexpr void clear() noexcept
     {
         destroy_range({.start = 0, .distance = size()});
         set_size(0);
-        return *this;
     }
 
     /**
