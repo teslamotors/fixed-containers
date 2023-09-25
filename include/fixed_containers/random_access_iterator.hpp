@@ -79,8 +79,8 @@ public:
     }
 
     template <typename First, typename... Args>
-        requires(!std::same_as<Self, std::decay_t<First>> &&
-                 !std::same_as<Sibling, std::decay_t<First>>)
+        requires(!std::same_as<Self, std::remove_cvref_t<First>> &&
+                 !std::same_as<Sibling, std::remove_cvref_t<First>>)
     explicit constexpr RandomAccessIterator(First&& first, Args&&... args) noexcept
       : reference_provider_(std::forward<First>(first), std::forward<Args>(args)...)
     {
