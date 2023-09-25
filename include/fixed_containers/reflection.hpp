@@ -175,7 +175,9 @@ constexpr void for_each_field_entry(const T& instance, Func func)
 
     LayerTracker<> layer_tracker{};
     __builtin_dump_struct(&instance, converter, in_out{layer_tracker});
-    assert(layer_tracker.is_null_layer());
+    assert(layer_tracker.is_null_layer() &&
+           "If you are hitting this, a possible reason can be that clang-16 or lower has a limit "
+           "in total field count. See unit tests for more info.");
 }
 
 enum class RecursionType

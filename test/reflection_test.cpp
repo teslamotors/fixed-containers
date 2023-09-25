@@ -48,6 +48,92 @@ struct MyColors
     ChildStruct purple;
 };
 
+struct RecursiveFieldCount8
+{
+    double a1;
+    double a2;
+    double a3;
+    double a4;
+    double a5;
+    int a6;
+    int a7;
+    int a8;
+};
+
+struct RecursiveFieldCount9
+{
+    double a1;
+    double a2;
+    double a3;
+    double a4;
+    double a5;
+    int a6;
+    int a7;
+    int a8;
+    int a9;
+};
+
+struct RecursiveFieldCount10
+{
+    RecursiveFieldCount9 ten1;  // The entry itself counts
+};
+
+struct RecursiveFieldCount99
+{
+    RecursiveFieldCount9 ten1;
+    RecursiveFieldCount9 ten2;
+    RecursiveFieldCount9 ten3;
+    RecursiveFieldCount9 ten4;
+    RecursiveFieldCount9 ten5;
+    RecursiveFieldCount9 ten6;
+    RecursiveFieldCount9 ten7;
+    RecursiveFieldCount9 ten8;
+    RecursiveFieldCount9 ten9;
+    int a1;
+    int a2;
+    int a3;
+    int a4;
+    int a5;
+    int a6;
+    int a7;
+    int a8;
+    int a9;
+};
+
+struct RecursiveFieldCount100
+{
+    RecursiveFieldCount99 one_hundred1;
+};
+
+struct RecursiveFieldCount193
+{
+    RecursiveFieldCount99 one_hundred1;
+    RecursiveFieldCount9 ten1;
+    RecursiveFieldCount9 ten2;
+    RecursiveFieldCount9 ten3;
+    RecursiveFieldCount9 ten4;
+    RecursiveFieldCount9 ten5;
+    RecursiveFieldCount9 ten6;
+    RecursiveFieldCount9 ten7;
+    RecursiveFieldCount9 ten8;
+    RecursiveFieldCount9 ten9;
+    int a1;
+    int a2;
+    int a3;
+};
+
+struct RecursiveFieldCount194
+{
+    RecursiveFieldCount193 f;
+};
+
+struct RecursiveFieldCount300
+{
+    RecursiveFieldCount99 one_hundred1;
+    RecursiveFieldCount99 one_hundred2;
+    RecursiveFieldCount99 one_hundred3;
+};
+
 struct NonConstexprDefaultConstructibleWithFields
 {
     int a;
@@ -249,6 +335,42 @@ TEST(Reflection, NonConstexprDefaultConstructible)
         "fixed_containers::(anonymous namespace)::NonConstexprDefaultConstructibleWithFields");
     static_assert(FIELD_INFO.at(1).enclosing_field_name() == "");
     static_assert(!FIELD_INFO.at(1).providing_base_class_name().has_value());
+}
+
+TEST(Reflection, FieldCountLimits)
+{
+    using enum reflection_detail::RecursionType;
+    using reflection_detail::field_count_of;
+    static_assert(
+        consteval_compare::
+            equal<9, field_count_of<RECURSIVE_DEPTH_FIRST_ORDER, RecursiveFieldCount9>()>);
+    static_assert(
+        consteval_compare::
+            equal<10, field_count_of<RECURSIVE_DEPTH_FIRST_ORDER, RecursiveFieldCount10>()>);
+    static_assert(
+        consteval_compare::
+            equal<99, field_count_of<RECURSIVE_DEPTH_FIRST_ORDER, RecursiveFieldCount99>()>);
+    static_assert(
+        consteval_compare::
+            equal<100, field_count_of<RECURSIVE_DEPTH_FIRST_ORDER, RecursiveFieldCount100>()>);
+    static_assert(
+        consteval_compare::
+            equal<193, field_count_of<RECURSIVE_DEPTH_FIRST_ORDER, RecursiveFieldCount193>()>);
+
+    // Before clang-17, there is a limit in recursive number of fields.
+    // The limit is around 200 fields, but is affected by level of recursion, so it is 193 here
+    // due to the way the structs are defined.
+#if defined(__clang__) && __clang_major__ >= 17
+    static_assert(
+        consteval_compare::
+            equal<194, field_count_of<RECURSIVE_DEPTH_FIRST_ORDER, RecursiveFieldCount194>()>);
+    static_assert(
+        consteval_compare::
+            equal<300, field_count_of<RECURSIVE_DEPTH_FIRST_ORDER, RecursiveFieldCount300>()>);
+#else
+    EXPECT_DEATH((field_count_of<RECURSIVE_DEPTH_FIRST_ORDER, RecursiveFieldCount194>()), "");
+    EXPECT_DEATH((field_count_of<RECURSIVE_DEPTH_FIRST_ORDER, RecursiveFieldCount300>()), "");
+#endif
 }
 
 }  // namespace fixed_containers
