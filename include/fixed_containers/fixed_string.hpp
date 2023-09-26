@@ -445,6 +445,22 @@ public:
         return std::string_view(*this).substr(pos, len);
     }
 
+    constexpr void resize(
+        size_type count,
+        const std_transition::source_location& loc = std_transition::source_location::current())
+    {
+        resize(count, CharT{}, loc);
+    }
+
+    constexpr void resize(
+        size_type count,
+        CharT ch,
+        const std_transition::source_location& loc = std_transition::source_location::current())
+    {
+        vec().resize(count, ch, loc);
+        null_terminate(loc);
+    }
+
 private:
     constexpr void null_terminate(std::size_t n)
     {

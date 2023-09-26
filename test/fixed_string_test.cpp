@@ -1407,4 +1407,62 @@ TEST(FixedString, Substring)
     EXPECT_DEATH((void)v1.substr(5, 1), "");
 }
 
+TEST(FixedString, Resize)
+{
+    constexpr auto v1 = []()
+    {
+        FixedString<7> v{"012"};
+        v.resize(6);
+        v[4] = 'a';
+        return v;
+    }();
+
+    static_assert(v1[0] == '0');
+    static_assert(v1[1] == '1');
+    static_assert(v1[2] == '2');
+    static_assert(v1[3] == '\0');
+    static_assert(v1[4] == 'a');
+    static_assert(v1[5] == '\0');
+    static_assert(v1.size() == 6);
+    static_assert(v1.max_size() == 7);
+
+    constexpr auto v2 = []()
+    {
+        FixedString<7> v{"012"};
+        v.resize(7, 'c');
+        v[4] = 'x';
+        v.resize(5, 'e');
+        return v;
+    }();
+
+    static_assert(v2[0] == '0');
+    static_assert(v2[1] == '1');
+    static_assert(v2[2] == '2');
+    static_assert(v2[3] == 'c');
+    static_assert(v2[4] == 'x');
+    static_assert(v2.size() == 5);
+    static_assert(v2.max_size() == 7);
+
+    FixedString<8> v3{"0123"};
+    v3.resize(6);
+
+    EXPECT_TRUE(std::ranges::equal(v3, std::array<char, 6>{'0', '1', '2', '3', '\0', '\0'}));
+
+    v3.resize(2);
+    EXPECT_EQ(v3, "01");
+
+    v3.resize(5, '3');
+    EXPECT_EQ(v3, "01333");
+}
+
+TEST(FixedString, Resize_ExceedCapacity)
+{
+    FixedString<3> v1{};
+    EXPECT_DEATH(v1.resize(6), "");
+    EXPECT_DEATH(v1.resize(6, 5), "");
+    const size_t to_size = 7;
+    EXPECT_DEATH(v1.resize(to_size), "");
+    EXPECT_DEATH(v1.resize(to_size, 5), "");
+}
+
 }  // namespace fixed_containers
