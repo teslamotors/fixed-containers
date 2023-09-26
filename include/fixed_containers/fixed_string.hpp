@@ -223,6 +223,11 @@ public:
     [[nodiscard]] constexpr char* data() noexcept { return vec().data(); }
     [[nodiscard]] constexpr const CharT* c_str() const noexcept { return data(); }
 
+    explicit(false) constexpr operator std::string_view() const
+    {
+        return std::string_view(data(), length());
+    }
+
     constexpr iterator begin() noexcept { return vec().begin(); }
     constexpr const_iterator begin() const noexcept { return cbegin(); }
     constexpr const_iterator cbegin() const noexcept { return vec().cbegin(); }
@@ -265,11 +270,6 @@ public:
     {
         vec().push_back(ch, loc);
         null_terminate(loc);
-    }
-
-    explicit(false) constexpr operator std::string_view() const
-    {
-        return std::string_view(data(), length());
     }
 
     template <std::size_t MAXIMUM_LENGTH_2,

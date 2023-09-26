@@ -419,6 +419,18 @@ TEST(FixedString, CStr)
     }
 }
 
+TEST(FixedString, StringViewConversion)
+{
+    auto function_that_takes_string_view = [](const std::string_view&) {};
+
+    static constexpr FixedString<7> v1{"12345"};
+    function_that_takes_string_view(v1);
+    constexpr std::string_view as_view = v1;
+
+    static_assert(consteval_compare::equal<5, as_view.size()>);
+    static_assert(as_view == std::string_view{"12345"});
+}
+
 TEST(FixedString, IteratorAssignment)
 {
     FixedString<8>::iterator it;              // Default construction
@@ -780,18 +792,6 @@ TEST(FixedString, PushBack_ExceedsCapacity)
     const char value = '1';
     v.push_back(value);
     EXPECT_DEATH(v.push_back('2'), "");
-}
-
-TEST(FixedString, StringViewConversion)
-{
-    auto function_that_takes_string_view = [](const std::string_view&) {};
-
-    static constexpr FixedString<7> v1{"12345"};
-    function_that_takes_string_view(v1);
-    constexpr std::string_view as_view = v1;
-
-    static_assert(consteval_compare::equal<5, as_view.size()>);
-    static_assert(as_view == std::string_view{"12345"});
 }
 
 TEST(FixedString, Equality)
