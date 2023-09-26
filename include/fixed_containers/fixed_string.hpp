@@ -374,6 +374,11 @@ public:
         return append(t, std_transition::source_location::current());
     }
 
+    [[nodiscard]] constexpr int compare(std::string_view view) const
+    {
+        return std::string_view(*this).compare(view);
+    }
+
     template <std::size_t MAXIMUM_LENGTH_2,
               fixed_string_customize::FixedStringChecking CheckingType2>
     constexpr bool operator==(const FixedString<MAXIMUM_LENGTH_2, CheckingType2>& other) const
@@ -382,7 +387,26 @@ public:
     }
     constexpr bool operator==(const CharT* other) const
     {
-        return static_cast<std::string_view>(*this) == std::string_view{other};
+        return as_view() == std::string_view{other};
+    }
+    constexpr bool operator==(std::string_view view) const noexcept { return as_view() == view; }
+
+    template <std::size_t MAXIMUM_LENGTH_2,
+              fixed_string_customize::FixedStringChecking CheckingType2>
+    constexpr std::strong_ordering operator<=>(
+        const FixedString<MAXIMUM_LENGTH_2, CheckingType2>& other) const noexcept
+    {
+        return as_view() <=> other;
+    }
+    constexpr std::strong_ordering operator<=>(const CharT* other) const noexcept
+    {
+        return as_view() <=> std::string_view{other};
+    }
+    constexpr std::strong_ordering operator<=>(const std::string_view& other) const noexcept
+    {
+        return as_view() <=> other;
+    }
+
     }
 
 private:
@@ -403,6 +427,8 @@ private:
         null_terminate(length());
     }
     constexpr void null_terminate_at_max_length() { null_terminate(MAXIMUM_LENGTH); }
+
+    [[nodiscard]] constexpr std::string_view as_view() const { return *this; }
 
     constexpr const FixedVecStorage& vec() const { return IMPLEMENTATION_DETAIL_DO_NOT_USE_data_; }
     constexpr FixedVecStorage& vec() { return IMPLEMENTATION_DETAIL_DO_NOT_USE_data_; }

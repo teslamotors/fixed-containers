@@ -1174,13 +1174,188 @@ TEST(FixedString, Equality)
     const_span_of_const_ref(v2);
 }
 
-TEST(FixedString, Equality_ConstCharPointer)
+TEST(FixedString, Equality_NonFixedString)
 {
     static_assert(FixedString<11>{"012"} == "012");
     static_assert("012" == FixedString<11>{"012"});
 
     static_assert(FixedString<11>{"012"} != "0123");
     static_assert("0123" != FixedString<11>{"012"});
+
+    static_assert(FixedString<11>{"012"} == std::string_view{"012"});
+    static_assert(std::string_view{"012"} == FixedString<11>{"012"});
+
+    static_assert(FixedString<11>{"012"} != std::string_view{"0123"});
+    static_assert(std::string_view{"0123"} != FixedString<11>{"012"});
+}
+
+TEST(FixedString, Spaceship_OverloadResolution)
+{
+    static_assert((FixedString<5>{"012"} <=> FixedString<11>{"012"}) ==
+                  std::strong_ordering::equal);
+
+    static_assert((FixedString<11>{"012"} <=> "012") == std::strong_ordering::equal);
+    static_assert(("012" <=> FixedString<11>{"012"}) == std::strong_ordering::equal);
+
+    static_assert((FixedString<11>{"012"} <=> std::string_view{"012"}) ==
+                  std::strong_ordering::equal);
+    static_assert((std::string_view{"012"} <=> FixedString<11>{"012"}) ==
+                  std::strong_ordering::equal);
+}
+
+TEST(FixedString, Comparison)
+{
+    // Using ASSERT_TRUE for symmetry with static_assert
+
+    // Equal size, left < right
+    {
+        std::string left{"123"};
+        std::string right{"124"};
+
+        ASSERT_TRUE(left < right);
+        ASSERT_TRUE(left <= right);
+        ASSERT_TRUE(!(left > right));
+        ASSERT_TRUE(!(left >= right));
+
+        ASSERT_TRUE(left.compare(right) < 0);
+    }
+
+    {
+        constexpr FixedString<5> left{"123"};
+        constexpr FixedString<5> right{"124"};
+
+        static_assert(left < right);
+        static_assert(left <= right);
+        static_assert(!(left > right));
+        static_assert(!(left >= right));
+
+        ASSERT_TRUE(left < right);
+        ASSERT_TRUE(left <= right);
+        ASSERT_TRUE(!(left > right));
+        ASSERT_TRUE(!(left >= right));
+
+        ASSERT_TRUE(left.compare(right) < 0);
+    }
+
+    // Left has fewer elements, left > right
+    {
+        std::string left{"15"};
+        std::string right{"124"};
+
+        ASSERT_TRUE(!(left < right));
+        ASSERT_TRUE(!(left <= right));
+        ASSERT_TRUE(left > right);
+        ASSERT_TRUE(left >= right);
+
+        ASSERT_TRUE(left.compare(right) > 0);
+    }
+
+    {
+        constexpr FixedString<5> left{"15"};
+        constexpr FixedString<5> right{"124"};
+
+        static_assert(!(left < right));
+        static_assert(!(left <= right));
+        static_assert(left > right);
+        static_assert(left >= right);
+
+        ASSERT_TRUE(!(left < right));
+        ASSERT_TRUE(!(left <= right));
+        ASSERT_TRUE(left > right);
+        ASSERT_TRUE(left >= right);
+
+        ASSERT_TRUE(left.compare(right) > 0);
+    }
+
+    // Right has fewer elements, left < right
+    {
+        std::string left{"123"};
+        std::string right{"15"};
+
+        ASSERT_TRUE(left < right);
+        ASSERT_TRUE(left <= right);
+        ASSERT_TRUE(!(left > right));
+        ASSERT_TRUE(!(left >= right));
+
+        ASSERT_TRUE(left.compare(right) < 0);
+    }
+
+    {
+        constexpr FixedString<5> left{"123"};
+        constexpr FixedString<5> right{"15"};
+
+        static_assert(left < right);
+        static_assert(left <= right);
+        static_assert(!(left > right));
+        static_assert(!(left >= right));
+
+        ASSERT_TRUE(left < right);
+        ASSERT_TRUE(left <= right);
+        ASSERT_TRUE(!(left > right));
+        ASSERT_TRUE(!(left >= right));
+
+        ASSERT_TRUE(left.compare(right) < 0);
+    }
+
+    // Left has one additional element
+    {
+        std::string left{"123"};
+        std::string right{"12"};
+
+        ASSERT_TRUE(!(left < right));
+        ASSERT_TRUE(!(left <= right));
+        ASSERT_TRUE(left > right);
+        ASSERT_TRUE(left >= right);
+
+        ASSERT_TRUE(left.compare(right) > 0);
+    }
+
+    {
+        constexpr FixedString<5> left{"123"};
+        constexpr FixedString<5> right{"12"};
+
+        static_assert(!(left < right));
+        static_assert(!(left <= right));
+        static_assert(left > right);
+        static_assert(left >= right);
+
+        ASSERT_TRUE(!(left < right));
+        ASSERT_TRUE(!(left <= right));
+        ASSERT_TRUE(left > right);
+        ASSERT_TRUE(left >= right);
+
+        ASSERT_TRUE(left.compare(right) > 0);
+    }
+
+    // Right has one additional element
+    {
+        std::string left{"12"};
+        std::string right{"123"};
+
+        ASSERT_TRUE(left < right);
+        ASSERT_TRUE(left <= right);
+        ASSERT_TRUE(!(left > right));
+        ASSERT_TRUE(!(left >= right));
+
+        ASSERT_TRUE(left.compare(right) < 0);
+    }
+
+    {
+        constexpr FixedString<5> left{"12"};
+        constexpr FixedString<5> right{"123"};
+
+        static_assert(left < right);
+        static_assert(left <= right);
+        static_assert(!(left > right));
+        static_assert(!(left >= right));
+
+        ASSERT_TRUE(left < right);
+        ASSERT_TRUE(left <= right);
+        ASSERT_TRUE(!(left > right));
+        ASSERT_TRUE(!(left >= right));
+
+        ASSERT_TRUE(left.compare(right) < 0);
+    }
 }
 
 }  // namespace fixed_containers
