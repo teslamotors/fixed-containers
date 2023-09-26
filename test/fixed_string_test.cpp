@@ -357,6 +357,43 @@ TEST(FixedString, Back_EmptyContainer)
     }
 }
 
+TEST(FixedString, Data)
+{
+    {
+        constexpr auto v1 = []()
+        {
+            FixedString<8> v{"012"};
+            return v;
+        }();
+
+        static_assert(*std::next(v1.data(), 0) == '0');
+        static_assert(*std::next(v1.data(), 1) == '1');
+        static_assert(*std::next(v1.data(), 2) == '2');
+        static_assert(*std::next(v1.data(), 3) == '\0');
+        static_assert(*std::next(v1.data(), 8) == '\0');
+
+        EXPECT_EQ(*std::next(v1.data(), 0), '0');
+        EXPECT_EQ(*std::next(v1.data(), 1), '1');
+        EXPECT_EQ(*std::next(v1.data(), 2), '2');
+        EXPECT_EQ(*std::next(v1.data(), 3), '\0');
+        EXPECT_EQ(*std::next(v1.data(), 8), '\0');
+
+        static_assert(v1.size() == 3);
+    }
+
+    {
+        FixedString<8> v2{"abc"};
+        const auto& v2_const_ref = v2;
+
+        auto it = std::next(v2.data(), 1);
+        EXPECT_EQ(*it, 'b');  // non-const variant
+        *it = 'z';
+        EXPECT_EQ(*it, 'z');
+
+        EXPECT_EQ(*std::next(v2_const_ref.data(), 1), 'z');  // const variant
+    }
+}
+
 TEST(FixedString, IteratorAssignment)
 {
     FixedString<8>::iterator it;              // Default construction
@@ -730,43 +767,6 @@ TEST(FixedString, StringViewConversion)
 
     static_assert(consteval_compare::equal<5, as_view.size()>);
     static_assert(as_view == std::string_view{"12345"});
-}
-
-TEST(FixedString, Data)
-{
-    {
-        constexpr auto v1 = []()
-        {
-            FixedString<8> v{"012"};
-            return v;
-        }();
-
-        static_assert(*std::next(v1.data(), 0) == '0');
-        static_assert(*std::next(v1.data(), 1) == '1');
-        static_assert(*std::next(v1.data(), 2) == '2');
-        static_assert(*std::next(v1.data(), 3) == '\0');
-        static_assert(*std::next(v1.data(), 8) == '\0');
-
-        EXPECT_EQ(*std::next(v1.data(), 0), '0');
-        EXPECT_EQ(*std::next(v1.data(), 1), '1');
-        EXPECT_EQ(*std::next(v1.data(), 2), '2');
-        EXPECT_EQ(*std::next(v1.data(), 3), '\0');
-        EXPECT_EQ(*std::next(v1.data(), 8), '\0');
-
-        static_assert(v1.size() == 3);
-    }
-
-    {
-        FixedString<8> v2{"abc"};
-        const auto& v2_const_ref = v2;
-
-        auto it = std::next(v2.data(), 1);
-        EXPECT_EQ(*it, 'b');  // non-const variant
-        *it = 'z';
-        EXPECT_EQ(*it, 'z');
-
-        EXPECT_EQ(*std::next(v2_const_ref.data(), 1), 'z');  // const variant
-    }
 }
 
 TEST(FixedString, Equality)
