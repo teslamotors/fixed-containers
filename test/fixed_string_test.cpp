@@ -293,6 +293,70 @@ TEST(FixedString, At_OutOfBounds)
     EXPECT_DEATH(static_cast<void>(v3.at(v2.size())), "");
 }
 
+TEST(FixedString, Front)
+{
+    constexpr auto v1 = []()
+    {
+        FixedString<8> v{"z12"};
+        return v;
+    }();
+
+    static_assert(v1.front() == 'z');
+    static_assert(v1 == "z12");
+    static_assert(v1.size() == 3);
+
+    FixedString<8> v2{"abc"};
+    const auto& v2_const_ref = v2;
+
+    EXPECT_EQ(v2.front(), 'a');  // non-const variant
+    v2.front() = 'a';
+    EXPECT_EQ(v2_const_ref.front(), 'a');  // const variant
+}
+
+TEST(FixedString, Front_EmptyContainer)
+{
+    {
+        const FixedString<3> v{};
+        EXPECT_DEATH(v.front(), "");
+    }
+    {
+        FixedString<3> v{};
+        EXPECT_DEATH(v.front(), "");
+    }
+}
+
+TEST(FixedString, Back)
+{
+    constexpr auto v1 = []()
+    {
+        FixedString<8> v{"01w"};
+        return v;
+    }();
+
+    static_assert(v1.back() == 'w');
+    static_assert(v1 == "01w");
+    static_assert(v1.size() == 3);
+
+    FixedString<8> v2{"abc"};
+    const auto& v2_const_ref = v2;
+
+    EXPECT_EQ(v2.back(), 'c');  // non-const variant
+    v2.back() = 'c';
+    EXPECT_EQ(v2_const_ref.back(), 'c');  // const variant
+}
+
+TEST(FixedString, Back_EmptyContainer)
+{
+    {
+        const FixedString<3> v{};
+        EXPECT_DEATH(v.back(), "");
+    }
+    {
+        FixedString<3> v{};
+        EXPECT_DEATH(v.back(), "");
+    }
+}
+
 TEST(FixedString, IteratorAssignment)
 {
     FixedString<8>::iterator it;              // Default construction

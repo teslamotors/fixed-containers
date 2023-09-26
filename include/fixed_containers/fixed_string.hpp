@@ -198,6 +198,27 @@ public:
         return vec().at(i, loc);
     }
 
+    constexpr reference front(
+        const std_transition::source_location& loc = std_transition::source_location::current())
+    {
+        return vec().front(loc);
+    }
+    constexpr const_reference front(const std_transition::source_location& loc =
+                                        std_transition::source_location::current()) const
+    {
+        return vec().front(loc);
+    }
+    constexpr reference back(
+        const std_transition::source_location& loc = std_transition::source_location::current())
+    {
+        return vec().back(loc);
+    }
+    constexpr const_reference back(const std_transition::source_location& loc =
+                                       std_transition::source_location::current()) const
+    {
+        return vec().back(loc);
+    }
+
     [[nodiscard]] constexpr const char* data() const noexcept { return vec().data(); }
     [[nodiscard]] constexpr char* data() noexcept { return vec().data(); }
 
