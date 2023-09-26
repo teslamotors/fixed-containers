@@ -649,19 +649,12 @@ TEST(FixedString, IterationBasic)
     const_span_of_const_ref(v);
 }
 
-TEST(FixedString, CapacityAndMaxSize)
+TEST(FixedString, Empty)
 {
-    {
-        constexpr FixedString<3> v1{};
-        static_assert(v1.capacity() == 3);
-        static_assert(v1.max_size() == 3);
-    }
+    constexpr auto v1 = []() { return FixedString<7>{}; }();
 
-    {
-        FixedString<3> v1{};
-        EXPECT_EQ(3, v1.capacity());
-        EXPECT_EQ(3, v1.max_size());
-    }
+    static_assert(v1.empty());
+    static_assert(v1.max_size() == 7);
 }
 
 TEST(FixedString, LengthAndSize)
@@ -681,12 +674,19 @@ TEST(FixedString, LengthAndSize)
     }
 }
 
-TEST(FixedString, Empty)
+TEST(FixedString, CapacityAndMaxSize)
 {
-    constexpr auto v1 = []() { return FixedString<7>{}; }();
+    {
+        constexpr FixedString<3> v1{};
+        static_assert(v1.capacity() == 3);
+        static_assert(v1.max_size() == 3);
+    }
 
-    static_assert(v1.empty());
-    static_assert(v1.max_size() == 7);
+    {
+        FixedString<3> v1{};
+        EXPECT_EQ(3, v1.capacity());
+        EXPECT_EQ(3, v1.max_size());
+    }
 }
 
 TEST(FixedString, Reserve)
