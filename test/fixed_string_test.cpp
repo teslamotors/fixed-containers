@@ -1496,4 +1496,43 @@ TEST(FixedString, MaxSizeDeduction)
     static_assert(v1[3] == 'd');
     static_assert(v1[4] == 'e');
 }
+
+TEST(FixedString, ClassTemplateArgumentDeduction)
+{
+    // Compile-only test
+    FixedString a = FixedString<5>{};
+    (void)a;
+}
+
+namespace
+{
+template <FixedString<5> /*MY_STR*/>
+struct FixedStringInstanceCanBeUsedAsATemplateParameter
+{
+};
+
+template <FixedString<5> /*MY_STR*/>
+constexpr void fixed_string_instance_can_be_used_as_a_template_parameter()
+{
+}
+}  // namespace
+
+TEST(FixedString, UsageAsTemplateParameter)
+{
+    static constexpr FixedString<5> MY_STR1{};
+    fixed_string_instance_can_be_used_as_a_template_parameter<MY_STR1>();
+    FixedStringInstanceCanBeUsedAsATemplateParameter<MY_STR1> my_struct{};
+    static_cast<void>(my_struct);
+}
+
 }  // namespace fixed_containers
+
+namespace another_namespace_unrelated_to_the_fixed_containers_namespace
+{
+TEST(FixedString, ArgumentDependentLookup)
+{
+    // Compile-only test
+    fixed_containers::FixedString<5> a{};
+    is_full(a);
+}
+}  // namespace another_namespace_unrelated_to_the_fixed_containers_namespace
