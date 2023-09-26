@@ -1465,4 +1465,35 @@ TEST(FixedString, Resize_ExceedCapacity)
     EXPECT_DEATH(v1.resize(to_size, 5), "");
 }
 
+TEST(FixedString, Full)
+{
+    constexpr auto v1 = []()
+    {
+        FixedString<4> v{};
+        v.push_back('0');
+        v.push_back('1');
+        v.push_back('2');
+        v.push_back('3');
+        return v;
+    }();
+
+    static_assert(v1 == "0123");
+    static_assert(is_full(v1));
+    static_assert(v1.size() == 4);
+    static_assert(v1.max_size() == 4);
+
+    EXPECT_TRUE(is_full(v1));
+}
+
+TEST(FixedString, MaxSizeDeduction)
+{
+    constexpr auto v1 = make_fixed_string("abcde");
+    static_assert(v1.size() == 5);
+    static_assert(v1.max_size() == 5);
+    static_assert(v1[0] == 'a');
+    static_assert(v1[1] == 'b');
+    static_assert(v1[2] == 'c');
+    static_assert(v1[3] == 'd');
+    static_assert(v1[4] == 'e');
+}
 }  // namespace fixed_containers

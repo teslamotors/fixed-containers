@@ -485,6 +485,52 @@ private:
     constexpr const FixedVecStorage& vec() const { return IMPLEMENTATION_DETAIL_DO_NOT_USE_data_; }
     constexpr FixedVecStorage& vec() { return IMPLEMENTATION_DETAIL_DO_NOT_USE_data_; }
 };
+
+template <std::size_t MAXIMUM_LENGTH, typename CheckingType>
+constexpr typename FixedString<MAXIMUM_LENGTH, CheckingType>::size_type is_full(
+    const FixedString<MAXIMUM_LENGTH, CheckingType>& c)
+{
+    return c.size() >= c.max_size();
+}
+
+/**
+ * Construct a FixedString with its capacity being deduced from the number of items being passed.
+ */
+template <
+    fixed_string_customize::FixedStringChecking CheckingType,
+    std::size_t MAXIMUM_LENGTH_WITH_NULL_TERMINATOR,
+    // Exposing this as a template parameter is useful for customization (for example with
+    // child classes that set the CheckingType)
+    typename FixedStringType = FixedString<MAXIMUM_LENGTH_WITH_NULL_TERMINATOR - 1, CheckingType>>
+[[nodiscard]] constexpr FixedStringType make_fixed_string(
+    const char (&list)[MAXIMUM_LENGTH_WITH_NULL_TERMINATOR],
+    const std_transition::source_location& loc =
+        std_transition::source_location::current()) noexcept
+{
+    constexpr std::size_t MAXIMUM_LENGTH = MAXIMUM_LENGTH_WITH_NULL_TERMINATOR - 1;
+    assert(list[MAXIMUM_LENGTH] == '\0');
+    FixedStringType s{};
+    s.resize(MAXIMUM_LENGTH, loc);
+    for (std::size_t i = 0; i < MAXIMUM_LENGTH; i++)
+    {
+        s[i] = list[i];
+    }
+    return s;
+}
+
+template <std::size_t MAXIMUM_LENGTH_WITH_NULL_TERMINATOR>
+[[nodiscard]] constexpr auto make_fixed_string(
+    const char (&list)[MAXIMUM_LENGTH_WITH_NULL_TERMINATOR],
+    const std_transition::source_location& loc =
+        std_transition::source_location::current()) noexcept
+{
+    constexpr std::size_t MAXIMUM_LENGTH = MAXIMUM_LENGTH_WITH_NULL_TERMINATOR - 1;
+    using CheckingType = fixed_string_customize::AbortChecking<MAXIMUM_LENGTH>;
+    using FixedStringType = FixedString<MAXIMUM_LENGTH, CheckingType>;
+    return make_fixed_string<CheckingType, MAXIMUM_LENGTH_WITH_NULL_TERMINATOR, FixedStringType>(
+        list, loc);
+}
+
 }  // namespace fixed_containers
 
 namespace std
