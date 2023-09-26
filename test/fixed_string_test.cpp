@@ -171,10 +171,14 @@ TEST(FixedString, Data)
         static_assert(*std::next(v1.data(), 0) == '0');
         static_assert(*std::next(v1.data(), 1) == '1');
         static_assert(*std::next(v1.data(), 2) == '2');
+        static_assert(*std::next(v1.data(), 3) == '\0');
+        static_assert(*std::next(v1.data(), 8) == '\0');
 
         EXPECT_EQ(*std::next(v1.data(), 0), '0');
         EXPECT_EQ(*std::next(v1.data(), 1), '1');
         EXPECT_EQ(*std::next(v1.data(), 2), '2');
+        EXPECT_EQ(*std::next(v1.data(), 3), '\0');
+        EXPECT_EQ(*std::next(v1.data(), 8), '\0');
 
         static_assert(v1.size() == 3);
     }
