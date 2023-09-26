@@ -496,6 +496,15 @@ TEST(FixedVector, PushBack)
     static_assert(v2.size() == 1);
 }
 
+TEST(FixedVector, PushBack_ExceedsCapacity)
+{
+    FixedVector<int, 2> v{};
+    v.push_back(0);
+    const char value = 1;
+    v.push_back(value);
+    EXPECT_DEATH(v.push_back(2), "");
+}
+
 TEST(FixedVector, EmplaceBack)
 {
     {
@@ -1606,7 +1615,7 @@ TEST(FixedVector, EraseOne)
     ++it;
     it = v2.erase(it);
     EXPECT_EQ(it, v2.cend());
-    EXPECT_EQ(*it, 3);
+    // EXPECT_EQ(*it, 3); // Not dereferenceable
     EXPECT_TRUE(std::ranges::equal(v2, std::array<int, 3>{{1, 4, 0}}));
 }
 
