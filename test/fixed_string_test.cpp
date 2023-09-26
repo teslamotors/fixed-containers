@@ -1,9 +1,14 @@
 #include "fixed_containers/fixed_string.hpp"
 
+#include "test_utilities_common.hpp"
+
 #include "fixed_containers/concepts.hpp"
 #include "fixed_containers/consteval_compare.hpp"
 
 #include <gtest/gtest.h>
+
+#include <span>
+#include <string>
 
 namespace fixed_containers
 {
@@ -15,6 +20,11 @@ static_assert(TriviallyCopyable<FixedStringType>);
 static_assert(NotTrivial<FixedStringType>);
 static_assert(StandardLayout<FixedStringType>);
 static_assert(IsStructuralType<FixedStringType>);
+
+void const_ref(const int&) {}
+void const_span_ref(const std::span<char>&) {}
+void const_span_of_const_ref(const std::span<const char>&) {}
+
 }  // namespace
 
 TEST(FixedString, DefaultConstructor)
@@ -22,6 +32,42 @@ TEST(FixedString, DefaultConstructor)
     constexpr FixedString<8> v1{};
     static_assert(v1.empty());
     static_assert(v1.max_size() == 8);
+}
+
+TEST(FixedString, CountConstructor)
+{
+    {
+        constexpr FixedString<8> v2(5, '3');
+        static_assert(v2.size() == 5);
+        static_assert(v2.max_size() == 8);
+        static_assert(v2 == "33333");
+    }
+}
+
+TEST(FixedString, ConstCharPointerConstructor)
+{
+    {
+        constexpr FixedString<8> v2("12345");
+        static_assert(v2.size() == 5);
+        static_assert(v2.max_size() == 8);
+        static_assert(v2 == "12345");
+    }
+}
+
+TEST(FixedString, InitializerConstructor)
+{
+    constexpr FixedString<3> v1{'7', '9'};
+    static_assert(v1[0] == '7');
+    static_assert(v1[1] == '9');
+    static_assert(v1.size() == 2);
+
+    constexpr FixedString<3> v2{{'6', '5'}};
+    static_assert(v2[0] == '6');
+    static_assert(v2[1] == '5');
+    static_assert(v2.size() == 2);
+
+    EXPECT_EQ(v1, "79");
+    EXPECT_EQ(v2, "65");
 }
 
 TEST(FixedString, StringViewConstructor)
@@ -107,6 +153,224 @@ TEST(FixedString, At_OutOfBounds)
     EXPECT_DEATH(static_cast<void>(v3.at(v2.size())), "");
 }
 
+TEST(FixedString, IteratorAssignment)
+{
+    FixedString<8>::iterator it;              // Default construction
+    FixedString<8>::const_iterator const_it;  // Default construction
+
+    const_it = it;  // Non-const needs to be assignable to const
+}
+
+TEST(FixedString, TrivialIterators)
+{
+    {
+        constexpr FixedString<3> v1{{'7', '8', '9'}};
+
+        static_assert(std::distance(v1.cbegin(), v1.cend()) == 3);
+
+        static_assert(*v1.begin() == '7');
+        static_assert(*std::next(v1.begin(), 1) == '8');
+        static_assert(*std::next(v1.begin(), 2) == '9');
+
+        static_assert(*std::prev(v1.end(), 1) == '9');
+        static_assert(*std::prev(v1.end(), 2) == '8');
+        static_assert(*std::prev(v1.end(), 3) == '7');
+    }
+
+    {
+        /*non-const*/ FixedString<8> v{};
+        v.push_back('0');
+        v.push_back('1');
+        v.push_back('2');
+        v.push_back('3');
+        {
+            char ctr = '0';
+            for (auto it = v.begin(); it != v.end(); it++)
+            {
+                EXPECT_LT(ctr, '4');
+                EXPECT_EQ(ctr, *it);
+                ++ctr;
+            }
+            EXPECT_EQ(ctr, '4');
+        }
+        {
+            char ctr = '0';
+            for (auto it = v.cbegin(); it != v.cend(); it++)
+            {
+                EXPECT_LT(ctr, '4');
+                EXPECT_EQ(ctr, *it);
+                ++ctr;
+            }
+            EXPECT_EQ(ctr, '4');
+        }
+    }
+    {
+        const FixedString<8> v = {"0123"};
+        {
+            char ctr = '0';
+            for (auto it = v.begin(); it != v.end(); it++)
+            {
+                EXPECT_LT(ctr, '4');
+                EXPECT_EQ(ctr, *it);
+                ++ctr;
+            }
+            EXPECT_EQ(ctr, '4');
+        }
+        {
+            char ctr = '0';
+            for (auto it = v.cbegin(); it != v.cend(); it++)
+            {
+                EXPECT_LT(ctr, '4');
+                EXPECT_EQ(ctr, *it);
+                ++ctr;
+            }
+            EXPECT_EQ(ctr, '4');
+        }
+    }
+}
+
+TEST(FixedString, ReverseIterators)
+{
+    {
+        constexpr FixedString<3> v1{{'7', '8', '9'}};
+
+        static_assert(std::distance(v1.crbegin(), v1.crend()) == 3);
+
+        static_assert(*v1.rbegin() == '9');
+        static_assert(*std::next(v1.rbegin(), 1) == '8');
+        static_assert(*std::next(v1.rbegin(), 2) == '7');
+
+        static_assert(*std::prev(v1.rend(), 1) == '7');
+        static_assert(*std::prev(v1.rend(), 2) == '8');
+        static_assert(*std::prev(v1.rend(), 3) == '9');
+    }
+
+    {
+        /*non-cost*/ FixedString<8> v{};
+        v.push_back(0);
+        v.push_back(1);
+        v.push_back(2);
+        v.push_back(3);
+        {
+            int ctr = 3;
+            for (auto it = v.rbegin(); it != v.rend(); it++)
+            {
+                EXPECT_GT(ctr, -1);
+                EXPECT_EQ(ctr, *it);
+                --ctr;
+            }
+            EXPECT_EQ(ctr, -1);
+        }
+        {
+            int ctr = 3;
+            for (auto it = v.crbegin(); it != v.crend(); it++)
+            {
+                EXPECT_GT(ctr, -1);
+                EXPECT_EQ(ctr, *it);
+                --ctr;
+            }
+            EXPECT_EQ(ctr, -1);
+        }
+    }
+    {
+        const FixedString<8> v = {"0123"};
+        {
+            char ctr = '3';
+            for (auto it = v.rbegin(); it != v.rend(); it++)
+            {
+                EXPECT_GT(ctr, '0' - 1);
+                EXPECT_EQ(ctr, *it);
+                --ctr;
+            }
+            EXPECT_EQ(ctr, '0' - 1);
+        }
+        {
+            char ctr = '3';
+            for (auto it = v.crbegin(); it != v.crend(); it++)
+            {
+                EXPECT_GT(ctr, '0' - 1);
+                EXPECT_EQ(ctr, *it);
+                --ctr;
+            }
+            EXPECT_EQ(ctr, '0' - 1);
+        }
+    }
+}
+
+TEST(FixedString, ReverseIteratorBase)
+{
+    constexpr auto v1 = []()
+    {
+        FixedString<7> v{"123"};
+        auto it = v.rbegin();  // points to 3
+        std::advance(it, 1);   // points to 2
+        // https://stackoverflow.com/questions/1830158/how-to-call-erase-with-a-reverse-iterator
+        v.erase(std::next(it).base());
+        return v;
+    }();
+
+    static_assert(v1 == "13");
+}
+
+TEST(FixedString, IterationBasic)
+{
+    FixedString<13> v_expected{};
+
+    FixedString<8> v{};
+    v.push_back('0');
+    v.push_back('1');
+    v.push_back('2');
+    v.push_back('3');
+    // Expect {0, 1, 2, 3}
+
+    char ctr = '0';
+    for (const char& x : v)
+    {
+        EXPECT_LT(ctr, '4');
+        EXPECT_EQ(ctr, x);
+        ++ctr;
+    }
+    EXPECT_EQ(ctr, '4');
+
+    v_expected = {"0123"};
+    EXPECT_TRUE((v == v_expected));
+
+    v.push_back('4');
+    v.push_back('5');
+
+    v_expected = "012345";
+    EXPECT_TRUE((v == v_expected));
+
+    ctr = '0';
+    for (const char& x : v)
+    {
+        EXPECT_LT(ctr, '6');
+        EXPECT_EQ(ctr, x);
+        ++ctr;
+    }
+    EXPECT_EQ(ctr, '6');
+
+    v.erase(v.begin() + 5);
+    v.erase(v.begin() + 3);
+    v.erase(v.begin() + 1);
+
+    v_expected = "024";
+    EXPECT_TRUE((v == v_expected));
+
+    ctr = '0';
+    for (const char& x : v)
+    {
+        EXPECT_LT(ctr, '6');
+        EXPECT_EQ(ctr, x);
+        ctr += 2;
+    }
+    EXPECT_EQ(ctr, '6');
+
+    const_ref(v[0]);
+    const_span_ref(v);
+    const_span_of_const_ref(v);
+}
+
 TEST(FixedString, CapacityAndMaxSize)
 {
     {
@@ -145,6 +409,111 @@ TEST(FixedString, Empty)
 
     static_assert(v1.empty());
     static_assert(v1.max_size() == 7);
+}
+
+TEST(FixedString, EraseRange)
+{
+    constexpr auto v1 = []()
+    {
+        FixedString<8> v{"012345"};
+        v.erase(v.cbegin() + 2, v.begin() + 4);
+        return v;
+    }();
+
+    static_assert(v1 == "0145");
+    static_assert(v1.size() == 4);
+    static_assert(v1.max_size() == 8);
+
+    FixedString<8> v2{"214503"};
+
+    auto it = v2.erase(v2.begin() + 1, v2.cbegin() + 3);
+    EXPECT_EQ(it, v2.begin() + 1);
+    EXPECT_EQ(*it, '5');
+    EXPECT_EQ(v2, "2503");
+}
+
+TEST(FixedString, EraseOne)
+{
+    constexpr auto v1 = []()
+    {
+        FixedString<8> v{"012345"};
+        v.erase(v.cbegin());
+        v.erase(v.begin() + 2);
+        return v;
+    }();
+
+    static_assert(v1 == "1245");
+    static_assert(v1.size() == 4);
+    static_assert(v1.max_size() == 8);
+
+    FixedString<8> v2{"214503"};
+
+    auto it = v2.erase(v2.begin());
+    EXPECT_EQ(it, v2.begin());
+    EXPECT_EQ(*it, '1');
+    EXPECT_EQ(v2, "14503");
+    it += 2;
+    it = v2.erase(it);
+    EXPECT_EQ(it, v2.begin() + 2);
+    EXPECT_EQ(*it, '0');
+    EXPECT_EQ(v2, "1403");
+    ++it;
+    it = v2.erase(it);
+    EXPECT_EQ(it, v2.cend());
+    // EXPECT_EQ(*it, '\0'); // Not dereferenceable
+    EXPECT_EQ(v2, "140");
+}
+
+TEST(FixedString, Erase_Empty)
+{
+    {
+        FixedString<3> v1{};
+
+        // Don't Expect Death
+        v1.erase(std::remove_if(v1.begin(), v1.end(), [&](const auto&) { return true; }), v1.end());
+
+        EXPECT_DEATH(v1.erase(v1.begin()), "");
+    }
+
+    {
+        std::string v1{};
+
+        // Don't Expect Death
+        v1.erase(std::remove_if(v1.begin(), v1.end(), [&](const auto&) { return true; }), v1.end());
+
+        // The iterator pos must be valid and dereferenceable. Thus the end() iterator (which is
+        // valid, but is not dereferenceable) cannot be used as a value for pos.
+        // The behavior is undefined if iterator is not dereferenceable.
+        // https://en.cppreference.com/w/cpp/string/basic_string/erase
+        // EXPECT_DEATH(v1.erase(v1.begin()), "");
+    }
+}
+
+TEST(FixedString, PushBack)
+{
+    constexpr auto v1 = []()
+    {
+        FixedString<11> v{};
+        v.push_back('0');
+        const char value = '1';
+        v.push_back(value);
+        v.push_back('2');
+        return v;
+    }();
+
+    static_assert(v1[0] == '0');
+    static_assert(v1[1] == '1');
+    static_assert(v1[2] == '2');
+    static_assert(v1.size() == 3);
+}
+
+TEST(FixedString, PushBack_ExceedsCapacity)
+{
+    FixedString<2> v{};
+    v.push_back('0');
+    const char value = '1';
+    v.push_back(value);
+    EXPECT_DEATH(v.push_back('2'), "");
 }
 
 TEST(FixedString, StringViewConversion)
@@ -194,6 +563,42 @@ TEST(FixedString, Data)
 
         EXPECT_EQ(*std::next(v2_const_ref.data(), 1), 'z');  // const variant
     }
+}
+
+TEST(FixedString, Equality)
+{
+    constexpr auto v1 = FixedString<12>{"012"};
+    // Capacity difference should not affect equality
+    constexpr auto v2 = FixedString<11>{"012"};
+    constexpr auto v3 = FixedString<12>{"092"};
+    constexpr auto v4 = FixedString<12>{"01"};
+    constexpr auto v5 = FixedString<12>{"012345"};
+
+    static_assert(v1 == v1);
+    static_assert(v1 == v2);
+    static_assert(v1 != v3);
+    static_assert(v1 != v4);
+    static_assert(v1 != v5);
+
+    EXPECT_EQ(v1, v1);
+    EXPECT_EQ(v1, v2);
+    EXPECT_NE(v1, v3);
+    EXPECT_NE(v1, v4);
+    EXPECT_NE(v1, v5);
+
+    const_ref(v1[0]);
+    const_ref(v2[0]);
+    const_span_of_const_ref(v1);
+    const_span_of_const_ref(v2);
+}
+
+TEST(FixedString, Equality_ConstCharPointer)
+{
+    static_assert(FixedString<11>{"012"} == "012");
+    static_assert("012" == FixedString<11>{"012"});
+
+    static_assert(FixedString<11>{"012"} != "0123");
+    static_assert("0123" != FixedString<11>{"012"});
 }
 
 }  // namespace fixed_containers

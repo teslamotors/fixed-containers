@@ -693,6 +693,7 @@ cc_test(
         ":concepts",
         ":consteval_compare",
         ":fixed_string",
+        ":test_utilities_common",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
