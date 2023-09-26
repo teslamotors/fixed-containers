@@ -246,6 +246,16 @@ public:
     [[nodiscard]] constexpr std::size_t length() const noexcept { return vec().size(); }
     [[nodiscard]] constexpr std::size_t size() const noexcept { return length(); }
     [[nodiscard]] constexpr std::size_t max_size() const noexcept { return MAXIMUM_LENGTH; }
+    constexpr void reserve(const std::size_t new_capacity,
+                           const std_transition::source_location& loc =
+                               std_transition::source_location::current()) noexcept
+    {
+        if (preconditions::test(new_capacity <= MAXIMUM_LENGTH))
+        {
+            Checking::length_error(new_capacity, loc);
+        }
+        // Do nothing
+    }
     [[nodiscard]] constexpr std::size_t capacity() const noexcept { return max_size(); }
 
     constexpr iterator erase(
