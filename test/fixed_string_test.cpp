@@ -1,5 +1,6 @@
 #include "fixed_containers/fixed_string.hpp"
 
+#include "mock_testing_types.hpp"
 #include "test_utilities_common.hpp"
 
 #include "fixed_containers/concepts.hpp"
@@ -7,6 +8,7 @@
 
 #include <gtest/gtest.h>
 
+#include <ranges>
 #include <span>
 #include <string>
 
@@ -719,6 +721,161 @@ TEST(FixedString, Clear)
     static_assert(v1.empty());
     static_assert(v1.capacity() == 7);
     static_assert(v1.max_size() == 7);
+}
+
+TEST(FixedString, InsertValue)
+{
+    {
+        constexpr auto v1 = []()
+        {
+            FixedString<7> v{"0123"};
+            v.insert(v.begin(), 'a');
+            const char value = 'e';
+            v.insert(v.begin() + 2, value);
+            return v;
+        }();
+
+        static_assert(v1 == "a0e123");
+        static_assert(v1.size() == 6);
+        static_assert(v1.max_size() == 7);
+    }
+    {
+        // For off-by-one issues, make the capacity just fit
+        constexpr auto v2 = []()
+        {
+            FixedString<5> v{"012"};
+            v.insert(v.begin(), 'a');
+            const char value = 'e';
+            v.insert(v.begin() + 2, value);
+            return v;
+        }();
+
+        static_assert(v2 == "a0e12");
+        static_assert(v2.size() == 5);
+        static_assert(v2.max_size() == 5);
+    }
+}
+
+TEST(FixedString, InsertValue_ExceedsCapacity)
+{
+    FixedString<4> v1{"0123"};
+    EXPECT_DEATH(v1.insert(v1.begin() + 1, '5'), "");
+}
+
+TEST(FixedString, InsertIterator)
+{
+    {
+        constexpr auto v1 = []()
+        {
+            std::array<char, 2> a{'a', 'e'};
+            FixedString<7> v{"0123"};
+            v.insert(v.begin() + 2, a.begin(), a.end());
+            return v;
+        }();
+
+        static_assert(v1 == "01ae23");
+        static_assert(v1.size() == 6);
+        static_assert(v1.max_size() == 7);
+    }
+    {
+        // For off-by-one issues, make the capacity just fit
+        constexpr auto v2 = []()
+        {
+            std::array<char, 2> a{'a', 'e'};
+            FixedString<5> v{"012"};
+            v.insert(v.begin() + 2, a.begin(), a.end());
+            return v;
+        }();
+
+        static_assert(v2 == "01ae2");
+        static_assert(v2.size() == 5);
+        static_assert(v2.max_size() == 5);
+    }
+
+    {
+        std::array<char, 2> a{'a', 'e'};
+        FixedString<7> v{"0123"};
+        auto it = v.insert(v.begin() + 2, a.begin(), a.end());
+        EXPECT_EQ(v, "01ae23");
+        EXPECT_EQ(it, v.begin() + 2);
+    }
+}
+
+TEST(FixedString, InsertIterator_ExceedsCapacity)
+{
+    FixedString<4> v1{"012"};
+    std::array<char, 2> a{'3', '4'};
+    EXPECT_DEATH(v1.insert(v1.begin() + 1, a.begin(), a.end()), "");
+}
+
+TEST(FixedString, InsertInputIterator)
+{
+    MockIntegraStream<char> stream{static_cast<char>(3)};
+    FixedString<14> v{"abcd"};
+    auto it = v.insert(v.begin() + 2, stream.begin(), stream.end());
+    ASSERT_EQ(7, v.size());
+    EXPECT_TRUE(std::ranges::equal(
+        v,
+        std::array{
+            'a', 'b', static_cast<char>(3), static_cast<char>(2), static_cast<char>(1), 'c', 'd'}));
+    EXPECT_EQ(it, v.begin() + 2);
+}
+
+TEST(FixedString, InsertInputIterator_ExceedsCapacity)
+{
+    MockIntegraStream<char> stream{3};
+    FixedString<6> v{"abcd"};
+    EXPECT_DEATH(v.insert(v.begin() + 2, stream.begin(), stream.end()), "");
+}
+
+TEST(FixedString, InsertInitializerList)
+{
+    {
+        // For off-by-one issues, make the capacity just fit
+        constexpr auto v1 = []()
+        {
+            FixedString<5> v{"012"};
+            v.insert(v.begin() + 2, {'a', 'e'});
+            return v;
+        }();
+
+        static_assert(v1 == "01ae2");
+        static_assert(v1.size() == 5);
+        static_assert(v1.max_size() == 5);
+    }
+
+    {
+        FixedString<7> v{"0123"};
+        auto it = v.insert(v.begin() + 2, {'a', 'e'});
+        EXPECT_EQ(v, "01ae23");
+        EXPECT_EQ(it, v.begin() + 2);
+    }
+}
+
+TEST(FixedString, InsertStringView)
+{
+    {
+        // For off-by-one issues, make the capacity just fit
+        constexpr auto v1 = []()
+        {
+            FixedString<5> v{"012"};
+            std::string_view s = "ae";
+            v.insert(v.begin() + 2, s);
+            return v;
+        }();
+
+        static_assert(v1 == "01ae2");
+        static_assert(v1.size() == 5);
+        static_assert(v1.max_size() == 5);
+    }
+
+    {
+        FixedString<7> v{"0123"};
+        std::string_view s = "ae";
+        auto it = v.insert(v.begin() + 2, s);
+        EXPECT_EQ(v, "01ae23");
+        EXPECT_EQ(it, v.begin() + 2);
+    }
 }
 
 TEST(FixedString, EraseRange)

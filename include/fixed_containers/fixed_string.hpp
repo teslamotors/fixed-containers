@@ -264,6 +264,41 @@ public:
         null_terminate(std_transition::source_location::current());
     }
 
+    constexpr iterator insert(
+        const_iterator it,
+        CharT v,
+        const std_transition::source_location& loc = std_transition::source_location::current())
+    {
+        ScopedNullTermination guard{this, loc};
+        return vec().insert(it, v, loc);
+    }
+    template <InputIterator InputIt>
+    constexpr iterator insert(
+        const_iterator it,
+        InputIt first,
+        InputIt last,
+        const std_transition::source_location& loc = std_transition::source_location::current())
+    {
+        ScopedNullTermination guard{this, loc};
+        return vec().insert(it, first, last, loc);
+    }
+    constexpr iterator insert(
+        const_iterator it,
+        std::initializer_list<CharT> ilist,
+        const std_transition::source_location& loc = std_transition::source_location::current())
+    {
+        ScopedNullTermination guard{this, loc};
+        return vec().insert(it, ilist, loc);
+    }
+    constexpr iterator insert(
+        const_iterator it,
+        std::string_view s,
+        const std_transition::source_location& loc = std_transition::source_location::current())
+    {
+        ScopedNullTermination guard{this, loc};
+        return vec().insert(it, s.begin(), s.end(), loc);
+    }
+
     constexpr iterator erase(
         const_iterator position,
         const std_transition::source_location& loc = std_transition::source_location::current())
