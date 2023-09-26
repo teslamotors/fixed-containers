@@ -1518,6 +1518,13 @@ TEST(FixedVector, InsertIterator)
     }
 }
 
+TEST(FixedVector, InsertIterator_ExceedsCapacity)
+{
+    FixedVector<int, 4> v1{0, 1, 2};
+    std::array<int, 2> a{3, 4};
+    EXPECT_DEATH(v1.insert(v1.begin() + 1, a.begin(), a.end()), "");
+}
+
 TEST(FixedVector, InsertInputIterator)
 {
     MockIntStream stream{3};
@@ -1533,13 +1540,6 @@ TEST(FixedVector, InsertInputIterator_ExceedsCapacity)
     MockIntStream stream{3};
     FixedVector<int, 6> v{10, 20, 30, 40};
     EXPECT_DEATH(v.insert(v.begin() + 2, stream.begin(), stream.end()), "");
-}
-
-TEST(FixedVector, InsertRange_ExceedsCapacity)
-{
-    FixedVector<int, 4> v1{0, 1, 2};
-    std::array<int, 2> a{3, 4};
-    EXPECT_DEATH(v1.insert(v1.begin() + 1, a.begin(), a.end()), "");
 }
 
 TEST(FixedVector, InsertInitializerList)

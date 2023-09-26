@@ -1441,6 +1441,19 @@ TEST(FixedDeque, InsertIterator)
     run_test(FixedDequeInitialStateLastIndex{});
 }
 
+TEST(FixedDeque, InsertIterator_ExceedsCapacity)
+{
+    auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
+    {
+        auto v1 = Factory::template create<int, 4>({0, 1, 2});
+        std::array<int, 2> a{3, 4};
+        EXPECT_DEATH(v1.insert(v1.begin() + 1, a.begin(), a.end()), "");
+    };
+
+    run_test(FixedDequeInitialStateFirstIndex{});
+    run_test(FixedDequeInitialStateLastIndex{});
+}
+
 TEST(FixedDeque, InsertInputIterator)
 {
     auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
@@ -1464,19 +1477,6 @@ TEST(FixedDeque, InsertInputIterator_ExceedsCapacity)
         MockIntStream stream{3};
         auto v = Factory::template create<int, 6>({10, 20, 30, 40});
         EXPECT_DEATH(v.insert(v.begin() + 2, stream.begin(), stream.end()), "");
-    };
-
-    run_test(FixedDequeInitialStateFirstIndex{});
-    run_test(FixedDequeInitialStateLastIndex{});
-}
-
-TEST(FixedDeque, InsertRange_ExceedsCapacity)
-{
-    auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
-    {
-        auto v1 = Factory::template create<int, 4>({0, 1, 2});
-        std::array<int, 2> a{3, 4};
-        EXPECT_DEATH(v1.insert(v1.begin() + 1, a.begin(), a.end()), "");
     };
 
     run_test(FixedDequeInitialStateFirstIndex{});
