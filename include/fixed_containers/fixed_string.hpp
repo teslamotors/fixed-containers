@@ -330,6 +330,50 @@ public:
         null_terminate(loc);
     }
 
+    template <class InputIt>
+    constexpr FixedString& append(
+        InputIt first,
+        InputIt last,
+        const std_transition::source_location& loc = std_transition::source_location::current())
+    {
+        vec().insert(vec().cend(), first, last, loc);
+        null_terminate(loc);
+        return *this;
+    }
+    constexpr FixedString& append(
+        std::initializer_list<CharT> ilist,
+        const std_transition::source_location& loc = std_transition::source_location::current())
+    {
+        vec().insert(vec().cend(), ilist, loc);
+        null_terminate(loc);
+        return *this;
+    }
+    constexpr FixedString& append(
+        const std::string_view& t,
+        const std_transition::source_location& loc = std_transition::source_location::current())
+    {
+        vec().insert(vec().cend(), t.begin(), t.end(), loc);
+        null_terminate(loc);
+        return *this;
+    }
+
+    constexpr FixedString& operator+=(CharT ch)
+    {
+        return append(ch, std_transition::source_location::current());
+    }
+    constexpr FixedString& operator+=(const CharT* s)
+    {
+        return append(std::string_view{s}, std_transition::source_location::current());
+    }
+    constexpr FixedString& operator+=(std::initializer_list<CharT> ilist)
+    {
+        return append(ilist, std_transition::source_location::current());
+    }
+    constexpr FixedString& operator+=(const std::string_view& t)
+    {
+        return append(t, std_transition::source_location::current());
+    }
+
     template <std::size_t MAXIMUM_LENGTH_2,
               fixed_string_customize::FixedStringChecking CheckingType2>
     constexpr bool operator==(const FixedString<MAXIMUM_LENGTH_2, CheckingType2>& other) const

@@ -1008,6 +1008,145 @@ TEST(FixedString, PopBack_Empty)
     EXPECT_DEATH(v1.pop_back(), "");
 }
 
+TEST(FixedString, AppendIterator)
+{
+    {
+        constexpr auto v1 = []()
+        {
+            std::array<char, 2> a{'a', 'e'};
+            FixedString<7> v{"0123"};
+            v.append(a.begin(), a.end());
+            return v;
+        }();
+
+        static_assert(v1 == "0123ae");
+        static_assert(v1.size() == 6);
+        static_assert(v1.max_size() == 7);
+    }
+    {
+        // For off-by-one issues, make the capacity just fit
+        constexpr auto v2 = []()
+        {
+            std::array<char, 2> a{'a', 'e'};
+            FixedString<5> v{"012"};
+            v.append(a.begin(), a.end());
+            return v;
+        }();
+
+        static_assert(v2 == "012ae");
+        static_assert(v2.size() == 5);
+        static_assert(v2.max_size() == 5);
+    }
+
+    {
+        std::array<char, 2> a{'a', 'e'};
+        FixedString<7> v{"0123"};
+        auto& self = v.append(a.begin(), a.end());
+        EXPECT_EQ(v, "0123ae");
+        EXPECT_EQ(self, v);
+    }
+}
+
+TEST(FixedString, AppendIterator_ExceedsCapacity)
+{
+    FixedString<4> v1{"012"};
+    std::array<char, 2> a{'3', '4'};
+    EXPECT_DEATH(v1.append(a.begin(), a.end()), "");
+}
+
+TEST(FixedString, AppendInputIterator)
+{
+    MockIntegraStream<char> stream{static_cast<char>(3)};
+    FixedString<14> v{"abcd"};
+    auto& self = v.append(stream.begin(), stream.end());
+    ASSERT_EQ(7, v.size());
+    EXPECT_TRUE(std::ranges::equal(v,
+                                   std::array{
+                                       'a',
+                                       'b',
+                                       'c',
+                                       'd',
+                                       static_cast<char>(3),
+                                       static_cast<char>(2),
+                                       static_cast<char>(1),
+                                   }));
+    EXPECT_EQ(self, v);
+}
+
+TEST(FixedString, AppendInputIterator_ExceedsCapacity)
+{
+    MockIntegraStream<char> stream{3};
+    FixedString<6> v{"abcd"};
+    EXPECT_DEATH(v.append(stream.begin(), stream.end()), "");
+}
+
+TEST(FixedString, AppendInitializerList)
+{
+    {
+        // For off-by-one issues, make the capacity just fit
+        constexpr auto v1 = []()
+        {
+            FixedString<5> v{"012"};
+            v.append({'a', 'e'});
+            return v;
+        }();
+
+        static_assert(v1 == "012ae");
+        static_assert(v1.size() == 5);
+        static_assert(v1.max_size() == 5);
+    }
+
+    {
+        FixedString<7> v{"0123"};
+        auto& self = v.append({'a', 'e'});
+        EXPECT_EQ(v, "0123ae");
+        EXPECT_EQ(self, v);
+    }
+}
+
+TEST(FixedString, AppendStringView)
+{
+    {
+        // For off-by-one issues, make the capacity just fit
+        constexpr auto v1 = []()
+        {
+            FixedString<5> v{"012"};
+            std::string_view s = "ae";
+            v.append(s);
+            return v;
+        }();
+
+        static_assert(v1 == "012ae");
+        static_assert(v1.size() == 5);
+        static_assert(v1.max_size() == 5);
+    }
+
+    {
+        FixedString<7> v{"0123"};
+        std::string_view s = "ae";
+        auto& self = v.append(s);
+        EXPECT_EQ(v, "0123ae");
+        EXPECT_EQ(self, v);
+    }
+}
+
+TEST(FixedString, OperatorPlusEqual)
+{
+    constexpr auto v1 = []()
+    {
+        FixedString<17> v{"012"};
+        v.append("abc");
+        v.append({'d', 'e'});
+        std::string_view s = "fg";
+        v.append(s);
+        return v;
+    }();
+
+    static_assert(v1 == "012abcdefg");
+    static_assert(v1.size() == 10);
+    static_assert(v1.max_size() == 17);
+}
+
 TEST(FixedString, Equality)
 {
     constexpr auto v1 = FixedString<12>{"012"};
