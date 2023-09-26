@@ -80,6 +80,146 @@ TEST(FixedString, StringViewConstructor)
     static_assert(v1.max_size() == 17);
 }
 
+TEST(FixedString, AssignValue)
+{
+    {
+        constexpr auto v1 = []()
+        {
+            FixedString<7> v{"012"};
+            v.assign(5, '3');
+            return v;
+        }();
+
+        static_assert(v1 == "33333");
+        static_assert(v1.size() == 5);
+    }
+
+    {
+        constexpr auto v2 = []()
+        {
+            FixedString<7> v{"012"};
+            v.assign(5, '5');
+            v.assign(2, '9');
+            return v;
+        }();
+
+        static_assert(v2 == "99");
+        static_assert(v2.size() == 2);
+        static_assert(v2.max_size() == 7);
+    }
+
+    {
+        auto v3 = []()
+        {
+            FixedString<7> v{"012"};
+            v.assign(5, '5');
+            v.assign(2, '9');
+            return v;
+        }();
+
+        EXPECT_EQ(2, v3.size());
+        EXPECT_EQ(v3, "99");
+    }
+}
+
+TEST(FixedString, AssignValue_ExceedsCapacity)
+{
+    FixedString<3> v1{"012"};
+    EXPECT_DEATH(v1.assign(5, '9'), "");
+}
+
+TEST(FixedString, AssignRange)
+{
+    {
+        constexpr auto v1 = []()
+        {
+            std::array<char, 2> a{'9', '9'};
+            FixedString<7> v{"012"};
+            v.assign(a.begin(), a.end());
+            return v;
+        }();
+
+        static_assert(v1 == "99");
+        static_assert(v1.size() == 2);
+        static_assert(v1.max_size() == 7);
+    }
+    {
+        auto v2 = []()
+        {
+            std::array<char, 2> a{'9', '9'};
+            FixedString<7> v{"012"};
+            v.assign(a.begin(), a.end());
+            return v;
+        }();
+
+        EXPECT_EQ(v2, "99");
+        EXPECT_EQ(2, v2.size());
+    }
+}
+
+TEST(FixedString, AssignRange_ExceedsCapacity)
+{
+    FixedString<3> v1{"012"};
+    std::array<char, 17> a{'9', '9'};
+    EXPECT_DEATH(v1.assign(a.begin(), a.end()), "");
+}
+
+TEST(FixedString, AssignInitializerList)
+{
+    {
+        constexpr auto v1 = []()
+        {
+            FixedString<7> v{"012"};
+            v.assign({'9', '9'});
+            return v;
+        }();
+
+        static_assert(v1 == "99");
+        static_assert(v1.size() == 2);
+        static_assert(v1.max_size() == 7);
+    }
+    {
+        auto v2 = []()
+        {
+            FixedString<7> v{"012"};
+            v.assign({'9', '9'});
+            return v;
+        }();
+
+        EXPECT_EQ(v2, "99");
+        EXPECT_EQ(2, v2.size());
+    }
+}
+
+TEST(FixedString, AssignStringView)
+{
+    {
+        constexpr auto v1 = []()
+        {
+            FixedString<7> v{"012"};
+            std::string_view s{"99"};
+            v.assign(s);
+            return v;
+        }();
+
+        static_assert(v1 == "99");
+        static_assert(v1.size() == 2);
+        static_assert(v1.max_size() == 7);
+    }
+    {
+        auto v2 = []()
+        {
+            FixedString<7> v{"012"};
+            std::string_view s{"99"};
+            v.assign(s);
+            return v;
+        }();
+
+        EXPECT_EQ(v2, "99");
+        EXPECT_EQ(2, v2.size());
+    }
+}
+
 TEST(FixedString, BracketOperator)
 {
     constexpr auto v1 = []()

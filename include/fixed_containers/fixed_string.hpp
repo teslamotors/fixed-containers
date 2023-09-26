@@ -135,6 +135,42 @@ public:
         null_terminate(loc);
     }
 
+    constexpr FixedString& assign(
+        size_type count,
+        CharT ch,
+        const std_transition::source_location& loc = std_transition::source_location::current())
+    {
+        vec().assign(count, ch, loc);
+        null_terminate(loc);
+        return *this;
+    }
+    template <class InputIt>
+    constexpr FixedString& assign(
+        InputIt first,
+        InputIt last,
+        const std_transition::source_location& loc = std_transition::source_location::current())
+    {
+        vec().assign(first, last, loc);
+        null_terminate(loc);
+        return *this;
+    }
+    constexpr FixedString& assign(
+        std::initializer_list<CharT> ilist,
+        const std_transition::source_location& loc = std_transition::source_location::current())
+    {
+        vec().assign(ilist, loc);
+        null_terminate(loc);
+        return *this;
+    }
+    constexpr FixedString& assign(
+        const std::string_view& t,
+        const std_transition::source_location& loc = std_transition::source_location::current())
+    {
+        vec().assign(t.begin(), t.end(), loc);
+        null_terminate(loc);
+        return *this;
+    }
+
     [[nodiscard]] constexpr reference operator[](size_type i) noexcept
     {
         // Cannot capture real source_location for operator[]
