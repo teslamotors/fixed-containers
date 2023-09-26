@@ -407,6 +407,42 @@ public:
         return as_view() <=> other;
     }
 
+    [[nodiscard]] constexpr bool starts_with(const std::string_view& prefix) const noexcept
+    {
+        return as_view().starts_with(prefix);
+    }
+    [[nodiscard]] constexpr bool starts_with(char x) const noexcept
+    {
+        return as_view().starts_with(x);
+    }
+
+    [[nodiscard]] constexpr bool starts_with(const char* x) const noexcept
+    {
+        return as_view().starts_with(x);
+    }
+
+    [[nodiscard]] constexpr bool ends_with(const std::string_view& suffix) const noexcept
+    {
+        return as_view().ends_with(suffix);
+    }
+    [[nodiscard]] constexpr bool ends_with(char x) const noexcept { return as_view().ends_with(x); }
+    [[nodiscard]] constexpr bool ends_with(const char* x) const noexcept
+    {
+        return as_view().ends_with(x);
+    }
+
+    [[nodiscard]] constexpr std::string_view substr(
+        size_type pos = 0,
+        size_t len = MAXIMUM_LENGTH,
+        const std_transition::source_location& loc =
+            std_transition::source_location::current()) const
+    {
+        if (preconditions::test(pos < length()))
+        {
+            Checking::out_of_range(pos, length(), loc);
+        }
+
+        return std::string_view(*this).substr(pos, len);
     }
 
 private:

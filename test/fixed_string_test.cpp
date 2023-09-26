@@ -1358,4 +1358,53 @@ TEST(FixedString, Comparison)
     }
 }
 
+TEST(FixedString, StartsWith)
+{
+    constexpr auto v1 = []()
+    {
+        FixedString<7> v{"0123"};
+        return v;
+    }();
+
+    static_assert(v1.starts_with('0'));
+    static_assert(v1.starts_with("01"));
+    static_assert(v1.starts_with(std::string_view{"012"}));
+
+    static_assert(!v1.starts_with('1'));
+    static_assert(!v1.starts_with("1"));
+    static_assert(!v1.starts_with(std::string_view{"12"}));
+}
+
+TEST(FixedString, EndsWith)
+{
+    constexpr auto v1 = []()
+    {
+        FixedString<7> v{"0123"};
+        return v;
+    }();
+
+    static_assert(v1.ends_with('3'));
+    static_assert(v1.ends_with("23"));
+    static_assert(v1.ends_with(std::string_view{"123"}));
+
+    static_assert(!v1.ends_with('2'));
+    static_assert(!v1.ends_with("2"));
+    static_assert(!v1.ends_with(std::string_view{"12"}));
+}
+
+TEST(FixedString, Substring)
+{
+    constexpr auto v1 = []()
+    {
+        FixedString<7> v{"0123"};
+        return v;
+    }();
+
+    static_assert(v1.substr(0, 3) == "012");
+    static_assert(v1.substr(1, 2) == "12");
+    static_assert(v1.substr(2, 2) == "23");
+
+    EXPECT_DEATH((void)v1.substr(5, 1), "");
+}
+
 }  // namespace fixed_containers
