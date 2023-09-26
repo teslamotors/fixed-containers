@@ -1349,6 +1349,12 @@ TEST(FixedVector, AssignValue)
     }
 }
 
+TEST(FixedVector, AssignValue_ExceedsCapacity)
+{
+    FixedVector<int, 3> v1{0, 1, 2};
+    EXPECT_DEATH(v1.assign(5, 100), "");
+}
+
 TEST(FixedVector, AssignRange)
 {
     {
@@ -1376,12 +1382,6 @@ TEST(FixedVector, AssignRange)
         EXPECT_TRUE(std::ranges::equal(v2, std::array<int, 2>{300, 300}));
         EXPECT_EQ(2, v2.size());
     }
-}
-
-TEST(FixedVector, AssignValue_ExceedsCapacity)
-{
-    FixedVector<int, 3> v1{0, 1, 2};
-    EXPECT_DEATH(v1.assign(5, 100), "");
 }
 
 TEST(FixedVector, AssignRange_ExceedsCapacity)

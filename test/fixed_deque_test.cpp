@@ -1228,6 +1228,18 @@ TEST(FixedDeque, AssignValue)
     run_test(FixedDequeInitialStateLastIndex{});
 }
 
+TEST(FixedDeque, AssignValue_ExceedsCapacity)
+{
+    auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
+    {
+        auto v1 = Factory::template create<int, 3>({0, 1, 2});
+        EXPECT_DEATH(v1.assign(5, 100), "");
+    };
+
+    run_test(FixedDequeInitialStateFirstIndex{});
+    run_test(FixedDequeInitialStateLastIndex{});
+}
+
 TEST(FixedDeque, AssignRange)
 {
     auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
@@ -1257,18 +1269,6 @@ TEST(FixedDeque, AssignRange)
             EXPECT_TRUE(std::ranges::equal(v2, std::array<int, 2>{300, 300}));
             EXPECT_EQ(2, v2.size());
         }
-    };
-
-    run_test(FixedDequeInitialStateFirstIndex{});
-    run_test(FixedDequeInitialStateLastIndex{});
-}
-
-TEST(FixedDeque, AssignValue_ExceedsCapacity)
-{
-    auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
-    {
-        auto v1 = Factory::template create<int, 3>({0, 1, 2});
-        EXPECT_DEATH(v1.assign(5, 100), "");
     };
 
     run_test(FixedDequeInitialStateFirstIndex{});
