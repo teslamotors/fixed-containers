@@ -323,6 +323,13 @@ public:
         null_terminate(loc);
     }
 
+    constexpr void pop_back(
+        const std_transition::source_location& loc = std_transition::source_location::current())
+    {
+        vec().pop_back(loc);
+        null_terminate(loc);
+    }
+
     template <std::size_t MAXIMUM_LENGTH_2,
               fixed_string_customize::FixedStringChecking CheckingType2>
     constexpr bool operator==(const FixedString<MAXIMUM_LENGTH_2, CheckingType2>& other) const

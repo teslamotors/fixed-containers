@@ -983,6 +983,31 @@ TEST(FixedString, PushBack_ExceedsCapacity)
     EXPECT_DEATH(v.push_back('2'), "");
 }
 
+TEST(FixedString, PopBack)
+{
+    constexpr auto v1 = []()
+    {
+        FixedString<11> v{"012"};
+        v.pop_back();
+        return v;
+    }();
+
+    static_assert(v1[0] == '0');
+    static_assert(v1[1] == '1');
+    static_assert(v1.size() == 2);
+    static_assert(v1.max_size() == 11);
+
+    FixedString<17> v2{"abc"};
+    v2.pop_back();
+    EXPECT_EQ(v2, "ab");
+}
+
+TEST(FixedString, PopBack_Empty)
+{
+    FixedString<5> v1{};
+    EXPECT_DEATH(v1.pop_back(), "");
+}
+
 TEST(FixedString, Equality)
 {
     constexpr auto v1 = FixedString<12>{"012"};
