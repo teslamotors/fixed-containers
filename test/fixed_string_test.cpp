@@ -706,6 +706,21 @@ TEST(FixedString, Reserve)
     EXPECT_DEATH(v2.reserve(15), "");
 }
 
+TEST(FixedString, Clear)
+{
+    constexpr auto v1 = []()
+    {
+        FixedString<7> v{"012"};
+        v.assign(5, 'a');
+        v.clear();
+        return v;
+    }();
+
+    static_assert(v1.empty());
+    static_assert(v1.capacity() == 7);
+    static_assert(v1.max_size() == 7);
+}
+
 TEST(FixedString, EraseRange)
 {
     constexpr auto v1 = []()

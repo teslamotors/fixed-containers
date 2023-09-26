@@ -258,6 +258,12 @@ public:
     }
     [[nodiscard]] constexpr std::size_t capacity() const noexcept { return max_size(); }
 
+    constexpr void clear() noexcept
+    {
+        vec().clear();
+        null_terminate(std_transition::source_location::current());
+    }
+
     constexpr iterator erase(
         const_iterator position,
         const std_transition::source_location& loc = std_transition::source_location::current())
