@@ -394,6 +394,31 @@ TEST(FixedString, Data)
     }
 }
 
+TEST(FixedString, CStr)
+{
+    {
+        constexpr auto v1 = []()
+        {
+            FixedString<8> v{"012"};
+            return v;
+        }();
+
+        static_assert(*std::next(v1.c_str(), 0) == '0');
+        static_assert(*std::next(v1.c_str(), 1) == '1');
+        static_assert(*std::next(v1.c_str(), 2) == '2');
+        static_assert(*std::next(v1.c_str(), 3) == '\0');
+        static_assert(*std::next(v1.c_str(), 8) == '\0');
+
+        EXPECT_EQ(*std::next(v1.c_str(), 0), '0');
+        EXPECT_EQ(*std::next(v1.c_str(), 1), '1');
+        EXPECT_EQ(*std::next(v1.c_str(), 2), '2');
+        EXPECT_EQ(*std::next(v1.c_str(), 3), '\0');
+        EXPECT_EQ(*std::next(v1.c_str(), 8), '\0');
+
+        static_assert(v1.size() == 3);
+    }
+}
+
 TEST(FixedString, IteratorAssignment)
 {
     FixedString<8>::iterator it;              // Default construction

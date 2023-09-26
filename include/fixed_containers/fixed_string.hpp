@@ -221,6 +221,7 @@ public:
 
     [[nodiscard]] constexpr const char* data() const noexcept { return vec().data(); }
     [[nodiscard]] constexpr char* data() noexcept { return vec().data(); }
+    [[nodiscard]] constexpr const CharT* c_str() const noexcept { return data(); }
 
     constexpr iterator begin() noexcept { return vec().begin(); }
     constexpr const_iterator begin() const noexcept { return cbegin(); }
