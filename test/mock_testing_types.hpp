@@ -4,6 +4,7 @@
 
 #include <cassert>
 #include <compare>
+#include <concepts>
 #include <optional>
 #include <type_traits>
 
@@ -225,20 +226,21 @@ struct MockAComparableToB
     }
 };
 
-class MockIntStream
+template <std::integral T>
+class MockIntegraStream
 {
     class MockInputIterator
     {
     public:
-        using reference = const int&;
-        using value_type = const int;
-        using pointer = const int*;
+        using reference = const T&;
+        using value_type = const T;
+        using pointer = const T*;
         using iterator = MockInputIterator;
         using iterator_category = std::input_iterator_tag;
         using difference_type = std::ptrdiff_t;
 
     private:
-        std::optional<int*> remaining_;
+        std::optional<T*> remaining_;
 
     public:
         constexpr MockInputIterator() noexcept
@@ -246,7 +248,7 @@ class MockIntStream
         {
         }
 
-        explicit constexpr MockInputIterator(int& remaining) noexcept
+        explicit constexpr MockInputIterator(T& remaining) noexcept
           : remaining_(&remaining)
         {
         }
@@ -279,10 +281,10 @@ class MockIntStream
     };
 
 private:
-    int remaining_;
+    T remaining_;
 
 public:
-    explicit constexpr MockIntStream(const int stream_size)
+    explicit constexpr MockIntegraStream(const T stream_size)
       : remaining_{stream_size}
     {
     }
