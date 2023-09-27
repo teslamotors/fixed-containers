@@ -1047,7 +1047,6 @@ TEST(FixedDeque, Resize)
         EXPECT_TRUE(std::ranges::equal(v3, std::array<int, 2>{{0, 1}}));
 
         v3.resize(5, 3);
-
         EXPECT_TRUE(std::ranges::equal(v3, std::array<int, 5>{{0, 1, 3, 3, 3}}));
 
         {
