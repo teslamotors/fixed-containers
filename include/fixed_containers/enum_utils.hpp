@@ -619,7 +619,7 @@ public:
     constexpr SkeletalRichEnum& operator=(SkeletalRichEnum&&) noexcept = default;
 
     constexpr const RichEnumType& operator!() const
-        requires std::is_same_v<bool, magic_enum::underlying_type_t<BackingEnum>>
+        requires std::is_same_v<bool, std::underlying_type_t<BackingEnum>>
     {
         if (*this == RichEnumType::values()[0])
         {
