@@ -183,9 +183,9 @@ constexpr std::optional<std::reference_wrapper<const RichEnum>> value_of(
     return std::nullopt;
 }
 
-template <class RichEnum, class BackingEnum>
+template <class RichEnum>
 constexpr std::optional<std::reference_wrapper<const RichEnum>> value_of(
-    const BackingEnum& backing_enum)
+    const typename RichEnum::BackingEnum& backing_enum)
 {
     const auto& rich_enum_values = RichEnum::values();
     const auto enum_integer = static_cast<std::size_t>(backing_enum);
