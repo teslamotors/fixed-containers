@@ -322,6 +322,7 @@ public:
     constexpr NonCopyableRichEnum& operator=(const NonCopyableRichEnum& other) = delete;
 
 public:
+    constexpr const BackingEnum& backing_enum() const { return backing_enum_; }
     constexpr std::size_t ordinal() const
     {
         return static_cast<std::size_t>(magic_enum::enum_integer(backing_enum_));

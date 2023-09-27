@@ -30,6 +30,14 @@ concept has_member_sizet_ordinal_void_const = requires(T t) {
 };
 
 template <typename T>
+concept has_backing_enum_typename_and_member_backing_enum_void_const = requires(T t) {
+    typename T::BackingEnum;
+    {
+        t.backing_enum()
+    } -> std::same_as<const typename T::BackingEnum&>;
+};
+
+template <typename T>
 concept has_static_sizet_count_void = requires() {
     {
         T::count()
@@ -114,6 +122,7 @@ constexpr bool has_zero_based_and_sorted_contiguous_ordinal()
 template <class T>
 concept is_rich_enum =
     has_static_sizet_count_void<T> && has_static_const_ref_array_values_void<T, T, T::count()> &&
+    has_backing_enum_typename_and_member_backing_enum_void_const<T> &&
     has_member_sizet_ordinal_void_const<T> && has_member_std_string_view_to_string_void_const<T> &&
     has_zero_based_and_sorted_contiguous_ordinal(T::values(), RichEnumOrdinalFunctor<T>{});
 
