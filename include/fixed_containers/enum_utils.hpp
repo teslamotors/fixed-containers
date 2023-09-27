@@ -514,9 +514,6 @@ public:
         return rich_enums_detail::value_of<RichEnumType>(backing_enum);
     }
 
-private:
-    static constexpr std::string_view INVALID_TO_STRING = "INVALID";
-
 protected:
     // Default constructor for supporting sentinel value semantics (e.g. INVALID) without a
     // dedicated enum constant. Does not exclude child-classes from using their own INVALID enum
