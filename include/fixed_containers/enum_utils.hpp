@@ -590,45 +590,15 @@ class SkeletalRichEnum
     using Base = SkeletalRichEnumLite<RichEnumType, BackingEnumType, InfusedDataProviderType>;
 
 public:
-    using BackingEnum = BackingEnumType;
-
-protected:
-    using ValuesFriend = SkeletalRichEnumValues<RichEnumType>;
-    using InfusedDataProvider = InfusedDataProviderType;
-    using InfusedData = typename InfusedDataProvider::DataType;
-
-public:
     static constexpr std::size_t count() { return magic_enum::enum_count<BackingEnumType>(); }
 
 private:
     static constexpr std::string_view INVALID_TO_STRING = "INVALID";
 
 protected:
-    // Default constructor for supporting sentinel value semantics (e.g. INVALID) without a
-    // dedicated enum constant. Does not exclude child-classes from using their own INVALID enum
-    // constant.
-    // Note that child-classes don't have to provide a default constructor.
-    constexpr SkeletalRichEnum() noexcept = default;
-
-    explicit(false) constexpr SkeletalRichEnum(const BackingEnum& backing_enum) noexcept
-        requires(std::is_empty_v<InfusedData>)
-      : Base{backing_enum}
-    {
-    }
-
-    constexpr SkeletalRichEnum(const BackingEnum& backing_enum,
-                               const InfusedData& enum_data) noexcept
-        requires(!std::is_empty_v<InfusedData>)
-      : Base{backing_enum, enum_data}
-    {
-    }
+    using Base::Base;
 
 public:
-    constexpr SkeletalRichEnum(const SkeletalRichEnum&) noexcept = default;
-    constexpr SkeletalRichEnum(SkeletalRichEnum&&) noexcept = default;
-    constexpr SkeletalRichEnum& operator=(const SkeletalRichEnum&) noexcept = default;
-    constexpr SkeletalRichEnum& operator=(SkeletalRichEnum&&) noexcept = default;
-
     [[nodiscard]] constexpr std::string_view to_string() const
     {
         if (this->has_value())
@@ -637,10 +607,6 @@ public:
         }
         return INVALID_TO_STRING;
     }
-
-protected:
-    // Intentionally non-virtual. Polymorphism breaks standard layout.
-    constexpr ~SkeletalRichEnum() noexcept = default;
 };
 
 template <class RichEnumType,
@@ -653,30 +619,10 @@ class NonDefaultConstructibleSkeletalRichEnum
     using Base = SkeletalRichEnum<RichEnumType, BackingEnumType, InfusedDataProviderType>;
 
 public:
-    using BackingEnum = typename Base::BackingEnum;
-
-protected:
-    using ValuesFriend = typename Base::ValuesFriend;
-    using InfusedDataProvider = InfusedDataProviderType;
-    using InfusedData = typename InfusedDataProvider::DataType;
-
-public:
     constexpr NonDefaultConstructibleSkeletalRichEnum() noexcept = delete;
 
 protected:
-    explicit(false) constexpr NonDefaultConstructibleSkeletalRichEnum(
-        const BackingEnum& backing_enum) noexcept
-        requires(std::is_empty_v<InfusedData>)
-      : Base{backing_enum}
-    {
-    }
-
-    constexpr NonDefaultConstructibleSkeletalRichEnum(const BackingEnum& backing_enum,
-                                                      const InfusedData& enum_data) noexcept
-        requires(!std::is_empty_v<InfusedData>)
-      : Base{backing_enum, enum_data}
-    {
-    }
+    using Base::Base;
 };
 
 }  // namespace fixed_containers::rich_enums

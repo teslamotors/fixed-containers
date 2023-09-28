@@ -75,6 +75,12 @@ enum class SortedContiguousValuesTestEnum4
 static_assert(std::is_trivially_copyable_v<TestRichEnum1>);
 static_assert(!std::is_trivial_v<TestRichEnum1>);
 static_assert(std::is_standard_layout_v<TestRichEnum1>);
+static_assert(std::is_default_constructible_v<TestRichEnum1>);
+
+static_assert(std::is_trivially_copyable_v<TestRichEnum2>);
+static_assert(!std::is_trivial_v<TestRichEnum2>);
+static_assert(std::is_standard_layout_v<TestRichEnum2>);
+static_assert(!std::is_default_constructible_v<TestRichEnum2>);
 
 static_assert(!is_rich_enum<CustomValuesTestEnum1>);
 static_assert(
@@ -86,6 +92,9 @@ static_assert(
 
 static_assert(is_rich_enum<TestRichEnum1>);
 static_assert(has_enum_adapter<TestRichEnum1>);
+
+static_assert(is_rich_enum<TestRichEnum2>);
+static_assert(has_enum_adapter<TestRichEnum2>);
 
 static_assert(!is_rich_enum<NonConformingTestRichEnum1>);
 static_assert(has_enum_adapter<NonConformingTestRichEnum1>);
