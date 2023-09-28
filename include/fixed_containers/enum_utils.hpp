@@ -603,7 +603,7 @@ public:
     {
         if (this->has_value())
         {
-            return magic_enum::enum_name(this->detail_backing_enum.value());
+            return magic_enum::enum_name(this->backing_enum());
         }
         return INVALID_TO_STRING;
     }
