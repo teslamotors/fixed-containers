@@ -551,6 +551,17 @@ public:
         return this->detail_backing_enum == other.detail_backing_enum;
     }
 
+    constexpr const RichEnumType& operator!() const
+        requires std::is_same_v<bool, std::underlying_type_t<BackingEnum>>
+    {
+        if (*this == RichEnumType::values()[0])
+        {
+            return RichEnumType::values()[1];
+        }
+
+        return RichEnumType::values()[0];
+    }
+
     [[nodiscard]] constexpr bool has_value() const { return this->detail_backing_enum.has_value(); }
 
     [[nodiscard]] constexpr std::size_t ordinal() const
@@ -617,17 +628,6 @@ public:
     constexpr SkeletalRichEnum(SkeletalRichEnum&&) noexcept = default;
     constexpr SkeletalRichEnum& operator=(const SkeletalRichEnum&) noexcept = default;
     constexpr SkeletalRichEnum& operator=(SkeletalRichEnum&&) noexcept = default;
-
-    constexpr const RichEnumType& operator!() const
-        requires std::is_same_v<bool, std::underlying_type_t<BackingEnum>>
-    {
-        if (*this == RichEnumType::values()[0])
-        {
-            return RichEnumType::values()[1];
-        }
-
-        return RichEnumType::values()[0];
-    }
 
     [[nodiscard]] constexpr std::string_view to_string() const
     {
