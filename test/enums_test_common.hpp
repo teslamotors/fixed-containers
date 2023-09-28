@@ -82,10 +82,10 @@ namespace detail
 {
 enum class TestRichEnum1BackingEnum : std::uint32_t
 {
-    C_ONE,
-    C_TWO,
-    C_THREE,
-    C_FOUR,
+    C_ONE = 19,
+    C_FOUR = 25,
+    C_TWO = 21,
+    C_THREE = 23,
 };
 
 // If we have data to associate with each enum constant, we can put them in a map here, then provide

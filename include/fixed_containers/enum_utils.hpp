@@ -158,17 +158,6 @@ struct RichEnumAdapter
 };
 
 template <class RichEnum>
-constexpr std::optional<std::reference_wrapper<const RichEnum>> value_of(std::size_t i)
-{
-    if (i >= RichEnum::count())
-    {
-        return std::nullopt;
-    }
-
-    return RichEnum::values()[i];
-}
-
-template <class RichEnum>
 constexpr std::optional<std::reference_wrapper<const RichEnum>> value_of(
     const std::string_view& name)
 {
@@ -188,14 +177,16 @@ constexpr std::optional<std::reference_wrapper<const RichEnum>> value_of(
     const typename RichEnum::BackingEnum& backing_enum)
 {
     const auto& rich_enum_values = RichEnum::values();
-    const auto enum_integer = static_cast<std::size_t>(backing_enum);
 
     // Optimistically try the index for zero-based and contiguous enum values.
+    // Note: not using the has_zero_based_and_sorted_contiguous_ordinal trait because it
+    // uses magic_enum and this function is used by SkeletalRichEnumLite too.
     {
-        if (enum_integer < rich_enum_values.size())
+        const auto maybe_enum_index = static_cast<std::size_t>(backing_enum);
+        if (maybe_enum_index < rich_enum_values.size())
         {
-            const RichEnum& v = rich_enum_values.at(enum_integer);
-            if (v.ordinal() == enum_integer)
+            const RichEnum& v = rich_enum_values.at(maybe_enum_index);
+            if (v.backing_enum() == backing_enum)
             {
                 return v;
             }
@@ -205,13 +196,20 @@ constexpr std::optional<std::reference_wrapper<const RichEnum>> value_of(
     // If the above fails, linearly search the array
     for (const RichEnum& v : rich_enum_values)
     {
-        if (v.ordinal() == enum_integer)
+        if (v.backing_enum() == backing_enum)
         {
             return v;
         }
     }
 
     return std::nullopt;
+}
+
+template <class RichEnum>
+constexpr std::optional<std::reference_wrapper<const RichEnum>> value_of(
+    std::underlying_type_t<typename RichEnum::BackingEnum> enum_integer)
+{
+    return value_of<RichEnum>(typename RichEnum::BackingEnum(enum_integer));
 }
 
 struct EmptyEnumData
@@ -388,9 +386,7 @@ public:  // Public so this type is a structural type and can thus be used in tem
 #define FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(RichEnumName, CONSTANT_NAME) \
     static constexpr const RichEnumName& CONSTANT_NAME()                            \
     {                                                                               \
-        return ::fixed_containers::rich_enums_detail::value_of<RichEnumName>(       \
-                   BackingEnum::CONSTANT_NAME)                                      \
-            .value();                                                               \
+        return RichEnumName::value_of(BackingEnum::CONSTANT_NAME).value();          \
     }
 
 namespace fixed_containers::rich_enums
@@ -506,12 +502,6 @@ protected:
 
 public:
     static constexpr std::optional<std::reference_wrapper<const RichEnumType>> value_of(
-        std::size_t i)
-    {
-        return rich_enums_detail::value_of<RichEnumType>(i);
-    }
-
-    static constexpr std::optional<std::reference_wrapper<const RichEnumType>> value_of(
         const std::string_view& name)
     {
         return rich_enums_detail::value_of<RichEnumType>(name);
@@ -521,6 +511,12 @@ public:
         const BackingEnum& backing_enum)
     {
         return rich_enums_detail::value_of<RichEnumType>(backing_enum);
+    }
+
+    static constexpr std::optional<std::reference_wrapper<const RichEnumType>> value_of(
+        std::underlying_type_t<BackingEnum> enum_integer)
+    {
+        return rich_enums_detail::value_of<RichEnumType>(enum_integer);
     }
 
 protected:
@@ -573,11 +569,6 @@ public:
 
     [[nodiscard]] constexpr bool has_value() const { return this->detail_backing_enum.has_value(); }
 
-    [[nodiscard]] constexpr std::size_t ordinal() const
-    {
-        return static_cast<std::size_t>(this->detail_backing_enum.value());
-    }
-
 protected:
     // Intentionally non-virtual. Polymorphism breaks standard layout.
     constexpr ~SkeletalRichEnumLite() noexcept = default;
@@ -608,6 +599,11 @@ protected:
     using Base::Base;
 
 public:
+    [[nodiscard]] constexpr std::size_t ordinal() const
+    {
+        return magic_enum::enum_index(this->backing_enum()).value();
+    }
+
     [[nodiscard]] constexpr std::string_view to_string() const
     {
         if (this->has_value())
