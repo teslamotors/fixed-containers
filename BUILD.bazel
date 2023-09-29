@@ -237,6 +237,19 @@ cc_library(
 
 
 cc_library(
+    name = "fixed_queue",
+    hdrs = ["include/fixed_containers/fixed_queue.hpp"],
+    includes = ["include"],
+    deps = [
+        ":fixed_deque",
+        ":source_location",
+    ],
+    copts = ["-std=c++20"],
+)
+
+
+
+cc_library(
     name = "fixed_string",
     hdrs = ["include/fixed_containers/fixed_string.hpp"],
     includes = ["include"],
@@ -679,6 +692,19 @@ cc_test(
     deps = [
         ":concepts",
         ":fixed_stack",
+        ":fixed_vector",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
+    ],
+    copts = ["-std=c++20"],
+)
+
+cc_test(
+    name = "fixed_queue_test",
+    srcs = ["test/fixed_queue_test.cpp"],
+    deps = [
+        ":concepts",
+        ":fixed_queue",
         ":fixed_vector",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
