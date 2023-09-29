@@ -21,8 +21,11 @@ error: expected unqualified-id if (const auto __len = std::min(__d1, __d2))
 #include "fixed_containers/enum_map.hpp"
 #include "fixed_containers/enum_set.hpp"
 #include "fixed_containers/enum_utils.hpp"
+#include "fixed_containers/fixed_deque.hpp"
 #include "fixed_containers/fixed_map.hpp"
 #include "fixed_containers/fixed_set.hpp"
+#include "fixed_containers/fixed_stack.hpp"
+#include "fixed_containers/fixed_string.hpp"
 #include "fixed_containers/fixed_vector.hpp"
 
 namespace fixed_containers
@@ -62,24 +65,36 @@ TEST(MacroCountermeasures, DummyUsagesOfContainers)
     // Dummy usages are not necessary, this is mostly a compile-only test.
     // Counters tools that remove unused headers.
     {
-        FixedVector<int, 5> vec{};
-        (void)vec;
+        FixedDeque<int, 5> s{};
+        (void)s;
     }
     {
-        FixedSet<int, 5> set{};
-        (void)set;
+        FixedVector<int, 5> s{};
+        (void)s;
     }
     {
-        FixedMap<int, int, 5> map{};
-        (void)map;
+        FixedStack<int, 5> s{};
+        (void)s;
     }
     {
-        EnumSet<Color> set{};
-        (void)set;
+        FixedString<5> s{};
+        (void)s;
     }
     {
-        EnumMap<Color, int> map{};
-        (void)map;
+        FixedSet<int, 5> s{};
+        (void)s;
+    }
+    {
+        FixedMap<int, int, 5> s{};
+        (void)s;
+    }
+    {
+        EnumSet<Color> s{};
+        (void)s;
+    }
+    {
+        EnumMap<Color, int> s{};
+        (void)s;
     }
 }
 }  // namespace fixed_containers
