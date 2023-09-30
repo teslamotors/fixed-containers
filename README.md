@@ -21,6 +21,7 @@ Header-only C++20 library that provides containers with the following properties
 * `FixedMap`/`FixedSet` - Red-Black Tree map/set implementation with `std::map`/`std::set` API and "fixed container" properties.
 * `EnumMap`/`EnumSet` - For enum keys only, Map/Set implementation with `std::map`/`std::set` API and "fixed container" properties. O(1) lookups.
 * `FixedDeque` - Deque implementation with `std::deque` API and "fixed container" properties
+* `FixedQueue` - Queue implementation with `std::queue` API and "fixed container" properties
 * `FixedStack` - Stack implementation with `std::stack` API and "fixed container" properties
 * `FixedString` - String implementation with `std::string` API and "fixed container" properties
 * `StringLiteral` - Compile-time null-terminated literal string.
@@ -154,6 +155,21 @@ More examples can be found [here](test/enums_test_common.hpp).
     static_assert(v1[2] == 1);
     static_assert(v1.size() == 3);
     static_assert(v1.capacity() == 11);
+    ```
+  
+- FixedQueue
+    ```C++
+    constexpr FixedQueue<int, 3> s1 = []()
+    {
+        FixedStack<int, 3> v1{};
+        int my_int = 77;
+        v1.push(my_int);
+        v1.push(99);
+        return v1;
+    }();
+
+    static_assert(s1.front() == 77);
+    static_assert(s1.size() == 2);
     ```
 
 - FixedStack
