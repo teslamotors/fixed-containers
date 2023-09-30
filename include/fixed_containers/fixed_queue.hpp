@@ -94,6 +94,27 @@ public:
     {
         IMPLEMENTATION_DETAIL_DO_NOT_USE_data_.pop_front(loc);
     }
+
+    template <std::size_t MAXIMUM_SIZE_2, customize::SequenceContainerChecking CheckingType2>
+    constexpr bool operator==(const FixedQueue<T, MAXIMUM_SIZE_2, CheckingType2>& other) const
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_data_ ==
+               other.IMPLEMENTATION_DETAIL_DO_NOT_USE_data_;
+    }
+
+    template <std::size_t MAXIMUM_SIZE_2, customize::SequenceContainerChecking CheckingType2>
+    constexpr auto operator<=>(const FixedQueue<T, MAXIMUM_SIZE_2, CheckingType2>& other) const
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_data_ <=>
+               other.IMPLEMENTATION_DETAIL_DO_NOT_USE_data_;
+    }
 };
+
+template <typename T, std::size_t MAXIMUM_SIZE, typename CheckingType>
+constexpr typename FixedQueue<T, MAXIMUM_SIZE, CheckingType>::size_type is_full(
+    const FixedQueue<T, MAXIMUM_SIZE, CheckingType>& c)
+{
+    return c.size() >= MAXIMUM_SIZE;
+}
 
 }  // namespace fixed_containers
