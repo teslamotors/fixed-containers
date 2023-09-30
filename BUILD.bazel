@@ -218,6 +218,7 @@ cc_library(
         ":bidirectional_iterator",
         ":erase_if",
         ":fixed_red_black_tree",
+        ":set_checking",
         ":source_location",
     ],
     copts = ["-std=c++20"],
@@ -428,6 +429,17 @@ cc_library(
     deps = [
         ":source_location",
         ":string_literal",
+        ":type_name",
+    ],
+    copts = ["-std=c++20"],
+)
+
+cc_library(
+    name = "set_checking",
+    hdrs = ["include/fixed_containers/set_checking.hpp"],
+    includes = ["include"],
+    deps = [
+        ":source_location",
         ":type_name",
     ],
     copts = ["-std=c++20"],
