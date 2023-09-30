@@ -6,7 +6,6 @@
 #include "test_utilities_common.hpp"
 
 #include "fixed_containers/consteval_compare.hpp"
-#include "fixed_containers/fixed_vector.hpp"
 
 #include <gtest/gtest.h>
 #include <range/v3/iterator/concepts.hpp>
@@ -196,7 +195,7 @@ TEST(EnumMap, Builder_MultipleOuts)
 
 TEST(EnumMap, StaticFactory_CreateWithKeys)
 {
-    constexpr FixedVector<TestEnum1, 5> keys = {TestEnum1 ::ONE, TestEnum1 ::FOUR};
+    constexpr std::array keys{TestEnum1 ::ONE, TestEnum1 ::FOUR};
 
     constexpr EnumMap<TestEnum1, int> s1 = EnumMap<TestEnum1, int>::create_with_keys(keys, -17);
     static_assert(s1.size() == 2);
