@@ -25,6 +25,7 @@ template <class T, class K>
 concept EnumMapChecking =
     requires(K key, std::size_t size, const std_transition::source_location& loc) {
         T::missing_enum_entries(loc);
+        T::duplicate_enum_entries(loc);
         T::out_of_range(key, size, loc);  // ~ std::out_of_range
     };
 
