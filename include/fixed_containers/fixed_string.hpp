@@ -3,8 +3,8 @@
 #include "fixed_containers/concepts.hpp"
 #include "fixed_containers/fixed_vector.hpp"
 #include "fixed_containers/preconditions.hpp"
+#include "fixed_containers/sequence_container_checking.hpp"
 #include "fixed_containers/source_location.hpp"
-#include "fixed_containers/string_literal.hpp"
 
 #include <array>
 #include <cassert>
@@ -12,47 +12,11 @@
 #include <cstdlib>
 #include <string_view>
 
-namespace fixed_containers::fixed_string_customize
-{
-template <class T>
-concept FixedStringChecking = fixed_vector_customize::FixedVectorChecking<T>;
-
-template <std::size_t /*MAXIMUM_LENGTH*/>
-struct AbortChecking
-{
-    [[noreturn]] static constexpr void out_of_range(const std::size_t /*index*/,
-                                                    const std::size_t /*size*/,
-                                                    const std_transition::source_location& /*loc*/)
-    {
-        std::abort();
-    }
-
-    [[noreturn]] static void length_error(const std::size_t /*target_capacity*/,
-                                          const std_transition::source_location& /*loc*/)
-    {
-        std::abort();
-    }
-
-    [[noreturn]] static constexpr void empty_container_access(
-        const std_transition::source_location& /*loc*/)
-    {
-        std::abort();
-    }
-
-    [[noreturn]] static constexpr void invalid_argument(
-        const fixed_containers::StringLiteral& /*error_message*/,
-        const std_transition::source_location& /*loc*/)
-    {
-        std::abort();
-    }
-};
-}  // namespace fixed_containers::fixed_string_customize
-
 namespace fixed_containers
 {
 template <std::size_t MAXIMUM_LENGTH,
-          fixed_string_customize::FixedStringChecking CheckingType =
-              fixed_string_customize::AbortChecking<MAXIMUM_LENGTH>>
+          customize::SequenceContainerChecking CheckingType =
+              customize::SequenceContainerAbortChecking<char, MAXIMUM_LENGTH>>
 class FixedString
 {
     using Checking = CheckingType;
@@ -379,8 +343,7 @@ public:
         return std::string_view(*this).compare(view);
     }
 
-    template <std::size_t MAXIMUM_LENGTH_2,
-              fixed_string_customize::FixedStringChecking CheckingType2>
+    template <std::size_t MAXIMUM_LENGTH_2, customize::SequenceContainerChecking CheckingType2>
     constexpr bool operator==(const FixedString<MAXIMUM_LENGTH_2, CheckingType2>& other) const
     {
         return vec() == other.IMPLEMENTATION_DETAIL_DO_NOT_USE_data_;
@@ -391,8 +354,7 @@ public:
     }
     constexpr bool operator==(std::string_view view) const noexcept { return as_view() == view; }
 
-    template <std::size_t MAXIMUM_LENGTH_2,
-              fixed_string_customize::FixedStringChecking CheckingType2>
+    template <std::size_t MAXIMUM_LENGTH_2, customize::SequenceContainerChecking CheckingType2>
     constexpr std::strong_ordering operator<=>(
         const FixedString<MAXIMUM_LENGTH_2, CheckingType2>& other) const noexcept
     {
@@ -497,7 +459,7 @@ constexpr typename FixedString<MAXIMUM_LENGTH, CheckingType>::size_type is_full(
  * Construct a FixedString with its capacity being deduced from the number of items being passed.
  */
 template <
-    fixed_string_customize::FixedStringChecking CheckingType,
+    customize::SequenceContainerChecking CheckingType,
     std::size_t MAXIMUM_LENGTH_WITH_NULL_TERMINATOR,
     // Exposing this as a template parameter is useful for customization (for example with
     // child classes that set the CheckingType)
@@ -525,7 +487,7 @@ template <std::size_t MAXIMUM_LENGTH_WITH_NULL_TERMINATOR>
         std_transition::source_location::current()) noexcept
 {
     constexpr std::size_t MAXIMUM_LENGTH = MAXIMUM_LENGTH_WITH_NULL_TERMINATOR - 1;
-    using CheckingType = fixed_string_customize::AbortChecking<MAXIMUM_LENGTH>;
+    using CheckingType = customize::SequenceContainerAbortChecking<char, MAXIMUM_LENGTH>;
     using FixedStringType = FixedString<MAXIMUM_LENGTH, CheckingType>;
     return make_fixed_string<CheckingType, MAXIMUM_LENGTH_WITH_NULL_TERMINATOR, FixedStringType>(
         list, loc);
@@ -536,7 +498,7 @@ template <std::size_t MAXIMUM_LENGTH_WITH_NULL_TERMINATOR>
 namespace std
 {
 template <std::size_t MAXIMUM_LENGTH,
-          fixed_containers::fixed_string_customize::FixedStringChecking CheckingType>
+          fixed_containers::customize::SequenceContainerChecking CheckingType>
 struct tuple_size<fixed_containers::FixedString<MAXIMUM_LENGTH, CheckingType>>
   : std::integral_constant<std::size_t, 0>
 {
