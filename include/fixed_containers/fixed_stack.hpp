@@ -17,7 +17,8 @@ public:
     using reference = typename container_type::reference;
     using const_reference = typename container_type::const_reference;
 
-    container_type IMPLEMENTATION_DETAIL_DO_NOT_USE_data_{};
+public:  // Public so this type is a structural type and can thus be used in template parameters
+    container_type IMPLEMENTATION_DETAIL_DO_NOT_USE_data_;
 
 public:
     constexpr FixedStack()
