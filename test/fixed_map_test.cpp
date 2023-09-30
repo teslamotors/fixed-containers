@@ -1755,6 +1755,6 @@ TEST(FixedMap, ArgumentDependentLookup)
     // Compile-only test
     fixed_containers::FixedMap<int, int, 5> a{};
     erase_if(a, [](auto&&) { return true; });
-    is_full(a);
+    (void)is_full(a);
 }
 }  // namespace another_namespace_unrelated_to_the_fixed_containers_namespace

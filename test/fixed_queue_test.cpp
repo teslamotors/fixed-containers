@@ -239,6 +239,6 @@ TEST(FixedQueue, ArgumentDependentLookup)
 {
     // Compile-only test
     fixed_containers::FixedQueue<int, 5> a{};
-    is_full(a);
+    (void)is_full(a);
 }
 }  // namespace another_namespace_unrelated_to_the_fixed_containers_namespace

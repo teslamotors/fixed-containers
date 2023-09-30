@@ -99,7 +99,7 @@ public:
 };
 
 template <typename T, std::size_t MAXIMUM_SIZE, typename CheckingType>
-constexpr typename FixedStack<T, MAXIMUM_SIZE, CheckingType>::size_type is_full(
+[[nodiscard]] constexpr typename FixedStack<T, MAXIMUM_SIZE, CheckingType>::size_type is_full(
     const FixedStack<T, MAXIMUM_SIZE, CheckingType>& c)
 {
     return c.size() >= MAXIMUM_SIZE;

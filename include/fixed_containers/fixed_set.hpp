@@ -437,9 +437,11 @@ here. clang accepts it */
                     std::size_t>
           typename StorageTemplate,
           customize::SetChecking<K> CheckingType>
-constexpr typename FixedSet<K, MAXIMUM_SIZE, Compare, COMPACTNESS, StorageTemplate, CheckingType>::
-    size_type
-    is_full(const FixedSet<K, MAXIMUM_SIZE, Compare, COMPACTNESS, StorageTemplate, CheckingType>& c)
+[[nodiscard]] constexpr
+    typename FixedSet<K, MAXIMUM_SIZE, Compare, COMPACTNESS, StorageTemplate, CheckingType>::
+        size_type
+        is_full(
+            const FixedSet<K, MAXIMUM_SIZE, Compare, COMPACTNESS, StorageTemplate, CheckingType>& c)
 {
     return c.size() >= c.max_size();
 }

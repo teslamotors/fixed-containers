@@ -111,7 +111,7 @@ public:
 };
 
 template <typename T, std::size_t MAXIMUM_SIZE, typename CheckingType>
-constexpr typename FixedQueue<T, MAXIMUM_SIZE, CheckingType>::size_type is_full(
+[[nodiscard]] constexpr typename FixedQueue<T, MAXIMUM_SIZE, CheckingType>::size_type is_full(
     const FixedQueue<T, MAXIMUM_SIZE, CheckingType>& c)
 {
     return c.size() >= MAXIMUM_SIZE;

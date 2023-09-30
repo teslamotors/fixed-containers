@@ -449,7 +449,7 @@ private:
 };
 
 template <std::size_t MAXIMUM_LENGTH, typename CheckingType>
-constexpr typename FixedString<MAXIMUM_LENGTH, CheckingType>::size_type is_full(
+[[nodiscard]] constexpr typename FixedString<MAXIMUM_LENGTH, CheckingType>::size_type is_full(
     const FixedString<MAXIMUM_LENGTH, CheckingType>& c)
 {
     return c.size() >= c.max_size();

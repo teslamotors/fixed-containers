@@ -2088,6 +2088,6 @@ TEST(FixedVector, ArgumentDependentLookup)
     fixed_containers::FixedVector<int, 5> a{};
     erase(a, 5);
     erase_if(a, [](int) { return true; });
-    is_full(a);
+    (void)is_full(a);
 }
 }  // namespace another_namespace_unrelated_to_the_fixed_containers_namespace

@@ -709,6 +709,6 @@ TEST(FixedSet, ArgumentDependentLookup)
     // Compile-only test
     fixed_containers::FixedSet<int, 5> a{};
     erase_if(a, [](int) { return true; });
-    is_full(a);
+    (void)is_full(a);
 }
 }  // namespace another_namespace_unrelated_to_the_fixed_containers_namespace

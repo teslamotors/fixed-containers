@@ -1003,7 +1003,7 @@ public:
 };
 
 template <typename T, std::size_t MAXIMUM_SIZE, typename CheckingType>
-constexpr typename FixedVector<T, MAXIMUM_SIZE, CheckingType>::size_type is_full(
+[[nodiscard]] constexpr typename FixedVector<T, MAXIMUM_SIZE, CheckingType>::size_type is_full(
     const FixedVector<T, MAXIMUM_SIZE, CheckingType>& c)
 {
     return c.size() >= c.max_size();

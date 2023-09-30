@@ -1013,7 +1013,7 @@ public:
 };
 
 template <typename T, std::size_t MAXIMUM_SIZE, typename CheckingType>
-constexpr typename FixedDeque<T, MAXIMUM_SIZE, CheckingType>::size_type is_full(
+[[nodiscard]] constexpr typename FixedDeque<T, MAXIMUM_SIZE, CheckingType>::size_type is_full(
     const FixedDeque<T, MAXIMUM_SIZE, CheckingType>& c)
 {
     return c.size() >= c.max_size();
