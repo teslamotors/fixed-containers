@@ -38,7 +38,10 @@ public:
     {
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_data_.size();
     }
-    [[nodiscard]] constexpr bool empty() const noexcept { return IMPLEMENTATION_DETAIL_DO_NOT_USE_data_.empty(); }
+    [[nodiscard]] constexpr bool empty() const noexcept
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_data_.empty();
+    }
 
     constexpr reference front(
         const std_transition::source_location& loc = std_transition::source_location::current())
@@ -46,7 +49,7 @@ public:
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_data_.front(loc);
     }
     constexpr const_reference front(const std_transition::source_location& loc =
-                                      std_transition::source_location::current()) const
+                                        std_transition::source_location::current()) const
     {
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_data_.front(loc);
     }
@@ -57,7 +60,7 @@ public:
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_data_.back(loc);
     }
     constexpr const_reference back(const std_transition::source_location& loc =
-                                      std_transition::source_location::current()) const
+                                       std_transition::source_location::current()) const
     {
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_data_.back(loc);
     }
