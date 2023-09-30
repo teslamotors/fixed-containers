@@ -1,5 +1,7 @@
 #include "fixed_containers/fixed_queue.hpp"
+
 #include "fixed_containers/fixed_vector.hpp"
+
 #include <gtest/gtest.h>
 
 #include <queue>
