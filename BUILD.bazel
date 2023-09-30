@@ -234,8 +234,6 @@ cc_library(
     copts = ["-std=c++20"],
 )
 
-
-
 cc_library(
     name = "fixed_queue",
     hdrs = ["include/fixed_containers/fixed_queue.hpp"],
@@ -246,8 +244,6 @@ cc_library(
     ],
     copts = ["-std=c++20"],
 )
-
-
 
 cc_library(
     name = "fixed_string",
@@ -333,7 +329,6 @@ cc_library(
     includes = ["include"],
     copts = ["-std=c++20"],
 )
-
 
 cc_library(
     name = "optional_storage",
@@ -852,7 +847,6 @@ cc_test(
     ],
     copts = ["-std=c++20"],
 )
-
 
 cc_test(
     name = "string_literal_test",
