@@ -19,7 +19,7 @@
 #include <memory>
 #include <type_traits>
 
-namespace fixed_containers::enum_map_customize
+namespace fixed_containers::customize
 {
 template <class T, class K>
 concept EnumMapChecking =
@@ -30,8 +30,10 @@ concept EnumMapChecking =
     };
 
 template <class K, class V>
-struct AbortChecking
+struct EnumMapAbortChecking
 {
+    // KEY_TYPE_NAME and VALUE_TYPE_NAME are not used, but are meant as an example
+    // for Checking implementations that will utilize this information.
     static constexpr auto KEY_TYPE_NAME = fixed_containers::type_name<K>();
     static constexpr auto VALUE_TYPE_NAME = fixed_containers::type_name<V>();
 
@@ -45,15 +47,15 @@ struct AbortChecking
         std::abort();
     }
 
-    [[noreturn]] static constexpr void out_of_range(const K& /*key*/,
-                                                    const std::size_t /*size*/,
-                                                    const std_transition::source_location& /*loc*/)
+    [[noreturn]] static void out_of_range(const K& /*key*/,
+                                          const std::size_t /*size*/,
+                                          const std_transition::source_location& /*loc*/)
     {
         std::abort();
     }
 };
 
-}  // namespace fixed_containers::enum_map_customize
+}  // namespace fixed_containers::customize
 
 namespace fixed_containers::enum_map_detail
 {
@@ -117,7 +119,7 @@ private:
     EnumMapType enum_map_;
 };
 
-template <class K, class V, enum_map_customize::EnumMapChecking<K> CheckingType>
+template <class K, class V, customize::EnumMapChecking<K> CheckingType>
 class EnumMapBase
 {
 public:
@@ -586,7 +588,7 @@ public:
         return static_cast<std::size_t>(contains(key));
     }
 
-    template <enum_map_customize::EnumMapChecking<K> CheckingType2>
+    template <customize::EnumMapChecking<K> CheckingType2>
     [[nodiscard]] constexpr bool operator==(const EnumMapBase<K, V, CheckingType2>& other) const
     {
         for (std::size_t i = 0; i < ENUM_COUNT; i++)
@@ -716,7 +718,7 @@ protected:  // [WORKAROUND-1]
 
 namespace fixed_containers::enum_map_detail::specializations
 {
-template <class K, class V, enum_map_customize::EnumMapChecking<K> CheckingType>
+template <class K, class V, customize::EnumMapChecking<K> CheckingType>
 class EnumMap : public enum_map_detail::EnumMapBase<K, V, CheckingType>
 {
     using Self = EnumMap<K, V, CheckingType>;
@@ -877,7 +879,7 @@ public:
     constexpr ~EnumMap() noexcept { this->clear(); }
 };
 
-template <class K, TriviallyCopyable V, enum_map_customize::EnumMapChecking<K> CheckingType>
+template <class K, TriviallyCopyable V, customize::EnumMapChecking<K> CheckingType>
 class EnumMap<K, V, CheckingType> : public enum_map_detail::EnumMapBase<K, V, CheckingType>
 {
     using Self = EnumMap<K, V, CheckingType>;
@@ -960,8 +962,7 @@ namespace fixed_containers
  */
 template <class K,
           class V,
-          enum_map_customize::EnumMapChecking<K> CheckingType =
-              enum_map_customize::AbortChecking<K, V>>
+          customize::EnumMapChecking<K> CheckingType = customize::EnumMapAbortChecking<K, V>>
 class EnumMap : public enum_map_detail::specializations::EnumMap<K, V, CheckingType>
 {
     using Self = EnumMap<K, V, CheckingType>;
@@ -1032,7 +1033,7 @@ public:
     }
 };
 
-template <class K, class V, enum_map_customize::EnumMapChecking<K> CheckingType, class Predicate>
+template <class K, class V, customize::EnumMapChecking<K> CheckingType, class Predicate>
 constexpr typename EnumMap<K, V, CheckingType>::size_type erase_if(EnumMap<K, V, CheckingType>& c,
                                                                    Predicate predicate)
 {
