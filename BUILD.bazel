@@ -150,9 +150,8 @@ cc_library(
         ":optional_storage",
         ":preconditions",
         ":random_access_iterator",
+        ":sequence_container_checking",
         ":source_location",
-        ":string_literal",
-        ":type_name",
     ],
     copts = ["-std=c++20"],
 )
@@ -253,8 +252,8 @@ cc_library(
         ":concepts",
         ":fixed_vector",
         ":preconditions",
+        ":sequence_container_checking",
         ":source_location",
-        ":string_literal",
     ],
     copts = ["-std=c++20"],
 )
@@ -272,9 +271,8 @@ cc_library(
         ":optional_storage",
         ":preconditions",
         ":random_access_iterator_transformer",
+        ":sequence_container_checking",
         ":source_location",
-        ":string_literal",
-        ":type_name",
     ],
     copts = ["-std=c++20"],
 )
@@ -407,6 +405,18 @@ cc_library(
         ":fixed_stack",
         ":fixed_vector",
         ":in_out",
+    ],
+    copts = ["-std=c++20"],
+)
+
+cc_library(
+    name = "sequence_container_checking",
+    hdrs = ["include/fixed_containers/sequence_container_checking.hpp"],
+    includes = ["include"],
+    deps = [
+        ":source_location",
+        ":string_literal",
+        ":type_name",
     ],
     copts = ["-std=c++20"],
 )

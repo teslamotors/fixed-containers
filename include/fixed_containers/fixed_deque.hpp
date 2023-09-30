@@ -7,9 +7,8 @@
 #include "fixed_containers/optional_storage.hpp"
 #include "fixed_containers/preconditions.hpp"
 #include "fixed_containers/random_access_iterator.hpp"
+#include "fixed_containers/sequence_container_checking.hpp"
 #include "fixed_containers/source_location.hpp"
-#include "fixed_containers/string_literal.hpp"
-#include "fixed_containers/type_name.hpp"
 
 #include <algorithm>
 #include <array>
@@ -19,52 +18,6 @@
 #include <memory>
 #include <type_traits>
 
-namespace fixed_containers::fixed_deque_customize
-{
-template <class T>
-concept FixedDequeChecking = requires(std::size_t i,
-                                      std::size_t s,
-                                      const StringLiteral& error_message,
-                                      const std_transition::source_location& loc) {
-    T::out_of_range(i, s, loc);  // ~ std::out_of_range
-    T::length_error(s, loc);     // ~ std::length_error
-    T::empty_container_access(loc);
-    T::invalid_argument(error_message, loc);  // ~ std::invalid_argument
-};
-
-template <typename T, std::size_t /*MAXIMUM_SIZE*/>
-struct AbortChecking
-{
-    static constexpr auto TYPE_NAME = fixed_containers::type_name<T>();
-
-    [[noreturn]] static constexpr void out_of_range(const std::size_t /*index*/,
-                                                    const std::size_t /*size*/,
-                                                    const std_transition::source_location& /*loc*/)
-    {
-        std::abort();
-    }
-
-    [[noreturn]] static void length_error(const std::size_t /*target_capacity*/,
-                                          const std_transition::source_location& /*loc*/)
-    {
-        std::abort();
-    }
-
-    [[noreturn]] static constexpr void empty_container_access(
-        const std_transition::source_location& /*loc*/)
-    {
-        std::abort();
-    }
-
-    [[noreturn]] static constexpr void invalid_argument(
-        const fixed_containers::StringLiteral& /*error_message*/,
-        const std_transition::source_location& /*loc*/)
-    {
-        std::abort();
-    }
-};
-}  // namespace fixed_containers::fixed_deque_customize
-
 namespace fixed_containers::fixed_deque_detail
 {
 // FixedDeque<T> should carry the properties of T. For example, if T fulfils
@@ -73,9 +26,7 @@ namespace fixed_containers::fixed_deque_detail
 // that is preventing usage of concepts for destructors: https://bugs.llvm.org/show_bug.cgi?id=46269
 // [WORKAROUND-1] due to destructors: manually do the split with template specialization.
 // FixedDequeBase is only used for avoiding too much duplication for the destructor split
-template <typename T,
-          std::size_t MAXIMUM_SIZE,
-          fixed_deque_customize::FixedDequeChecking CheckingType>
+template <typename T, std::size_t MAXIMUM_SIZE, customize::SequenceContainerChecking CheckingType>
 class FixedDequeBase
 {
     using OptionalT = optional_storage_detail::OptionalStorage<T>;
@@ -518,7 +469,7 @@ public:
     }
     [[nodiscard]] constexpr bool empty() const noexcept { return size() == 0; }
 
-    template <std::size_t MAXIMUM_SIZE_2, fixed_deque_customize::FixedDequeChecking CheckingType2>
+    template <std::size_t MAXIMUM_SIZE_2, customize::SequenceContainerChecking CheckingType2>
     constexpr bool operator==(const FixedDequeBase<T, MAXIMUM_SIZE_2, CheckingType2>& other) const
     {
         if constexpr (MAXIMUM_SIZE == MAXIMUM_SIZE_2)
@@ -545,7 +496,7 @@ public:
         return true;
     }
 
-    template <std::size_t MAXIMUM_SIZE_2, fixed_deque_customize::FixedDequeChecking CheckingType2>
+    template <std::size_t MAXIMUM_SIZE_2, customize::SequenceContainerChecking CheckingType2>
     constexpr auto operator<=>(const FixedDequeBase<T, MAXIMUM_SIZE_2, CheckingType2>& other) const
     {
         using OrderingType = decltype(std::declval<T>() <=> std::declval<T>());
@@ -865,9 +816,7 @@ protected:
 
 namespace fixed_containers::fixed_deque_detail::specializations
 {
-template <typename T,
-          std::size_t MAXIMUM_SIZE,
-          fixed_deque_customize::FixedDequeChecking CheckingType>
+template <typename T, std::size_t MAXIMUM_SIZE, customize::SequenceContainerChecking CheckingType>
 class FixedDeque : public fixed_deque_detail::FixedDequeBase<T, MAXIMUM_SIZE, CheckingType>
 {
     using Base = fixed_deque_detail::FixedDequeBase<T, MAXIMUM_SIZE, CheckingType>;
@@ -968,7 +917,7 @@ public:
 
 template <TriviallyCopyable T,
           std::size_t MAXIMUM_SIZE,
-          fixed_deque_customize::FixedDequeChecking CheckingType>
+          customize::SequenceContainerChecking CheckingType>
 class FixedDeque<T, MAXIMUM_SIZE, CheckingType>
   : public fixed_deque_detail::FixedDequeBase<T, MAXIMUM_SIZE, CheckingType>
 {
@@ -1022,8 +971,8 @@ namespace fixed_containers
  */
 template <typename T,
           std::size_t MAXIMUM_SIZE,
-          fixed_deque_customize::FixedDequeChecking CheckingType =
-              fixed_deque_customize::AbortChecking<T, MAXIMUM_SIZE>>
+          customize::SequenceContainerChecking CheckingType =
+              customize::SequenceContainerAbortChecking<T, MAXIMUM_SIZE>>
 class FixedDeque
   : public fixed_deque_detail::specializations::FixedDeque<T, MAXIMUM_SIZE, CheckingType>
 {
@@ -1092,7 +1041,7 @@ constexpr typename FixedDeque<T, MAXIMUM_SIZE, CheckingType>::size_type erase_if
  * Construct a FixedDeque with its capacity being deduced from the number of items being passed.
  */
 template <typename T,
-          fixed_deque_customize::FixedDequeChecking CheckingType,
+          customize::SequenceContainerChecking CheckingType,
           std::size_t MAXIMUM_SIZE,
           // Exposing this as a template parameter is useful for customization (for example with
           // child classes that set the CheckingType)
@@ -1116,7 +1065,7 @@ template <typename T, std::size_t MAXIMUM_SIZE>
     const std_transition::source_location& loc =
         std_transition::source_location::current()) noexcept
 {
-    using CheckingType = fixed_deque_customize::AbortChecking<T, MAXIMUM_SIZE>;
+    using CheckingType = customize::SequenceContainerAbortChecking<T, MAXIMUM_SIZE>;
     using FixedDequeType = FixedDeque<T, MAXIMUM_SIZE, CheckingType>;
     return make_fixed_deque<T, CheckingType, MAXIMUM_SIZE, FixedDequeType>(list, loc);
 }
