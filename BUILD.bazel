@@ -230,6 +230,7 @@ cc_library(
     includes = ["include"],
     deps = [
         ":fixed_vector",
+        ":sequence_container_checking",
         ":source_location",
     ],
     copts = ["-std=c++20"],
@@ -241,6 +242,7 @@ cc_library(
     includes = ["include"],
     deps = [
         ":fixed_deque",
+        ":sequence_container_checking",
         ":source_location",
     ],
     copts = ["-std=c++20"],

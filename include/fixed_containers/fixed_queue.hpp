@@ -1,15 +1,19 @@
 #pragma once
 
 #include "fixed_containers/fixed_deque.hpp"
+#include "fixed_containers/sequence_container_checking.hpp"
 #include "fixed_containers/source_location.hpp"
 
 namespace fixed_containers
 {
-template <typename T, std::size_t MAXIMUM_SIZE>
+template <typename T,
+          std::size_t MAXIMUM_SIZE,
+          customize::SequenceContainerChecking CheckingType =
+              customize::SequenceContainerAbortChecking<T, MAXIMUM_SIZE>>
 class FixedQueue
 {
 public:
-    using container_type = FixedDeque<T, MAXIMUM_SIZE>;
+    using container_type = FixedDeque<T, MAXIMUM_SIZE, CheckingType>;
     using value_type = typename container_type::value_type;
     using size_type = typename container_type::size_type;
     using reference = typename container_type::reference;
