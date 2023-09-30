@@ -179,4 +179,42 @@ TEST(FixedStack, Full)
     EXPECT_TRUE(is_full(v1));
 }
 
+TEST(FixedStack, ClassTemplateArgumentDeduction)
+{
+    // Compile-only test
+    FixedStack a = FixedStack<int, 5>{};
+    (void)a;
+}
+
+namespace
+{
+template <FixedStack<int, 5> /*MY_STACK*/>
+struct FixedStackInstanceCanBeUsedAsATemplateParameter
+{
+};
+
+template <FixedStack<int, 5> /*MY_STACK*/>
+constexpr void fixed_stack_instance_can_be_used_as_a_template_parameter()
+{
+}
+}  // namespace
+
+TEST(FixedStack, UsageAsTemplateParameter)
+{
+    static constexpr FixedStack<int, 5> STACK1{};
+    fixed_stack_instance_can_be_used_as_a_template_parameter<STACK1>();
+    FixedStackInstanceCanBeUsedAsATemplateParameter<STACK1> my_struct{};
+    static_cast<void>(my_struct);
+}
+
 }  // namespace fixed_containers
+
+namespace another_namespace_unrelated_to_the_fixed_containers_namespace
+{
+TEST(FixedStack, ArgumentDependentLookup)
+{
+    // Compile-only test
+    fixed_containers::FixedStack<int, 5> a{};
+    is_full(a);
+}
+}  // namespace another_namespace_unrelated_to_the_fixed_containers_namespace

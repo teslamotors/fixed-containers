@@ -203,4 +203,42 @@ TEST(FixedQueue, Full)
     EXPECT_TRUE(is_full(v1));
 }
 
+TEST(FixedQueue, ClassTemplateArgumentDeduction)
+{
+    // Compile-only test
+    FixedQueue a = FixedQueue<int, 5>{};
+    (void)a;
+}
+
+namespace
+{
+template <FixedQueue<int, 5> /*MY_QUEUE*/>
+struct FixedQueueInstanceCanBeUsedAsATemplateParameter
+{
+};
+
+template <FixedQueue<int, 5> /*MY_QUEUE*/>
+constexpr void fixed_queue_instance_can_be_used_as_a_template_parameter()
+{
+}
+}  // namespace
+
+TEST(FixedQueue, UsageAsTemplateParameter)
+{
+    static constexpr FixedQueue<int, 5> QUEUE1{};
+    fixed_queue_instance_can_be_used_as_a_template_parameter<QUEUE1>();
+    FixedQueueInstanceCanBeUsedAsATemplateParameter<QUEUE1> my_struct{};
+    static_cast<void>(my_struct);
+}
+
 }  // namespace fixed_containers
+
+namespace another_namespace_unrelated_to_the_fixed_containers_namespace
+{
+TEST(FixedQueue, ArgumentDependentLookup)
+{
+    // Compile-only test
+    fixed_containers::FixedQueue<int, 5> a{};
+    is_full(a);
+}
+}  // namespace another_namespace_unrelated_to_the_fixed_containers_namespace
