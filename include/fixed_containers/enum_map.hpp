@@ -228,7 +228,7 @@ public:
         EnumMapType output{};
         for (auto&& k : sp)
         {
-            output[k] = value;
+            output.try_emplace(k, value);
         }
         return output;
     }

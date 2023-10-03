@@ -195,18 +195,33 @@ TEST(EnumMap, Builder_MultipleOuts)
 
 TEST(EnumMap, StaticFactory_CreateWithKeys)
 {
-    constexpr std::array keys{TestEnum1 ::ONE, TestEnum1 ::FOUR};
+    {
+        constexpr std::array keys{TestEnum1 ::ONE, TestEnum1 ::FOUR};
 
-    constexpr EnumMap<TestEnum1, int> s1 = EnumMap<TestEnum1, int>::create_with_keys(keys, -17);
-    static_assert(s1.size() == 2);
+        constexpr EnumMap<TestEnum1, int> s1 = EnumMap<TestEnum1, int>::create_with_keys(keys, -17);
+        static_assert(s1.size() == 2);
 
-    static_assert(s1.contains(TestEnum1::ONE));
-    static_assert(!s1.contains(TestEnum1::TWO));
-    static_assert(!s1.contains(TestEnum1::THREE));
-    static_assert(s1.contains(TestEnum1::FOUR));
+        static_assert(s1.contains(TestEnum1::ONE));
+        static_assert(!s1.contains(TestEnum1::TWO));
+        static_assert(!s1.contains(TestEnum1::THREE));
+        static_assert(s1.contains(TestEnum1::FOUR));
 
-    static_assert(s1.at(TestEnum1::ONE) == -17);
-    static_assert(s1.at(TestEnum1::FOUR) == -17);
+        static_assert(s1.at(TestEnum1::ONE) == -17);
+        static_assert(s1.at(TestEnum1::FOUR) == -17);
+    }
+
+    {
+        constexpr std::array keys{TestEnum1 ::ONE, TestEnum1 ::FOUR};
+
+        constexpr EnumMap<TestEnum1, MockNonDefaultConstructible> s1 =
+            EnumMap<TestEnum1, MockNonDefaultConstructible>::create_with_keys(keys, {-17});
+        static_assert(s1.size() == 2);
+
+        static_assert(s1.contains(TestEnum1::ONE));
+        static_assert(!s1.contains(TestEnum1::TWO));
+        static_assert(!s1.contains(TestEnum1::THREE));
+        static_assert(s1.contains(TestEnum1::FOUR));
+    }
 }
 
 TEST(EnumMap, CreateWithAllEntries)
