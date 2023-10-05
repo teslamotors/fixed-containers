@@ -6,7 +6,7 @@
 
 #include <array>
 
-namespace fixed_containers::enum_array_detail
+namespace fixed_containers
 {
 template <class L, class T>
 class EnumArray
@@ -163,4 +163,4 @@ public:
         return values_ <=> other.values_;
     }
 };
-}  // namespace fixed_containers::enum_array_detail
+}  // namespace fixed_containers

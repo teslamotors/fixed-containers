@@ -9,7 +9,7 @@
 
 #include <memory>
 
-namespace fixed_containers::enum_array_detail
+namespace fixed_containers
 {
 namespace
 {
@@ -396,4 +396,4 @@ TEST(EnumArray, NonAssignable)
         s[TestEnum1::TWO];
     }
 }
-}  // namespace fixed_containers::enum_array_detail
+}  // namespace fixed_containers

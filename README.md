@@ -25,6 +25,7 @@ Header-only C++20 library that provides containers with the following properties
 * `FixedStack` - Stack implementation with `std::stack` API and "fixed container" properties
 * `FixedString` - String implementation with `std::string` API and "fixed container" properties
 * `StringLiteral` - Compile-time null-terminated literal string.
+* `EnumArray` - For enum keys only, similar to `std::array` but with typed accessors and "fixed container" properties
 * Rich enums - `enum` & `class` hybrid.
 
 ## Rich enum features
@@ -208,6 +209,16 @@ More examples can be found [here](test/enums_test_common.hpp).
     static constexpr const char* s = "blah"; // strlen==4, sizeof==8
     static constexpr const char s[5] = "blah";  // strlen==4, sizeof==5 (null terminator)
     static constexpr StringLiteral s = "blah";  // constexpr .size()==4
+    ```
+
+- EnumArray
+    ```C++
+    constexpr EnumArray<TestEnum1, int> s1{{TestEnum1::ONE, 10}, {TestEnum1::FOUR, 40}};
+    static_assert(4 == s1.max_size());
+    static_assert(s1.at(TestEnum1::ONE) == 10);
+    static_assert(s1.at(TestEnum1::TWO) == 0);
+    static_assert(s1.at(TestEnum1::THREE) == 0);
+    static_assert(s1.at(TestEnum1::FOUR) == 40);
     ```
 
 - Using instances as non-type template parameters
