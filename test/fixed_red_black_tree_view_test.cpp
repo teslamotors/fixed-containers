@@ -30,7 +30,7 @@ TEST(FixedRedBlackTreeView, ViewOfPoolStorage)
     auto view = FixedRedBlackTreeRawView(
         ptr,
         sizeof(FixedSetType::value_type),
-        FixedSetType::max_size(),
+        s1.max_size(),
         COMPACTNESS,
         fixed_red_black_tree_detail::RedBlackTreeStorageType::FIXED_INDEX_POOL);
 
@@ -75,7 +75,7 @@ TEST(FixedRedBlackTreeView, ViewWithStructValue)
     auto view = FixedRedBlackTreeRawView(
         ptr,
         sizeof(FixedSetType::value_type),
-        FixedSetType::max_size(),
+        s1.max_size(),
         COMPACTNESS,
         fixed_red_black_tree_detail::RedBlackTreeStorageType::FIXED_INDEX_POOL);
 
@@ -104,7 +104,7 @@ TEST(FixedRedBlackTreeView, ViewOfContiguousStorage)
     auto view = FixedRedBlackTreeRawView(
         ptr,
         sizeof(FixedSetType::value_type),
-        FixedSetType::max_size(),
+        s1.max_size(),
         COMPACTNESS,
         fixed_red_black_tree_detail::RedBlackTreeStorageType::FIXED_INDEX_CONTIGUOUS);
 
@@ -133,7 +133,7 @@ TEST(FixedRedBlackTreeView, PreservedOrdering)
     auto view = FixedRedBlackTreeRawView(
         ptr,
         sizeof(FixedSetType::value_type),
-        FixedSetType::max_size(),
+        s1.max_size(),
         COMPACTNESS,
         fixed_red_black_tree_detail::RedBlackTreeStorageType::FIXED_INDEX_POOL);
 
@@ -151,16 +151,18 @@ TEST(FixedRedBlackTreeView, PreservedOrdering)
 
 TEST(FixedRedBlackTreeView, SizeCalculation)
 {
+    constexpr std::size_t MAXIMUM_ENTRIES = 10;
     constexpr auto COMPACTNESS =
         fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR;
-    using FixedSetType = FixedSet<int, 10, std::less<int>, COMPACTNESS, FixedIndexBasedPoolStorage>;
+    using FixedSetType =
+        FixedSet<int, MAXIMUM_ENTRIES, std::less<int>, COMPACTNESS, FixedIndexBasedPoolStorage>;
 
     // Test empty set.
     FixedSetType s1{};
     auto v1 = FixedRedBlackTreeRawView(
         &s1,
         sizeof(FixedSetType::value_type),
-        FixedSetType::max_size(),
+        s1.max_size(),
         COMPACTNESS,
         fixed_red_black_tree_detail::RedBlackTreeStorageType::FIXED_INDEX_POOL);
     EXPECT_EQ(v1.size(), 0);
@@ -170,7 +172,7 @@ TEST(FixedRedBlackTreeView, SizeCalculation)
     auto v2 = FixedRedBlackTreeRawView(
         &s2,
         sizeof(FixedSetType::value_type),
-        FixedSetType::max_size(),
+        s2.max_size(),
         COMPACTNESS,
         fixed_red_black_tree_detail::RedBlackTreeStorageType::FIXED_INDEX_POOL);
     EXPECT_EQ(v2.size(), s2.size());
@@ -180,7 +182,7 @@ TEST(FixedRedBlackTreeView, SizeCalculation)
     auto v3 = FixedRedBlackTreeRawView(
         &s3,
         sizeof(FixedSetType::value_type),
-        FixedSetType::max_size(),
+        s3.max_size(),
         COMPACTNESS,
         fixed_red_black_tree_detail::RedBlackTreeStorageType::FIXED_INDEX_POOL);
     EXPECT_EQ(v3.size(), s3.size());
@@ -191,7 +193,7 @@ TEST(FixedRedBlackTreeView, SizeCalculation)
     auto v4 = FixedRedBlackTreeRawView(
         buf,
         sizeof(FixedSetType::value_type),
-        FixedSetType::max_size(),
+        MAXIMUM_ENTRIES,
         COMPACTNESS,
         fixed_red_black_tree_detail::RedBlackTreeStorageType::FIXED_INDEX_POOL);
     EXPECT_EQ(v4.size(), 0);

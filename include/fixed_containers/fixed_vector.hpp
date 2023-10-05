@@ -152,19 +152,6 @@ public:  // Public so this type is a structural type and can thus be used in tem
     std::array<OptionalT, MAXIMUM_SIZE> IMPLEMENTATION_DETAIL_DO_NOT_USE_array_;
 
 public:
-    static constexpr std::size_t max_size() noexcept { return MAXIMUM_SIZE; }
-    static constexpr std::size_t capacity() noexcept { return max_size(); }
-    static constexpr void reserve(const std::size_t new_capacity,
-                                  const std_transition::source_location& loc =
-                                      std_transition::source_location::current()) noexcept
-    {
-        if (preconditions::test(new_capacity <= MAXIMUM_SIZE))
-        {
-            Checking::length_error(new_capacity, loc);
-        }
-        // Do nothing
-    }
-
     constexpr FixedVectorBase() noexcept
       : IMPLEMENTATION_DETAIL_DO_NOT_USE_size_{0}
     // Don't initialize the array
@@ -538,6 +525,18 @@ public:
     /**
      * Size
      */
+    [[nodiscard]] constexpr std::size_t max_size() const noexcept { return MAXIMUM_SIZE; }
+    [[nodiscard]] constexpr std::size_t capacity() const noexcept { return max_size(); }
+    constexpr void reserve(const std::size_t new_capacity,
+                           const std_transition::source_location& loc =
+                               std_transition::source_location::current()) noexcept
+    {
+        if (preconditions::test(new_capacity <= MAXIMUM_SIZE))
+        {
+            Checking::length_error(new_capacity, loc);
+        }
+        // Do nothing
+    }
     [[nodiscard]] constexpr std::size_t size() const noexcept
     {
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_size_;

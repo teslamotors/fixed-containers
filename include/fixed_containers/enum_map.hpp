@@ -310,8 +310,6 @@ public:
         return create_with_all_entries<EnumMapType, AS_ARRAY>();
     }
 
-    static constexpr std::size_t max_size() noexcept { return ENUM_COUNT; }
-
 public:  // Public so this type is a structural type and can thus be used in template parameters
     ValueArrayType IMPLEMENTATION_DETAIL_DO_NOT_USE_values_;
     std::array<bool, ENUM_COUNT> IMPLEMENTATION_DETAIL_DO_NOT_USE_array_set_;
@@ -395,12 +393,12 @@ public:
         return create_const_reverse_iterator(0);
     }
 
-    [[nodiscard]] constexpr bool empty() const noexcept { return size() == 0; }
-
+    [[nodiscard]] constexpr std::size_t max_size() const noexcept { return ENUM_COUNT; }
     [[nodiscard]] constexpr std::size_t size() const noexcept
     {
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_size_;
     }
+    [[nodiscard]] constexpr bool empty() const noexcept { return size() == 0; }
 
     constexpr void clear() noexcept
     {

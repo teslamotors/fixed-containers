@@ -202,8 +202,6 @@ public:
         return output;
     }
 
-    static constexpr std::size_t max_size() noexcept { return ENUM_COUNT; }
-
 public:  // Public so this type is a structural type and can thus be used in template parameters
     // std::bitset is not sufficiently constexpr to use here, using a std::array instead.
     std::array<bool, ENUM_COUNT> IMPLEMENTATION_DETAIL_DO_NOT_USE_array_set_;
@@ -246,12 +244,12 @@ public:
     constexpr const_reverse_iterator rbegin() const noexcept { return crbegin(); }
     constexpr const_reverse_iterator rend() const noexcept { return crend(); }
 
-    [[nodiscard]] constexpr bool empty() const noexcept { return size() == 0; }
-
+    [[nodiscard]] constexpr std::size_t max_size() const noexcept { return ENUM_COUNT; }
     [[nodiscard]] constexpr std::size_t size() const noexcept
     {
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_size_;
     }
+    [[nodiscard]] constexpr bool empty() const noexcept { return size() == 0; }
 
     constexpr void clear() noexcept
     {

@@ -123,9 +123,6 @@ public:
     using size_type = typename Tree::size_type;
     using difference_type = typename Tree::difference_type;
 
-public:
-    static constexpr std::size_t max_size() noexcept { return MAXIMUM_SIZE; }
-
 public:  // Public so this type is a structural type and can thus be used in template parameters
     Tree IMPLEMENTATION_DETAIL_DO_NOT_USE_tree_;
 
@@ -180,6 +177,7 @@ public:
     constexpr const_reverse_iterator rbegin() const noexcept { return crbegin(); }
     constexpr const_reverse_iterator rend() const noexcept { return crend(); }
 
+    [[nodiscard]] constexpr std::size_t max_size() const noexcept { return MAXIMUM_SIZE; }
     [[nodiscard]] constexpr std::size_t size() const noexcept { return tree().size(); }
     [[nodiscard]] constexpr bool empty() const noexcept { return tree().empty(); }
 
