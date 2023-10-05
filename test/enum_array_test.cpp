@@ -55,7 +55,7 @@ TEST(EnumArray, DefaultConstructorValueInitialization)
     }
 }
 
-TEST(EnumArray, AggregateInitialization)
+TEST(EnumArray, InitializerConstructor)
 {
     constexpr EnumArray<TestEnum1, int> s1{
         {TestEnum1::ONE, 10}, {TestEnum1::TWO, 20}, {TestEnum1::THREE, 30}, {TestEnum1::FOUR, 40}};
@@ -66,12 +66,24 @@ TEST(EnumArray, AggregateInitialization)
     static_assert(consteval_compare::equal<40, s1.at(TestEnum1::FOUR)>);
 }
 
-TEST(EnumArray, AggregateInitialization_Partial)
+TEST(EnumArray, InitializerConstructor_Partial)
 {
     constexpr EnumArray<TestEnum1, int> s1{
         {TestEnum1::FOUR, 40},
         {TestEnum1::ONE, 10},
     };
+    static_assert(consteval_compare::equal<4, s1.max_size()>);
+    static_assert(consteval_compare::equal<10, s1.at(TestEnum1::ONE)>);
+    static_assert(consteval_compare::equal<0, s1.at(TestEnum1::TWO)>);
+    static_assert(consteval_compare::equal<0, s1.at(TestEnum1::THREE)>);
+    static_assert(consteval_compare::equal<40, s1.at(TestEnum1::FOUR)>);
+}
+
+TEST(EnumArray, RangeConstructor)
+{
+    constexpr std::array<std::pair<TestEnum1, int>, 2> a{std::pair{TestEnum1::FOUR, 40},
+                                                         std::pair{TestEnum1::ONE, 10}};
+    constexpr EnumArray<TestEnum1, int> s1{fixed_containers::std_transition::from_range, a};
     static_assert(consteval_compare::equal<4, s1.max_size()>);
     static_assert(consteval_compare::equal<10, s1.at(TestEnum1::ONE)>);
     static_assert(consteval_compare::equal<0, s1.at(TestEnum1::TWO)>);

@@ -70,6 +70,7 @@ cc_library(
     deps = [
         ":concepts",
         ":enum_utils",
+        ":ranges",
     ],
     copts = ["-std=c++20"],
 )
@@ -400,6 +401,14 @@ cc_library(
     deps = [
         ":iterator_utils"
     ],
+    copts = ["-std=c++20"],
+)
+
+cc_library(
+    name = "ranges",
+    hdrs = ["include/fixed_containers/ranges.hpp"],
+    includes = ["include"],
+    deps = [":concepts"],
     copts = ["-std=c++20"],
 )
 

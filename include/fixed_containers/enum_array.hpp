@@ -2,6 +2,7 @@
 
 #include "fixed_containers/concepts.hpp"
 #include "fixed_containers/enum_utils.hpp"
+#include "fixed_containers/ranges.hpp"
 
 #include <array>
 
@@ -69,9 +70,16 @@ public:
 
     constexpr EnumArray(std::initializer_list<std::pair<const L, T>> list) noexcept
         requires DefaultConstructible<T>
+      : EnumArray(std_transition::from_range, list)
+    {
+    }
+
+    template <class R>
+    constexpr EnumArray(std_transition::from_range_t, R&& rg) noexcept
+        requires DefaultConstructible<T>
       : EnumArray()
     {
-        for (const auto& [label, value] : list)
+        for (const auto& [label, value] : rg)
         {
             const std::size_t ordinal = EnumAdapterType::ordinal(label);
             values_.at(ordinal) = value;
