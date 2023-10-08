@@ -145,7 +145,7 @@ TEST(FixedDeque, IteratorConstructor)
 
 TEST(FixedDeque, InputIteratorConstructor)
 {
-    MockIntegraStream<int> stream{3};
+    MockIntegralStream<int> stream{3};
     FixedDeque<int, 14> v{stream.begin(), stream.end()};
     ASSERT_EQ(3, v.size());
     EXPECT_TRUE(std::ranges::equal(v, std::array{3, 2, 1}));
@@ -1457,7 +1457,7 @@ TEST(FixedDeque, InsertInputIterator)
 {
     auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
     {
-        MockIntegraStream<int> stream{3};
+        MockIntegralStream<int> stream{3};
         auto v = Factory::template create<int, 14>({10, 20, 30, 40});
         auto it = v.insert(v.begin() + 2, stream.begin(), stream.end());
         ASSERT_EQ(7, v.size());
@@ -1473,7 +1473,7 @@ TEST(FixedDeque, InsertInputIterator_ExceedsCapacity)
 {
     auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
     {
-        MockIntegraStream<int> stream{3};
+        MockIntegralStream<int> stream{3};
         auto v = Factory::template create<int, 6>({10, 20, 30, 40});
         EXPECT_DEATH(v.insert(v.begin() + 2, stream.begin(), stream.end()), "");
     };

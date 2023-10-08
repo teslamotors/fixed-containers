@@ -810,7 +810,7 @@ TEST(FixedString, InsertIterator_ExceedsCapacity)
 
 TEST(FixedString, InsertInputIterator)
 {
-    MockIntegraStream<char> stream{static_cast<char>(3)};
+    MockIntegralStream<char> stream{static_cast<char>(3)};
     FixedString<14> v{"abcd"};
     auto it = v.insert(v.begin() + 2, stream.begin(), stream.end());
     ASSERT_EQ(7, v.size());
@@ -823,7 +823,7 @@ TEST(FixedString, InsertInputIterator)
 
 TEST(FixedString, InsertInputIterator_ExceedsCapacity)
 {
-    MockIntegraStream<char> stream{3};
+    MockIntegralStream<char> stream{3};
     FixedString<6> v{"abcd"};
     EXPECT_DEATH(v.insert(v.begin() + 2, stream.begin(), stream.end()), "");
 }
@@ -1056,7 +1056,7 @@ TEST(FixedString, AppendIterator_ExceedsCapacity)
 
 TEST(FixedString, AppendInputIterator)
 {
-    MockIntegraStream<char> stream{static_cast<char>(3)};
+    MockIntegralStream<char> stream{static_cast<char>(3)};
     FixedString<14> v{"abcd"};
     auto& self = v.append(stream.begin(), stream.end());
     ASSERT_EQ(7, v.size());
@@ -1075,7 +1075,7 @@ TEST(FixedString, AppendInputIterator)
 
 TEST(FixedString, AppendInputIterator_ExceedsCapacity)
 {
-    MockIntegraStream<char> stream{3};
+    MockIntegralStream<char> stream{3};
     FixedString<6> v{"abcd"};
     EXPECT_DEATH(v.append(stream.begin(), stream.end()), "");
 }

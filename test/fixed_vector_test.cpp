@@ -448,7 +448,7 @@ TEST(FixedVector, IteratorConstructor)
 
 TEST(FixedVector, InputIteratorConstructor)
 {
-    MockIntegraStream<int> stream{3};
+    MockIntegralStream<int> stream{3};
     FixedVector<int, 14> v{stream.begin(), stream.end()};
     ASSERT_EQ(3, v.size());
     EXPECT_TRUE(std::ranges::equal(v, std::array{3, 2, 1}));
@@ -1526,7 +1526,7 @@ TEST(FixedVector, InsertIterator_ExceedsCapacity)
 
 TEST(FixedVector, InsertInputIterator)
 {
-    MockIntegraStream<int> stream{3};
+    MockIntegralStream<int> stream{3};
     FixedVector<int, 14> v{10, 20, 30, 40};
     auto it = v.insert(v.begin() + 2, stream.begin(), stream.end());
     ASSERT_EQ(7, v.size());
@@ -1536,7 +1536,7 @@ TEST(FixedVector, InsertInputIterator)
 
 TEST(FixedVector, InsertInputIterator_ExceedsCapacity)
 {
-    MockIntegraStream<int> stream{3};
+    MockIntegralStream<int> stream{3};
     FixedVector<int, 6> v{10, 20, 30, 40};
     EXPECT_DEATH(v.insert(v.begin() + 2, stream.begin(), stream.end()), "");
 }

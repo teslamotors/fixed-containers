@@ -227,7 +227,7 @@ struct MockAComparableToB
 };
 
 template <std::integral T>
-class MockIntegraStream
+class MockIntegralStream
 {
     class MockInputIterator
     {
@@ -284,7 +284,7 @@ private:
     T remaining_;
 
 public:
-    explicit constexpr MockIntegraStream(const T stream_size)
+    explicit constexpr MockIntegralStream(const T stream_size)
       : remaining_{stream_size}
     {
     }
