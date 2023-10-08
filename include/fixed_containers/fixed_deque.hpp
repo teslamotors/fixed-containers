@@ -113,7 +113,8 @@ private:
         template <bool IS_CONST2>
         constexpr bool operator==(const ReferenceProvider<IS_CONST2>& other) const noexcept
         {
-            return array_ == other.array_ && current_index_ == other.current_index_;
+            assert(array_ == other.array_);
+            return current_index_ == other.current_index_;
         }
         template <bool IS_CONST2>
         constexpr auto operator<=>(const ReferenceProvider<IS_CONST2>& other) const noexcept
