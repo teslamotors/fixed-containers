@@ -1187,11 +1187,11 @@ TEST(FixedDeque, Emplace)
         }
         {
             auto v2 = Factory::template create<ComplexStruct, 11>();
-            v2.emplace_back(1, 2, 3, 4);
-            auto ref = v2.emplace_back(101, 202, 303, 404);
+            v2.emplace(v2.begin(), 1, 2, 3, 4);
+            auto ref = v2.emplace(v2.begin(), 101, 202, 303, 404);
 
-            EXPECT_EQ(ref.a, 101);
-            EXPECT_EQ(ref.c, 404);
+            EXPECT_EQ(ref->a, 101);
+            EXPECT_EQ(ref->c, 404);
         }
     };
 
