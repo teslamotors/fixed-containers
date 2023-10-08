@@ -485,12 +485,7 @@ template <typename K,
     const std_transition::source_location& loc =
         std_transition::source_location::current()) noexcept
 {
-    FixedSetType set{comparator};
-    for (const auto& item : list)
-    {
-        set.insert(item, loc);
-    }
-    return set;
+    return {std::begin(list), std::end(list), comparator, loc};
 }
 
 template <typename K,

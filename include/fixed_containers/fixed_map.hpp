@@ -756,12 +756,7 @@ template <typename K,
     const std_transition::source_location& loc =
         std_transition::source_location::current()) noexcept
 {
-    FixedMapType map{comparator};
-    for (const auto& item : list)
-    {
-        map.insert(item, loc);
-    }
-    return map;
+    return {std::begin(list), std::end(list), comparator, loc};
 }
 
 template <typename K,

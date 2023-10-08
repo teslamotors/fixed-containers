@@ -1041,12 +1041,7 @@ template <typename T,
     const std_transition::source_location& loc =
         std_transition::source_location::current()) noexcept
 {
-    FixedVectorType vector{};
-    for (const auto& item : list)
-    {
-        vector.push_back(item, loc);
-    }
-    return vector;
+    return {std::begin(list), std::end(list), loc};
 }
 
 template <typename T, std::size_t MAXIMUM_SIZE>

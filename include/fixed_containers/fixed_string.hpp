@@ -471,13 +471,7 @@ template <
 {
     constexpr std::size_t MAXIMUM_LENGTH = MAXIMUM_LENGTH_WITH_NULL_TERMINATOR - 1;
     assert(list[MAXIMUM_LENGTH] == '\0');
-    FixedStringType s{};
-    s.resize(MAXIMUM_LENGTH, loc);
-    for (std::size_t i = 0; i < MAXIMUM_LENGTH; i++)
-    {
-        s[i] = list[i];
-    }
-    return s;
+    return {std::string_view{std::begin(list), MAXIMUM_LENGTH}, loc};
 }
 
 template <std::size_t MAXIMUM_LENGTH_WITH_NULL_TERMINATOR>

@@ -1051,12 +1051,7 @@ template <typename T,
     const std_transition::source_location& loc =
         std_transition::source_location::current()) noexcept
 {
-    FixedDequeType deque{};
-    for (const auto& item : list)
-    {
-        deque.push_back(item, loc);
-    }
-    return deque;
+    return {std::begin(list), std::end(list), loc};
 }
 
 template <typename T, std::size_t MAXIMUM_SIZE>
