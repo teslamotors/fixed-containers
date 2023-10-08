@@ -346,7 +346,7 @@ public:
     template <std::size_t MAXIMUM_LENGTH_2, customize::SequenceContainerChecking CheckingType2>
     constexpr bool operator==(const FixedString<MAXIMUM_LENGTH_2, CheckingType2>& other) const
     {
-        return vec() == other.IMPLEMENTATION_DETAIL_DO_NOT_USE_data_;
+        return as_view() == std::string_view{other};
     }
     constexpr bool operator==(const CharT* other) const
     {
