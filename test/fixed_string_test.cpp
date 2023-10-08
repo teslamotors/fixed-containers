@@ -46,6 +46,11 @@ TEST(FixedString, CountConstructor)
     }
 }
 
+TEST(FixedString, CountConstructor_ExceedsCapacity)
+{
+    EXPECT_DEATH((FixedString<8>(1000, '3')), "");
+}
+
 TEST(FixedString, ConstCharPointerConstructor)
 {
     {

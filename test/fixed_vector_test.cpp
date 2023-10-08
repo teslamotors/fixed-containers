@@ -433,17 +433,26 @@ TEST(FixedVector, CountConstructor)
     }
 }
 
+TEST(FixedVector, CountConstructor_ExceedsCapacity)
+{
+    EXPECT_DEATH((FixedVector<int, 8>(1000, 3)), "");
+}
+
 TEST(FixedVector, IteratorConstructor)
 {
-    constexpr FixedVector<int, 3> v1{77, 99};
-    static_assert(v1[0] == 77);
-    static_assert(v1[1] == 99);
-    static_assert(v1.size() == 2);
+    constexpr std::array<int, 2> v1{77, 99};
 
     constexpr FixedVector<int, 15> v2{v1.begin(), v1.end()};
     static_assert(v2[0] == 77);
     static_assert(v2[1] == 99);
     static_assert(v2.size() == 2);
+}
+
+TEST(FixedVector, IteratorConstructor_ExceedsCapacity)
+{
+    constexpr std::array<int, 5> v1{1, 2, 3, 4, 5};
+
+    EXPECT_DEATH((FixedVector<int, 3>(v1.begin(), v1.end())), "");
 }
 
 TEST(FixedVector, InputIteratorConstructor)
@@ -452,6 +461,12 @@ TEST(FixedVector, InputIteratorConstructor)
     FixedVector<int, 14> v{stream.begin(), stream.end()};
     ASSERT_EQ(3, v.size());
     EXPECT_TRUE(std::ranges::equal(v, std::array{3, 2, 1}));
+}
+
+TEST(FixedVector, InputIteratorConstructor_ExceedsCapacity)
+{
+    MockIntegralStream<int> stream{7};
+    EXPECT_DEATH((FixedVector<int, 3>{stream.begin(), stream.end()}), "");
 }
 
 TEST(FixedVector, InitializerConstructor)
@@ -468,6 +483,11 @@ TEST(FixedVector, InitializerConstructor)
 
     EXPECT_TRUE(std::ranges::equal(v1, std::array{77, 99}));
     EXPECT_TRUE(std::ranges::equal(v2, std::array{66, 55}));
+}
+
+TEST(FixedVector, InitializerConstructor_ExceedsCapacity)
+{
+    EXPECT_DEATH((FixedVector<int, 3>{1, 2, 3, 4, 5}), "");
 }
 
 TEST(FixedVector, PushBack)
