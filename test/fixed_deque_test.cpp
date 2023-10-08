@@ -459,6 +459,21 @@ TEST(FixedDeque, PushFront)
     run_test(FixedDequeInitialStateLastIndex{});
 }
 
+TEST(FixedDeque, PushFront_ExceedsCapacity)
+{
+    auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
+    {
+        FixedDeque<int, 2> v{};
+        v.push_front(0);
+        const char value = 1;
+        v.push_front(value);
+        EXPECT_DEATH(v.push_front(2), "");
+    };
+
+    run_test(FixedDequeInitialStateFirstIndex{});
+    run_test(FixedDequeInitialStateLastIndex{});
+}
+
 TEST(FixedDeque, EmplaceFront)
 {
     auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
@@ -498,6 +513,20 @@ TEST(FixedDeque, EmplaceFront)
             auto v3 = Factory::template create<MockNonAssignable, 11>();
             v3.emplace_front();  // Should compile
         }
+    };
+
+    run_test(FixedDequeInitialStateFirstIndex{});
+    run_test(FixedDequeInitialStateLastIndex{});
+}
+
+TEST(FixedDeque, EmplaceFront_ExceedsCapacity)
+{
+    auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
+    {
+        FixedDeque<int, 2> v{};
+        v.emplace_front(0);
+        v.emplace_front(1);
+        EXPECT_DEATH(v.emplace_front(2), "");
     };
 
     run_test(FixedDequeInitialStateFirstIndex{});
