@@ -30,8 +30,7 @@ public:
       : integer_range_{integer_range}
       , current_index_{current_index}
     {
-        assert(integer_range_.contains(current_index_) ||
-               current_index_ == integer_range_.end_exclusive());
+        assert(integer_range_detail::contains_or_is_equal_to_end(integer_range_, current_index_));
     }
 
     constexpr void advance(const std::size_t n) noexcept

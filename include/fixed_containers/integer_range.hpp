@@ -110,3 +110,12 @@ struct StartingIntegerAndDistance
 };
 
 }  // namespace fixed_containers
+
+namespace fixed_containers::integer_range_detail
+{
+template <IsIntegerRange IntegerRangeType>
+constexpr bool contains_or_is_equal_to_end(const IntegerRangeType& integer_range, std::size_t i)
+{
+    return integer_range.contains(i) || integer_range.end_exclusive() == i;
+}
+}  // namespace fixed_containers::integer_range_detail
