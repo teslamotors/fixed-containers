@@ -157,7 +157,6 @@ cc_library(
     deps = [
         ":algorithm",
         ":circular_indexing",
-        ":circular_integer_range_iterator",
         ":consteval_compare",
         ":integer_range",
         ":iterator_utils",

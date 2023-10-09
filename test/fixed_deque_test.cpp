@@ -40,11 +40,15 @@ struct ComplexStruct
     int c;
 };
 
+constexpr std::size_t STARTING_OFFSET_OF_TEST =
+    (std::numeric_limits<std::size_t>::max)() / static_cast<std::size_t>(2);
+
 template <typename T, std::size_t MAXIMUM_SIZE>
 constexpr FixedDeque<T, MAXIMUM_SIZE>& set_deque_initial_state(FixedDeque<T, MAXIMUM_SIZE>& deque,
                                                                std::size_t initial_starting_index)
 {
-    assert_or_abort(deque.IMPLEMENTATION_DETAIL_DO_NOT_USE_starting_index_and_size_.start == 0);
+    assert_or_abort(deque.IMPLEMENTATION_DETAIL_DO_NOT_USE_starting_index_and_size_.start ==
+                    STARTING_OFFSET_OF_TEST);
     assert_or_abort(deque.IMPLEMENTATION_DETAIL_DO_NOT_USE_starting_index_and_size_.distance == 0);
     deque.IMPLEMENTATION_DETAIL_DO_NOT_USE_starting_index_and_size_.start = initial_starting_index;
     return deque;
@@ -56,7 +60,7 @@ struct FixedDequeInitialStateFirstIndex
     static constexpr auto create(const std::initializer_list<T>& list = {})
     {
         FixedDeque<T, MAXIMUM_SIZE> deque{};
-        set_deque_initial_state(deque, 0);
+        set_deque_initial_state(deque, STARTING_OFFSET_OF_TEST);
         deque.insert(deque.cend(), list.begin(), list.end());
         return deque;
     }
@@ -1067,6 +1071,102 @@ TEST(FixedDeque, ReverseIteratorBase)
 
     run_test(FixedDequeInitialStateFirstIndex{});
     run_test(FixedDequeInitialStateLastIndex{});
+}
+
+// Note: This is a test for a previous approach of storing deque and iterator state, where:
+// - the deque would adjust its starting_index to be within [0, MAXIMUM_SIZE]
+// - the iterator would use a CircularIndexEntryProvider
+// This ended up being problematic when having an iterator and the starting_index changes
+// after it is created. Keeping this test as a Regression test for the future.
+// The comments in this test refer to the aforementioned old state.
+TEST(FixedDeque, Iterator_Regression_ConsistencyWhenTheStartingIndexIsChanged)
+{
+    {
+        // Old start = 2, New start = 0
+        // index = 0 (equal to new start)
+        auto v = FixedDequeInitialStateLastIndex::create<int, 3>({1, 2, 3});
+        const auto it = v.begin() + 1;
+        v.pop_front();
+        const auto it2 = v.begin();
+        EXPECT_EQ(*it, 2);
+        EXPECT_EQ(*it2, 2);
+        EXPECT_EQ(it, it2);
+        EXPECT_EQ(it2, it);
+        EXPECT_EQ(std::distance(it, it2), 0);
+        EXPECT_EQ(std::distance(it2, it), 0);
+    }
+    {
+        // Old start = 2, New start = 0
+        // index = 1 (not equal to new start)
+        auto v = FixedDequeInitialStateLastIndex::create<int, 3>({1, 2, 3});
+        const auto it = v.begin() + 2;
+        v.pop_front();
+        const auto it2 = v.begin() + 1;
+        EXPECT_EQ(*it, 3);
+        EXPECT_EQ(*it2, 3);
+        EXPECT_EQ(it, it2);
+        EXPECT_EQ(it2, it);
+        EXPECT_EQ(std::distance(it, it2), 0);
+        EXPECT_EQ(std::distance(it2, it), 0);
+    }
+    {
+        // Old start = 0, New start = 2
+        // index = 0 (equal to old start)
+        auto v = FixedDequeInitialStateFirstIndex::create<int, 3>({1, 2});
+        const auto it = v.begin();
+        v.push_front(3);
+        const auto it2 = v.begin() + 1;
+        EXPECT_EQ(*it, 1);
+        EXPECT_EQ(*it2, 1);
+        EXPECT_EQ(it, it2);
+        EXPECT_EQ(it2, it);
+        EXPECT_EQ(std::distance(it, it2), 0);
+        EXPECT_EQ(std::distance(it2, it), 0);
+    }
+    {
+        // Old start = 0, New start = 2
+        // index = 1 (not equal to old start)
+        auto v = FixedDequeInitialStateFirstIndex::create<int, 3>({1, 2});
+        const auto it = v.begin() + 1;
+        v.push_front(3);
+        const auto it2 = v.begin() + 2;
+        EXPECT_EQ(*it, 2);
+        EXPECT_EQ(*it2, 2);
+        EXPECT_EQ(it, it2);
+        EXPECT_EQ(it2, it);
+        EXPECT_EQ(std::distance(it, it2), 0);
+        EXPECT_EQ(std::distance(it2, it), 0);
+    }
+    {
+        // Old start = 1, New start = 2
+        // index = 0 but it is not in [old_start, new_start) like the others.
+        // Can we detect whether we went forward or backward?
+        auto v = FixedDequeInitialStateFirstIndex::create<int, 3>({1, 2});
+        v.pop_front();
+        auto it = v.begin();
+        v.push_front(1);
+        v.push_front(3);
+        --it;
+        const auto it2 = v.begin() + 1;
+        EXPECT_EQ(*it, 1);
+        EXPECT_EQ(*it2, 1);
+        EXPECT_EQ(it, it2);
+        EXPECT_EQ(it2, it);
+        EXPECT_EQ(std::distance(it, it2), 0);
+        EXPECT_EQ(std::distance(it2, it), 0);
+    }
+    {
+        // Ensure fully wrapping-around iterators work
+        auto v = FixedDequeInitialStateLastIndex::create<int, 3>({1, 2, 3});
+        auto it = v.begin();
+        auto it2 = v.end();
+        EXPECT_EQ(*it, 1);
+        // EXPECT_EQ(*it2, 1); // Not dereferenceable
+        EXPECT_NE(it, it2);
+        EXPECT_NE(it2, it);
+        EXPECT_EQ(std::distance(it, it2), 3);
+        EXPECT_EQ(std::distance(it2, it), -3);
+    }
 }
 
 TEST(FixedDeque, Resize)
