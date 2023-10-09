@@ -1455,7 +1455,7 @@ TEST(FixedString, Resize)
     EXPECT_EQ(v3, "01333");
 }
 
-TEST(FixedString, Resize_ExceedCapacity)
+TEST(FixedString, Resize_ExceedsCapacity)
 {
     FixedString<3> v1{};
     EXPECT_DEATH(v1.resize(6), "");

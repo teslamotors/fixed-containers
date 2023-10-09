@@ -1060,7 +1060,7 @@ TEST(FixedDeque, Resize)
     run_test(FixedDequeInitialStateLastIndex{});
 }
 
-TEST(FixedDeque, Resize_ExceedCapacity)
+TEST(FixedDeque, Resize_ExceedsCapacity)
 {
     auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
     {

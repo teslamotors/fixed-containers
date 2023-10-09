@@ -582,7 +582,7 @@ TEST(FixedVector, ReserveFailure)
     EXPECT_DEATH(v1.reserve(15), "");
 }
 
-TEST(FixedVector, ExceedCapacity)
+TEST(FixedVector, ExceedsCapacity)
 {
     FixedVector<int, 3> v1{0, 1, 2};
     EXPECT_DEATH(v1.push_back(3), "");
@@ -1171,7 +1171,7 @@ TEST(FixedVector, Resize)
     }
 }
 
-TEST(FixedVector, Resize_ExceedCapacity)
+TEST(FixedVector, Resize_ExceedsCapacity)
 {
     FixedVector<int, 3> v1{};
     EXPECT_DEATH(v1.resize(6), "");
