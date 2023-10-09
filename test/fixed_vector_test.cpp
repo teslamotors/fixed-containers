@@ -564,6 +564,14 @@ TEST(FixedVector, EmplaceBack)
     }
 }
 
+TEST(FixedVector, EmplaceBack_ExceedsCapacity)
+{
+    FixedVector<int, 2> v{};
+    v.emplace_back(0);
+    v.emplace_back(1);
+    EXPECT_DEATH(v.emplace_back(2), "");
+}
+
 TEST(FixedVector, CapacityAndMaxSize)
 {
     {
@@ -1324,6 +1332,14 @@ TEST(FixedVector, Emplace)
         EXPECT_EQ(ref->a, 101);
         EXPECT_EQ(ref->c, 404);
     }
+}
+
+TEST(FixedVector, Emplace_ExceedsCapacity)
+{
+    FixedVector<int, 2> v{};
+    v.emplace(v.begin(), 0);
+    v.emplace(v.begin(), 1);
+    EXPECT_DEATH(v.emplace(v.begin(), 2), "");
 }
 
 TEST(FixedVector, AssignValue)

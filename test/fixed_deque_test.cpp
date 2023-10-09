@@ -273,6 +273,20 @@ TEST(FixedDeque, EmplaceBack)
     run_test(FixedDequeInitialStateLastIndex{});
 }
 
+TEST(FixedDeque, EmplaceBack_ExceedsCapacity)
+{
+    auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
+    {
+        FixedDeque<int, 2> v{};
+        v.emplace_back(0);
+        v.emplace_back(1);
+        EXPECT_DEATH(v.emplace_back(2), "");
+    };
+
+    run_test(FixedDequeInitialStateFirstIndex{});
+    run_test(FixedDequeInitialStateLastIndex{});
+}
+
 TEST(FixedDeque, MaxSize)
 {
     auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
@@ -1193,6 +1207,20 @@ TEST(FixedDeque, Emplace)
             EXPECT_EQ(ref->a, 101);
             EXPECT_EQ(ref->c, 404);
         }
+    };
+
+    run_test(FixedDequeInitialStateFirstIndex{});
+    run_test(FixedDequeInitialStateLastIndex{});
+}
+
+TEST(FixedDeque, Emplace_ExceedsCapacity)
+{
+    auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
+    {
+        FixedDeque<int, 2> v{};
+        v.emplace(v.begin(), 0);
+        v.emplace(v.begin(), 1);
+        EXPECT_DEATH(v.emplace(v.begin(), 2), "");
     };
 
     run_test(FixedDequeInitialStateFirstIndex{});
