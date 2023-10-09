@@ -21,6 +21,7 @@ error: expected unqualified-id if (const auto __len = std::min(__d1, __d2))
 #include "fixed_containers/enum_map.hpp"
 #include "fixed_containers/enum_set.hpp"
 #include "fixed_containers/enum_utils.hpp"
+#include "fixed_containers/fixed_circular_deque.hpp"
 #include "fixed_containers/fixed_deque.hpp"
 #include "fixed_containers/fixed_map.hpp"
 #include "fixed_containers/fixed_set.hpp"
@@ -70,6 +71,10 @@ TEST(MacroCountermeasures, DummyUsagesOfContainers)
     }
     {
         FixedVector<int, 5> s{};
+        (void)s;
+    }
+    {
+        FixedCircularDeque<int, 5> s{};
         (void)s;
     }
     {
