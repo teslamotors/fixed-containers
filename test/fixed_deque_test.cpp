@@ -221,11 +221,17 @@ TEST(FixedDeque, PushBack)
 
 TEST(FixedDeque, PushBack_ExceedsCapacity)
 {
-    FixedDeque<int, 2> v{};
-    v.push_back(0);
-    const char value = 1;
-    v.push_back(value);
-    EXPECT_DEATH(v.push_back(2), "");
+    auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
+    {
+        FixedDeque<int, 2> v{};
+        v.push_back(0);
+        const char value = 1;
+        v.push_back(value);
+        EXPECT_DEATH(v.push_back(2), "");
+    };
+
+    run_test(FixedDequeInitialStateFirstIndex{});
+    run_test(FixedDequeInitialStateLastIndex{});
 }
 
 TEST(FixedDeque, EmplaceBack)
