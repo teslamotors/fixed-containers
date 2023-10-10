@@ -193,6 +193,8 @@ if(BUILD_TESTS)
     add_test_dependencies(string_literal_test)
     add_executable(type_name_test test/type_name_test.cpp)
     add_test_dependencies(type_name_test)
+    add_executable(fixed_circular_buffer_test test/fixed_circular_buffer_test.cpp)
+    add_test_dependencies(fixed_circular_buffer_test)
 endif()
 
 option(FIXED_CONTAINERS_OPT_INSTALL "Enable install target" ${PROJECT_IS_TOP_LEVEL})

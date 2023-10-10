@@ -783,6 +783,8 @@ private:
         }
     }
 
+    // [WORKAROUND-1] - Needed by FixedCircularBuffer
+public:
     constexpr void place_at(const std::size_t i, const value_type& v)
     {
         std::construct_at(&array_unchecked_at(i), v);
