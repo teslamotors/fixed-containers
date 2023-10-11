@@ -1390,7 +1390,7 @@ TEST(FixedVector, AssignValue_ExceedsCapacity)
     EXPECT_DEATH(v1.assign(5, 100), "");
 }
 
-TEST(FixedVector, AssignRange)
+TEST(FixedVector, AssignIterator)
 {
     {
         constexpr auto v1 = []()
@@ -1419,11 +1419,27 @@ TEST(FixedVector, AssignRange)
     }
 }
 
-TEST(FixedVector, AssignRange_ExceedsCapacity)
+TEST(FixedVector, AssignIterator_ExceedsCapacity)
 {
     FixedVector<int, 3> v1{0, 1, 2};
-    std::array<int, 17> a{300, 300};
+    std::array<int, 5> a{300, 300, 300, 300, 300};
     EXPECT_DEATH(v1.assign(a.begin(), a.end()), "");
+}
+
+TEST(FixedVector, AssignInputIterator)
+{
+    MockIntegralStream<int> stream{3};
+    FixedVector<int, 14> v{10, 20, 30, 40};
+    v.assign(stream.begin(), stream.end());
+    ASSERT_EQ(3, v.size());
+    EXPECT_TRUE(std::ranges::equal(v, std::array{3, 2, 1}));
+}
+
+TEST(FixedVector, AssignInputIterator_ExceedsCapacity)
+{
+    MockIntegralStream<int> stream{7};
+    FixedVector<int, 2> v{};
+    EXPECT_DEATH(v.assign(stream.begin(), stream.end()), "");
 }
 
 TEST(FixedVector, AssignInitializerList)
@@ -1451,6 +1467,12 @@ TEST(FixedVector, AssignInitializerList)
         EXPECT_TRUE(std::ranges::equal(v2, std::array<int, 2>{300, 300}));
         EXPECT_EQ(2, v2.size());
     }
+}
+
+TEST(FixedVector, AssignInitializerList_ExceedsCapacity)
+{
+    FixedVector<int, 3> v{0, 1, 2};
+    EXPECT_DEATH(v.assign({300, 300, 300, 300, 300}), "");
 }
 
 TEST(FixedVector, InsertValue)
@@ -1599,6 +1621,12 @@ TEST(FixedVector, InsertInitializerList)
         EXPECT_TRUE(std::ranges::equal(v, std::array<int, 6>{0, 1, 100, 500, 2, 3}));
         EXPECT_EQ(it, v.begin() + 2);
     }
+}
+
+TEST(FixedVector, InsertInitializerList_ExceedsCapacity)
+{
+    FixedVector<int, 4> v1{0, 1, 2};
+    EXPECT_DEATH(v1.insert(v1.begin() + 1, {3, 4}), "");
 }
 
 TEST(FixedVector, EraseRange)

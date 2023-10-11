@@ -1322,7 +1322,7 @@ TEST(FixedDeque, AssignValue_ExceedsCapacity)
     run_test(FixedDequeInitialStateLastIndex{});
 }
 
-TEST(FixedDeque, AssignRange)
+TEST(FixedDeque, AssignIterator)
 {
     auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
     {
@@ -1357,13 +1357,41 @@ TEST(FixedDeque, AssignRange)
     run_test(FixedDequeInitialStateLastIndex{});
 }
 
-TEST(FixedDeque, AssignRange_ExceedsCapacity)
+TEST(FixedDeque, AssignIterator_ExceedsCapacity)
 {
     auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
     {
         auto v1 = Factory::template create<int, 3>({0, 1, 2});
-        std::array<int, 17> a{300, 300};
+        std::array<int, 5> a{300, 300, 300, 300, 300};
         EXPECT_DEATH(v1.assign(a.begin(), a.end()), "");
+    };
+
+    run_test(FixedDequeInitialStateFirstIndex{});
+    run_test(FixedDequeInitialStateLastIndex{});
+}
+
+TEST(FixedDeque, AssignInputIterator)
+{
+    auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
+    {
+        MockIntegralStream<int> stream{3};
+        auto v = Factory::template create<int, 14>({10, 20, 30, 40});
+        v.assign(stream.begin(), stream.end());
+        ASSERT_EQ(3, v.size());
+        EXPECT_TRUE(std::ranges::equal(v, std::array{3, 2, 1}));
+    };
+
+    run_test(FixedDequeInitialStateFirstIndex{});
+    run_test(FixedDequeInitialStateLastIndex{});
+}
+
+TEST(FixedDeque, AssignInputIterator_ExceedsCapacity)
+{
+    auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
+    {
+        MockIntegralStream<int> stream{7};
+        auto v = Factory::template create<int, 3>();
+        EXPECT_DEATH(v.assign(stream.begin(), stream.end()), "");
     };
 
     run_test(FixedDequeInitialStateFirstIndex{});
@@ -1397,6 +1425,18 @@ TEST(FixedDeque, AssignInitializerList)
             EXPECT_TRUE(std::ranges::equal(v2, std::array<int, 2>{300, 300}));
             EXPECT_EQ(2, v2.size());
         }
+    };
+
+    run_test(FixedDequeInitialStateFirstIndex{});
+    run_test(FixedDequeInitialStateLastIndex{});
+}
+
+TEST(FixedDeque, AssignInitializerList_ExceedsCapacity)
+{
+    auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
+    {
+        auto v = Factory::template create<int, 3>({0, 1, 2});
+        EXPECT_DEATH(v.assign({300, 300, 300, 300, 300}), "");
     };
 
     run_test(FixedDequeInitialStateFirstIndex{});
@@ -1589,6 +1629,18 @@ TEST(FixedDeque, InsertInitializerList)
             EXPECT_TRUE(std::ranges::equal(v, std::array<int, 6>{0, 1, 100, 500, 2, 3}));
             EXPECT_EQ(it, v.begin() + 2);
         }
+    };
+
+    run_test(FixedDequeInitialStateFirstIndex{});
+    run_test(FixedDequeInitialStateLastIndex{});
+}
+
+TEST(FixedDeque, InsertInitializerList_ExceedsCapacity)
+{
+    auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
+    {
+        auto v1 = Factory::template create<int, 4>({0, 1, 2});
+        EXPECT_DEATH(v1.insert(v1.begin() + 1, {3, 4}), "");
     };
 
     run_test(FixedDequeInitialStateFirstIndex{});
