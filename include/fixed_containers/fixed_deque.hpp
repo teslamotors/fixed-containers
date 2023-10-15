@@ -392,24 +392,21 @@ public:
             Checking::invalid_argument("iterators exceed container range", loc);
         }
 
-        const std::size_t read_start = this->index_of(last);
-        const std::size_t write_start = this->index_of(first);
+        const auto entry_count_to_move = std::distance(last, cend());
+        const auto entry_count_to_remove = std::distance(first, last);
 
-        const auto entry_count_to_move = static_cast<std::size_t>(cend() - last);
-        const auto entry_count_to_remove = static_cast<std::size_t>(last - first);
+        iterator read_start_it = const_to_mutable_it(last);
+        iterator read_end_it = std::next(read_start_it, entry_count_to_move);
+        iterator write_start_it = const_to_mutable_it(first);
 
         // Clean out the gap
-        destroy_range({.start = write_start, .distance = entry_count_to_remove});
-
-        auto read_start_it = create_iterator({.start = read_start, .distance = 0});
-        auto read_end_it = create_iterator({.start = read_start, .distance = entry_count_to_move});
-        auto write_start_it = create_iterator({.start = write_start, .distance = 0});
+        destroy_range(write_start_it, std::next(write_start_it, entry_count_to_remove));
 
         // Do the move
         std::move(read_start_it, read_end_it, write_start_it);
 
-        decrement_size(entry_count_to_remove);
-        return create_iterator({.start = write_start, .distance = 0});
+        decrement_size(static_cast<std::size_t>(entry_count_to_remove));
+        return write_start_it;
     }
     constexpr iterator erase(const_iterator it,
                              const std_transition::source_location& loc =
@@ -420,7 +417,7 @@ public:
 
     constexpr void clear() noexcept
     {
-        destroy_range(IMPLEMENTATION_DETAIL_DO_NOT_USE_starting_index_and_size_);
+        destroy_range(begin(), end());
         set_start(0);
         set_size(0);
     }
@@ -581,19 +578,14 @@ public:
 private:
     constexpr iterator advance_all_after_iterator_by_n(const const_iterator it, const std::size_t n)
     {
-        const std::size_t read_start = index_of(it);
-        const std::size_t value_count_to_move =
-            IMPLEMENTATION_DETAIL_DO_NOT_USE_starting_index_and_size_.to_range().end_exclusive() -
-            read_start;
-        const std::size_t write_start = read_start + n;
+        const std::ptrdiff_t value_count_to_move = std::distance(it, cend());
+        increment_size(n);  // Increment now so iterators are all within valid range
 
-        auto read_start_it = create_iterator({.start = read_start, .distance = 0});
-        auto read_end_it = create_iterator({.start = read_start, .distance = value_count_to_move});
+        auto read_start_it = const_to_mutable_it(it);
+        auto read_end_it = std::next(read_start_it, value_count_to_move);
         auto write_end_it =
-            create_iterator({.start = write_start, .distance = value_count_to_move});
+            std::next(read_start_it, static_cast<std::ptrdiff_t>(n) + value_count_to_move);
         algorithm::emplace_move_backward(read_start_it, read_end_it, write_end_it);
-
-        increment_size(n);
 
         return read_start_it;
     }
@@ -623,9 +615,10 @@ private:
                                        InputIt last,
                                        const std_transition::source_location& loc)
     {
-        const std::size_t original_size = size();
+        auto first_it = const_to_mutable_it(it);
+        auto middle_it = end();
 
-        // Place everything at the end of the deque
+        // Place everything at the end
         for (; first != last && size() < max_size(); ++first)
         {
             push_back_internal(*first);
@@ -643,13 +636,9 @@ private:
         }
 
         // Rotate into the correct places
-        const std::size_t write_index = this->index_of(it);
-        auto write_it = create_iterator({.start = write_index, .distance = 0});
-        std::rotate({write_it},
-                    create_iterator({.start = front_index(), .distance = original_size}),
-                    end());
+        std::rotate(first_it, middle_it, end());
 
-        return write_it;
+        return first_it;
     }
 
     constexpr iterator create_iterator(
@@ -680,10 +669,9 @@ private:
     }
 
 private:
-    constexpr std::size_t index_of(const_iterator it) const
+    constexpr iterator const_to_mutable_it(const_iterator it)
     {
-        return static_cast<std::size_t>(
-            std::distance(create_const_iterator({.start = 0, .distance = 0}), it));
+        return std::next(begin(), std::distance(cbegin(), it));
     }
 
     constexpr void check_not_full(const std_transition::source_location& loc) const
@@ -768,19 +756,16 @@ private:
         std::destroy_at(&array_unchecked_at(i).value);
     }
 
-    constexpr void destroy_range(const StartingIntegerAndDistance&)
+    constexpr void destroy_range(iterator /*first*/, iterator /*last*/)
         requires TriviallyDestructible<T>
     {
     }
-    constexpr void destroy_range(const StartingIntegerAndDistance& start_and_distance)
+    constexpr void destroy_range(iterator first, iterator last)
         requires NotTriviallyDestructible<T>
     {
-        auto start = create_iterator({.start = start_and_distance.start, .distance = 0});
-        auto end = create_iterator(start_and_distance);
-
-        for (auto it = start; it != end; ++it)
+        for (; first != last; ++first)
         {
-            std::destroy_at(&*it);
+            std::destroy_at(&*first);
         }
     }
 

@@ -271,7 +271,6 @@ cc_library(
         ":algorithm",
         ":concepts",
         ":consteval_compare",
-        ":integer_range",
         ":iterator_utils",
         ":optional_storage",
         ":preconditions",
