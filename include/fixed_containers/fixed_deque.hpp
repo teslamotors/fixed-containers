@@ -1,6 +1,7 @@
 #pragma once
 
 #include "fixed_containers/algorithm.hpp"
+#include "fixed_containers/circular_indexing.hpp"
 #include "fixed_containers/circular_integer_range_iterator.hpp"
 #include "fixed_containers/consteval_compare.hpp"
 #include "fixed_containers/iterator_utils.hpp"
@@ -45,11 +46,11 @@ class FixedDequeBase
 
     static constexpr std::size_t increment_index_with_wraparound(std::size_t i, std::size_t n = 1)
     {
-        return circular_integer_detail::increment_index_with_wraparound(FULL_RANGE, i, n).integer;
+        return circular_indexing::increment_index_with_wraparound(FULL_RANGE, i, n).integer;
     }
     static constexpr std::size_t decrement_index_with_wraparound(std::size_t i, std::size_t n = 1)
     {
-        return circular_integer_detail::decrement_index_with_wraparound(FULL_RANGE, i, n).integer;
+        return circular_indexing::decrement_index_with_wraparound(FULL_RANGE, i, n).integer;
     }
 
 public:

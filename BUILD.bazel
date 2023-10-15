@@ -30,10 +30,22 @@ cc_library(
 )
 
 cc_library(
+    name = "circular_indexing",
+    hdrs = ["include/fixed_containers/circular_indexing.hpp"],
+    includes = ["include"],
+    deps = [
+        ":int_math",
+        ":integer_range",
+    ],
+    copts = ["-std=c++20"],
+)
+
+cc_library(
     name = "circular_integer_range_iterator",
     hdrs = ["include/fixed_containers/circular_integer_range_iterator.hpp"],
     includes = ["include"],
     deps = [
+        ":circular_indexing",
         ":int_math",
         ":integer_range",
         ":iterator_utils",
@@ -144,6 +156,7 @@ cc_library(
     includes = ["include"],
     deps = [
         ":algorithm",
+        ":circular_indexing",
         ":circular_integer_range_iterator",
         ":consteval_compare",
         ":integer_range",
@@ -528,6 +541,17 @@ cc_library(
     copts = ["-std=c++20"],
     strip_include_prefix = "/test",
     visibility = ["//visibility:private"],
+)
+
+cc_test(
+    name = "circular_indexing_test",
+    srcs = ["test/circular_indexing_test.cpp"],
+    deps = [
+        ":circular_indexing",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
+    ],
+    copts = ["-std=c++20"],
 )
 
 cc_test(
