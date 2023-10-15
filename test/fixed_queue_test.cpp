@@ -8,15 +8,6 @@
 
 namespace fixed_containers
 {
-// std::queue would be preferable, but it is not always constexpr
-// The spec has it as non-constexpr as of C++23, including construction.
-static_assert(TriviallyCopyable<std::queue<int, FixedDeque<int, 5>>>);
-#if defined(_MSC_VER)
-static_assert(ConstexprDefaultConstructible<std::queue<int, FixedDeque<int, 5>>>);
-#else
-static_assert(!ConstexprDefaultConstructible<std::queue<int, FixedDeque<int, 5>>>);
-#endif
-
 using QueueType = FixedQueue<int, 5>;
 static_assert(TriviallyCopyable<QueueType>);
 static_assert(NotTrivial<QueueType>);

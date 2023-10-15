@@ -9,15 +9,6 @@
 
 namespace fixed_containers
 {
-// std::stack would be preferable, but it is not always constexpr
-// The spec has it as non-constexpr as of C++23, including construction.
-static_assert(TriviallyCopyable<std::stack<int, FixedVector<int, 5>>>);
-#if defined(_MSC_VER)
-static_assert(ConstexprDefaultConstructible<std::stack<int, FixedVector<int, 5>>>);
-#else
-static_assert(!ConstexprDefaultConstructible<std::stack<int, FixedVector<int, 5>>>);
-#endif
-
 using StackType = FixedStack<int, 5>;
 static_assert(TriviallyCopyable<StackType>);
 static_assert(NotTrivial<StackType>);

@@ -245,6 +245,7 @@ cc_library(
         ":fixed_vector",
         ":sequence_container_checking",
         ":source_location",
+        ":stack_adapter",
     ],
     copts = ["-std=c++20"],
 )
@@ -255,6 +256,7 @@ cc_library(
     includes = ["include"],
     deps = [
         ":fixed_deque",
+        ":queue_adapter",
         ":sequence_container_checking",
         ":source_location",
     ],
@@ -395,6 +397,17 @@ cc_library(
 )
 
 cc_library(
+    name = "queue_adapter",
+    hdrs = ["include/fixed_containers/queue_adapter.hpp"],
+    includes = ["include"],
+    deps = [
+        ":concepts",
+        ":source_location",
+    ],
+    copts = ["-std=c++20"],
+)
+
+cc_library(
     name = "random_access_iterator",
     hdrs = ["include/fixed_containers/random_access_iterator.hpp"],
     includes = ["include"],
@@ -471,6 +484,17 @@ cc_library(
     name = "source_location",
     hdrs = ["include/fixed_containers/source_location.hpp"],
     includes = ["include"],
+    copts = ["-std=c++20"],
+)
+
+cc_library(
+    name = "stack_adapter",
+    hdrs = ["include/fixed_containers/stack_adapter.hpp"],
+    includes = ["include"],
+    deps = [
+        ":concepts",
+        ":source_location",
+    ],
     copts = ["-std=c++20"],
 )
 
@@ -904,10 +928,34 @@ cc_test(
 )
 
 cc_test(
+    name = "queue_adapter_test",
+    srcs = ["test/queue_adapter_test.cpp"],
+    deps = [
+        ":fixed_deque",
+        ":queue_adapter",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
+    ],
+    copts = ["-std=c++20"],
+)
+
+cc_test(
     name = "reflection_test",
     srcs = ["test/reflection_test.cpp"],
     deps = [
         ":reflection",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
+    ],
+    copts = ["-std=c++20"],
+)
+
+cc_test(
+    name = "stack_adapter_test",
+    srcs = ["test/stack_adapter_test.cpp"],
+    deps = [
+        ":fixed_stack",
+        ":stack_adapter",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
