@@ -470,7 +470,7 @@ template <
         std_transition::source_location::current()) noexcept
 {
     constexpr std::size_t MAXIMUM_LENGTH = MAXIMUM_LENGTH_WITH_NULL_TERMINATOR - 1;
-    assert(list[MAXIMUM_LENGTH] == '\0');
+    assert(*std::next(list, MAXIMUM_LENGTH) == '\0');
     return {std::string_view{std::begin(list), MAXIMUM_LENGTH}, loc};
 }
 
