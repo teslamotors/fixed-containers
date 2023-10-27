@@ -1779,6 +1779,25 @@ TEST(FixedVector, Ranges)
     EXPECT_EQ(20, first_entry);
 }
 
+TEST(FixedVector, MoveableButNotCopyable)
+{
+    // Compile-only test
+    {
+        FixedVector<MockMoveableButNotCopyable, 13> a{};
+        a.emplace_back();
+        a.emplace_back();
+        a.emplace(a.cbegin());
+        a.erase(a.cbegin());
+    }
+    {
+        std::vector<MockMoveableButNotCopyable> a{};
+        a.emplace_back();
+        a.emplace_back();
+        a.emplace(a.cbegin());
+        a.erase(a.cbegin());
+    }
+}
+
 TEST(FixedVector, NonTriviallyCopyableCopyConstructor)
 {
     FixedVector<MockNonTrivialInt, 11> v1{};

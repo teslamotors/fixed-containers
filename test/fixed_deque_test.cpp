@@ -1737,6 +1737,25 @@ TEST(FixedDeque, Back_EmptyContainer)
     run_test(FixedDequeInitialStateLastIndex{});
 }
 
+TEST(FixedDeque, MoveableButNotCopyable)
+{
+    // Compile-only test
+    {
+        FixedDeque<MockMoveableButNotCopyable, 13> a{};
+        a.emplace_back();
+        a.emplace_back();
+        a.emplace(a.cbegin());
+        a.erase(a.cbegin());
+    }
+    {
+        std::deque<MockMoveableButNotCopyable> a{};
+        a.emplace_back();
+        a.emplace_back();
+        a.emplace(a.cbegin());
+        a.erase(a.cbegin());
+    }
+}
+
 TEST(FixedDeque, ClassTemplateArgumentDeduction)
 {
     // Compile-only test

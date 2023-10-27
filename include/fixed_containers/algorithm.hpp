@@ -14,7 +14,7 @@ constexpr BidirIt2 emplace_move_backward(BidirIt1 first, BidirIt1 last, BidirIt2
     {
         --d_last;
         --last;
-        std::construct_at(&*d_last, *last);
+        std::construct_at(&*d_last, std::move(*last));
         std::destroy_at(&*last);
     }
     return d_last;
