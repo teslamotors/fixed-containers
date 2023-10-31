@@ -23,6 +23,8 @@ Header-only C++20 library that provides containers with the following properties
 * `FixedDeque` - Deque implementation with `std::deque` API and "fixed container" properties
 * `FixedQueue` - Queue implementation with `std::queue` API and "fixed container" properties
 * `FixedStack` - Stack implementation with `std::stack` API and "fixed container" properties
+* `FixedCircularDeque` - Circular buffer implementation with `std::deque` API and "fixed container" properties
+* `FixedCircularQueue` - Circular buffer implementation with `std::queue` API and "fixed container" properties
 * `FixedString` - String implementation with `std::string` API and "fixed container" properties
 * `StringLiteral` - Compile-time null-terminated literal string.
 * `EnumArray` - For enum keys only, similar to `std::array` but with typed accessors and "fixed container" properties
@@ -187,6 +189,43 @@ More examples can be found [here](test/enums_test_common.hpp).
 
     static_assert(s1.top() == 99);
     static_assert(s1.size() == 2);
+    ```
+
+- FixedCircularDeque
+    ```C++
+    constexpr auto v1 = []()
+    {
+        FixedCircularDeque<int, 3> v{};
+        v.push_back(2);
+        v.emplace_back(3);
+        v.push_front(1);
+        v.emplace_front(0);
+        v.push_back(4);
+        return v;
+    }();
+
+    static_assert(v1[0] == 1);
+    static_assert(v1[1] == 2);
+    static_assert(v1[2] == 4);
+    static_assert(v1.size() == 3);
+    ```
+
+- FixedCircularQueue
+    ```C++
+    constexpr auto s1 = []()
+    {
+        FixedCircularQueue<int, 3> v1{};
+        v1.push(55);
+        v1.push(66);
+        v1.push(77);
+        v1.push(88);
+        v1.push(99);
+        return v1;
+    }();
+
+    static_assert(s1.front() == 77);
+    static_assert(s1.back() == 99);
+    static_assert(s1.size() == 3);
     ```
 
 - FixedString
