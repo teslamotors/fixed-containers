@@ -160,22 +160,23 @@ More examples can be found [here](test/enums_test_common.hpp).
   
 - FixedQueue
     ```C++
-    constexpr FixedQueue<int, 3> s1 = []()
+    constexpr auto s1 = []()
     {
-        FixedStack<int, 3> v1{};
-        int my_int = 77;
-        v1.push(my_int);
+        FixedQueue<int, 3> v1{};
+        v1.push(77);
+        v1.push(88);
         v1.push(99);
         return v1;
     }();
 
     static_assert(s1.front() == 77);
-    static_assert(s1.size() == 2);
+    static_assert(s1.back() == 99);
+    static_assert(s1.size() == 3);
     ```
 
 - FixedStack
     ```C++
-    constexpr FixedStack<int, 3> s1 = []()
+    constexpr auto s1 = []()
     {
         FixedStack<int, 3> v1{};
         int my_int = 77;
