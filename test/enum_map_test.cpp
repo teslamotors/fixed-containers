@@ -909,6 +909,7 @@ TEST(EnumMap, IteratorTypes)
             static_assert(
                 std::is_same_v<decltype(key_and_value), const std::pair<const TestEnum1&, int&>&>);
             // key_and_value.second = 5;  // Allowed, but ideally should not.
+            (void)key_and_value;
         }
 
         // cannot do this
