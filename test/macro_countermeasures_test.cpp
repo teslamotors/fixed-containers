@@ -79,6 +79,10 @@ TEST(MacroCountermeasures, DummyUsagesOfContainers)
         (void)s;
     }
     {
+        FixedCircularQueue<int, 5> s{};
+        (void)s;
+    }
+    {
         FixedDeque<int, 5> s{};
         (void)s;
     }
