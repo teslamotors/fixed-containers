@@ -67,15 +67,27 @@ TEST(MacroCountermeasures, DummyUsagesOfContainers)
     // Dummy usages are not necessary, this is mostly a compile-only test.
     // Counters tools that remove unused headers.
     {
-        FixedDeque<int, 5> s{};
+        EnumMap<Color, int> s{};
         (void)s;
     }
     {
-        FixedVector<int, 5> s{};
+        EnumSet<Color> s{};
         (void)s;
     }
     {
         FixedCircularDeque<int, 5> s{};
+        (void)s;
+    }
+    {
+        FixedDeque<int, 5> s{};
+        (void)s;
+    }
+    {
+        FixedMap<int, int, 5> s{};
+        (void)s;
+    }
+    {
+        FixedSet<int, 5> s{};
         (void)s;
     }
     {
@@ -87,19 +99,7 @@ TEST(MacroCountermeasures, DummyUsagesOfContainers)
         (void)s;
     }
     {
-        FixedSet<int, 5> s{};
-        (void)s;
-    }
-    {
-        FixedMap<int, int, 5> s{};
-        (void)s;
-    }
-    {
-        EnumSet<Color> s{};
-        (void)s;
-    }
-    {
-        EnumMap<Color, int> s{};
+        FixedVector<int, 5> s{};
         (void)s;
     }
 }
