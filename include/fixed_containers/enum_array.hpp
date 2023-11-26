@@ -79,10 +79,10 @@ public:
         requires DefaultConstructible<T>
       : EnumArray()
     {
-        for (const auto& [label, value] : rg)
+        for (auto&& [label, value] : rg)
         {
             const std::size_t ordinal = EnumAdapterType::ordinal(label);
-            values_.at(ordinal) = value;
+            values_.at(ordinal) = std::forward<decltype(value)>(value);
         }
     }
 

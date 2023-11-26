@@ -91,6 +91,13 @@ TEST(EnumArray, RangeConstructor)
     static_assert(consteval_compare::equal<40, s1.at(TestEnum1::FOUR)>);
 }
 
+TEST(EnumArray, RangeConstructorMoveOnly)
+{
+    // Compile only check that the range constructor moves r-values
+    EnumArray<TestEnum1, MockMoveableButNotCopyable> s1{fixed_containers::std_transition::from_range, std::array{std::make_pair(TestEnum1::ONE,MockMoveableButNotCopyable()),
+                                                                                                                 std::make_pair(TestEnum1::TWO,MockMoveableButNotCopyable())}};
+}
+
 TEST(EnumArray, At)
 {
     {
