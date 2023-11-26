@@ -41,3 +41,6 @@ user.bazelrc
 
 ### vcpkg ###
 vcpkg_installed/*
+
+### ctags ###
+tags
