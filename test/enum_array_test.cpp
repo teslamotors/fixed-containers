@@ -94,8 +94,10 @@ TEST(EnumArray, RangeConstructor)
 TEST(EnumArray, RangeConstructorMoveOnly)
 {
     // Compile only check that the range constructor moves r-values
-    EnumArray<TestEnum1, MockMoveableButNotCopyable> s1{fixed_containers::std_transition::from_range, std::array{std::make_pair(TestEnum1::ONE,MockMoveableButNotCopyable()),
-                                                                                                                 std::make_pair(TestEnum1::TWO,MockMoveableButNotCopyable())}};
+    constexpr EnumArray<TestEnum1, MockMoveableButNotCopyable> s1{
+        fixed_containers::std_transition::from_range,
+        std::array{std::make_pair(TestEnum1::ONE, MockMoveableButNotCopyable()),
+                   std::make_pair(TestEnum1::TWO, MockMoveableButNotCopyable())}};
 }
 
 TEST(EnumArray, At)
