@@ -1033,6 +1033,12 @@ public:
     }
 };
 
+template <InputIterator InputIt>
+EnumMap(InputIt first, InputIt last)
+        -> EnumMap<typename std::iterator_traits<InputIt>::value_type::first_type,
+                   typename std::iterator_traits<InputIt>::value_type::second_type>;
+
+
 template <class K, class V, customize::EnumMapChecking<K> CheckingType, class Predicate>
 constexpr typename EnumMap<K, V, CheckingType>::size_type erase_if(EnumMap<K, V, CheckingType>& c,
                                                                    Predicate predicate)
