@@ -218,6 +218,13 @@ TEST(EnumSet, IteratorConstructor)
     static_assert(s1.contains(TestEnum1::FOUR));
 }
 
+TEST(EnumSet, DeducedIteratorConstructor)
+{
+    constexpr std::array INPUT{TestEnum1::TWO, TestEnum1::FOUR};
+    constexpr EnumSet s1(INPUT.begin(), INPUT.end());
+    (void)s1;
+}
+
 TEST(EnumSet, InitializerConstructor)
 {
     constexpr EnumSet<TestEnum1> s1{TestEnum1::TWO, TestEnum1::FOUR};
