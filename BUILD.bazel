@@ -19,6 +19,13 @@ cc_library(
 )
 
 cc_library(
+    name = "assert_or_abort",
+    hdrs = ["include/fixed_containers/assert_or_abort.hpp"],
+    includes = ["include"],
+    copts = ["-std=c++20"],
+)
+
+cc_library(
     name = "bidirectional_iterator",
     hdrs = ["include/fixed_containers/bidirectional_iterator.hpp"],
     includes = ["include"],
@@ -654,6 +661,7 @@ cc_test(
     name = "enum_map_test",
     srcs = ["test/enum_map_test.cpp"],
     deps = [
+        ":assert_or_abort",
         ":consteval_compare",
         ":enum_map",
         ":enums_test_common",
@@ -671,6 +679,7 @@ cc_test(
     name = "enum_set_test",
     srcs = ["test/enum_set_test.cpp"],
     deps = [
+        ":assert_or_abort",
         ":consteval_compare",
         ":enum_set",
         ":enums_test_common",
@@ -711,6 +720,7 @@ cc_test(
     name = "fixed_circular_deque_test",
     srcs = ["test/fixed_circular_deque_test.cpp"],
     deps = [
+        ":assert_or_abort",
         ":fixed_circular_deque",
         ":instance_counter",
         ":mock_testing_types",
@@ -737,6 +747,7 @@ cc_test(
     name = "fixed_deque_test",
     srcs = ["test/fixed_deque_test.cpp"],
     deps = [
+        ":assert_or_abort",
         ":fixed_deque",
         ":instance_counter",
         ":mock_testing_types",
@@ -762,6 +773,7 @@ cc_test(
     name = "fixed_map_test",
     srcs = ["test/fixed_map_test.cpp"],
     deps = [
+        ":assert_or_abort",
         ":concepts",
         ":consteval_compare",
         ":fixed_map",
@@ -810,6 +822,7 @@ cc_test(
     name = "fixed_set_test",
     srcs = ["test/fixed_set_test.cpp"],
     deps = [
+        ":assert_or_abort",
         ":concepts",
         ":consteval_compare",
         ":fixed_set",
@@ -867,6 +880,7 @@ cc_test(
     name = "fixed_vector_test",
     srcs = ["test/fixed_vector_test.cpp"],
     deps = [
+        ":assert_or_abort",
         ":fixed_vector",
         ":instance_counter",
         ":mock_testing_types",
