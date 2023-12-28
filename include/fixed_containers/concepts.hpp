@@ -125,6 +125,9 @@ concept InputIterator =
     std::is_convertible_v<typename std::iterator_traits<Iterator>::iterator_category,
                           std::input_iterator_tag>;
 
+template <typename T>
+concept IsStdPair = std::same_as<T, std::pair<typename T::first_type, typename T::second_type>>;
+
 // The member type `is_transparent` is a convention that indicates to the user that this function
 // object is a transparent function object: it accepts arguments of arbitrary types and uses perfect
 // forwarding, which avoids unnecessary copying and conversion when the function object is used in

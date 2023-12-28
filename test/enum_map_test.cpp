@@ -705,6 +705,22 @@ TEST(EnumMap, Emplace)
             ASSERT_EQ(20, it->second);
         }
     }
+
+    {
+        EnumMap<TestEnum1, MockMoveableButNotCopyable> s2{};
+        s2.emplace(TestEnum1::ONE, MockMoveableButNotCopyable{});
+    }
+
+    {
+        EnumMap<TestEnum1, MockTriviallyCopyableButNotCopyableOrMoveable> s2{};
+        s2.emplace(TestEnum1::ONE);
+    }
+
+    {
+        EnumMap<TestEnum1, std::pair<int, int>> s3{};
+        s3.emplace(
+            std::piecewise_construct, std::make_tuple(TestEnum1::ONE), std::make_tuple(2, 3));
+    }
 }
 
 TEST(EnumMap, Clear)

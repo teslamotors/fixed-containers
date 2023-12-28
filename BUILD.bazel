@@ -85,6 +85,16 @@ cc_library(
 )
 
 cc_library(
+    name = "emplace",
+    hdrs = ["include/fixed_containers/emplace.hpp"],
+    includes = ["include"],
+    deps = [
+        ":concepts",
+    ],
+    copts = ["-std=c++20"],
+)
+
+cc_library(
     name = "enum_array",
     hdrs = ["include/fixed_containers/enum_array.hpp"],
     includes = ["include"],
@@ -105,6 +115,7 @@ cc_library(
         ":assert_or_abort",
         ":bidirectional_iterator",
         ":concepts",
+        ":emplace",
         ":enum_utils",
         ":erase_if",
         ":filtered_integer_range_iterator",
@@ -229,6 +240,7 @@ cc_library(
     deps = [
         ":assert_or_abort",
         ":bidirectional_iterator",
+        ":emplace",
         ":erase_if",
         ":fixed_red_black_tree",
         ":map_checking",

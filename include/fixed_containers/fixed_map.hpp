@@ -2,6 +2,7 @@
 
 #include "fixed_containers/assert_or_abort.hpp"
 #include "fixed_containers/bidirectional_iterator.hpp"
+#include "fixed_containers/emplace.hpp"
 #include "fixed_containers/erase_if.hpp"
 #include "fixed_containers/fixed_red_black_tree.hpp"
 #include "fixed_containers/map_checking.hpp"
@@ -420,10 +421,11 @@ public:
     }
 
     template <class... Args>
+        requires(sizeof...(Args) >= 1 and sizeof...(Args) <= 3)
     constexpr std::pair<iterator, bool> emplace(Args&&... args) noexcept
     {
-        std::pair<K, V> as_pair{std::forward<Args>(args)...};
-        return try_emplace(std::move(as_pair.first), std::move(as_pair.second));
+        return emplace_detail::emplace_in_terms_of_try_emplace_impl(*this,
+                                                                    std::forward<Args>(args)...);
     }
     template <class... Args>
     constexpr std::pair<iterator, bool> emplace_hint(const_iterator /*hint*/,

@@ -3,6 +3,7 @@
 #include "fixed_containers/assert_or_abort.hpp"
 #include "fixed_containers/bidirectional_iterator.hpp"
 #include "fixed_containers/concepts.hpp"
+#include "fixed_containers/emplace.hpp"
 #include "fixed_containers/enum_utils.hpp"
 #include "fixed_containers/erase_if.hpp"
 #include "fixed_containers/filtered_integer_range_iterator.hpp"
@@ -497,10 +498,11 @@ public:
     }
 
     template <class... Args>
+        requires(sizeof...(Args) >= 1 and sizeof...(Args) <= 3)
     constexpr std::pair<iterator, bool> emplace(Args&&... args) noexcept
     {
-        std::pair<K, V> as_pair{std::forward<Args>(args)...};
-        return try_emplace(as_pair.first, std::move(as_pair.second));
+        return emplace_detail::emplace_in_terms_of_try_emplace_impl(*this,
+                                                                    std::forward<Args>(args)...);
     }
     template <class... Args>
     constexpr std::pair<iterator, bool> emplace_hint(const_iterator /*hint*/,
@@ -1035,9 +1037,8 @@ public:
 
 template <InputIterator InputIt>
 EnumMap(InputIt first, InputIt last)
-        -> EnumMap<typename std::iterator_traits<InputIt>::value_type::first_type,
-                   typename std::iterator_traits<InputIt>::value_type::second_type>;
-
+    -> EnumMap<typename std::iterator_traits<InputIt>::value_type::first_type,
+               typename std::iterator_traits<InputIt>::value_type::second_type>;
 
 template <class K, class V, customize::EnumMapChecking<K> CheckingType, class Predicate>
 constexpr typename EnumMap<K, V, CheckingType>::size_type erase_if(EnumMap<K, V, CheckingType>& c,

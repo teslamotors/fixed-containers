@@ -523,9 +523,32 @@ TEST(FixedMap, Emplace)
         }
 
         {
-            FixedMap<int, MockMoveableButNotCopyable, 5> s2{};
-            s2.emplace(1, MockMoveableButNotCopyable{});
+            auto [it, was_inserted] = s1.emplace(std::make_pair(2, 209999999));
+            ASSERT_EQ(1, s1.size());
+            ASSERT_TRUE(!s1.contains(1));
+            ASSERT_TRUE(s1.contains(2));
+            ASSERT_TRUE(!s1.contains(3));
+            ASSERT_TRUE(!s1.contains(4));
+            ASSERT_EQ(20, s1.at(2));
+            ASSERT_FALSE(was_inserted);
+            ASSERT_EQ(2, it->first);
+            ASSERT_EQ(20, it->second);
         }
+    }
+
+    {
+        FixedMap<int, MockMoveableButNotCopyable, 5> s2{};
+        s2.emplace(1, MockMoveableButNotCopyable{});
+    }
+
+    {
+        FixedMap<int, MockTriviallyCopyableButNotCopyableOrMoveable, 5> s2{};
+        s2.emplace(1);
+    }
+
+    {
+        FixedMap<int, std::pair<int, int>, 5> s3{};
+        s3.emplace(std::piecewise_construct, std::make_tuple(1), std::make_tuple(2, 3));
     }
 }
 

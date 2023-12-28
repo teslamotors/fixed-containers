@@ -132,7 +132,7 @@ struct MockMoveableButNotCopyable
         default;
 };
 
-// std::atomic<int> is an example of this
+// std::atomic<int> and std::mutex are examples of this
 struct MockTriviallyCopyableButNotCopyableOrMoveable
 {
     MockTriviallyCopyableButNotCopyableOrMoveable() = default;
