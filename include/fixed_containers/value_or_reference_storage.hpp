@@ -27,4 +27,4 @@ struct ValueOrReferenceStorage<T> : public reference_storage_detail::ReferenceSt
 {
     using reference_storage_detail::ReferenceStorage<T>::ReferenceStorage;
 };
-}  // namespace fixed_containers
+}  // namespace fixed_containers::value_or_reference_storage_detail
