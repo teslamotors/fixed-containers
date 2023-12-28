@@ -1,6 +1,7 @@
 #pragma once
 
-#include <cassert>
+#include "fixed_containers/assert_or_abort.hpp"
+
 #include <concepts>
 #include <cstddef>
 #include <cstdint>
@@ -63,7 +64,7 @@ public:
     template <std::unsigned_integral V>
     [[nodiscard]] constexpr V cast() const
     {
-        assert(is_non_negative());
+        assert_or_abort(is_non_negative());
 
         // TODO: ensure the value fits in the target type
         return static_cast<V>(unsigned_value());

@@ -41,6 +41,7 @@ cc_library(
     hdrs = ["include/fixed_containers/circular_indexing.hpp"],
     includes = ["include"],
     deps = [
+        ":assert_or_abort",
         ":int_math",
         ":integer_range",
     ],
@@ -52,6 +53,7 @@ cc_library(
     hdrs = ["include/fixed_containers/circular_integer_range_iterator.hpp"],
     includes = ["include"],
     deps = [
+        ":assert_or_abort",
         ":circular_indexing",
         ":int_math",
         ":integer_range",
@@ -87,6 +89,7 @@ cc_library(
     hdrs = ["include/fixed_containers/enum_array.hpp"],
     includes = ["include"],
     deps = [
+        ":assert_or_abort",
         ":concepts",
         ":enum_utils",
         ":ranges",
@@ -99,6 +102,7 @@ cc_library(
     hdrs = ["include/fixed_containers/enum_map.hpp"],
     includes = ["include"],
     deps = [
+        ":assert_or_abort",
         ":bidirectional_iterator",
         ":concepts",
         ":enum_utils",
@@ -119,6 +123,7 @@ cc_library(
     hdrs = ["include/fixed_containers/enum_set.hpp"],
     includes = ["include"],
     deps = [
+        ":assert_or_abort",
         ":bidirectional_iterator",
         ":concepts",
         ":enum_utils",
@@ -133,6 +138,7 @@ cc_library(
     hdrs = ["include/fixed_containers/enum_utils.hpp"],
     includes = ["include"],
     deps = [
+        ":assert_or_abort",
         "@com_github_neargye_magic_enum//:magic_enum",
     ],
     copts = ["-std=c++20"],
@@ -150,6 +156,7 @@ cc_library(
     hdrs = ["include/fixed_containers/filtered_integer_range_iterator.hpp"],
     includes = ["include"],
     deps = [
+        ":assert_or_abort",
         ":bidirectional_iterator",
         ":integer_range",
         ":iterator_utils",
@@ -188,6 +195,7 @@ cc_library(
     includes = ["include"],
     deps = [
         ":algorithm",
+        ":assert_or_abort",
         ":circular_indexing",
         ":consteval_compare",
         ":integer_range",
@@ -206,6 +214,7 @@ cc_library(
     hdrs = ["include/fixed_containers/fixed_index_based_storage.hpp"],
     includes = ["include"],
     deps = [
+        ":assert_or_abort",
         ":consteval_compare",
         ":fixed_vector",
         ":index_or_value_storage",
@@ -218,6 +227,7 @@ cc_library(
     hdrs = ["include/fixed_containers/fixed_map.hpp",],
     includes = ["include"],
     deps = [
+        ":assert_or_abort",
         ":bidirectional_iterator",
         ":erase_if",
         ":fixed_red_black_tree",
@@ -251,6 +261,7 @@ cc_library(
     ],
     includes = ["include"],
     deps = [
+        ":assert_or_abort",
         ":concepts",
         ":fixed_index_based_storage",
         ":value_or_reference_storage",
@@ -262,6 +273,7 @@ cc_library(
     name = "fixed_red_black_tree_view",
     hdrs = ["include/fixed_containers/fixed_red_black_tree_view.hpp"],
     deps = [
+        ":assert_or_abort",
         ":fixed_red_black_tree",
     ],
     includes = ["include"],
@@ -273,6 +285,7 @@ cc_library(
     hdrs = ["include/fixed_containers/fixed_set.hpp"],
     includes = ["include"],
     deps = [
+        ":assert_or_abort",
         ":bidirectional_iterator",
         ":erase_if",
         ":fixed_red_black_tree",
@@ -300,6 +313,7 @@ cc_library(
     hdrs = ["include/fixed_containers/fixed_string.hpp"],
     includes = ["include"],
     deps = [
+        ":assert_or_abort",
         ":concepts",
         ":fixed_vector",
         ":preconditions",
@@ -348,6 +362,9 @@ cc_library(
     name = "int_math",
     hdrs = ["include/fixed_containers/int_math.hpp"],
     includes = ["include"],
+    deps = [
+        ":assert_or_abort",
+    ],
     copts = ["-std=c++20"],
 )
 
@@ -355,6 +372,9 @@ cc_library(
     name = "integer_range",
     hdrs = ["include/fixed_containers/integer_range.hpp"],
     includes = ["include"],
+    deps = [
+        ":assert_or_abort",
+    ],
     copts = ["-std=c++20"],
 )
 
@@ -363,6 +383,7 @@ cc_library(
     hdrs = ["include/fixed_containers/integer_range_iterator.hpp"],
     includes = ["include"],
     deps = [
+        ":assert_or_abort",
         ":int_math",
         ":integer_range",
         ":iterator_utils",
@@ -481,6 +502,7 @@ cc_library(
     hdrs = ["include/fixed_containers/reflection.hpp"],
     includes = ["include"],
     deps = [
+        ":assert_or_abort",
         ":concepts",
         ":fixed_stack",
         ":fixed_vector",
@@ -534,6 +556,9 @@ cc_library(
     name = "string_literal",
     hdrs = ["include/fixed_containers/string_literal.hpp"],
     includes = ["include"],
+    deps = [
+        ":assert_or_abort",
+    ],
     copts = ["-std=c++20"],
 )
 

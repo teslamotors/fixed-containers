@@ -1,5 +1,6 @@
 #pragma once
 
+#include "fixed_containers/assert_or_abort.hpp"
 #include "fixed_containers/bidirectional_iterator.hpp"
 #include "fixed_containers/erase_if.hpp"
 #include "fixed_containers/fixed_red_black_tree.hpp"
@@ -433,17 +434,17 @@ public:
 
     constexpr iterator erase(const_iterator pos) noexcept
     {
-        assert(pos != cend());
+        assert_or_abort(pos != cend());
         const NodeIndex i = tree().index_of_node_or_null(pos->first);
-        assert(tree().contains_at(i));
+        assert_or_abort(tree().contains_at(i));
         const NodeIndex successor_index = tree().delete_at_and_return_successor(i);
         return create_iterator(successor_index);
     }
     constexpr iterator erase(iterator pos) noexcept
     {
-        assert(pos != end());
+        assert_or_abort(pos != end());
         const NodeIndex i = tree().index_of_node_or_null(pos->first);
-        assert(tree().contains_at(i));
+        assert_or_abort(tree().contains_at(i));
         const NodeIndex successor_index = tree().delete_at_and_return_successor(i);
         return create_iterator(successor_index);
     }

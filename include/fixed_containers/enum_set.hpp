@@ -1,5 +1,6 @@
 #pragma once
 
+#include "fixed_containers/assert_or_abort.hpp"
 #include "fixed_containers/bidirectional_iterator.hpp"
 #include "fixed_containers/concepts.hpp"
 #include "fixed_containers/enum_utils.hpp"
@@ -7,7 +8,6 @@
 #include "fixed_containers/filtered_integer_range_iterator.hpp"
 
 #include <array>
-#include <cassert>
 #include <cstddef>
 #include <initializer_list>
 
@@ -306,9 +306,9 @@ public:
 
     constexpr const_iterator erase(const_iterator pos) noexcept
     {
-        assert(pos != cend());
+        assert_or_abort(pos != cend());
         const std::size_t i = EnumAdapterType::ordinal(*pos);
-        assert(contains_at(i));
+        assert_or_abort(contains_at(i));
         reset_at(i);
         return create_const_iterator(i);
     }
@@ -317,7 +317,7 @@ public:
     {
         const std::size_t from = first == end() ? ENUM_COUNT : EnumAdapterType::ordinal(*first);
         const std::size_t to = last == end() ? ENUM_COUNT : EnumAdapterType::ordinal(*last);
-        assert(from <= to);
+        assert_or_abort(from <= to);
 
         for (std::size_t i = from; i < to; i++)
         {
@@ -395,15 +395,15 @@ private:
 
     constexpr void reset_at(const std::size_t i) noexcept
     {
-        assert(contains_at(i));
+        assert_or_abort(contains_at(i));
         array_set_unchecked_at(i) = false;
         decrement_size();
     }
 };
 
 template <InputIterator InputIt>
-EnumSet(InputIt first,
-        InputIt last) noexcept->EnumSet<typename std::iterator_traits<InputIt>::value_type>;
+EnumSet(InputIt first, InputIt last) noexcept
+    -> EnumSet<typename std::iterator_traits<InputIt>::value_type>;
 
 template <class K, class Predicate>
 constexpr typename EnumSet<K>::size_type erase_if(EnumSet<K>& c, Predicate predicate)

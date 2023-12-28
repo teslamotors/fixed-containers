@@ -1,11 +1,11 @@
 #pragma once
 
+#include "fixed_containers/assert_or_abort.hpp"
 #include "fixed_containers/consteval_compare.hpp"
 #include "fixed_containers/fixed_vector.hpp"
 #include "fixed_containers/index_or_value_storage.hpp"
 
 #include <array>
-#include <cassert>
 #include <cstddef>
 #include <memory>
 #include <type_traits>
@@ -61,7 +61,7 @@ public:
     template <class... Args>
     constexpr std::size_t emplace_and_return_index(Args&&... args)
     {
-        assert(!full());
+        assert_or_abort(!full());
         const std::size_t i = next_index();
         set_next_index(array_unchecked_at(next_index()).index);
         emplace_at(i, std::forward<Args>(args)...);

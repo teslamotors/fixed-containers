@@ -1,5 +1,6 @@
 #pragma once
 
+#include "fixed_containers/assert_or_abort.hpp"
 #include "fixed_containers/concepts.hpp"
 #include "fixed_containers/fixed_vector.hpp"
 #include "fixed_containers/preconditions.hpp"
@@ -7,7 +8,6 @@
 #include "fixed_containers/source_location.hpp"
 
 #include <array>
-#include <cassert>
 #include <cstdint>
 #include <cstdlib>
 #include <string_view>
@@ -470,7 +470,7 @@ template <
         std_transition::source_location::current()) noexcept
 {
     constexpr std::size_t MAXIMUM_LENGTH = MAXIMUM_LENGTH_WITH_NULL_TERMINATOR - 1;
-    assert(*std::next(list, MAXIMUM_LENGTH) == '\0');
+    assert_or_abort(*std::next(list, MAXIMUM_LENGTH) == '\0');
     return {std::string_view{std::begin(list), MAXIMUM_LENGTH}, loc};
 }
 

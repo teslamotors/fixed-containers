@@ -1,6 +1,7 @@
 #pragma once
 
 #include "fixed_containers/algorithm.hpp"
+#include "fixed_containers/assert_or_abort.hpp"
 #include "fixed_containers/circular_indexing.hpp"
 #include "fixed_containers/consteval_compare.hpp"
 #include "fixed_containers/integer_range.hpp"
@@ -13,7 +14,6 @@
 
 #include <algorithm>
 #include <array>
-#include <cassert>
 #include <cstddef>
 #include <initializer_list>
 #include <iterator>
@@ -105,7 +105,7 @@ private:
 
         constexpr std::conditional_t<IS_CONST, const_reference, reference> get() const noexcept
         {
-            assert(starting_index_and_distance_->to_range().contains(current_index_));
+            assert_or_abort(starting_index_and_distance_->to_range().contains(current_index_));
             const std::size_t i = decrement_index_with_wraparound(current_index_, STARTING_OFFSET);
             return optional_storage_detail::get(array_->at(i));
         }
@@ -113,23 +113,23 @@ private:
         template <bool IS_CONST2>
         constexpr bool operator==(const ReferenceProvider<IS_CONST2>& other) const noexcept
         {
-            assert(array_ == other.array_);
-            assert(starting_index_and_distance_ == other.starting_index_and_distance_);
+            assert_or_abort(array_ == other.array_);
+            assert_or_abort(starting_index_and_distance_ == other.starting_index_and_distance_);
             return current_index_ == other.current_index_;
         }
         template <bool IS_CONST2>
         constexpr auto operator<=>(const ReferenceProvider<IS_CONST2>& other) const noexcept
         {
-            assert(array_ == other.array_);
-            assert(starting_index_and_distance_ == other.starting_index_and_distance_);
+            assert_or_abort(array_ == other.array_);
+            assert_or_abort(starting_index_and_distance_ == other.starting_index_and_distance_);
             return current_index_ <=> other.current_index_;
         }
 
         template <bool IS_CONST2>
         constexpr std::ptrdiff_t operator-(const ReferenceProvider<IS_CONST2>& other) const
         {
-            assert(array_ == other.array_);
-            assert(starting_index_and_distance_ == other.starting_index_and_distance_);
+            assert_or_abort(array_ == other.array_);
+            assert_or_abort(starting_index_and_distance_ == other.starting_index_and_distance_);
             return static_cast<std::ptrdiff_t>(current_index_ - other.current_index_);
         }
     };

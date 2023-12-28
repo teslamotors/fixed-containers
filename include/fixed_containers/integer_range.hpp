@@ -1,6 +1,7 @@
 #pragma once
 
-#include <cassert>
+#include "fixed_containers/assert_or_abort.hpp"
+
 #include <concepts>
 #include <cstddef>
 
@@ -80,7 +81,7 @@ private:
       : start_inclusive_{start_inclusive_inclusive}
       , end_exclusive_{end_exclusive}
     {
-        assert(start_inclusive_ <= end_exclusive_);
+        assert_or_abort(start_inclusive_ <= end_exclusive_);
     }
 
 public:

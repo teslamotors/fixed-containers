@@ -1,5 +1,6 @@
 #pragma once
 
+#include "fixed_containers/assert_or_abort.hpp"
 #include "fixed_containers/concepts.hpp"
 #include "fixed_containers/enum_utils.hpp"
 #include "fixed_containers/ranges.hpp"
@@ -97,7 +98,7 @@ public:
         requires NotDefaultConstructible<T>
       : values_(initializer_pair_list_to_value_array(list))
     {
-        assert(fixed_containers::rich_enums_detail::is_zero_based_contiguous_and_sorted(
+        assert_or_abort(fixed_containers::rich_enums_detail::is_zero_based_contiguous_and_sorted(
             ENUM_COUNT, PairOrdinalComparator<ENUM_COUNT>{list}));
     }
 

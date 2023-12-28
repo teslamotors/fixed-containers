@@ -1,8 +1,8 @@
 #pragma once
 
+#include "fixed_containers/assert_or_abort.hpp"
 #include "fixed_containers/fixed_red_black_tree.hpp"
 
-#include <cassert>
 #include <cstdint>
 #include <functional>
 #include <iterator>
@@ -16,7 +16,7 @@ namespace fixed_containers
 template <class M, class N>
 constexpr std::common_type_t<M, N> align_up(M m, N n)
 {
-    assert(n > 0);
+    assert_or_abort(n > 0);
     return m + n - 1 - (m + n - 1) % n;
 }
 
@@ -131,7 +131,7 @@ public:
                                  static_cast<difference_type>(i * storage_elem_size_bytes_));
             }
 
-            assert(false && "unreachable");
+            assert_or_abort(false);
             return nullptr;
         }
 
@@ -202,7 +202,7 @@ public:
                     ->get_index();
             }
 
-            assert(false && "unreachable");
+            assert_or_abort(false);
             return NULL_INDEX;
         }
 
@@ -271,7 +271,7 @@ public:
                 return vector_size_bytes + vector_data_size_bytes;
             }
 
-            assert(false && "unreachable");
+            assert_or_abort(false);
             return 0;
         }
 
@@ -281,7 +281,7 @@ public:
          */
         [[nodiscard]] const std::byte* iov_array_base() const
         {
-            assert(storage_type_ == StorageType::FIXED_INDEX_POOL);
+            assert_or_abort(storage_type_ == StorageType::FIXED_INDEX_POOL);
             const auto bptr = reinterpret_cast<const std::byte*>(base_);
             const auto storage_ptr = bptr;
             const auto iov_array = storage_ptr;
@@ -294,7 +294,7 @@ public:
          */
         [[nodiscard]] const std::byte* contiguous_array_base() const
         {
-            assert(storage_type_ == StorageType::FIXED_INDEX_CONTIGUOUS);
+            assert_or_abort(storage_type_ == StorageType::FIXED_INDEX_CONTIGUOUS);
             const auto bptr = reinterpret_cast<const std::byte*>(base_);
             const auto storage_ptr = bptr;
             const auto fixed_vector_ptr = storage_ptr;
@@ -309,7 +309,7 @@ public:
          */
         [[nodiscard]] std::size_t contiguous_vector_size_bytes() const
         {
-            assert(storage_type_ == StorageType::FIXED_INDEX_CONTIGUOUS);
+            assert_or_abort(storage_type_ == StorageType::FIXED_INDEX_CONTIGUOUS);
             const auto bptr = reinterpret_cast<const std::byte*>(base_);
             const auto storage_ptr = bptr;
             const auto fixed_vector_ptr = storage_ptr;
@@ -333,7 +333,7 @@ public:
                 return node_size_bytes;
             }
 
-            assert(false && "unreachable");
+            assert_or_abort(false);
             return 0;
         }
 

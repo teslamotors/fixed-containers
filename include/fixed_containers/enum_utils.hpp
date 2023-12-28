@@ -1,5 +1,7 @@
 #pragma once
 
+#include "fixed_containers/assert_or_abort.hpp"
+
 #include <magic_enum.hpp>
 
 #include <array>
@@ -250,7 +252,7 @@ constexpr auto get_backing_enum(const T& key)
         return key.backing_enum();
     }
 
-    assert(false);
+    assert_or_abort(false);
 }
 
 template <class T>
@@ -290,7 +292,7 @@ public:
 
     [[nodiscard]] constexpr const T& value() const
     {
-        assert(has_value());
+        assert_or_abort(has_value());
         return val;
     }
 };
@@ -316,7 +318,7 @@ public:
     explicit constexpr CompactRichEnumStorage(const T& value) noexcept
       : val{value}
     {
-        assert(value != NO_VALUE_SENTINEL);  // Value reserved for internal usage
+        assert_or_abort(value != NO_VALUE_SENTINEL);  // Value reserved for internal usage
     }
 
 public:
@@ -329,7 +331,7 @@ public:
 
     [[nodiscard]] constexpr const T& value() const
     {
-        assert(has_value());
+        assert_or_abort(has_value());
         return val;
     }
 };

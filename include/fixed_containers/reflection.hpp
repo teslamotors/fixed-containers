@@ -1,12 +1,12 @@
 #pragma once
 
+#include "fixed_containers/assert_or_abort.hpp"
 #include "fixed_containers/concepts.hpp"
 #include "fixed_containers/fixed_stack.hpp"
 #include "fixed_containers/fixed_vector.hpp"
 #include "fixed_containers/in_out.hpp"
 
 #include <array>
-#include <cassert>
 #include <concepts>
 #include <optional>
 #include <string_view>
@@ -73,7 +73,7 @@ public:
             }
             else
             {
-                assert(false);
+                assert_or_abort(false);
             }
         }
 
@@ -88,7 +88,7 @@ public:
             }
             else
             {
-                assert(false);
+                assert_or_abort(false);
             }
         }
 
@@ -175,9 +175,10 @@ constexpr void for_each_field_entry(const T& instance, Func func)
 
     LayerTracker<> layer_tracker{};
     __builtin_dump_struct(&instance, converter, in_out{layer_tracker});
-    assert(layer_tracker.is_null_layer() &&
-           "If you are hitting this, a possible reason can be that clang-16 or lower has a limit "
-           "in total field count. See unit tests for more info.");
+    assert_or_abort(
+        layer_tracker.is_null_layer() &&
+        "If you are hitting this, a possible reason can be that clang-16 or lower has a limit "
+        "in total field count. See unit tests for more info.");
 }
 
 enum class RecursionType

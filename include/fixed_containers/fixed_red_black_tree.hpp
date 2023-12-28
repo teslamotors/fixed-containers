@@ -1,5 +1,6 @@
 #pragma once
 
+#include "fixed_containers/assert_or_abort.hpp"
 #include "fixed_containers/concepts.hpp"
 #include "fixed_containers/fixed_index_based_storage.hpp"
 #include "fixed_containers/fixed_red_black_tree_ops.hpp"
@@ -7,7 +8,6 @@
 #include "fixed_containers/fixed_red_black_tree_types.hpp"
 
 #include <algorithm>
-#include <cassert>
 #include <cstddef>
 #include <functional>
 
@@ -127,7 +127,7 @@ public:
     template <class... Args>
     constexpr void insert_new_at(NodeIndexAndParentIndex& np, Args&&... args) noexcept
     {
-        assert(!contains_at(np.i));
+        assert_or_abort(!contains_at(np.i));
         increment_size();
         np.i = tree_storage().emplace_and_return_index(std::forward<Args>(args)...);
 
@@ -177,7 +177,8 @@ public:
     {
         if (from_index != NULL_INDEX && to_index != NULL_INDEX)
         {
-            assert(compare(tree_storage().key(from_index), tree_storage().key(to_index)) <= 0);
+            assert_or_abort(compare(tree_storage().key(from_index), tree_storage().key(to_index)) <=
+                            0);
         }
 
         NodeIndex i = from_index;
@@ -614,7 +615,7 @@ private:
     constexpr SuccessorIndexAndRepositionedIndex delete_at_and_return_successor_and_repositioned(
         const NodeIndex& i) noexcept
     {
-        assert(contains_at(i));
+        assert_or_abort(contains_at(i));
 
         // If there is only one node
         if (size() == 1)

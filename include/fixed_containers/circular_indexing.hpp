@@ -1,9 +1,9 @@
 #pragma once
 
+#include "fixed_containers/assert_or_abort.hpp"
 #include "fixed_containers/int_math.hpp"
 #include "fixed_containers/integer_range.hpp"
 
-#include <cassert>
 #include <compare>
 #include <cstdint>
 #include <tuple>
@@ -30,7 +30,7 @@ constexpr CyclesAndInteger increment_index_with_wraparound(const IntegerRangeTyp
     if (range.distance() == 0)
     {
         // Default constructed
-        assert(i == 0);
+        assert_or_abort(i == 0);
         return {};
     }
 
@@ -53,7 +53,7 @@ constexpr CyclesAndInteger decrement_index_with_wraparound(const IntegerRangeTyp
     if (range.distance() == 0)
     {
         // Default constructed
-        assert(i == 0);
+        assert_or_abort(i == 0);
         return {};
     }
 

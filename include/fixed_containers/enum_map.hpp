@@ -1,5 +1,6 @@
 #pragma once
 
+#include "fixed_containers/assert_or_abort.hpp"
 #include "fixed_containers/bidirectional_iterator.hpp"
 #include "fixed_containers/concepts.hpp"
 #include "fixed_containers/enum_utils.hpp"
@@ -13,7 +14,6 @@
 #include "fixed_containers/type_name.hpp"
 
 #include <array>
-#include <cassert>
 #include <cstddef>
 #include <initializer_list>
 #include <memory>
@@ -511,17 +511,17 @@ public:
 
     constexpr iterator erase(const_iterator pos) noexcept
     {
-        assert(pos != cend());
+        assert_or_abort(pos != cend());
         const std::size_t i = EnumAdapterType::ordinal(pos->first);
-        assert(contains_at(i));
+        assert_or_abort(contains_at(i));
         reset_at(i);
         return create_iterator(i);
     }
     constexpr iterator erase(iterator pos) noexcept
     {
-        assert(pos != end());
+        assert_or_abort(pos != end());
         const std::size_t i = EnumAdapterType::ordinal(pos->first);
-        assert(contains_at(i));
+        assert_or_abort(contains_at(i));
         reset_at(i);
         return create_iterator(i);
     }
@@ -531,7 +531,7 @@ public:
         const std::size_t from =
             first == cend() ? ENUM_COUNT : EnumAdapterType::ordinal(first->first);
         const std::size_t to = last == cend() ? ENUM_COUNT : EnumAdapterType::ordinal(last->first);
-        assert(from <= to);
+        assert_or_abort(from <= to);
 
         for (std::size_t i = from; i < to; i++)
         {
@@ -648,7 +648,7 @@ private:
 
     constexpr void reset_at(const std::size_t i) noexcept
     {
-        assert(contains_at(i));
+        assert_or_abort(contains_at(i));
         if constexpr (NotTriviallyDestructible<V>)  // if-check needed by clang
         {
             std::destroy_at(&unchecked_at(i));

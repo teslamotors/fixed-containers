@@ -1,12 +1,12 @@
 #pragma once
 
+#include "fixed_containers/assert_or_abort.hpp"
 #include "fixed_containers/circular_indexing.hpp"
 #include "fixed_containers/int_math.hpp"
 #include "fixed_containers/integer_range.hpp"
 #include "fixed_containers/iterator_utils.hpp"
 #include "fixed_containers/random_access_iterator.hpp"
 
-#include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <iterator>
@@ -54,18 +54,18 @@ public:
 
     constexpr bool operator==(const CircularIntegerRangeEntryProvider& other) const noexcept
     {
-        assert(integer_range_ == other.integer_range_);
+        assert_or_abort(integer_range_ == other.integer_range_);
         return current_index_ == other.current_index_;
     }
     constexpr auto operator<=>(const CircularIntegerRangeEntryProvider& other) const noexcept
     {
-        assert(integer_range_ == other.integer_range_);
+        assert_or_abort(integer_range_ == other.integer_range_);
         return current_index_ <=> other.current_index_;
     }
 
     constexpr std::ptrdiff_t operator-(const CircularIntegerRangeEntryProvider& other) const
     {
-        assert(integer_range_ == other.integer_range_);
+        assert_or_abort(integer_range_ == other.integer_range_);
         const auto cycle_offset =
             static_cast<std::ptrdiff_t>(current_index_.cycles - other.current_index_.cycles) *
             static_cast<std::ptrdiff_t>(integer_range_.distance());

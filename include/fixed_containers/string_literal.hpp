@@ -1,6 +1,7 @@
 #pragma once
 
-#include <cassert>
+#include "fixed_containers/assert_or_abort.hpp"
+
 #include <cstddef>
 #include <string_view>
 
@@ -31,7 +32,7 @@ public:
       : size_(N - 1)
       , cstr_(str)
     {
-        assert(*std::next(cstr_, N - 1) == '\0');
+        assert_or_abort(*std::next(cstr_, N - 1) == '\0');
     }
 
     constexpr StringLiteral() noexcept

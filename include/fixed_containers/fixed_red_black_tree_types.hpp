@@ -1,5 +1,7 @@
 #pragma once
 
+#include "fixed_containers/assert_or_abort.hpp"
+
 #include <cstddef>
 #include <functional>
 #include <limits>
@@ -67,7 +69,7 @@ public:
     constexpr void set_index(const NodeIndex i)
     {
         const NodeIndex j = i == NULL_INDEX ? LOCAL_NULL_INDEX : i;
-        assert(j <= LOCAL_NULL_INDEX);
+        assert_or_abort(j <= LOCAL_NULL_INDEX);
         index_and_color() = (index_and_color() & MASK) | j;
     }
 
