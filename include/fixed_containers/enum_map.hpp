@@ -1033,6 +1033,13 @@ public:
     }
 };
 
+template <typename K, typename V, fixed_containers::customize::EnumMapChecking<K> CheckingType>
+[[nodiscard]] constexpr typename EnumMap<K, V, CheckingType>::size_type is_full(
+    const EnumMap<K, V, CheckingType>& c)
+{
+    return c.size() >= c.max_size();
+}
+
 template <InputIterator InputIt>
 EnumMap(InputIt first, InputIt last)
     -> EnumMap<typename std::iterator_traits<InputIt>::value_type::first_type,

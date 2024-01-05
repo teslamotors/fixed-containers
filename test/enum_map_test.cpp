@@ -359,14 +359,22 @@ TEST(EnumMap, MaxSize)
     static_assert(s2.max_size() == 4);
 }
 
-TEST(EnumMap, EmptyAndSize)
+TEST(EnumMap, EmptySizeFull)
 {
     constexpr EnumMap<TestEnum1, int> s1{{TestEnum1::TWO, 20}, {TestEnum1::FOUR, 40}};
     static_assert(s1.size() == 2);
     static_assert(!s1.empty());
 
     constexpr EnumMap<TestEnum1, int> s2{};
+    static_assert(s2.size() == 0);
     static_assert(s2.empty());
+
+    constexpr EnumMap<TestEnum1, int> s3{
+        {TestEnum1::ONE, 10}, {TestEnum1::TWO, 20}, {TestEnum1::THREE, 30}, {TestEnum1::FOUR, 40}};
+    static_assert(is_full(s3));
+
+    constexpr EnumMap<TestEnum1, int> s4{{TestEnum1::TWO, 20}, {TestEnum1::FOUR, 40}};
+    static_assert(!is_full(s4));
 }
 
 TEST(EnumMap, OperatorBracket_Constexpr)

@@ -399,6 +399,12 @@ private:
     }
 };
 
+template <typename K>
+[[nodiscard]] constexpr typename EnumSet<K>::size_type is_full(const EnumSet<K>& c)
+{
+    return c.size() >= c.max_size();
+}
+
 template <InputIterator InputIt>
 EnumSet(InputIt first, InputIt last) noexcept
     -> EnumSet<typename std::iterator_traits<InputIt>::value_type>;

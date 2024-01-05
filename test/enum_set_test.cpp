@@ -255,7 +255,7 @@ TEST(EnumSet, MaxSize)
     static_assert(s2.max_size() == 4);
 }
 
-TEST(EnumSet, EmptyAndSize)
+TEST(EnumSet, EmptySizeFull)
 {
     constexpr EnumSet<TestEnum1> s1{TestEnum1::TWO, TestEnum1::FOUR};
     static_assert(s1.size() == 2);
@@ -264,6 +264,13 @@ TEST(EnumSet, EmptyAndSize)
     constexpr EnumSet<TestEnum1> s2{};
     static_assert(s2.size() == 0);
     static_assert(s2.empty());
+
+    constexpr EnumSet<TestEnum1> s3{
+        TestEnum1::ONE, TestEnum1::TWO, TestEnum1::THREE, TestEnum1::FOUR};
+    static_assert(is_full(s3));
+
+    constexpr EnumSet<TestEnum1> s4{TestEnum1::TWO, TestEnum1::FOUR};
+    static_assert(!is_full(s4));
 }
 
 TEST(EnumSet, Insert)
