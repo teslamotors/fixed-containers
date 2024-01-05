@@ -2,6 +2,7 @@
 
 #include "fixed_containers/concepts.hpp"
 #include "fixed_containers/fixed_deque.hpp"
+#include "fixed_containers/max_size.hpp"
 #include "fixed_containers/sequence_container_checking.hpp"
 #include "fixed_containers/source_location.hpp"
 
@@ -33,6 +34,9 @@ public:
     using iterator = typename FixedDequeStorage::iterator;
     using reverse_iterator = typename FixedDequeStorage::reverse_iterator;
     using const_reverse_iterator = typename FixedDequeStorage::const_reverse_iterator;
+
+public:
+    [[nodiscard]] static constexpr std::size_t static_max_size() noexcept { return MAXIMUM_SIZE; }
 
 public:  // Public so this type is a structural type and can thus be used in template parameters
     FixedDequeStorage IMPLEMENTATION_DETAIL_DO_NOT_USE_data_;
@@ -257,7 +261,7 @@ public:
     constexpr const_reverse_iterator rend() const noexcept { return crend(); }
     constexpr const_reverse_iterator crend() const noexcept { return deque().crend(); }
 
-    [[nodiscard]] constexpr std::size_t max_size() const noexcept { return MAXIMUM_SIZE; }
+    [[nodiscard]] constexpr std::size_t max_size() const noexcept { return static_max_size(); }
     [[nodiscard]] constexpr std::size_t size() const noexcept { return deque().size(); }
     [[nodiscard]] constexpr bool empty() const noexcept { return size() == 0; }
 

@@ -8,6 +8,7 @@
 #include "fixed_containers/erase_if.hpp"
 #include "fixed_containers/filtered_integer_range_iterator.hpp"
 #include "fixed_containers/fixed_vector.hpp"
+#include "fixed_containers/max_size.hpp"
 #include "fixed_containers/optional_storage.hpp"
 #include "fixed_containers/pair.hpp"
 #include "fixed_containers/preconditions.hpp"
@@ -310,6 +311,8 @@ public:
         return create_with_all_entries<EnumMapType, AS_ARRAY>();
     }
 
+    [[nodiscard]] static constexpr std::size_t static_max_size() noexcept { return ENUM_COUNT; }
+
 public:  // Public so this type is a structural type and can thus be used in template parameters
     ValueArrayType IMPLEMENTATION_DETAIL_DO_NOT_USE_values_;
     std::array<bool, ENUM_COUNT> IMPLEMENTATION_DETAIL_DO_NOT_USE_array_set_;
@@ -393,7 +396,7 @@ public:
         return create_const_reverse_iterator(0);
     }
 
-    [[nodiscard]] constexpr std::size_t max_size() const noexcept { return ENUM_COUNT; }
+    [[nodiscard]] constexpr std::size_t max_size() const noexcept { return static_max_size(); }
     [[nodiscard]] constexpr std::size_t size() const noexcept
     {
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_size_;

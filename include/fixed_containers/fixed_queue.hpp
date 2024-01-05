@@ -2,6 +2,7 @@
 
 #include "fixed_containers/concepts.hpp"
 #include "fixed_containers/fixed_deque.hpp"
+#include "fixed_containers/max_size.hpp"
 #include "fixed_containers/queue_adapter.hpp"
 #include "fixed_containers/sequence_container_checking.hpp"
 #include "fixed_containers/source_location.hpp"
@@ -16,6 +17,9 @@ class FixedQueue : public QueueAdapter<FixedDeque<T, MAXIMUM_SIZE, CheckingType>
 {
 private:
     using Base = QueueAdapter<FixedDeque<T, MAXIMUM_SIZE, CheckingType>>;
+
+public:
+    [[nodiscard]] static constexpr std::size_t static_max_size() noexcept { return MAXIMUM_SIZE; }
 
 public:
     constexpr FixedQueue()

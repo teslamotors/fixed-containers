@@ -4,6 +4,7 @@
 #include "fixed_containers/concepts.hpp"
 #include "fixed_containers/consteval_compare.hpp"
 #include "fixed_containers/iterator_utils.hpp"
+#include "fixed_containers/max_size.hpp"
 #include "fixed_containers/optional_storage.hpp"
 #include "fixed_containers/preconditions.hpp"
 #include "fixed_containers/random_access_iterator_transformer.hpp"
@@ -136,6 +137,9 @@ public:
     using iterator = IteratorImpl<IteratorConstness::MUTABLE_ITERATOR>;
     using reverse_iterator = std::reverse_iterator<iterator>;
     using const_reverse_iterator = std::reverse_iterator<const_iterator>;
+
+public:
+    [[nodiscard]] static constexpr std::size_t static_max_size() noexcept { return MAXIMUM_SIZE; }
 
 private:
     static constexpr void check_target_size(size_type target_size,
@@ -525,7 +529,7 @@ public:
     /**
      * Size
      */
-    [[nodiscard]] constexpr std::size_t max_size() const noexcept { return MAXIMUM_SIZE; }
+    [[nodiscard]] constexpr std::size_t max_size() const noexcept { return static_max_size(); }
     [[nodiscard]] constexpr std::size_t capacity() const noexcept { return max_size(); }
     constexpr void reserve(const std::size_t new_capacity,
                            const std_transition::source_location& loc =

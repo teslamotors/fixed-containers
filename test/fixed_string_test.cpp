@@ -717,6 +717,13 @@ TEST(FixedString, CapacityAndMaxSize)
         EXPECT_EQ(3, v1.capacity());
         EXPECT_EQ(3, v1.max_size());
     }
+
+    {
+        static_assert(FixedString<3>::static_max_size() == 3);
+        EXPECT_EQ(3, (FixedString<3>::static_max_size()));
+        static_assert(max_size_v<FixedString<3>> == 3);
+        EXPECT_EQ(3, (max_size_v<FixedString<3>>));
+    }
 }
 
 TEST(FixedString, Reserve)

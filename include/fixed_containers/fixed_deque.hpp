@@ -7,6 +7,7 @@
 #include "fixed_containers/consteval_compare.hpp"
 #include "fixed_containers/integer_range.hpp"
 #include "fixed_containers/iterator_utils.hpp"
+#include "fixed_containers/max_size.hpp"
 #include "fixed_containers/optional_storage.hpp"
 #include "fixed_containers/preconditions.hpp"
 #include "fixed_containers/random_access_iterator.hpp"
@@ -149,6 +150,9 @@ public:
         Iterator<IteratorConstness::CONSTANT_ITERATOR, IteratorDirection::REVERSE>;
     using reverse_iterator =
         Iterator<IteratorConstness::MUTABLE_ITERATOR, IteratorDirection::REVERSE>;
+
+public:
+    [[nodiscard]] static constexpr std::size_t static_max_size() noexcept { return MAXIMUM_SIZE; }
 
 private:
     static constexpr void check_target_size(size_type target_size,
@@ -472,7 +476,7 @@ public:
             IMPLEMENTATION_DETAIL_DO_NOT_USE_starting_index_and_size_.start);
     }
 
-    [[nodiscard]] constexpr std::size_t max_size() const noexcept { return MAXIMUM_SIZE; }
+    [[nodiscard]] constexpr std::size_t max_size() const noexcept { return static_max_size(); }
     [[nodiscard]] constexpr std::size_t size() const noexcept
     {
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_starting_index_and_size_.distance;

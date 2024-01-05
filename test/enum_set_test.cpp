@@ -253,6 +253,11 @@ TEST(EnumSet, MaxSize)
 
     constexpr EnumSet<TestEnum1> s2{};
     static_assert(s2.max_size() == 4);
+
+    static_assert(EnumSet<TestEnum1>::static_max_size() == 4);
+    EXPECT_EQ(4, (EnumSet<TestEnum1>::static_max_size()));
+    static_assert(max_size_v<EnumSet<TestEnum1>> == 4);
+    EXPECT_EQ(4, (max_size_v<EnumSet<TestEnum1>>));
 }
 
 TEST(EnumSet, EmptySizeFull)

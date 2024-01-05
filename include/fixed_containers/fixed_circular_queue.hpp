@@ -5,6 +5,7 @@
 #include "fixed_containers/queue_adapter.hpp"
 #include "fixed_containers/sequence_container_checking.hpp"
 #include "fixed_containers/source_location.hpp"
+#include "fixed_containers/max_size.hpp"
 
 namespace fixed_containers
 {
@@ -16,6 +17,9 @@ class FixedCircularQueue : public QueueAdapter<FixedCircularDeque<T, MAXIMUM_SIZ
 {
 private:
     using Base = QueueAdapter<FixedCircularDeque<T, MAXIMUM_SIZE, CheckingType>>;
+
+public:
+    [[nodiscard]] static constexpr std::size_t static_max_size() noexcept { return MAXIMUM_SIZE; }
 
 public:
     constexpr FixedCircularQueue()

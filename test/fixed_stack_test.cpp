@@ -45,6 +45,13 @@ TEST(FixedStack, MaxSize)
         FixedStack<int, 3> v1{};
         EXPECT_EQ(3, v1.max_size());
     }
+
+    {
+        static_assert(FixedStack<int, 3>::static_max_size() == 3);
+        EXPECT_EQ(3, (FixedStack<int, 3>::static_max_size()));
+        static_assert(max_size_v<FixedStack<int, 3>> == 3);
+        EXPECT_EQ(3, (max_size_v<FixedStack<int, 3>>));
+    }
 }
 
 TEST(FixedStack, Empty)

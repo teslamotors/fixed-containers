@@ -2,6 +2,7 @@
 
 #include "fixed_containers/concepts.hpp"
 #include "fixed_containers/fixed_vector.hpp"
+#include "fixed_containers/max_size.hpp"
 #include "fixed_containers/sequence_container_checking.hpp"
 #include "fixed_containers/source_location.hpp"
 #include "fixed_containers/stack_adapter.hpp"
@@ -18,6 +19,9 @@ class FixedStack : public StackAdapter<FixedVector<T, MAXIMUM_SIZE, CheckingType
 {
 private:
     using Base = StackAdapter<FixedVector<T, MAXIMUM_SIZE, CheckingType>>;
+
+public:
+    [[nodiscard]] static constexpr std::size_t static_max_size() noexcept { return MAXIMUM_SIZE; }
 
 public:
     constexpr FixedStack()

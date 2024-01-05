@@ -7,6 +7,7 @@
 #include "fixed_containers/erase_if.hpp"
 #include "fixed_containers/fixed_red_black_tree.hpp"
 #include "fixed_containers/map_checking.hpp"
+#include "fixed_containers/max_size.hpp"
 #include "fixed_containers/preconditions.hpp"
 #include "fixed_containers/source_location.hpp"
 
@@ -152,6 +153,9 @@ public:
     using size_type = typename Tree::size_type;
     using difference_type = typename Tree::difference_type;
 
+public:
+    [[nodiscard]] static constexpr std::size_t static_max_size() noexcept { return MAXIMUM_SIZE; }
+
 public:  // Public so this type is a structural type and can thus be used in template parameters
     Tree IMPLEMENTATION_DETAIL_DO_NOT_USE_tree_;
 
@@ -264,7 +268,7 @@ public:
         return create_const_reverse_iterator(tree().index_of_min_at());
     }
 
-    [[nodiscard]] constexpr std::size_t max_size() const noexcept { return MAXIMUM_SIZE; }
+    [[nodiscard]] constexpr std::size_t max_size() const noexcept { return static_max_size(); }
     [[nodiscard]] constexpr std::size_t size() const noexcept { return tree().size(); }
     [[nodiscard]] constexpr bool empty() const noexcept { return tree().empty(); }
 

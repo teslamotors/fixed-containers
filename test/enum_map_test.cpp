@@ -357,6 +357,11 @@ TEST(EnumMap, MaxSize)
 
     constexpr EnumMap<TestEnum1, int> s2{};
     static_assert(s2.max_size() == 4);
+
+    static_assert(EnumMap<TestEnum1, int>::static_max_size() == 4);
+    EXPECT_EQ(4, (EnumMap<TestEnum1, int>::static_max_size()));
+    static_assert(max_size_v<EnumMap<TestEnum1, int>> == 4);
+    EXPECT_EQ(4, (max_size_v<EnumMap<TestEnum1, int>>));
 }
 
 TEST(EnumMap, EmptySizeFull)

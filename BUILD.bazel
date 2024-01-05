@@ -120,6 +120,7 @@ cc_library(
         ":erase_if",
         ":filtered_integer_range_iterator",
         ":fixed_vector",
+        ":max_size",
         ":optional_storage",
         ":pair",
         ":preconditions",
@@ -140,6 +141,7 @@ cc_library(
         ":enum_utils",
         ":erase_if",
         ":filtered_integer_range_iterator",
+        ":max_size",
     ],
     copts = ["-std=c++20"],
 )
@@ -182,6 +184,7 @@ cc_library(
     deps = [
         ":concepts",
         ":fixed_deque",
+        ":max_size",
         ":sequence_container_checking",
         ":source_location",
     ],
@@ -195,6 +198,7 @@ cc_library(
     deps = [
         ":concepts",
         ":fixed_circular_deque",
+        ":max_size",
         ":queue_adapter",
         ":sequence_container_checking",
         ":source_location",
@@ -214,6 +218,7 @@ cc_library(
         ":consteval_compare",
         ":integer_range",
         ":iterator_utils",
+        ":max_size",
         ":optional_storage",
         ":preconditions",
         ":random_access_iterator",
@@ -248,6 +253,7 @@ cc_library(
         ":erase_if",
         ":fixed_red_black_tree",
         ":map_checking",
+        ":max_size",
         ":source_location",
     ],
     copts = ["-std=c++20"],
@@ -260,6 +266,7 @@ cc_library(
     deps = [
         ":concepts",
         ":fixed_deque",
+        ":max_size",
         ":queue_adapter",
         ":sequence_container_checking",
         ":source_location",
@@ -307,6 +314,7 @@ cc_library(
         ":concepts",
         ":erase_if",
         ":fixed_red_black_tree",
+        ":max_size",
         ":set_checking",
         ":source_location",
     ],
@@ -320,6 +328,7 @@ cc_library(
     deps = [
         ":concepts",
         ":fixed_vector",
+        ":max_size",
         ":sequence_container_checking",
         ":source_location",
         ":stack_adapter",
@@ -335,6 +344,7 @@ cc_library(
         ":assert_or_abort",
         ":concepts",
         ":fixed_vector",
+        ":max_size",
         ":preconditions",
         ":sequence_container_checking",
         ":source_location",
@@ -351,6 +361,7 @@ cc_library(
         ":concepts",
         ":consteval_compare",
         ":iterator_utils",
+        ":max_size",
         ":optional_storage",
         ":preconditions",
         ":random_access_iterator_transformer",
@@ -437,6 +448,13 @@ cc_library(
         ":concepts",
         ":reference_storage",
     ],
+    copts = ["-std=c++20"],
+)
+
+cc_library(
+    name = "max_size",
+    hdrs = ["include/fixed_containers/max_size.hpp"],
+    includes = ["include"],
     copts = ["-std=c++20"],
 )
 

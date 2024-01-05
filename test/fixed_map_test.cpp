@@ -93,6 +93,14 @@ TEST(FixedMap, MaxSize)
 {
     constexpr FixedMap<int, int, 10> s1{{2, 20}, {4, 40}};
     static_assert(s1.max_size() == 10);
+
+    constexpr FixedMap<int, int, 4> s2{};
+    static_assert(s2.max_size() == 4);
+
+    static_assert(FixedMap<int, int, 4>::static_max_size() == 4);
+    EXPECT_EQ(4, (FixedMap<int, int, 4>::static_max_size()));
+    static_assert(max_size_v<FixedMap<int, int, 4>> == 4);
+    EXPECT_EQ(4, (max_size_v<FixedMap<int, int, 4>>));
 }
 
 TEST(FixedMap, EmptySizeFull)
