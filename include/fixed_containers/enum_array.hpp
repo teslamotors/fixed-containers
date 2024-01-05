@@ -60,12 +60,12 @@ private:
         return initializer_pair_list_to_value_array_impl(list, std::make_index_sequence<M>{});
     }
 
-private:
-    ValueArrayType values_;
+public:  // Public so this type is a structural type and can thus be used in template parameters
+    ValueArrayType IMPLEMENTATION_DETAIL_DO_NOT_USE_values_;
 
 public:
     constexpr EnumArray() noexcept
-      : values_()
+      : IMPLEMENTATION_DETAIL_DO_NOT_USE_values_()
     {
     }
 
@@ -96,7 +96,7 @@ public:
         requires(M == ENUM_COUNT)  // Template parameter M is used to avoid -Wzero-length-array
     constexpr EnumArray(const std::pair<const L, T> (&list)[M]) noexcept
         requires NotDefaultConstructible<T>
-      : values_(initializer_pair_list_to_value_array(list))
+      : IMPLEMENTATION_DETAIL_DO_NOT_USE_values_(initializer_pair_list_to_value_array(list))
     {
         assert_or_abort(fixed_containers::rich_enums_detail::is_zero_based_contiguous_and_sorted(
             ENUM_COUNT, PairOrdinalComparator<ENUM_COUNT>{list}));
@@ -165,7 +165,10 @@ public:
     }
 
 private:
-    constexpr const ValueArrayType& values() const { return values_; }
-    constexpr ValueArrayType& values() { return values_; }
+    constexpr const ValueArrayType& values() const
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_values_;
+    }
+    constexpr ValueArrayType& values() { return IMPLEMENTATION_DETAIL_DO_NOT_USE_values_; }
 };
 }  // namespace fixed_containers

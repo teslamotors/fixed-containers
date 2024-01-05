@@ -3,6 +3,7 @@
 #include "enums_test_common.hpp"
 #include "mock_testing_types.hpp"
 
+#include "fixed_containers/concepts.hpp"
 #include "fixed_containers/consteval_compare.hpp"
 
 #include <gtest/gtest.h>
@@ -16,7 +17,8 @@ namespace
 using TestEnum1 = rich_enums::TestEnum1;
 using EnumWithNoConstants = rich_enums::EnumWithNoConstants;
 
-static_assert(std::is_trivially_copyable_v<EnumArray<TestEnum1, int>>);
+static_assert(TriviallyCopyable<EnumArray<TestEnum1, int>>);
+static_assert(IsStructuralType<EnumArray<TestEnum1, int>>);
 }  // namespace
 
 TEST(EnumArray, DefaultConstructorDefaultInitialization)
@@ -396,4 +398,33 @@ TEST(EnumArray, NonAssignable)
         s[TestEnum1::TWO];
     }
 }
+
+TEST(EnumArray, ClassTemplateArgumentDeduction)
+{
+    // Compile-only test
+    EnumArray a = EnumArray<TestEnum1, int>{};
+    (void)a;
+}
+
+namespace
+{
+template <EnumArray<TestEnum1, int> /*MY_ARRAY*/>
+struct EnumArrayInstanceCanBeUsedAsATemplateParameter
+{
+};
+
+template <EnumArray<TestEnum1, int> /*MY_ARRAY*/>
+constexpr void enum_array_instance_can_be_used_as_a_template_parameter()
+{
+}
+}  // namespace
+
+TEST(EnumArray, UsageAsTemplateParameter)
+{
+    static constexpr EnumArray<TestEnum1, int> ARRAY1{};
+    enum_array_instance_can_be_used_as_a_template_parameter<ARRAY1>();
+    EnumArrayInstanceCanBeUsedAsATemplateParameter<ARRAY1> my_struct{};
+    static_cast<void>(my_struct);
+}
+
 }  // namespace fixed_containers

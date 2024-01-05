@@ -684,6 +684,7 @@ cc_test(
     name = "enum_array_test",
     srcs = ["test/enum_array_test.cpp"],
     deps = [
+        ":concepts",
         ":consteval_compare",
         ":enum_array",
         ":enums_test_common",
