@@ -979,6 +979,7 @@ cc_test(
     name = "macro_countermeasures_test",
     srcs = ["test/macro_countermeasures_test.cpp"],
     deps = [
+        ":enum_array",
         ":enum_map",
         ":enum_set",
         ":enum_utils",

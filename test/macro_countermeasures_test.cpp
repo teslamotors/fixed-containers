@@ -18,6 +18,7 @@ error: expected unqualified-id if (const auto __len = std::min(__d1, __d2))
 #define BLACK 0
 #define RED 1
 
+#include "fixed_containers/enum_array.hpp"
 #include "fixed_containers/enum_map.hpp"
 #include "fixed_containers/enum_set.hpp"
 #include "fixed_containers/enum_utils.hpp"
@@ -66,6 +67,10 @@ TEST(MacroCountermeasures, DummyUsagesOfContainers)
 {
     // Dummy usages are not necessary, this is mostly a compile-only test.
     // Counters tools that remove unused headers.
+    {
+        EnumArray<Color, int> s{};
+        (void)s;
+    }
     {
         EnumMap<Color, int> s{};
         (void)s;
