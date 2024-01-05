@@ -83,7 +83,7 @@ public:
         for (const auto& [label, value] : rg)
         {
             const std::size_t ordinal = EnumAdapterType::ordinal(label);
-            values_.at(ordinal) = value;
+            values().at(ordinal) = value;
         }
     }
 
@@ -106,62 +106,66 @@ public:
     constexpr reference at(const L& label)
     {
         const std::size_t ordinal = EnumAdapterType::ordinal(label);
-        return values_.at(ordinal);
+        return values().at(ordinal);
     }
     constexpr const_reference at(const L& label) const
     {
         const std::size_t ordinal = EnumAdapterType::ordinal(label);
-        return values_.at(ordinal);
+        return values().at(ordinal);
     }
     constexpr reference operator[](const L& label)
     {
         const std::size_t ordinal = EnumAdapterType::ordinal(label);
-        return values_.at(ordinal);
+        return values().at(ordinal);
     }
     constexpr const_reference operator[](const L& label) const
     {
         const std::size_t ordinal = EnumAdapterType::ordinal(label);
-        return values_.at(ordinal);
+        return values().at(ordinal);
     }
-    constexpr reference front() { return values_.front(); }
-    constexpr const_reference front() const { return values_.front(); }
-    constexpr reference back() { return values_.back(); }
-    constexpr const_reference back() const { return values_.back(); }
+    constexpr reference front() { return values().front(); }
+    constexpr const_reference front() const { return values().front(); }
+    constexpr reference back() { return values().back(); }
+    constexpr const_reference back() const { return values().back(); }
 
-    constexpr T* data() noexcept { return values_.data(); }
-    constexpr const T* data() const noexcept { return values_.data(); }
+    constexpr T* data() noexcept { return values().data(); }
+    constexpr const T* data() const noexcept { return values().data(); }
 
-    constexpr iterator begin() noexcept { return values_.begin(); }
-    constexpr const_iterator begin() const noexcept { return values_.begin(); }
-    constexpr const_iterator cbegin() const noexcept { return values_.cbegin(); }
-    constexpr iterator end() noexcept { return values_.end(); }
-    constexpr const_iterator end() const noexcept { return values_.end(); }
-    constexpr const_iterator cend() const noexcept { return values_.cend(); }
+    constexpr iterator begin() noexcept { return values().begin(); }
+    constexpr const_iterator begin() const noexcept { return values().begin(); }
+    constexpr const_iterator cbegin() const noexcept { return values().cbegin(); }
+    constexpr iterator end() noexcept { return values().end(); }
+    constexpr const_iterator end() const noexcept { return values().end(); }
+    constexpr const_iterator cend() const noexcept { return values().cend(); }
 
-    constexpr reverse_iterator rbegin() noexcept { return values_.rbegin(); }
-    constexpr const_reverse_iterator rbegin() const noexcept { return values_.rbegin(); }
-    constexpr const_reverse_iterator crbegin() const noexcept { return values_.crbegin(); }
-    constexpr reverse_iterator rend() noexcept { return values_.rend(); }
-    constexpr const_reverse_iterator rend() const noexcept { return values_.rend(); }
-    constexpr const_reverse_iterator crend() const noexcept { return values_.crend(); }
+    constexpr reverse_iterator rbegin() noexcept { return values().rbegin(); }
+    constexpr const_reverse_iterator rbegin() const noexcept { return values().rbegin(); }
+    constexpr const_reverse_iterator crbegin() const noexcept { return values().crbegin(); }
+    constexpr reverse_iterator rend() noexcept { return values().rend(); }
+    constexpr const_reverse_iterator rend() const noexcept { return values().rend(); }
+    constexpr const_reverse_iterator crend() const noexcept { return values().crend(); }
 
-    [[nodiscard]] constexpr bool empty() const noexcept { return values_.empty(); }
-    constexpr size_type size() const noexcept { return values_.size(); }
-    constexpr size_type max_size() const noexcept { return values_.max_size(); }
+    [[nodiscard]] constexpr bool empty() const noexcept { return values().empty(); }
+    constexpr size_type size() const noexcept { return values().size(); }
+    constexpr size_type max_size() const noexcept { return values().max_size(); }
 
     constexpr const LabelArrayType& labels() const noexcept { return ENUM_VALUES; }
 
-    constexpr void fill(const T& value) { values_.fill(value); }
+    constexpr void fill(const T& value) { values().fill(value); }
 
-    constexpr void swap(EnumArray<L, T>& other) noexcept { return values_.swap(other.values_); }
+    constexpr void swap(EnumArray<L, T>& other) noexcept { return values().swap(other.values()); }
 
     constexpr bool operator==(const EnumArray<L, T>& other) const
     {
-        return values_ == other.values_;
+        return values() == other.values();
     }
     constexpr auto operator<=>(const EnumArray<L, T>& other) const
     {
-        return values_ <=> other.values_;
+        return values() <=> other.values();
     }
+
+private:
+    constexpr const ValueArrayType& values() const { return values_; }
+    constexpr ValueArrayType& values() { return values_; }
 };
 }  // namespace fixed_containers
