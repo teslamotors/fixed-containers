@@ -410,3 +410,14 @@ constexpr typename EnumSet<K>::size_type erase_if(EnumSet<K>& c, Predicate predi
 }
 
 }  // namespace fixed_containers
+
+// Specializations
+namespace std
+{
+template <typename K>
+struct tuple_size<fixed_containers::EnumSet<K>> : std::integral_constant<std::size_t, 0>
+{
+    static_assert(fixed_containers::AlwaysFalseV<K>,
+                  "Implicit Structured Binding due to the fields being public is disabled");
+};
+}  // namespace std

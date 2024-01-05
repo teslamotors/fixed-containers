@@ -3,6 +3,7 @@
 #include "fixed_containers/algorithm.hpp"
 #include "fixed_containers/assert_or_abort.hpp"
 #include "fixed_containers/circular_indexing.hpp"
+#include "fixed_containers/concepts.hpp"
 #include "fixed_containers/consteval_compare.hpp"
 #include "fixed_containers/integer_range.hpp"
 #include "fixed_containers/iterator_utils.hpp"
@@ -1068,3 +1069,17 @@ template <typename T, std::size_t MAXIMUM_SIZE>
 }
 
 }  // namespace fixed_containers
+
+// Specializations
+namespace std
+{
+template <typename T,
+          std::size_t MAXIMUM_SIZE,
+          fixed_containers::customize::SequenceContainerChecking CheckingType>
+struct tuple_size<fixed_containers::FixedDeque<T, MAXIMUM_SIZE, CheckingType>>
+  : std::integral_constant<std::size_t, 0>
+{
+    static_assert(fixed_containers::AlwaysFalseV<T, decltype(MAXIMUM_SIZE), CheckingType>,
+                  "Implicit Structured Binding due to the fields being public is disabled");
+};
+}  // namespace std

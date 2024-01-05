@@ -1046,3 +1046,15 @@ constexpr typename EnumMap<K, V, CheckingType>::size_type erase_if(EnumMap<K, V,
 }
 
 }  // namespace fixed_containers
+
+// Specializations
+namespace std
+{
+template <typename K, typename V, fixed_containers::customize::EnumMapChecking<K> CheckingType>
+struct tuple_size<fixed_containers::EnumMap<K, V, CheckingType>>
+  : std::integral_constant<std::size_t, 0>
+{
+    static_assert(fixed_containers::AlwaysFalseV<K, V, CheckingType>,
+                  "Implicit Structured Binding due to the fields being public is disabled");
+};
+}  // namespace std

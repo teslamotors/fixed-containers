@@ -489,6 +489,7 @@ template <std::size_t MAXIMUM_LENGTH_WITH_NULL_TERMINATOR>
 
 }  // namespace fixed_containers
 
+// Specializations
 namespace std
 {
 template <std::size_t MAXIMUM_LENGTH,
@@ -499,5 +500,4 @@ struct tuple_size<fixed_containers::FixedString<MAXIMUM_LENGTH, CheckingType>>
     static_assert(fixed_containers::AlwaysFalseV<decltype(MAXIMUM_LENGTH), CheckingType>,
                   "Implicit Structured Binding due to the fields being public is disabled");
 };
-
 }  // namespace std

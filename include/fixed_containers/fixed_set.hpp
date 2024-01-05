@@ -2,6 +2,7 @@
 
 #include "fixed_containers/assert_or_abort.hpp"
 #include "fixed_containers/bidirectional_iterator.hpp"
+#include "fixed_containers/concepts.hpp"
 #include "fixed_containers/erase_if.hpp"
 #include "fixed_containers/fixed_red_black_tree.hpp"
 #include "fixed_containers/preconditions.hpp"
@@ -511,3 +512,29 @@ template <typename K,
 }
 
 }  // namespace fixed_containers
+
+// Specializations
+namespace std
+{
+template <
+    typename K,
+    std::size_t MAXIMUM_SIZE,
+    typename Compare,
+    fixed_containers::fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness COMPACTNESS,
+    template <class /*Would be IsFixedIndexBasedStorage but gcc doesn't like the constraints
+here. clang accepts it */
+              ,
+              std::size_t>
+    typename StorageTemplate,
+    fixed_containers::customize::SetChecking<K> CheckingType>
+struct tuple_size<
+    fixed_containers::
+        FixedSet<K, MAXIMUM_SIZE, Compare, COMPACTNESS, StorageTemplate, CheckingType>>
+  : std::integral_constant<std::size_t, 0>
+{
+    static_assert(
+        fixed_containers::
+            AlwaysFalseV<K, decltype(MAXIMUM_SIZE), Compare, decltype(COMPACTNESS), CheckingType>,
+        "Implicit Structured Binding due to the fields being public is disabled");
+};
+}  // namespace std

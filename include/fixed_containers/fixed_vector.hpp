@@ -1044,3 +1044,17 @@ template <typename T, std::size_t MAXIMUM_SIZE>
 }
 
 }  // namespace fixed_containers
+
+// Specializations
+namespace std
+{
+template <typename T,
+          std::size_t MAXIMUM_SIZE,
+          fixed_containers::customize::SequenceContainerChecking CheckingType>
+struct tuple_size<fixed_containers::FixedVector<T, MAXIMUM_SIZE, CheckingType>>
+  : std::integral_constant<std::size_t, 0>
+{
+    static_assert(fixed_containers::AlwaysFalseV<T, decltype(MAXIMUM_SIZE), CheckingType>,
+                  "Implicit Structured Binding due to the fields being public is disabled");
+};
+}  // namespace std

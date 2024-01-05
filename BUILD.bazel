@@ -180,6 +180,7 @@ cc_library(
     hdrs = ["include/fixed_containers/fixed_circular_deque.hpp"],
     includes = ["include"],
     deps = [
+        ":concepts",
         ":fixed_deque",
         ":sequence_container_checking",
         ":source_location",
@@ -192,6 +193,7 @@ cc_library(
     hdrs = ["include/fixed_containers/fixed_circular_queue.hpp"],
     includes = ["include"],
     deps = [
+        ":concepts",
         ":fixed_circular_deque",
         ":queue_adapter",
         ":sequence_container_checking",
@@ -208,6 +210,7 @@ cc_library(
         ":algorithm",
         ":assert_or_abort",
         ":circular_indexing",
+        ":concepts",
         ":consteval_compare",
         ":integer_range",
         ":iterator_utils",
@@ -240,6 +243,7 @@ cc_library(
     deps = [
         ":assert_or_abort",
         ":bidirectional_iterator",
+        ":concepts",
         ":emplace",
         ":erase_if",
         ":fixed_red_black_tree",
@@ -254,6 +258,7 @@ cc_library(
     hdrs = ["include/fixed_containers/fixed_queue.hpp"],
     includes = ["include"],
     deps = [
+        ":concepts",
         ":fixed_deque",
         ":queue_adapter",
         ":sequence_container_checking",
@@ -299,6 +304,7 @@ cc_library(
     deps = [
         ":assert_or_abort",
         ":bidirectional_iterator",
+        ":concepts",
         ":erase_if",
         ":fixed_red_black_tree",
         ":set_checking",
@@ -312,6 +318,7 @@ cc_library(
     hdrs = ["include/fixed_containers/fixed_stack.hpp"],
     includes = ["include"],
     deps = [
+        ":concepts",
         ":fixed_vector",
         ":sequence_container_checking",
         ":source_location",
