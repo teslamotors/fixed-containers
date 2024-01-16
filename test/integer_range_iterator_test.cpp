@@ -17,10 +17,8 @@ namespace
 using IotaView1 = std::ranges::iota_view<std::size_t, std::size_t>;
 static_assert(TriviallyCopyable<IotaView1>);
 static_assert(TriviallyCopyable<decltype(IotaView1{}.begin())>);
-// iota_view's iterator can allow it to go out of range
-#if defined(__clang__)
-static_assert(*std::next(IotaView1{0, 3}.begin(), 15) == 15);
-#endif
+// Some implementations of iota_view's iterator can allow it to go out of range
+// static_assert(*std::next(IotaView1{0, 3}.begin(), 15) == 15);
 static_assert(sizeof(IotaView1) == 16ULL);
 static_assert(sizeof(IotaView1{}.begin()) == 8ULL);
 // Need both range and the iterator to make a range-enforcing iterator
