@@ -600,6 +600,19 @@ cc_library(
 )
 
 cc_library(
+    name = "tuples",
+    hdrs = [
+        "include/fixed_containers/tuples.hpp",
+        "include/fixed_containers/tuples_as_tuple_view.hpp"
+    ],
+    includes = ["include"],
+    deps = [
+        ":concepts",
+    ],
+    copts = ["-std=c++20"],
+)
+
+cc_library(
     name = "type_name",
     hdrs = ["include/fixed_containers/type_name.hpp"],
     includes = ["include"],
@@ -1098,6 +1111,18 @@ cc_test(
     srcs = ["test/string_literal_test.cpp"],
     deps = [
         ":string_literal",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
+    ],
+    copts = ["-std=c++20"],
+)
+
+cc_test(
+    name = "tuples_test",
+    srcs = ["test/tuples_test.cpp"],
+    deps = [
+        ":int_math",
+        ":tuples",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
