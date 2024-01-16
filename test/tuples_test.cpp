@@ -100,4 +100,67 @@ TEST(Tuples, AsTupleView)
     static_assert(result.a5 == 'z');
 }
 
+TEST(Tuples, ForEachEntry_Empty)
+{
+    constexpr auto result = []()
+    {
+        std::tuple<> a{};
+        tuples::for_each_entry(a, []<typename T>(T& /*t*/) {});
+        tuples::for_each_entry(a, []<typename T>(T& /*t*/, std::size_t /*i*/) {});
+        return a;
+    }();
+
+    static_assert(std::tuple_size_v<decltype(result)> == 0);
+}
+
+TEST(Tuples, ForEachEntry)
+{
+    constexpr auto result = []()
+    {
+        std::tuple<int, double> a{1, 2};
+        tuples::for_each_entry(a,
+                               []<typename T>(T& t)
+                               {
+                                   t *= 2;
+                                   if constexpr (std::same_as<T, int>)
+                                   {
+                                       t += 7;
+                                   }
+                               });
+        return a;
+    }();
+
+    static_assert(std::get<0>(result) == 9);
+    static_assert(std::get<1>(result) == 4.0);
+}
+
+TEST(Tuples, ForEachEntry_WithIndex)
+{
+    constexpr auto result = []()
+    {
+        std::tuple<int, double> a{1, 2};
+        tuples::for_each_entry(a,
+                               []<typename T>(std::size_t i, T& t)
+                               {
+                                   if (i == 0)
+                                   {
+                                       t *= 2;
+                                   }
+                                   else
+                                   {
+                                       t *= 3;
+                                   }
+
+                                   if constexpr (std::same_as<T, int>)
+                                   {
+                                       t += 7;
+                                   }
+                               });
+        return a;
+    }();
+
+    static_assert(std::get<0>(result) == 9);
+    static_assert(std::get<1>(result) == 6.0);
+}
+
 }  // namespace fixed_containers
