@@ -66,7 +66,7 @@ public:
         {
             if constexpr (sizeof...(args) == 1)
             {
-                auto as_tuple = std::tuple{std::forward<Args>(args)...};
+                auto as_tuple = std::forward_as_tuple(std::forward<Args>(args)...);
                 layer_type_stack_.push(LayerType::ENCLOSING_FIELD);
                 nesting_stack_.push({std::get<0>(as_tuple), ""});
                 return;
@@ -81,7 +81,7 @@ public:
         {
             if constexpr (sizeof...(args) == 2)
             {
-                auto as_tuple = std::tuple{std::forward<Args>(args)...};
+                auto as_tuple = std::forward_as_tuple(std::forward<Args>(args)...);
                 layer_type_stack_.push(LayerType::BASE_CLASS);
                 inheritance_stack_.push(std::get<1>(as_tuple));
                 return;
@@ -162,7 +162,7 @@ constexpr void for_each_field_entry(const T& instance, Func func)
         layer_tracker->update_layer(fmt, std::forward<Args>(args)...);
         if constexpr (sizeof...(args) >= 3)
         {
-            auto as_tuple = std::tuple{std::forward<Args>(args)...};
+            auto as_tuple = std::forward_as_tuple(std::forward<Args>(args)...);
             const std::string_view field_type_name = std::get<1>(as_tuple);
             const std::string_view field_name = std::get<2>(as_tuple);
             FieldAsString field_as_string{.type_name = field_type_name, .name = field_name};
