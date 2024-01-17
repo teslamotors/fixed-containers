@@ -19,7 +19,7 @@ static_assert(__has_builtin(__builtin_dump_struct),
 namespace fixed_containers::reflection_detail
 {
 template <typename T>
-concept Reflectable = std::is_class_v<T> && ConstexprDefaultConstructible<T>;
+concept Reflectable = std::is_class_v<T> && DefaultConstructible<T>;
 
 enum class LayerType
 {
