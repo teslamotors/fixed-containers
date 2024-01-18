@@ -94,4 +94,11 @@ constexpr UnsignedIntegralAndSign<T> safe_add(const T addend_left,
     return UnsignedIntegralAndSign<T>::create_positive(addend_left + static_cast<T>(addend_right));
 }
 
+template <std::integral T>
+constexpr T divide_integers_rounding_up(const T dividend, const T divisor)
+{
+    assert_or_abort(divisor != static_cast<T>(0));
+    return ((dividend - static_cast<T>(1)) / divisor) + static_cast<T>(1);
+}
+
 }  // namespace fixed_containers::int_math
