@@ -5,12 +5,14 @@
 #include "fixed_containers/fixed_stack.hpp"
 #include "fixed_containers/fixed_vector.hpp"
 #include "fixed_containers/in_out.hpp"
+#include "fixed_containers/tuples.hpp"
 
 #include <array>
 #include <concepts>
 #include <optional>
 #include <string_view>
 #include <tuple>
+#include <type_traits>
 
 // https://clang.llvm.org/docs/LanguageExtensions.html#builtin-dump-struct
 static_assert(__has_builtin(__builtin_dump_struct),
@@ -228,6 +230,18 @@ template <typename T>
 constexpr const auto& field_names_of()
 {
     return reflection_detail::FIELD_NAMES<std::decay_t<T>>;
+}
+
+template <typename T, typename Func>
+    requires(Reflectable<std::decay_t<T>>)
+constexpr void for_each_field(T&& instance, Func&& func)
+{
+    constexpr const auto& FIELD_NAMES = field_names_of<T>();
+    auto tuple_view = tuples::as_tuple_view<FIELD_NAMES.size()>(instance);
+    tuples::for_each_entry(
+        tuple_view,
+        [&func]<typename Field>(std::size_t index, Field&& field)
+        { std::forward<Func>(func)(FIELD_NAMES.at(index), std::forward<Field>(field)); });
 }
 
 }  // namespace fixed_containers::reflection_detail

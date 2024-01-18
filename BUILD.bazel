@@ -544,6 +544,7 @@ cc_library(
         ":fixed_stack",
         ":fixed_vector",
         ":in_out",
+        ":tuples",
     ],
     copts = ["-std=c++20"],
 )
@@ -1087,6 +1088,7 @@ cc_test(
     name = "reflection_test",
     srcs = ["test/reflection_test.cpp"],
     deps = [
+        ":fixed_vector",
         ":mock_testing_types",
         ":reflection",
         "@com_google_googletest//:gtest",

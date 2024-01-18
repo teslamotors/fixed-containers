@@ -4,7 +4,12 @@
 
 #include "mock_testing_types.hpp"
 
+#include "fixed_containers/fixed_vector.hpp"
+
 #include <gtest/gtest.h>
+
+#include <cstddef>
+#include <string_view>
 
 namespace fixed_containers
 {
@@ -165,6 +170,13 @@ struct NonConstexprDefaultConstructibleWithFields
       , b{b0}
     {
     }
+};
+
+struct StructWithFieldsWithLimitedConstructibility
+{
+    MockTriviallyCopyableButNotCopyableOrMoveable non_copyable_non_moveable{};
+    MockNonTrivialInt non_trivial{};
+    MockMoveableButNotCopyable non_copyable{};
 };
 
 constexpr std::string_view pick_compiler_specific_string(
@@ -498,6 +510,82 @@ TEST(Reflection, FieldNames)
         static_assert(FIELD_NAMES.at(0) == "a1");
         static_assert(FIELD_NAMES.at(1) == "non_aggregate");
     }
+}
+
+TEST(Reflection, ForEachField)
+{
+    constexpr std::pair<StructWithNestedStructs, FixedVector<std::string_view, 10>> OUTPUT = []()
+    {
+        StructWithNestedStructs a{};
+        FixedVector<std::string_view, 10> field_list{};
+
+        reflection_detail::for_each_field(
+            a,
+            [&field_list]<class T>(const std::string_view& name, T& field)
+            {
+                if constexpr (std::is_same_v<int, T>)
+                {
+                    field = 5;
+                }
+
+                field_list.push_back(name);
+            });
+
+        return std::pair{a, field_list};
+    }();
+
+    constexpr StructWithNestedStructs STRUCT = OUTPUT.first;
+    constexpr FixedVector<std::string_view, 10> FIELD_LIST = OUTPUT.second;
+
+    static_assert(STRUCT.yellow == 5);
+
+    static_assert(FIELD_LIST.size() == 4);
+    static_assert(FIELD_LIST.at(0) == "yellow");
+    static_assert(FIELD_LIST.at(1) == "red");
+    static_assert(FIELD_LIST.at(2) == "green");
+    static_assert(FIELD_LIST.at(3) == "purple");
+}
+
+TEST(Reflection, ForEachField_LimitedConstructibility)
+{
+    StructWithFieldsWithLimitedConstructibility a{};
+    FixedVector<std::string_view, 10> field_list{};
+
+    reflection_detail::for_each_field(a,
+                                      [&field_list]<class T>(const std::string_view& name, T& field)
+                                      {
+                                          if constexpr (std::is_same_v<MockNonTrivialInt, T>)
+                                          {
+                                              field.value = 5;
+                                          }
+
+                                          field_list.push_back(name);
+                                      });
+
+    EXPECT_EQ(a.non_trivial.value, 5);
+    EXPECT_EQ(field_list.size(), 3);
+    EXPECT_EQ(field_list.at(0), "non_copyable_non_moveable");
+    EXPECT_EQ(field_list.at(1), "non_trivial");
+    EXPECT_EQ(field_list.at(2), "non_copyable");
+}
+
+TEST(Reflection, ForEachField_EmptyStruct)
+{
+    constexpr std::size_t COUNTER = []()
+    {
+        MockEmptyStruct empty_struct{};
+        std::size_t counter = 0;
+        [&]()
+        {
+            reflection_detail::for_each_field(
+                empty_struct,
+                [&]<typename T>(const std::string_view& /*name*/, const T&) { counter++; });
+        }();
+
+        return counter;
+    }();
+
+    static_assert(COUNTER == 0);
 }
 
 }  // namespace fixed_containers
