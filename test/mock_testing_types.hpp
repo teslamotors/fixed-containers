@@ -328,4 +328,8 @@ struct TypeWithMultipleConstructorParameters
     }
 };
 
+struct MockEmptyStruct
+{
+};
+
 }  // namespace fixed_containers
