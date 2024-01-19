@@ -22,7 +22,7 @@ struct ChildStruct : public BaseStruct
 
 /*
  * Output of `__builtin_dump_struct(&instance, printf)` is:
-fixed_containers::(anonymous namespace)::MyColors {
+fixed_containers::(anonymous namespace)::StructWithNestedStructs {
 int yellow = 0
 double red = 0.000000
 BaseStruct green = {
@@ -39,7 +39,7 @@ ChildStruct purple = {
 }
 }
  */
-struct MyColors
+struct StructWithNestedStructs
 {
     int yellow;
     double red[17];
@@ -161,7 +161,8 @@ constexpr std::string_view pick_compiler_specific_string([[maybe_unused]] const 
 TEST(Reflection, DebuggingHelper)
 {
     using enum reflection_detail::RecursionType;
-    auto foo = reflection_detail::field_info_of<RECURSIVE_DEPTH_FIRST_ORDER, MyColors>();
+    auto foo =
+        reflection_detail::field_info_of<RECURSIVE_DEPTH_FIRST_ORDER, StructWithNestedStructs>();
     // std::cout << foo.size() << std::endl;
     (void)foo;
 }
@@ -171,21 +172,23 @@ TEST(Reflection, Example)
     using enum reflection_detail::RecursionType;
 
     static_assert(
-        consteval_compare::equal<4, reflection_detail::field_count_of<NON_RECURSIVE, MyColors>()>);
+        consteval_compare::
+            equal<4, reflection_detail::field_count_of<NON_RECURSIVE, StructWithNestedStructs>()>);
 
-    constexpr auto FIELD_INFO = reflection_detail::field_info_of<NON_RECURSIVE, MyColors>();
+    constexpr auto FIELD_INFO =
+        reflection_detail::field_info_of<NON_RECURSIVE, StructWithNestedStructs>();
 
     static_assert(FIELD_INFO.at(0).field_type_name() == "int");
     static_assert(FIELD_INFO.at(0).field_name() == "yellow");
     static_assert(FIELD_INFO.at(0).enclosing_field_type_name() ==
-                  "fixed_containers::(anonymous namespace)::MyColors");
+                  "fixed_containers::(anonymous namespace)::StructWithNestedStructs");
     static_assert(FIELD_INFO.at(0).enclosing_field_name() == "");
     static_assert(!FIELD_INFO.at(0).providing_base_class_name().has_value());
 
     static_assert(FIELD_INFO.at(1).field_type_name() == "double[17]");
     static_assert(FIELD_INFO.at(1).field_name() == "red");
     static_assert(FIELD_INFO.at(1).enclosing_field_type_name() ==
-                  "fixed_containers::(anonymous namespace)::MyColors");
+                  "fixed_containers::(anonymous namespace)::StructWithNestedStructs");
     static_assert(FIELD_INFO.at(1).enclosing_field_name() == "");
     static_assert(!FIELD_INFO.at(1).providing_base_class_name().has_value());
 
@@ -194,7 +197,7 @@ TEST(Reflection, Example)
                       "fixed_containers::(anonymous namespace)::BaseStruct", "BaseStruct"));
     static_assert(FIELD_INFO.at(2).field_name() == "green");
     static_assert(FIELD_INFO.at(2).enclosing_field_type_name() ==
-                  "fixed_containers::(anonymous namespace)::MyColors");
+                  "fixed_containers::(anonymous namespace)::StructWithNestedStructs");
     static_assert(FIELD_INFO.at(2).enclosing_field_name() == "");
     static_assert(!FIELD_INFO.at(2).providing_base_class_name().has_value());
 
@@ -203,7 +206,7 @@ TEST(Reflection, Example)
                       "fixed_containers::(anonymous namespace)::ChildStruct", "ChildStruct"));
     static_assert(FIELD_INFO.at(3).field_name() == "purple");
     static_assert(FIELD_INFO.at(3).enclosing_field_type_name() ==
-                  "fixed_containers::(anonymous namespace)::MyColors");
+                  "fixed_containers::(anonymous namespace)::StructWithNestedStructs");
     static_assert(FIELD_INFO.at(3).enclosing_field_name() == "");
     static_assert(!FIELD_INFO.at(3).providing_base_class_name().has_value());
 }
@@ -213,23 +216,24 @@ TEST(Reflection, RecursiveExample)
     using enum reflection_detail::RecursionType;
 
     static_assert(
-        consteval_compare::
-            equal<10, reflection_detail::field_count_of<RECURSIVE_DEPTH_FIRST_ORDER, MyColors>()>);
+        consteval_compare::equal<10,
+                                 reflection_detail::field_count_of<RECURSIVE_DEPTH_FIRST_ORDER,
+                                                                   StructWithNestedStructs>()>);
 
     constexpr auto FIELD_INFO =
-        reflection_detail::field_info_of<RECURSIVE_DEPTH_FIRST_ORDER, MyColors>();
+        reflection_detail::field_info_of<RECURSIVE_DEPTH_FIRST_ORDER, StructWithNestedStructs>();
 
     static_assert(FIELD_INFO.at(0).field_type_name() == "int");
     static_assert(FIELD_INFO.at(0).field_name() == "yellow");
     static_assert(FIELD_INFO.at(0).enclosing_field_type_name() ==
-                  "fixed_containers::(anonymous namespace)::MyColors");
+                  "fixed_containers::(anonymous namespace)::StructWithNestedStructs");
     static_assert(FIELD_INFO.at(0).enclosing_field_name() == "");
     static_assert(!FIELD_INFO.at(0).providing_base_class_name().has_value());
 
     static_assert(FIELD_INFO.at(1).field_type_name() == "double[17]");
     static_assert(FIELD_INFO.at(1).field_name() == "red");
     static_assert(FIELD_INFO.at(1).enclosing_field_type_name() ==
-                  "fixed_containers::(anonymous namespace)::MyColors");
+                  "fixed_containers::(anonymous namespace)::StructWithNestedStructs");
     static_assert(FIELD_INFO.at(1).enclosing_field_name() == "");
     static_assert(!FIELD_INFO.at(1).providing_base_class_name().has_value());
 
@@ -238,7 +242,7 @@ TEST(Reflection, RecursiveExample)
                       "fixed_containers::(anonymous namespace)::BaseStruct", "BaseStruct"));
     static_assert(FIELD_INFO.at(2).field_name() == "green");
     static_assert(FIELD_INFO.at(2).enclosing_field_type_name() ==
-                  "fixed_containers::(anonymous namespace)::MyColors");
+                  "fixed_containers::(anonymous namespace)::StructWithNestedStructs");
     static_assert(FIELD_INFO.at(2).enclosing_field_name() == "");
     static_assert(!FIELD_INFO.at(2).providing_base_class_name().has_value());
 
@@ -265,7 +269,7 @@ TEST(Reflection, RecursiveExample)
                       "fixed_containers::(anonymous namespace)::ChildStruct", "ChildStruct"));
     static_assert(FIELD_INFO.at(5).field_name() == "purple");
     static_assert(FIELD_INFO.at(5).enclosing_field_type_name() ==
-                  "fixed_containers::(anonymous namespace)::MyColors");
+                  "fixed_containers::(anonymous namespace)::StructWithNestedStructs");
     static_assert(FIELD_INFO.at(5).enclosing_field_name() == "");
     static_assert(!FIELD_INFO.at(5).providing_base_class_name().has_value());
 
