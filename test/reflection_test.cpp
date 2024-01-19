@@ -247,7 +247,7 @@ TEST(Reflection, DebuggingHelper)
 TEST(Reflection, FieldInfo_StructWithNestedStructs)
 {
     static_assert(
-        consteval_compare::equal<4, reflection_detail::field_count_of<StructWithNestedStructs>()>);
+        consteval_compare::equal<4, reflection::field_count_of<StructWithNestedStructs>()>);
 
     constexpr auto FIELD_INFO = field_info_of(StructWithNestedStructs{});
 
@@ -287,7 +287,7 @@ TEST(Reflection, FieldInfo_StructWithNestedStructs)
 TEST(Reflection, FieldInfo_StructWithNonAggregates)
 {
     static_assert(
-        consteval_compare::equal<2, reflection_detail::field_count_of<StructWithNonAggregates>()>);
+        consteval_compare::equal<2, reflection::field_count_of<StructWithNonAggregates>()>);
 
     constexpr auto FIELD_INFO = field_info_of(StructWithNonAggregates{});
 
@@ -485,15 +485,14 @@ TEST(Reflection, BuiltinDumpStructLimits)
 
 TEST(Reflection, FieldCount)
 {
-    static_assert(reflection_detail::field_count_of<StructWithNestedStructs>() == 4);
-    static_assert(reflection_detail::field_count_of<StructWithNonAggregates>() == 2);
+    static_assert(reflection::field_count_of<StructWithNestedStructs>() == 4);
+    static_assert(reflection::field_count_of<StructWithNonAggregates>() == 2);
 }
 
 TEST(Reflection, FieldNames)
 {
     {
-        constexpr const auto& FIELD_NAMES =
-            reflection_detail::field_names_of<StructWithNestedStructs>();
+        constexpr const auto& FIELD_NAMES = reflection::field_names_of<StructWithNestedStructs>();
         static_assert(FIELD_NAMES.max_size() == 4);
         static_assert(FIELD_NAMES.size() == 4);
         static_assert(FIELD_NAMES.at(0) == "yellow");
@@ -503,8 +502,7 @@ TEST(Reflection, FieldNames)
     }
 
     {
-        constexpr const auto& FIELD_NAMES =
-            reflection_detail::field_names_of<StructWithNonAggregates>();
+        constexpr const auto& FIELD_NAMES = reflection::field_names_of<StructWithNonAggregates>();
         static_assert(FIELD_NAMES.max_size() == 2);
         static_assert(FIELD_NAMES.size() == 2);
         static_assert(FIELD_NAMES.at(0) == "a1");
@@ -519,17 +517,16 @@ TEST(Reflection, ForEachField)
         StructWithNestedStructs a{};
         FixedVector<std::string_view, 10> field_list{};
 
-        reflection_detail::for_each_field(
-            a,
-            [&field_list]<class T>(const std::string_view& name, T& field)
-            {
-                if constexpr (std::is_same_v<int, T>)
-                {
-                    field = 5;
-                }
+        reflection::for_each_field(a,
+                                   [&field_list]<class T>(const std::string_view& name, T& field)
+                                   {
+                                       if constexpr (std::is_same_v<int, T>)
+                                       {
+                                           field = 5;
+                                       }
 
-                field_list.push_back(name);
-            });
+                                       field_list.push_back(name);
+                                   });
 
         return std::pair{a, field_list};
     }();
@@ -551,16 +548,16 @@ TEST(Reflection, ForEachField_LimitedConstructibility)
     StructWithFieldsWithLimitedConstructibility a{};
     FixedVector<std::string_view, 10> field_list{};
 
-    reflection_detail::for_each_field(a,
-                                      [&field_list]<class T>(const std::string_view& name, T& field)
-                                      {
-                                          if constexpr (std::is_same_v<MockNonTrivialInt, T>)
-                                          {
-                                              field.value = 5;
-                                          }
+    reflection::for_each_field(a,
+                               [&field_list]<class T>(const std::string_view& name, T& field)
+                               {
+                                   if constexpr (std::is_same_v<MockNonTrivialInt, T>)
+                                   {
+                                       field.value = 5;
+                                   }
 
-                                          field_list.push_back(name);
-                                      });
+                                   field_list.push_back(name);
+                               });
 
     EXPECT_EQ(a.non_trivial.value, 5);
     EXPECT_EQ(field_list.size(), 3);
@@ -577,9 +574,9 @@ TEST(Reflection, ForEachField_EmptyStruct)
         std::size_t counter = 0;
         [&]()
         {
-            reflection_detail::for_each_field(
-                empty_struct,
-                [&]<typename T>(const std::string_view& /*name*/, const T&) { counter++; });
+            reflection::for_each_field(empty_struct,
+                                       [&]<typename T>(const std::string_view& /*name*/, const T&)
+                                       { counter++; });
         }();
 
         return counter;

@@ -20,9 +20,6 @@ static_assert(__has_builtin(__builtin_dump_struct),
 
 namespace fixed_containers::reflection_detail
 {
-template <typename T>
-concept Reflectable = std::is_class_v<T> && ConstexprDefaultConstructible<T>;
-
 enum class LayerType
 {
     ENCLOSING_FIELD,
@@ -217,6 +214,12 @@ constexpr auto field_names_of_impl(const T& instance)
 template <typename T>
 inline constexpr auto FIELD_NAMES =
     field_names_of_impl<field_count_of_impl(std::decay_t<T>{})>(std::decay_t<T>{});
+}  // namespace fixed_containers::reflection_detail
+
+namespace fixed_containers::reflection
+{
+template <typename T>
+concept Reflectable = std::is_class_v<T> && ConstexprDefaultConstructible<T>;
 
 template <typename T>
     requires(Reflectable<std::decay_t<T>>)
@@ -244,4 +247,4 @@ constexpr void for_each_field(T&& instance, Func&& func)
         { std::forward<Func>(func)(FIELD_NAMES.at(index), std::forward<Field>(field)); });
 }
 
-}  // namespace fixed_containers::reflection_detail
+}  // namespace fixed_containers::reflection
