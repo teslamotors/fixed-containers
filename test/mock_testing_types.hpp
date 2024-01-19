@@ -12,7 +12,7 @@ namespace fixed_containers
 {
 struct MockNonDefaultConstructible
 {
-    MockNonDefaultConstructible() = delete;
+    constexpr MockNonDefaultConstructible() = delete;
     constexpr MockNonDefaultConstructible(int) {}
     constexpr MockNonDefaultConstructible(const MockNonDefaultConstructible& other) noexcept =
         default;
@@ -26,7 +26,7 @@ static_assert(NotDefaultConstructible<MockNonDefaultConstructible>);
 
 struct MockNonTrivialDestructible
 {
-    MockNonTrivialDestructible() = default;
+    constexpr MockNonTrivialDestructible() = default;
 
     MockNonTrivialDestructible(const MockNonTrivialDestructible& other) noexcept = default;
     MockNonTrivialDestructible(MockNonTrivialDestructible&& other) noexcept = default;
@@ -35,7 +35,7 @@ struct MockNonTrivialDestructible
         default;
     MockNonTrivialDestructible& operator=(MockNonTrivialDestructible&& other) noexcept = default;
 
-    ~MockNonTrivialDestructible() {}
+    constexpr ~MockNonTrivialDestructible() {}
 };
 
 static_assert(NotTriviallyDestructible<MockNonTrivialDestructible>);
@@ -43,7 +43,7 @@ static_assert(NotTriviallyCopyable<MockNonTrivialDestructible>);
 
 struct MockNonTrivialCopyAssignable
 {
-    MockNonTrivialCopyAssignable() = default;
+    constexpr MockNonTrivialCopyAssignable() = default;
 
     constexpr MockNonTrivialCopyAssignable(const MockNonTrivialCopyAssignable& other) noexcept =
         default;
@@ -60,7 +60,7 @@ struct MockNonTrivialCopyAssignable
 
 struct MockNonTrivialCopyConstructible
 {
-    MockNonTrivialCopyConstructible() = default;
+    constexpr MockNonTrivialCopyConstructible() = default;
 
     constexpr MockNonTrivialCopyConstructible(const MockNonTrivialCopyConstructible&) noexcept {}
     constexpr MockNonTrivialCopyConstructible(MockNonTrivialCopyConstructible&& other) noexcept =
@@ -83,7 +83,7 @@ static_assert(TriviallyCopyable<MockNonAssignable>);
 
 struct MockNonCopyAssignable
 {
-    MockNonCopyAssignable() = default;
+    constexpr MockNonCopyAssignable() = default;
 
     constexpr MockNonCopyAssignable(const MockNonCopyAssignable& other) noexcept = default;
     constexpr MockNonCopyAssignable(MockNonCopyAssignable&& other) noexcept = default;
@@ -100,7 +100,7 @@ static_assert(TriviallyCopyable<MockNonCopyAssignable>);
 
 struct MockNonTriviallyCopyAssignable
 {
-    MockNonTriviallyCopyAssignable() = default;
+    constexpr MockNonTriviallyCopyAssignable() = default;
 
     MockNonTriviallyCopyAssignable(const MockNonTriviallyCopyAssignable& other) noexcept = default;
     MockNonTriviallyCopyAssignable(MockNonTriviallyCopyAssignable&& other) noexcept = default;
@@ -121,7 +121,7 @@ static_assert(NotTriviallyCopyable<MockNonTriviallyCopyAssignable>);
 
 struct MockMoveableButNotCopyable
 {
-    MockMoveableButNotCopyable() = default;
+    constexpr MockMoveableButNotCopyable() = default;
 
     constexpr MockMoveableButNotCopyable(const MockMoveableButNotCopyable& other) noexcept = delete;
     constexpr MockMoveableButNotCopyable(MockMoveableButNotCopyable&& other) noexcept = default;
@@ -135,7 +135,7 @@ struct MockMoveableButNotCopyable
 // std::atomic<int> and std::mutex are examples of this
 struct MockTriviallyCopyableButNotCopyableOrMoveable
 {
-    MockTriviallyCopyableButNotCopyableOrMoveable() = default;
+    constexpr MockTriviallyCopyableButNotCopyableOrMoveable() = default;
 
     constexpr MockTriviallyCopyableButNotCopyableOrMoveable(
         const MockTriviallyCopyableButNotCopyableOrMoveable& other) noexcept = delete;
@@ -164,7 +164,7 @@ struct MockNonTrivialInt
 {
     int value = 0;
 
-    MockNonTrivialInt()
+    constexpr MockNonTrivialInt()
       : value{0}
     {
     }

@@ -88,7 +88,6 @@ using VecType = FixedVector<T, 5>;
 static_assert(!TriviallyCopyable<VecType>);
 static_assert(NotTrivial<VecType>);
 static_assert(StandardLayout<VecType>);
-static_assert(!IsStructuralType<VecType>);
 
 static_assert(std::contiguous_iterator<VecType::iterator>);
 static_assert(std::contiguous_iterator<VecType::const_iterator>);
