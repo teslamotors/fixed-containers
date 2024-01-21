@@ -101,6 +101,11 @@ template <class T>
 concept NotTriviallyDestructible = not TriviallyDestructible<T>;
 
 template <class T>
+concept Aggregate = std::is_aggregate_v<T>;
+template <class T>
+concept NotAggregate = not Aggregate<T>;
+
+template <class T>
 concept IsReference = std::is_reference_v<T>;
 template <class T>
 concept IsNotReference = not IsReference<T>;
