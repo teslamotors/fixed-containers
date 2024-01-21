@@ -343,33 +343,24 @@ TEST(Reflection, NonConstexprDefaultConstructible)
 TEST(Reflection, FieldCountLimits)
 {
     using enum reflection_detail::RecursionType;
+    using consteval_compare::equal;
     using reflection_detail::field_count_of;
+    static_assert(equal<9, field_count_of<RECURSIVE_DEPTH_FIRST_ORDER, RecursiveFieldCount9>()>);
+    static_assert(equal<10, field_count_of<RECURSIVE_DEPTH_FIRST_ORDER, RecursiveFieldCount10>()>);
+    static_assert(equal<99, field_count_of<RECURSIVE_DEPTH_FIRST_ORDER, RecursiveFieldCount99>()>);
     static_assert(
-        consteval_compare::
-            equal<9, field_count_of<RECURSIVE_DEPTH_FIRST_ORDER, RecursiveFieldCount9>()>);
+        equal<100, field_count_of<RECURSIVE_DEPTH_FIRST_ORDER, RecursiveFieldCount100>()>);
     static_assert(
-        consteval_compare::
-            equal<10, field_count_of<RECURSIVE_DEPTH_FIRST_ORDER, RecursiveFieldCount10>()>);
-    static_assert(
-        consteval_compare::
-            equal<99, field_count_of<RECURSIVE_DEPTH_FIRST_ORDER, RecursiveFieldCount99>()>);
-    static_assert(
-        consteval_compare::
-            equal<100, field_count_of<RECURSIVE_DEPTH_FIRST_ORDER, RecursiveFieldCount100>()>);
-    static_assert(
-        consteval_compare::
-            equal<193, field_count_of<RECURSIVE_DEPTH_FIRST_ORDER, RecursiveFieldCount193>()>);
+        equal<193, field_count_of<RECURSIVE_DEPTH_FIRST_ORDER, RecursiveFieldCount193>()>);
 
     // Before clang-17, there is a limit in recursive number of fields.
     // The limit is around 200 fields, but is affected by level of recursion, so it is 193 here
     // due to the way the structs are defined.
 #if defined(__clang__) && __clang_major__ >= 17
     static_assert(
-        consteval_compare::
-            equal<194, field_count_of<RECURSIVE_DEPTH_FIRST_ORDER, RecursiveFieldCount194>()>);
+        equal<194, field_count_of<RECURSIVE_DEPTH_FIRST_ORDER, RecursiveFieldCount194>()>);
     static_assert(
-        consteval_compare::
-            equal<300, field_count_of<RECURSIVE_DEPTH_FIRST_ORDER, RecursiveFieldCount300>()>);
+        equal<300, field_count_of<RECURSIVE_DEPTH_FIRST_ORDER, RecursiveFieldCount300>()>);
 #else
     EXPECT_DEATH((field_count_of<RECURSIVE_DEPTH_FIRST_ORDER, RecursiveFieldCount194>()), "");
     EXPECT_DEATH((field_count_of<RECURSIVE_DEPTH_FIRST_ORDER, RecursiveFieldCount300>()), "");
