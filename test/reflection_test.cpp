@@ -419,10 +419,10 @@ TEST(Reflection, NonConstexprDefaultConstructible)
 {
     constexpr NonConstexprDefaultConstructibleWithFields INSTANCE{3, 5.0};
 
-    static_assert(consteval_compare::equal<2, reflection_detail::field_count_of(INSTANCE)>);
+    static_assert(consteval_compare::equal<2, reflection_detail::field_count_of_impl(INSTANCE)>);
 
     constexpr auto FIELD_INFO =
-        field_info_of<reflection_detail::field_count_of(INSTANCE)>(INSTANCE);
+        field_info_of<reflection_detail::field_count_of_impl(INSTANCE)>(INSTANCE);
 
     static_assert(FIELD_INFO.at(0).field_type_name() == "int");
     static_assert(FIELD_INFO.at(0).field_name() == "a");
@@ -480,7 +480,8 @@ TEST(Reflection, FieldCount)
 TEST(Reflection, FieldNames)
 {
     {
-        constexpr auto FIELD_NAMES = reflection_detail::field_names_of<StructWithNestedStructs>();
+        constexpr const auto& FIELD_NAMES =
+            reflection_detail::field_names_of<StructWithNestedStructs>();
         static_assert(FIELD_NAMES.max_size() == 4);
         static_assert(FIELD_NAMES.size() == 4);
         static_assert(FIELD_NAMES.at(0) == "yellow");
@@ -490,7 +491,8 @@ TEST(Reflection, FieldNames)
     }
 
     {
-        constexpr auto FIELD_NAMES = reflection_detail::field_names_of<StructWithNonAggregates>();
+        constexpr const auto& FIELD_NAMES =
+            reflection_detail::field_names_of<StructWithNonAggregates>();
         static_assert(FIELD_NAMES.max_size() == 2);
         static_assert(FIELD_NAMES.size() == 2);
         static_assert(FIELD_NAMES.at(0) == "a1");
