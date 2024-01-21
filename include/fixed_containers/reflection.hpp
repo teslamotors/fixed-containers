@@ -153,7 +153,7 @@ public:
 };
 
 template <typename T, std::invocable<FieldEntry> Func>
-constexpr void for_each_field_entry(const T& instance, Func func)
+constexpr void for_each_parsed_field_entry(const T& instance, Func func)
 {
     auto converter = [&func]<typename... Args>(in_out<LayerTracker<32>> layer_tracker,
                                                const char* const fmt,
@@ -185,14 +185,14 @@ template <typename T>
 constexpr std::size_t field_count_of(const T& instance)
 {
     std::size_t counter = 0;
-    for_each_field_entry(instance,
-                         [&counter](const FieldEntry& field_entry)
-                         {
-                             if (field_entry.enclosing_field_name().empty())
-                             {
-                                 ++counter;
-                             }
-                         });
+    for_each_parsed_field_entry(instance,
+                                [&counter](const FieldEntry& field_entry)
+                                {
+                                    if (field_entry.enclosing_field_name().empty())
+                                    {
+                                        ++counter;
+                                    }
+                                });
     return counter;
 }
 
@@ -207,14 +207,14 @@ template <std::size_t MAXIMUM_FIELD_COUNT = 16, typename T>
 constexpr auto field_info_of(const T& instance) -> FixedVector<FieldEntry, MAXIMUM_FIELD_COUNT>
 {
     FixedVector<FieldEntry, MAXIMUM_FIELD_COUNT> output{};
-    for_each_field_entry(instance,
-                         [&output](const FieldEntry& field_entry)
-                         {
-                             if (field_entry.enclosing_field_name().empty())
-                             {
-                                 output.push_back(field_entry);
-                             }
-                         });
+    for_each_parsed_field_entry(instance,
+                                [&output](const FieldEntry& field_entry)
+                                {
+                                    if (field_entry.enclosing_field_name().empty())
+                                    {
+                                        output.push_back(field_entry);
+                                    }
+                                });
     return output;
 }
 

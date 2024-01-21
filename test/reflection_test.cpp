@@ -183,7 +183,7 @@ template <typename T>
 constexpr std::size_t field_count_of_exhaustive_until_non_aggregates_impl(const T& instance)
 {
     std::size_t counter = 0;
-    reflection_detail::for_each_field_entry(
+    reflection_detail::for_each_parsed_field_entry(
         instance, [&counter](const reflection_detail::FieldEntry& /*field_entry*/) { ++counter; });
     return counter;
 }
@@ -192,7 +192,7 @@ constexpr auto field_info_of_exhaustive_until_non_aggregates_impl(const T& insta
     -> FixedVector<reflection_detail::FieldEntry, MAXIMUM_FIELD_COUNT>
 {
     FixedVector<reflection_detail::FieldEntry, MAXIMUM_FIELD_COUNT> output{};
-    reflection_detail::for_each_field_entry(
+    reflection_detail::for_each_parsed_field_entry(
         instance,
         [&output](const reflection_detail::FieldEntry& field_entry)
         { output.push_back(field_entry); });
