@@ -146,8 +146,8 @@ struct NonConstexprDefaultConstructibleWithFields
     }
 };
 
-constexpr std::string_view pick_compiler_specific_string([[maybe_unused]] const std::string_view s1,
-                                                         [[maybe_unused]] const std::string_view s2)
+constexpr std::string_view pick_compiler_specific_string(
+    [[maybe_unused]] const std::string_view& s1, [[maybe_unused]] const std::string_view& s2)
 {
 #if defined(__clang__) && __clang_major__ == 15
     return s1;
