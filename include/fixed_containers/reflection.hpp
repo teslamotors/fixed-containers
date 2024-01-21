@@ -181,21 +181,14 @@ constexpr void for_each_field_entry(const T& instance, Func func)
         "in total field count. See unit tests for more info.");
 }
 
-enum class RecursionType
-{
-    NON_RECURSIVE,
-    RECURSIVE_DEPTH_FIRST_ORDER,
-};
-
-template <RecursionType RECURSION_TYPE, typename T>
+template <typename T>
 constexpr std::size_t field_count_of(const T& instance)
 {
     std::size_t counter = 0;
     for_each_field_entry(instance,
                          [&counter](const FieldEntry& field_entry)
                          {
-                             if (RECURSION_TYPE == RecursionType::RECURSIVE_DEPTH_FIRST_ORDER or
-                                 field_entry.enclosing_field_name().empty())
+                             if (field_entry.enclosing_field_name().empty())
                              {
                                  ++counter;
                              }
@@ -203,22 +196,21 @@ constexpr std::size_t field_count_of(const T& instance)
     return counter;
 }
 
-template <RecursionType RECURSION_TYPE, typename T>
+template <typename T>
     requires(Reflectable<std::decay_t<T>>)
 constexpr std::size_t field_count_of()
 {
-    return field_count_of<RECURSION_TYPE, std::decay_t<T>>({});
+    return field_count_of<std::decay_t<T>>({});
 }
 
-template <RecursionType RECURSION_TYPE, std::size_t MAXIMUM_FIELD_COUNT = 16, typename T>
+template <std::size_t MAXIMUM_FIELD_COUNT = 16, typename T>
 constexpr auto field_info_of(const T& instance) -> FixedVector<FieldEntry, MAXIMUM_FIELD_COUNT>
 {
     FixedVector<FieldEntry, MAXIMUM_FIELD_COUNT> output{};
     for_each_field_entry(instance,
                          [&output](const FieldEntry& field_entry)
                          {
-                             if (RECURSION_TYPE == RecursionType::RECURSIVE_DEPTH_FIRST_ORDER or
-                                 field_entry.enclosing_field_name().empty())
+                             if (field_entry.enclosing_field_name().empty())
                              {
                                  output.push_back(field_entry);
                              }
@@ -226,12 +218,12 @@ constexpr auto field_info_of(const T& instance) -> FixedVector<FieldEntry, MAXIM
     return output;
 }
 
-template <RecursionType RECURSION_TYPE, typename T>
+template <typename T>
     requires(Reflectable<std::decay_t<T>>)
 constexpr auto field_info_of()
 {
-    constexpr std::size_t FIELD_COUNT = field_count_of<RECURSION_TYPE, std::decay_t<T>>();
-    return field_info_of<RECURSION_TYPE, FIELD_COUNT, std::decay_t<T>>(std::decay_t<T>{});
+    constexpr std::size_t FIELD_COUNT = field_count_of<std::decay_t<T>>();
+    return field_info_of<FIELD_COUNT, std::decay_t<T>>(std::decay_t<T>{});
 }
 
 }  // namespace fixed_containers::reflection_detail
