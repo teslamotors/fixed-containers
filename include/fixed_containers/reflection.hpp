@@ -204,15 +204,16 @@ constexpr std::size_t field_count_of()
 }
 
 template <std::size_t MAXIMUM_FIELD_COUNT = 16, typename T>
-constexpr auto field_info_of(const T& instance) -> FixedVector<FieldEntry, MAXIMUM_FIELD_COUNT>
+constexpr auto field_names_of(const T& instance)
+    -> FixedVector<std::string_view, MAXIMUM_FIELD_COUNT>
 {
-    FixedVector<FieldEntry, MAXIMUM_FIELD_COUNT> output{};
+    FixedVector<std::string_view, MAXIMUM_FIELD_COUNT> output{};
     for_each_parsed_field_entry(instance,
                                 [&output](const FieldEntry& field_entry)
                                 {
                                     if (field_entry.enclosing_field_name().empty())
                                     {
-                                        output.push_back(field_entry);
+                                        output.push_back(field_entry.field_name());
                                     }
                                 });
     return output;
@@ -220,10 +221,10 @@ constexpr auto field_info_of(const T& instance) -> FixedVector<FieldEntry, MAXIM
 
 template <typename T>
     requires(Reflectable<std::decay_t<T>>)
-constexpr auto field_info_of()
+constexpr auto field_names_of()
 {
     constexpr std::size_t FIELD_COUNT = field_count_of<std::decay_t<T>>();
-    return field_info_of<FIELD_COUNT, std::decay_t<T>>(std::decay_t<T>{});
+    return field_names_of<FIELD_COUNT, std::decay_t<T>>(std::decay_t<T>{});
 }
 
 }  // namespace fixed_containers::reflection_detail

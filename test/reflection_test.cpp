@@ -177,6 +177,23 @@ constexpr std::string_view pick_compiler_specific_string(
 #endif
 }
 
+template <std::size_t MAXIMUM_FIELD_COUNT = 16, typename T>
+constexpr auto field_info_of(const T& instance)
+    -> FixedVector<reflection_detail::FieldEntry, MAXIMUM_FIELD_COUNT>
+{
+    FixedVector<reflection_detail::FieldEntry, MAXIMUM_FIELD_COUNT> output{};
+    reflection_detail::for_each_parsed_field_entry(
+        instance,
+        [&output](const reflection_detail::FieldEntry& field_entry)
+        {
+            if (field_entry.enclosing_field_name().empty())
+            {
+                output.push_back(field_entry);
+            }
+        });
+    return output;
+}
+
 // Since __builtin_dump_struct sometimes recurses and sometimes does not, these
 // are impractical for direct use. Keep them for testing purposes.
 template <typename T>
@@ -203,7 +220,7 @@ constexpr auto field_info_of_exhaustive_until_non_aggregates_impl(const T& insta
 
 TEST(Reflection, DebuggingHelper)
 {
-    auto foo = reflection_detail::field_info_of<StructWithNestedStructs>();
+    auto foo = field_info_of(StructWithNestedStructs{});
     // std::cout << foo.size() << std::endl;
     (void)foo;
 
@@ -220,7 +237,7 @@ TEST(Reflection, FieldInfo_StructWithNestedStructs)
     static_assert(
         consteval_compare::equal<4, reflection_detail::field_count_of<StructWithNestedStructs>()>);
 
-    constexpr auto FIELD_INFO = reflection_detail::field_info_of<StructWithNestedStructs>();
+    constexpr auto FIELD_INFO = field_info_of(StructWithNestedStructs{});
 
     static_assert(FIELD_INFO.at(0).field_type_name() == "int");
     static_assert(FIELD_INFO.at(0).field_name() == "yellow");
@@ -260,7 +277,7 @@ TEST(Reflection, FieldInfo_StructWithNonAggregates)
     static_assert(
         consteval_compare::equal<2, reflection_detail::field_count_of<StructWithNonAggregates>()>);
 
-    constexpr auto FIELD_INFO = reflection_detail::field_info_of<StructWithNonAggregates>();
+    constexpr auto FIELD_INFO = field_info_of(StructWithNonAggregates{});
 
     static_assert(FIELD_INFO.at(0).field_type_name() == "int");
     static_assert(FIELD_INFO.at(0).field_name() == "a1");
@@ -405,7 +422,7 @@ TEST(Reflection, NonConstexprDefaultConstructible)
     static_assert(consteval_compare::equal<2, reflection_detail::field_count_of(INSTANCE)>);
 
     constexpr auto FIELD_INFO =
-        reflection_detail::field_info_of<reflection_detail::field_count_of(INSTANCE)>(INSTANCE);
+        field_info_of<reflection_detail::field_count_of(INSTANCE)>(INSTANCE);
 
     static_assert(FIELD_INFO.at(0).field_type_name() == "int");
     static_assert(FIELD_INFO.at(0).field_name() == "a");
@@ -452,6 +469,33 @@ TEST(Reflection, BuiltinDumpStructLimits)
     EXPECT_DEATH((field_count_of_exhaustive_until_non_aggregates_impl(RecursiveFieldCount300{})),
                  "");
 #endif
+}
+
+TEST(Reflection, FieldCount)
+{
+    static_assert(reflection_detail::field_count_of<StructWithNestedStructs>() == 4);
+    static_assert(reflection_detail::field_count_of<StructWithNonAggregates>() == 2);
+}
+
+TEST(Reflection, FieldNames)
+{
+    {
+        constexpr auto FIELD_NAMES = reflection_detail::field_names_of<StructWithNestedStructs>();
+        static_assert(FIELD_NAMES.max_size() == 4);
+        static_assert(FIELD_NAMES.size() == 4);
+        static_assert(FIELD_NAMES.at(0) == "yellow");
+        static_assert(FIELD_NAMES.at(1) == "red");
+        static_assert(FIELD_NAMES.at(2) == "green");
+        static_assert(FIELD_NAMES.at(3) == "purple");
+    }
+
+    {
+        constexpr auto FIELD_NAMES = reflection_detail::field_names_of<StructWithNonAggregates>();
+        static_assert(FIELD_NAMES.max_size() == 2);
+        static_assert(FIELD_NAMES.size() == 2);
+        static_assert(FIELD_NAMES.at(0) == "a1");
+        static_assert(FIELD_NAMES.at(1) == "non_aggregate");
+    }
 }
 
 }  // namespace fixed_containers
