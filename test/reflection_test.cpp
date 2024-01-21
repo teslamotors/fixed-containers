@@ -1,4 +1,3 @@
-#if __has_builtin(__builtin_dump_struct)
 #if defined(__clang__) && __clang_major__ >= 15
 
 #include "fixed_containers/reflection.hpp"
@@ -375,5 +374,4 @@ TEST(Reflection, FieldCountLimits)
 
 }  // namespace fixed_containers
 
-#endif
 #endif
