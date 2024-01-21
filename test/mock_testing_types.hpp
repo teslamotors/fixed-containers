@@ -332,4 +332,12 @@ struct MockEmptyStruct
 {
 };
 
+struct MockNonAggregate
+{
+    int field_1;
+
+    constexpr MockNonAggregate() noexcept = default;
+};
+static_assert(NotAggregate<MockNonAggregate>);
+
 }  // namespace fixed_containers
