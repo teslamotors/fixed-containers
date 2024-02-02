@@ -1,6 +1,7 @@
 #pragma once
 
 #include "fixed_containers/fixed_index_based_storage.hpp"
+#include "fixed_containers/concepts.hpp"
 
 #include <array>
 #include <type_traits>
@@ -19,8 +20,8 @@ struct LinkedListIndices
 template <class T, std::size_t MAXIMUM_SIZE>
 class FixedLinkedListBase
 {
-    using SizeType = std::conditional_t<(MAXIMUM_SIZE < std::numeric_limits<std::uint32_t>::max()), std::uint32_t, std::uint64_t>;
 public:
+    using SizeType = std::conditional_t<(MAXIMUM_SIZE < std::numeric_limits<std::uint32_t>::max()), std::uint32_t, std::uint64_t>;
     FixedIndexBasedPoolStorage<T, MAXIMUM_SIZE> IMPLEMENTATION_DETAIL_DO_NOT_USE_storage_{};
     std::array<LinkedListIndices<SizeType>, MAXIMUM_SIZE + 1> IMPLEMENTATION_DETAIL_DO_NOT_USE_lli_{};
     SizeType IMPLEMENTATION_DETAIL_DO_NOT_USE_size_{};
@@ -107,7 +108,8 @@ public:
     }
 
     // TODO: fast `clear()` for `TrviallyDestructible`
-    constexpr void clear() const
+    // I think this will require changes to `fixed_index_based_storage`
+    constexpr void clear()
     {
         SizeType idx = begin_index();
         while(idx != end_index())
@@ -115,8 +117,6 @@ public:
             idx = erase(idx);
         }
     }
-
-    // TODO: destructors
 
     // TODO: rest of the functions to match `std::list`
 
@@ -159,6 +159,102 @@ public:
     {
         return lli_at(i).prev;
     }
+
+};
+
+template <class T, std::size_t MAXIMUM_SIZE>
+class FixedLinkedList : public FixedLinkedListBase<T, MAXIMUM_SIZE>
+{
+    using Base = FixedLinkedListBase<T, MAXIMUM_SIZE>;
+public:
+    constexpr FixedLinkedList() noexcept : Base() {}
+
+    constexpr FixedLinkedList(const FixedLinkedList& other) noexcept
+        requires TriviallyCopyConstructible<T>
+    = default;
+
+    constexpr FixedLinkedList(FixedLinkedList&& other) noexcept
+        requires TriviallyMoveConstructible<T>
+    = default;
+
+    constexpr FixedLinkedList& operator=(const FixedLinkedList& other) noexcept
+        requires TriviallyCopyAssignable<T>
+    = default;
+    constexpr FixedLinkedList& operator=(FixedLinkedList&& other) noexcept
+        requires TriviallyMoveAssignable<T>
+    = default;
+
+    constexpr FixedLinkedList(const FixedLinkedList& other) noexcept
+    : FixedLinkedList()
+    {
+        typename Base::SizeType other_idx = other.begin_index();
+        while(other_idx != other.end_index())
+        {
+            this->emplace_back(other.at(other_idx));
+            other_idx = other.advance(other_idx);
+        }
+    }
+
+    constexpr FixedLinkedList(FixedLinkedList&& other) noexcept
+    : FixedLinkedList()
+    {
+        typename Base::SizeType other_idx = other.begin_index();
+        while(other_idx != other.end_index())
+        {
+            this->emplace_back(std::move(other.at(other_idx)));
+            other_idx = other.advance(other_idx);
+        }
+    }
+
+    constexpr FixedLinkedList& operator=(const FixedLinkedList& other) noexcept
+    {
+        if (this == &other)
+        {
+            return *this;
+        }
+
+        this->clear();
+
+        typename Base::SizeType other_idx = other.begin_index();
+        while(other_idx != other.end_index())
+        {
+            this->emplace_back(other.at(other_idx));
+            other_idx = other.advance(other_idx);
+        }
+
+        return *this;
+    }
+
+    constexpr FixedLinkedList& operator=(FixedLinkedList&& other) noexcept
+    {
+        if (this == &other)
+        {
+            return *this;
+        }
+
+        this->clear();
+
+        typename Base::SizeType other_idx = other.begin_index();
+        while(other_idx != other.end_index())
+        {
+            this->emplace_back(std::move(other.at(other_idx)));
+            other_idx = other.advance(other_idx);
+        }
+
+        return *this;
+    }
+
+    constexpr ~FixedLinkedList() noexcept
+    {
+        this->clear();
+    }
+};
+
+template <TriviallyCopyable T, std::size_t MAXIMUM_SIZE>
+class FixedLinkedList<T, MAXIMUM_SIZE> : public FixedLinkedListBase<T, MAXIMUM_SIZE>
+{
+public:
+    constexpr FixedLinkedList() noexcept : FixedLinkedListBase<T, MAXIMUM_SIZE>() {}
 
 };
 
