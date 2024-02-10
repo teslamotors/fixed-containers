@@ -17,14 +17,14 @@ namespace fixed_containers
 namespace
 {
 // Static assert for expected type properties
-namespace trivially_copyable_vector
+namespace trivially_copyable_deque
 {
 using DequeType = FixedDeque<int, 5>;
 static_assert(TriviallyCopyable<DequeType>);
 static_assert(NotTrivial<DequeType>);
 static_assert(StandardLayout<DequeType>);
 static_assert(IsStructuralType<DequeType>);
-}  // namespace trivially_copyable_vector
+}  // namespace trivially_copyable_deque
 
 void const_ref(const int&) {}
 

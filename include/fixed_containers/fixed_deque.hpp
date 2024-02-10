@@ -886,7 +886,7 @@ public:
             this->push_back_internal(std::move(entry));
         }
 
-        // Clear the moved-out-of-vector. This is consistent with both std::vector
+        // Clear the moved-out-of-deque. This is consistent with both std::deque
         // as well as the trivial move constructor of this class.
         other.clear();
     }
@@ -913,7 +913,7 @@ public:
             this->push_back_internal(std::move(entry));
         }
         // The trivial assignment operator does not `other.clear()`, so don't do it here either for
-        // consistency across FixedDeques. std::vector<T> does clear it, so behavior is different.
+        // consistency across FixedDeques. std::deque<T> does clear it, so behavior is different.
         // Both choices are fine, because the state of a moved object is intentionally unspecified
         // as per the standard and use-after-move is undefined behavior.
         return *this;
