@@ -825,6 +825,7 @@ cc_test(
     srcs = ["test/fixed_deque_test.cpp"],
     deps = [
         ":assert_or_abort",
+        ":concepts",
         ":fixed_deque",
         ":instance_counter",
         ":mock_testing_types",

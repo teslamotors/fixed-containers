@@ -5,6 +5,7 @@
 #include "test_utilities_common.hpp"
 
 #include "fixed_containers/assert_or_abort.hpp"
+#include "fixed_containers/concepts.hpp"
 
 #include <gtest/gtest.h>
 
