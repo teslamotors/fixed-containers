@@ -960,7 +960,7 @@ TEST(FixedString, EraseOne)
     EXPECT_EQ(it, v2.begin());
     EXPECT_EQ(*it, '1');
     EXPECT_EQ(v2, "14503");
-    it += 2;
+    std::advance(it, 2);
     it = v2.erase(it);
     EXPECT_EQ(it, std::next(v2.begin(), 2));
     EXPECT_EQ(*it, '0');
