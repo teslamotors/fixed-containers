@@ -421,7 +421,7 @@ public:
                              const std_transition::source_location& loc =
                                  std_transition::source_location::current()) noexcept
     {
-        return erase(it, it + 1, loc);
+        return erase(it, std::next(it), loc);
     }
 
     constexpr void clear() noexcept
