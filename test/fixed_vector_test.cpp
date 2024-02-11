@@ -1131,9 +1131,9 @@ TEST(FixedVector, IterationBasic)
     }
     EXPECT_EQ(ctr, 6);
 
-    v.erase(v.begin() + 5);
-    v.erase(v.begin() + 3);
-    v.erase(v.begin() + 1);
+    v.erase(std::next(v.begin(), 5));
+    v.erase(std::next(v.begin(), 3));
+    v.erase(std::next(v.begin(), 1));
 
     v_expected = {0, 2, 4};
     EXPECT_TRUE((v == v_expected));
@@ -1313,8 +1313,8 @@ TEST(FixedVector, Emplace)
         constexpr auto v1 = []()
         {
             FixedVector<int, 11> v{0, 1, 2};
-            v.emplace(v.begin() + 1, 3);
-            v.emplace(v.begin() + 1, 4);
+            v.emplace(std::next(v.begin(), 1), 3);
+            v.emplace(std::next(v.begin(), 1), 4);
             return v;
         }();
 
@@ -1324,8 +1324,8 @@ TEST(FixedVector, Emplace)
         auto v1 = []()
         {
             FixedVector<int, 11> v{0, 1, 2};
-            v.emplace(v.begin() + 1, 3);
-            v.emplace(v.begin() + 1, 4);
+            v.emplace(std::next(v.begin(), 1), 3);
+            v.emplace(std::next(v.begin(), 1), 4);
             return v;
         }();
 
@@ -1490,7 +1490,7 @@ TEST(FixedVector, InsertValue)
             FixedVector<int, 7> v{0, 1, 2, 3};
             v.insert(v.begin(), 100);
             const int value = 500;
-            v.insert(v.begin() + 2, value);
+            v.insert(std::next(v.begin(), 2), value);
             return v;
         }();
 
@@ -1505,7 +1505,7 @@ TEST(FixedVector, InsertValue)
             FixedVector<int, 5> v{0, 1, 2};
             v.insert(v.begin(), 100);
             const int value = 500;
-            v.insert(v.begin() + 2, value);
+            v.insert(std::next(v.begin(), 2), value);
             return v;
         }();
 
@@ -1526,9 +1526,9 @@ TEST(FixedVector, InsertValue)
         const MockNonTrivialInt value = 3;
         v3.insert(v3.end(), value);
         EXPECT_TRUE(std::ranges::equal(v3, std::array<MockNonTrivialInt, 4>{{2, 1, 0, 3}}));
-        v3.insert(v3.begin() + 2, 4);
+        v3.insert(std::next(v3.cbegin(), 2), 4);
         EXPECT_TRUE(std::ranges::equal(v3, std::array<MockNonTrivialInt, 5>{{2, 1, 4, 0, 3}}));
-        v3.insert(v3.begin() + 3, 5);
+        v3.insert(std::next(v3.cbegin(), 3), 5);
         EXPECT_TRUE(std::ranges::equal(v3, std::array<MockNonTrivialInt, 6>{{2, 1, 4, 5, 0, 3}}));
         auto v4 = v3;
         v3.clear();
@@ -1540,7 +1540,7 @@ TEST(FixedVector, InsertValue)
 TEST(FixedVector, InsertValue_ExceedsCapacity)
 {
     FixedVector<int, 4> v1{0, 1, 2, 3};
-    EXPECT_DEATH(v1.insert(v1.begin() + 1, 5), "");
+    EXPECT_DEATH(v1.insert(std::next(v1.begin(), 1), 5), "");
 }
 
 TEST(FixedVector, InsertIterator)
@@ -1550,7 +1550,7 @@ TEST(FixedVector, InsertIterator)
         {
             std::array<int, 2> a{100, 500};
             FixedVector<int, 7> v{0, 1, 2, 3};
-            v.insert(v.begin() + 2, a.begin(), a.end());
+            v.insert(std::next(v.begin(), 2), a.begin(), a.end());
             return v;
         }();
 
@@ -1564,7 +1564,7 @@ TEST(FixedVector, InsertIterator)
         {
             std::array<int, 2> a{100, 500};
             FixedVector<int, 5> v{0, 1, 2};
-            v.insert(v.begin() + 2, a.begin(), a.end());
+            v.insert(std::next(v.begin(), 2), a.begin(), a.end());
             return v;
         }();
 
@@ -1576,9 +1576,9 @@ TEST(FixedVector, InsertIterator)
     {
         std::array<int, 2> a{100, 500};
         FixedVector<int, 7> v{0, 1, 2, 3};
-        auto it = v.insert(v.begin() + 2, a.begin(), a.end());
+        auto it = v.insert(std::next(v.begin(), 2), a.begin(), a.end());
         EXPECT_TRUE(std::ranges::equal(v, std::array<int, 6>{0, 1, 100, 500, 2, 3}));
-        EXPECT_EQ(it, v.begin() + 2);
+        EXPECT_EQ(it, std::next(v.begin(), 2));
     }
 }
 
@@ -1586,24 +1586,24 @@ TEST(FixedVector, InsertIterator_ExceedsCapacity)
 {
     FixedVector<int, 4> v1{0, 1, 2};
     std::array<int, 2> a{3, 4};
-    EXPECT_DEATH(v1.insert(v1.begin() + 1, a.begin(), a.end()), "");
+    EXPECT_DEATH(v1.insert(std::next(v1.begin(), 1), a.begin(), a.end()), "");
 }
 
 TEST(FixedVector, InsertInputIterator)
 {
     MockIntegralStream<int> stream{3};
     FixedVector<int, 14> v{10, 20, 30, 40};
-    auto it = v.insert(v.begin() + 2, stream.begin(), stream.end());
+    auto it = v.insert(std::next(v.begin(), 2), stream.begin(), stream.end());
     ASSERT_EQ(7, v.size());
     EXPECT_TRUE(std::ranges::equal(v, std::array{10, 20, 3, 2, 1, 30, 40}));
-    EXPECT_EQ(it, v.begin() + 2);
+    EXPECT_EQ(it, std::next(v.begin(), 2));
 }
 
 TEST(FixedVector, InsertInputIterator_ExceedsCapacity)
 {
     MockIntegralStream<int> stream{3};
     FixedVector<int, 6> v{10, 20, 30, 40};
-    EXPECT_DEATH(v.insert(v.begin() + 2, stream.begin(), stream.end()), "");
+    EXPECT_DEATH(v.insert(std::next(v.begin(), 2), stream.begin(), stream.end()), "");
 }
 
 TEST(FixedVector, InsertInitializerList)
@@ -1613,7 +1613,7 @@ TEST(FixedVector, InsertInitializerList)
         constexpr auto v1 = []()
         {
             FixedVector<int, 5> v{0, 1, 2};
-            v.insert(v.begin() + 2, {100, 500});
+            v.insert(std::next(v.begin(), 2), {100, 500});
             return v;
         }();
 
@@ -1624,16 +1624,16 @@ TEST(FixedVector, InsertInitializerList)
 
     {
         FixedVector<int, 7> v{0, 1, 2, 3};
-        auto it = v.insert(v.begin() + 2, {100, 500});
+        auto it = v.insert(std::next(v.begin(), 2), {100, 500});
         EXPECT_TRUE(std::ranges::equal(v, std::array<int, 6>{0, 1, 100, 500, 2, 3}));
-        EXPECT_EQ(it, v.begin() + 2);
+        EXPECT_EQ(it, std::next(v.begin(), 2));
     }
 }
 
 TEST(FixedVector, InsertInitializerList_ExceedsCapacity)
 {
     FixedVector<int, 4> v1{0, 1, 2};
-    EXPECT_DEATH(v1.insert(v1.begin() + 1, {3, 4}), "");
+    EXPECT_DEATH(v1.insert(std::next(v1.begin(), 1), {3, 4}), "");
 }
 
 TEST(FixedVector, EraseRange)
@@ -1641,7 +1641,7 @@ TEST(FixedVector, EraseRange)
     constexpr auto v1 = []()
     {
         FixedVector<int, 8> v{0, 1, 2, 3, 4, 5};
-        v.erase(v.cbegin() + 2, v.begin() + 4);
+        v.erase(std::next(v.cbegin(), 2), std::next(v.begin(), 4));
         return v;
     }();
 
@@ -1651,8 +1651,8 @@ TEST(FixedVector, EraseRange)
 
     FixedVector<int, 8> v2{2, 1, 4, 5, 0, 3};
 
-    auto it = v2.erase(v2.begin() + 1, v2.cbegin() + 3);
-    EXPECT_EQ(it, v2.begin() + 1);
+    auto it = v2.erase(std::next(v2.begin(), 1), std::next(v2.cbegin(), 3));
+    EXPECT_EQ(it, std::next(v2.begin(), 1));
     EXPECT_EQ(*it, 5);
     EXPECT_TRUE(std::ranges::equal(v2, std::array<int, 4>{{2, 5, 0, 3}}));
 }
@@ -1663,7 +1663,7 @@ TEST(FixedVector, EraseOne)
     {
         FixedVector<int, 8> v{0, 1, 2, 3, 4, 5};
         v.erase(v.cbegin());
-        v.erase(v.begin() + 2);
+        v.erase(std::next(v.begin(), 2));
         return v;
     }();
 
@@ -1679,7 +1679,7 @@ TEST(FixedVector, EraseOne)
     EXPECT_TRUE(std::ranges::equal(v2, std::array<int, 5>{{1, 4, 5, 0, 3}}));
     it += 2;
     it = v2.erase(it);
-    EXPECT_EQ(it, v2.begin() + 2);
+    EXPECT_EQ(it, std::next(v2.begin(), 2));
     EXPECT_EQ(*it, 0);
     EXPECT_TRUE(std::ranges::equal(v2, std::array<int, 4>{{1, 4, 0, 3}}));
     ++it;
@@ -2055,7 +2055,7 @@ TYPED_TEST_P(FixedVectorInstanceCheckFixture, FixedVector_InstanceCheck)
     ASSERT_EQ(10, InstanceCounterType::counter);
     v1.erase(v1.begin());
     ASSERT_EQ(9, InstanceCounterType::counter);
-    v1.erase(v1.begin() + 2, v1.begin() + 5);
+    v1.erase(std::next(v1.begin(), 2), std::next(v1.begin(), 5));
     ASSERT_EQ(6, InstanceCounterType::counter);
     v1.erase(v1.begin(), v1.end());
     ASSERT_EQ(0, InstanceCounterType::counter);
@@ -2063,7 +2063,7 @@ TYPED_TEST_P(FixedVectorInstanceCheckFixture, FixedVector_InstanceCheck)
     {  // IMPORTANT SCOPE, don't remove.
         v1.assign(5, {});
         ASSERT_EQ(5, InstanceCounterType::counter);
-        v1.insert(v1.begin() + 3, InstanceCounterType{});
+        v1.insert(std::next(v1.begin(), 3), InstanceCounterType{});
         ASSERT_EQ(6, InstanceCounterType::counter);
         InstanceCounterType aa{};
         ASSERT_EQ(7, InstanceCounterType::counter);
@@ -2071,7 +2071,7 @@ TYPED_TEST_P(FixedVectorInstanceCheckFixture, FixedVector_InstanceCheck)
         ASSERT_EQ(8, InstanceCounterType::counter);
         std::array<InstanceCounterType, 3> many{};
         ASSERT_EQ(11, InstanceCounterType::counter);
-        v1.insert(v1.begin() + 3, many.begin(), many.end());
+        v1.insert(std::next(v1.begin(), 3), many.begin(), many.end());
         ASSERT_EQ(14, InstanceCounterType::counter);
         v1.clear();
         ASSERT_EQ(4, InstanceCounterType::counter);
@@ -2080,7 +2080,7 @@ TYPED_TEST_P(FixedVectorInstanceCheckFixture, FixedVector_InstanceCheck)
 
     v1.assign(5, {});
     ASSERT_EQ(5, InstanceCounterType::counter);
-    v1.emplace(v1.begin() + 2);
+    v1.emplace(std::next(v1.begin(), 2));
     ASSERT_EQ(6, InstanceCounterType::counter);
     v1.clear();
     ASSERT_EQ(0, InstanceCounterType::counter);

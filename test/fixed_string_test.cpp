@@ -658,9 +658,9 @@ TEST(FixedString, IterationBasic)
     }
     EXPECT_EQ(ctr, '6');
 
-    v.erase(v.begin() + 5);
-    v.erase(v.begin() + 3);
-    v.erase(v.begin() + 1);
+    v.erase(std::next(v.begin(), 5));
+    v.erase(std::next(v.begin(), 3));
+    v.erase(std::next(v.begin(), 1));
 
     v_expected = "024";
     EXPECT_TRUE((v == v_expected));
@@ -766,7 +766,7 @@ TEST(FixedString, InsertValue)
             FixedString<7> v{"0123"};
             v.insert(v.begin(), 'a');
             const char value = 'e';
-            v.insert(v.begin() + 2, value);
+            v.insert(std::next(v.begin(), 2), value);
             return v;
         }();
 
@@ -781,7 +781,7 @@ TEST(FixedString, InsertValue)
             FixedString<5> v{"012"};
             v.insert(v.begin(), 'a');
             const char value = 'e';
-            v.insert(v.begin() + 2, value);
+            v.insert(std::next(v.begin(), 2), value);
             return v;
         }();
 
@@ -794,7 +794,7 @@ TEST(FixedString, InsertValue)
 TEST(FixedString, InsertValue_ExceedsCapacity)
 {
     FixedString<4> v1{"0123"};
-    EXPECT_DEATH(v1.insert(v1.begin() + 1, '5'), "");
+    EXPECT_DEATH(v1.insert(std::next(v1.begin(), 1), '5'), "");
 }
 
 TEST(FixedString, InsertIterator)
@@ -804,7 +804,7 @@ TEST(FixedString, InsertIterator)
         {
             std::array<char, 2> a{'a', 'e'};
             FixedString<7> v{"0123"};
-            v.insert(v.begin() + 2, a.begin(), a.end());
+            v.insert(std::next(v.begin(), 2), a.begin(), a.end());
             return v;
         }();
 
@@ -818,7 +818,7 @@ TEST(FixedString, InsertIterator)
         {
             std::array<char, 2> a{'a', 'e'};
             FixedString<5> v{"012"};
-            v.insert(v.begin() + 2, a.begin(), a.end());
+            v.insert(std::next(v.begin(), 2), a.begin(), a.end());
             return v;
         }();
 
@@ -830,9 +830,9 @@ TEST(FixedString, InsertIterator)
     {
         std::array<char, 2> a{'a', 'e'};
         FixedString<7> v{"0123"};
-        auto it = v.insert(v.begin() + 2, a.begin(), a.end());
+        auto it = v.insert(std::next(v.begin(), 2), a.begin(), a.end());
         EXPECT_EQ(v, "01ae23");
-        EXPECT_EQ(it, v.begin() + 2);
+        EXPECT_EQ(it, std::next(v.begin(), 2));
     }
 }
 
@@ -840,27 +840,27 @@ TEST(FixedString, InsertIterator_ExceedsCapacity)
 {
     FixedString<4> v1{"012"};
     std::array<char, 2> a{'3', '4'};
-    EXPECT_DEATH(v1.insert(v1.begin() + 1, a.begin(), a.end()), "");
+    EXPECT_DEATH(v1.insert(std::next(v1.begin(), 1), a.begin(), a.end()), "");
 }
 
 TEST(FixedString, InsertInputIterator)
 {
     MockIntegralStream<char> stream{static_cast<char>(3)};
     FixedString<14> v{"abcd"};
-    auto it = v.insert(v.begin() + 2, stream.begin(), stream.end());
+    auto it = v.insert(std::next(v.begin(), 2), stream.begin(), stream.end());
     ASSERT_EQ(7, v.size());
     EXPECT_TRUE(std::ranges::equal(
         v,
         std::array{
             'a', 'b', static_cast<char>(3), static_cast<char>(2), static_cast<char>(1), 'c', 'd'}));
-    EXPECT_EQ(it, v.begin() + 2);
+    EXPECT_EQ(it, std::next(v.begin(), 2));
 }
 
 TEST(FixedString, InsertInputIterator_ExceedsCapacity)
 {
     MockIntegralStream<char> stream{3};
     FixedString<6> v{"abcd"};
-    EXPECT_DEATH(v.insert(v.begin() + 2, stream.begin(), stream.end()), "");
+    EXPECT_DEATH(v.insert(std::next(v.begin(), 2), stream.begin(), stream.end()), "");
 }
 
 TEST(FixedString, InsertInitializerList)
@@ -870,7 +870,7 @@ TEST(FixedString, InsertInitializerList)
         constexpr auto v1 = []()
         {
             FixedString<5> v{"012"};
-            v.insert(v.begin() + 2, {'a', 'e'});
+            v.insert(std::next(v.begin(), 2), {'a', 'e'});
             return v;
         }();
 
@@ -881,16 +881,16 @@ TEST(FixedString, InsertInitializerList)
 
     {
         FixedString<7> v{"0123"};
-        auto it = v.insert(v.begin() + 2, {'a', 'e'});
+        auto it = v.insert(std::next(v.begin(), 2), {'a', 'e'});
         EXPECT_EQ(v, "01ae23");
-        EXPECT_EQ(it, v.begin() + 2);
+        EXPECT_EQ(it, std::next(v.begin(), 2));
     }
 }
 
 TEST(FixedString, InsertInitializerList_ExceedsCapacity)
 {
     FixedString<4> v1{"012"};
-    EXPECT_DEATH(v1.insert(v1.begin() + 1, {'3', '4'}), "");
+    EXPECT_DEATH(v1.insert(std::next(v1.begin(), 1), {'3', '4'}), "");
 }
 
 TEST(FixedString, InsertStringView)
@@ -901,7 +901,7 @@ TEST(FixedString, InsertStringView)
         {
             FixedString<5> v{"012"};
             std::string_view s = "ae";
-            v.insert(v.begin() + 2, s);
+            v.insert(std::next(v.begin(), 2), s);
             return v;
         }();
 
@@ -913,9 +913,9 @@ TEST(FixedString, InsertStringView)
     {
         FixedString<7> v{"0123"};
         std::string_view s = "ae";
-        auto it = v.insert(v.begin() + 2, s);
+        auto it = v.insert(std::next(v.begin(), 2), s);
         EXPECT_EQ(v, "01ae23");
-        EXPECT_EQ(it, v.begin() + 2);
+        EXPECT_EQ(it, std::next(v.begin(), 2));
     }
 }
 
@@ -924,7 +924,7 @@ TEST(FixedString, EraseRange)
     constexpr auto v1 = []()
     {
         FixedString<8> v{"012345"};
-        v.erase(v.cbegin() + 2, v.begin() + 4);
+        v.erase(std::next(v.cbegin(), 2), std::next(v.begin(), 4));
         return v;
     }();
 
@@ -934,8 +934,8 @@ TEST(FixedString, EraseRange)
 
     FixedString<8> v2{"214503"};
 
-    auto it = v2.erase(v2.begin() + 1, v2.cbegin() + 3);
-    EXPECT_EQ(it, v2.begin() + 1);
+    auto it = v2.erase(std::next(v2.begin(), 1), std::next(v2.cbegin(), 3));
+    EXPECT_EQ(it, std::next(v2.begin(), 1));
     EXPECT_EQ(*it, '5');
     EXPECT_EQ(v2, "2503");
 }
@@ -946,7 +946,7 @@ TEST(FixedString, EraseOne)
     {
         FixedString<8> v{"012345"};
         v.erase(v.cbegin());
-        v.erase(v.begin() + 2);
+        v.erase(std::next(v.begin(), 2));
         return v;
     }();
 
@@ -962,7 +962,7 @@ TEST(FixedString, EraseOne)
     EXPECT_EQ(v2, "14503");
     it += 2;
     it = v2.erase(it);
-    EXPECT_EQ(it, v2.begin() + 2);
+    EXPECT_EQ(it, std::next(v2.begin(), 2));
     EXPECT_EQ(*it, '0');
     EXPECT_EQ(v2, "1403");
     ++it;
