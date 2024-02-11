@@ -10,7 +10,7 @@
 namespace fixed_containers::fixed_red_black_tree_detail
 {
 using NodeIndex = std::size_t;
-static constexpr NodeIndex NULL_INDEX = (std::numeric_limits<NodeIndex>::max)();
+inline constexpr NodeIndex NULL_INDEX = (std::numeric_limits<NodeIndex>::max)();
 
 using NodeColor = bool;
 constexpr NodeColor COLOR_BLACK = false;
