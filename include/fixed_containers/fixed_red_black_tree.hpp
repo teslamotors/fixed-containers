@@ -824,14 +824,8 @@ protected:  // [WORKAROUND-1]
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_tree_storage_;
     }
     constexpr TreeStorage& tree_storage() { return IMPLEMENTATION_DETAIL_DO_NOT_USE_tree_storage_; }
-    constexpr auto tree_storage_at(const NodeIndex& i) const
-    {
-        return IMPLEMENTATION_DETAIL_DO_NOT_USE_tree_storage_.at(i);
-    }
-    constexpr auto tree_storage_at(const NodeIndex& i)
-    {
-        return IMPLEMENTATION_DETAIL_DO_NOT_USE_tree_storage_.at(i);
-    }
+    constexpr auto tree_storage_at(const NodeIndex& i) const { return tree_storage().at(i); }
+    constexpr auto tree_storage_at(const NodeIndex& i) { return tree_storage().at(i); }
     constexpr void set_root_index(const std::size_t r)
     {
         IMPLEMENTATION_DETAIL_DO_NOT_USE_root_index_ = r;
