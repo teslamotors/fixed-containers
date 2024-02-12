@@ -236,8 +236,8 @@ public:
         // Destroy extras if we are making it smaller.
         while (size() > count)
         {
+            destroy_at(back_index());
             decrement_size();
-            destroy_at(end_index());
         }
     }
 
