@@ -135,11 +135,11 @@ TEST(FixedDeque, MaxSizeDeduction)
     constexpr auto v1 = make_fixed_deque({10, 11, 12, 13, 14});
     static_assert(v1.size() == 5);
     static_assert(v1.max_size() == 5);
-    static_assert(v1[0] == 10);
-    static_assert(v1[1] == 11);
-    static_assert(v1[2] == 12);
-    static_assert(v1[3] == 13);
-    static_assert(v1[4] == 14);
+    static_assert(v1.at(0) == 10);
+    static_assert(v1.at(1) == 11);
+    static_assert(v1.at(2) == 12);
+    static_assert(v1.at(3) == 13);
+    static_assert(v1.at(4) == 14);
 }
 
 TEST(FixedDeque, IteratorConstructor)
@@ -147,8 +147,8 @@ TEST(FixedDeque, IteratorConstructor)
     constexpr std::array<int, 2> v1{77, 99};
 
     constexpr FixedDeque<int, 15> v2{v1.begin(), v1.end()};
-    static_assert(v2[0] == 77);
-    static_assert(v2[1] == 99);
+    static_assert(v2.at(0) == 77);
+    static_assert(v2.at(1) == 99);
     static_assert(v2.size() == 2);
 }
 
@@ -176,13 +176,13 @@ TEST(FixedDeque, InputIteratorConstructor_ExceedsCapacity)
 TEST(FixedDeque, InitializerConstructor)
 {
     constexpr FixedDeque<int, 3> v1{77, 99};
-    static_assert(v1[0] == 77);
-    static_assert(v1[1] == 99);
+    static_assert(v1.at(0) == 77);
+    static_assert(v1.at(1) == 99);
     static_assert(v1.size() == 2);
 
     constexpr FixedDeque<int, 3> v2{{66, 55}};
-    static_assert(v2[0] == 66);
-    static_assert(v2[1] == 55);
+    static_assert(v2.at(0) == 66);
+    static_assert(v2.at(1) == 55);
     static_assert(v2.size() == 2);
 
     EXPECT_TRUE(std::ranges::equal(v1, std::array{77, 99}));
@@ -208,9 +208,9 @@ TEST(FixedDeque, PushBack)
             return v;
         }();
 
-        static_assert(v1[0] == 0);
-        static_assert(v1[1] == 1);
-        static_assert(v1[2] == 2);
+        static_assert(v1.at(0) == 0);
+        static_assert(v1.at(1) == 1);
+        static_assert(v1.at(2) == 2);
         static_assert(v1.size() == 3);
 
         constexpr auto v2 = []()
@@ -416,8 +416,8 @@ TEST(FixedDeque, PopBack)
             return v;
         }();
 
-        static_assert(v1[0] == 0);
-        static_assert(v1[1] == 1);
+        static_assert(v1.at(0) == 0);
+        static_assert(v1.at(1) == 1);
         static_assert(v1.size() == 2);
         static_assert(v1.max_size() == 11);
 
@@ -456,9 +456,9 @@ TEST(FixedDeque, PushFront)
             return v;
         }();
 
-        static_assert(v1[0] == 2);
-        static_assert(v1[1] == 1);
-        static_assert(v1[2] == 0);
+        static_assert(v1.at(0) == 2);
+        static_assert(v1.at(1) == 1);
+        static_assert(v1.at(2) == 0);
         static_assert(v1.size() == 3);
 
         constexpr auto v2 = []()
@@ -559,8 +559,8 @@ TEST(FixedDeque, PopFront)
             return v;
         }();
 
-        static_assert(v1[0] == 0);
-        static_assert(v1[1] == 1);
+        static_assert(v1.at(0) == 0);
+        static_assert(v1.at(1) == 1);
         static_assert(v1.size() == 2);
         static_assert(v1.max_size() == 11);
 
@@ -703,8 +703,8 @@ TEST(FixedDeque, Equality)
         EXPECT_NE(v1, v4);
         EXPECT_NE(v1, v5);
 
-        const_ref(v1[0]);
-        const_ref(v2[0]);
+        const_ref(v1.at(0));
+        const_ref(v2.at(0));
     };
 
     run_test(FixedDequeInitialStateFirstIndex{});
@@ -1188,16 +1188,16 @@ TEST(FixedDeque, Resize)
         {
             auto v = Factory::template create<int, 7>({0, 1, 2});
             v.resize(6);
-            v[4] = 100;
+            v.at(4) = 100;
             return v;
         }();
 
-        static_assert(v1[0] == 0);
-        static_assert(v1[1] == 1);
-        static_assert(v1[2] == 2);
-        static_assert(v1[3] == 0);
-        static_assert(v1[4] == 100);
-        static_assert(v1[5] == 0);
+        static_assert(v1.at(0) == 0);
+        static_assert(v1.at(1) == 1);
+        static_assert(v1.at(2) == 2);
+        static_assert(v1.at(3) == 0);
+        static_assert(v1.at(4) == 100);
+        static_assert(v1.at(5) == 0);
         static_assert(v1.size() == 6);
         static_assert(v1.max_size() == 7);
 
@@ -1205,16 +1205,16 @@ TEST(FixedDeque, Resize)
         {
             auto v = Factory::template create<int, 7>({0, 1, 2});
             v.resize(7, 300);
-            v[4] = -100;
+            v.at(4) = -100;
             v.resize(5, 500);
             return v;
         }();
 
-        static_assert(v2[0] == 0);
-        static_assert(v2[1] == 1);
-        static_assert(v2[2] == 2);
-        static_assert(v2[3] == 300);
-        static_assert(v2[4] == -100);
+        static_assert(v2.at(0) == 0);
+        static_assert(v2.at(1) == 1);
+        static_assert(v2.at(2) == 2);
+        static_assert(v2.at(3) == 300);
+        static_assert(v2.at(4) == -100);
         static_assert(v2.size() == 5);
         static_assert(v2.max_size() == 7);
 
@@ -1312,7 +1312,7 @@ TEST(FixedDeque, IterationBasic)
         }
         EXPECT_EQ(ctr, 6);
 
-        const_ref(v[0]);
+        const_ref(v.at(0));
     };
 
     run_test(FixedDequeInitialStateFirstIndex{});

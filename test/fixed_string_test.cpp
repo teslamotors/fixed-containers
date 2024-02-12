@@ -64,13 +64,13 @@ TEST(FixedString, ConstCharPointerConstructor)
 TEST(FixedString, InitializerConstructor)
 {
     constexpr FixedString<3> v1{'7', '9'};
-    static_assert(v1[0] == '7');
-    static_assert(v1[1] == '9');
+    static_assert(v1.at(0) == '7');
+    static_assert(v1.at(1) == '9');
     static_assert(v1.size() == 2);
 
     constexpr FixedString<3> v2{{'6', '5'}};
-    static_assert(v2[0] == '6');
-    static_assert(v2[1] == '5');
+    static_assert(v2.at(0) == '6');
+    static_assert(v2.at(1) == '5');
     static_assert(v2.size() == 2);
 
     EXPECT_EQ(v1, "79");
@@ -674,7 +674,7 @@ TEST(FixedString, IterationBasic)
     }
     EXPECT_EQ(ctr, '6');
 
-    const_ref(v[0]);
+    const_ref(v.at(0));
     const_span_ref(v);
     const_span_of_const_ref(v);
 }
@@ -1009,9 +1009,9 @@ TEST(FixedString, PushBack)
         return v;
     }();
 
-    static_assert(v1[0] == '0');
-    static_assert(v1[1] == '1');
-    static_assert(v1[2] == '2');
+    static_assert(v1.at(0) == '0');
+    static_assert(v1.at(1) == '1');
+    static_assert(v1.at(2) == '2');
     static_assert(v1.size() == 3);
 }
 
@@ -1033,8 +1033,8 @@ TEST(FixedString, PopBack)
         return v;
     }();
 
-    static_assert(v1[0] == '0');
-    static_assert(v1[1] == '1');
+    static_assert(v1.at(0) == '0');
+    static_assert(v1.at(1) == '1');
     static_assert(v1.size() == 2);
     static_assert(v1.max_size() == 11);
 
@@ -1209,8 +1209,8 @@ TEST(FixedString, Equality)
     EXPECT_NE(v1, v4);
     EXPECT_NE(v1, v5);
 
-    const_ref(v1[0]);
-    const_ref(v2[0]);
+    const_ref(v1.at(0));
+    const_ref(v2.at(0));
     const_span_of_const_ref(v1);
     const_span_of_const_ref(v2);
 }
@@ -1454,16 +1454,16 @@ TEST(FixedString, Resize)
     {
         FixedString<7> v{"012"};
         v.resize(6);
-        v[4] = 'a';
+        v.at(4) = 'a';
         return v;
     }();
 
-    static_assert(v1[0] == '0');
-    static_assert(v1[1] == '1');
-    static_assert(v1[2] == '2');
-    static_assert(v1[3] == '\0');
-    static_assert(v1[4] == 'a');
-    static_assert(v1[5] == '\0');
+    static_assert(v1.at(0) == '0');
+    static_assert(v1.at(1) == '1');
+    static_assert(v1.at(2) == '2');
+    static_assert(v1.at(3) == '\0');
+    static_assert(v1.at(4) == 'a');
+    static_assert(v1.at(5) == '\0');
     static_assert(v1.size() == 6);
     static_assert(v1.max_size() == 7);
 
@@ -1471,16 +1471,16 @@ TEST(FixedString, Resize)
     {
         FixedString<7> v{"012"};
         v.resize(7, 'c');
-        v[4] = 'x';
+        v.at(4) = 'x';
         v.resize(5, 'e');
         return v;
     }();
 
-    static_assert(v2[0] == '0');
-    static_assert(v2[1] == '1');
-    static_assert(v2[2] == '2');
-    static_assert(v2[3] == 'c');
-    static_assert(v2[4] == 'x');
+    static_assert(v2.at(0) == '0');
+    static_assert(v2.at(1) == '1');
+    static_assert(v2.at(2) == '2');
+    static_assert(v2.at(3) == 'c');
+    static_assert(v2.at(4) == 'x');
     static_assert(v2.size() == 5);
     static_assert(v2.max_size() == 7);
 
@@ -1531,11 +1531,11 @@ TEST(FixedString, MaxSizeDeduction)
     constexpr auto v1 = make_fixed_string("abcde");
     static_assert(v1.size() == 5);
     static_assert(v1.max_size() == 5);
-    static_assert(v1[0] == 'a');
-    static_assert(v1[1] == 'b');
-    static_assert(v1[2] == 'c');
-    static_assert(v1[3] == 'd');
-    static_assert(v1[4] == 'e');
+    static_assert(v1.at(0) == 'a');
+    static_assert(v1.at(1) == 'b');
+    static_assert(v1.at(2) == 'c');
+    static_assert(v1.at(3) == 'd');
+    static_assert(v1.at(4) == 'e');
 }
 
 TEST(FixedString, ClassTemplateArgumentDeduction)
