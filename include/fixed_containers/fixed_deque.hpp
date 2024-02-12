@@ -431,55 +431,45 @@ public:
         set_size(0);
     }
 
-    constexpr iterator begin() noexcept
-    {
-        return create_iterator(IMPLEMENTATION_DETAIL_DO_NOT_USE_starting_index_and_size_.start);
-    }
+    constexpr iterator begin() noexcept { return create_iterator(starting_index_and_size().start); }
     constexpr const_iterator begin() const noexcept { return cbegin(); }
     constexpr const_iterator cbegin() const noexcept
     {
-        return create_const_iterator(
-            IMPLEMENTATION_DETAIL_DO_NOT_USE_starting_index_and_size_.start);
+        return create_const_iterator(starting_index_and_size().start);
     }
     constexpr iterator end() noexcept
     {
-        return create_iterator(
-            IMPLEMENTATION_DETAIL_DO_NOT_USE_starting_index_and_size_.to_range().end_exclusive());
+        return create_iterator(starting_index_and_size().to_range().end_exclusive());
     }
     constexpr const_iterator end() const noexcept { return cend(); }
     constexpr const_iterator cend() const noexcept
     {
-        return create_const_iterator(
-            IMPLEMENTATION_DETAIL_DO_NOT_USE_starting_index_and_size_.to_range().end_exclusive());
+        return create_const_iterator(starting_index_and_size().to_range().end_exclusive());
     }
 
     constexpr reverse_iterator rbegin() noexcept
     {
-        return create_reverse_iterator(
-            IMPLEMENTATION_DETAIL_DO_NOT_USE_starting_index_and_size_.to_range().end_exclusive());
+        return create_reverse_iterator(starting_index_and_size().to_range().end_exclusive());
     }
     constexpr const_reverse_iterator rbegin() const noexcept { return crbegin(); }
     constexpr const_reverse_iterator crbegin() const noexcept
     {
-        return create_const_reverse_iterator(
-            IMPLEMENTATION_DETAIL_DO_NOT_USE_starting_index_and_size_.to_range().end_exclusive());
+        return create_const_reverse_iterator(starting_index_and_size().to_range().end_exclusive());
     }
     constexpr reverse_iterator rend() noexcept
     {
-        return create_reverse_iterator(
-            IMPLEMENTATION_DETAIL_DO_NOT_USE_starting_index_and_size_.start);
+        return create_reverse_iterator(starting_index_and_size().start);
     }
     constexpr const_reverse_iterator rend() const noexcept { return crend(); }
     constexpr const_reverse_iterator crend() const noexcept
     {
-        return create_const_reverse_iterator(
-            IMPLEMENTATION_DETAIL_DO_NOT_USE_starting_index_and_size_.start);
+        return create_const_reverse_iterator(starting_index_and_size().start);
     }
 
     [[nodiscard]] constexpr std::size_t max_size() const noexcept { return static_max_size(); }
     [[nodiscard]] constexpr std::size_t size() const noexcept
     {
-        return IMPLEMENTATION_DETAIL_DO_NOT_USE_starting_index_and_size_.distance;
+        return starting_index_and_size().distance;
     }
     [[nodiscard]] constexpr bool empty() const noexcept { return size() == 0; }
 
@@ -660,34 +650,26 @@ private:
     constexpr iterator create_iterator(const std::size_t offset_from_start) noexcept
     {
         return iterator{
-            ReferenceProvider<false>{&IMPLEMENTATION_DETAIL_DO_NOT_USE_array_,
-                                     &IMPLEMENTATION_DETAIL_DO_NOT_USE_starting_index_and_size_,
-                                     offset_from_start}};
+            ReferenceProvider<false>{&array(), &starting_index_and_size(), offset_from_start}};
     }
     constexpr const_iterator create_const_iterator(
         const std::size_t offset_from_start) const noexcept
     {
         return const_iterator{
-            ReferenceProvider<true>{&IMPLEMENTATION_DETAIL_DO_NOT_USE_array_,
-                                    &IMPLEMENTATION_DETAIL_DO_NOT_USE_starting_index_and_size_,
-                                    offset_from_start}};
+            ReferenceProvider<true>{&array(), &starting_index_and_size(), offset_from_start}};
     }
 
     constexpr reverse_iterator create_reverse_iterator(const std::size_t offset_from_start) noexcept
     {
         return reverse_iterator{
-            ReferenceProvider<false>{&IMPLEMENTATION_DETAIL_DO_NOT_USE_array_,
-                                     &IMPLEMENTATION_DETAIL_DO_NOT_USE_starting_index_and_size_,
-                                     offset_from_start}};
+            ReferenceProvider<false>{&array(), &starting_index_and_size(), offset_from_start}};
     }
 
     constexpr const_reverse_iterator create_const_reverse_iterator(
         const std::size_t offset_from_start) const noexcept
     {
         return const_reverse_iterator{
-            ReferenceProvider<true>{&IMPLEMENTATION_DETAIL_DO_NOT_USE_array_,
-                                    &IMPLEMENTATION_DETAIL_DO_NOT_USE_starting_index_and_size_,
-                                    offset_from_start}};
+            ReferenceProvider<true>{&array(), &starting_index_and_size(), offset_from_start}};
     }
 
 private:
@@ -713,8 +695,7 @@ private:
 
     [[nodiscard]] constexpr std::size_t front_index() const
     {
-        return decrement_index_with_wraparound(
-            IMPLEMENTATION_DETAIL_DO_NOT_USE_starting_index_and_size_.start, STARTING_OFFSET);
+        return decrement_index_with_wraparound(starting_index_and_size().start, STARTING_OFFSET);
     }
     [[nodiscard]] constexpr std::size_t back_index() const
     {
@@ -725,39 +706,38 @@ private:
         return increment_index_with_wraparound(front_index(), size());
     }
 
+    constexpr const Array& array() const { return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_; }
+    constexpr Array& array() { return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_; }
+    constexpr const StartingIntegerAndDistance& starting_index_and_size() const
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_starting_index_and_size_;
+    }
+    constexpr StartingIntegerAndDistance& starting_index_and_size()
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_starting_index_and_size_;
+    }
+
     constexpr void increment_start(const std::size_t n = 1)
     {
-        IMPLEMENTATION_DETAIL_DO_NOT_USE_starting_index_and_size_.start += n;
+        starting_index_and_size().start += n;
     }
     constexpr void decrement_start(const std::size_t n = 1)
     {
-        IMPLEMENTATION_DETAIL_DO_NOT_USE_starting_index_and_size_.start -= n;
+        starting_index_and_size().start -= n;
     }
-    constexpr void set_start(const std::size_t start)
-    {
-        IMPLEMENTATION_DETAIL_DO_NOT_USE_starting_index_and_size_.start = start;
-    }
+    constexpr void set_start(const std::size_t start) { starting_index_and_size().start = start; }
     constexpr void increment_size(const std::size_t n = 1)
     {
-        IMPLEMENTATION_DETAIL_DO_NOT_USE_starting_index_and_size_.distance += n;
+        starting_index_and_size().distance += n;
     }
     constexpr void decrement_size(const std::size_t n = 1)
     {
-        IMPLEMENTATION_DETAIL_DO_NOT_USE_starting_index_and_size_.distance -= n;
+        starting_index_and_size().distance -= n;
     }
-    constexpr void set_size(const std::size_t size)
-    {
-        IMPLEMENTATION_DETAIL_DO_NOT_USE_starting_index_and_size_.distance = size;
-    }
+    constexpr void set_size(const std::size_t size) { starting_index_and_size().distance = size; }
 
-    constexpr const OptionalT& array_unchecked_at(const std::size_t i) const
-    {
-        return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_[i];
-    }
-    constexpr OptionalT& array_unchecked_at(const std::size_t i)
-    {
-        return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_[i];
-    }
+    constexpr const OptionalT& array_unchecked_at(const std::size_t i) const { return array()[i]; }
+    constexpr OptionalT& array_unchecked_at(const std::size_t i) { return array()[i]; }
     constexpr const T& unchecked_at(const std::size_t i) const
     {
         return optional_storage_detail::get(array_unchecked_at(i));

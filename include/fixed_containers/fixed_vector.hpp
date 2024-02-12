@@ -103,6 +103,7 @@ class FixedVectorBase
     static_assert(std::same_as<std::remove_cv_t<T>, T>,
                   "Vector must have a non-const, non-volatile value_type");
     using Checking = CheckingType;
+    using Array = std::array<OptionalT, MAXIMUM_SIZE>;
 
     struct Mapper
     {
@@ -118,12 +119,11 @@ class FixedVectorBase
     };
 
     template <IteratorConstness CONSTNESS>
-    using IteratorImpl = RandomAccessIteratorTransformer<
-        typename std::array<OptionalT, MAXIMUM_SIZE>::const_iterator,
-        typename std::array<OptionalT, MAXIMUM_SIZE>::iterator,
-        Mapper,
-        Mapper,
-        CONSTNESS>;
+    using IteratorImpl = RandomAccessIteratorTransformer<typename Array::const_iterator,
+                                                         typename Array::iterator,
+                                                         Mapper,
+                                                         Mapper,
+                                                         CONSTNESS>;
 
 public:
     using value_type = T;
@@ -153,7 +153,7 @@ private:
 
 public:  // Public so this type is a structural type and can thus be used in template parameters
     std::size_t IMPLEMENTATION_DETAIL_DO_NOT_USE_size_;
-    std::array<OptionalT, MAXIMUM_SIZE> IMPLEMENTATION_DETAIL_DO_NOT_USE_array_;
+    Array IMPLEMENTATION_DETAIL_DO_NOT_USE_array_;
 
 public:
     constexpr FixedVectorBase() noexcept
@@ -167,7 +167,7 @@ public:
         {
             if (std::is_constant_evaluated())
             {
-                std::construct_at(&IMPLEMENTATION_DETAIL_DO_NOT_USE_array_);
+                std::construct_at(&array());
             }
         }
     }
@@ -491,13 +491,10 @@ public:
         return unchecked_at(back_index());
     }
 
-    constexpr value_type* data() noexcept
-    {
-        return &optional_storage_detail::get(*IMPLEMENTATION_DETAIL_DO_NOT_USE_array_.data());
-    }
+    constexpr value_type* data() noexcept { return &optional_storage_detail::get(*array().data()); }
     constexpr const value_type* data() const noexcept
     {
-        return &optional_storage_detail::get(*IMPLEMENTATION_DETAIL_DO_NOT_USE_array_.data());
+        return &optional_storage_detail::get(*array().data());
     }
 
     /**
@@ -665,16 +662,16 @@ private:
 
     constexpr iterator create_iterator(const std::size_t offset_from_start) noexcept
     {
-        auto array_it = std::next(std::begin(IMPLEMENTATION_DETAIL_DO_NOT_USE_array_),
-                                  static_cast<difference_type>(offset_from_start));
+        auto array_it =
+            std::next(std::begin(array()), static_cast<difference_type>(offset_from_start));
         return iterator{array_it, Mapper{}};
     }
 
     constexpr const_iterator create_const_iterator(
         const std::size_t offset_from_start) const noexcept
     {
-        auto array_it = std::next(std::begin(IMPLEMENTATION_DETAIL_DO_NOT_USE_array_),
-                                  static_cast<difference_type>(offset_from_start));
+        auto array_it =
+            std::next(std::begin(array()), static_cast<difference_type>(offset_from_start));
         return const_iterator{array_it, Mapper{}};
     }
 
@@ -703,6 +700,9 @@ private:
     [[nodiscard]] constexpr std::size_t back_index() const { return end_index() - 1; }
     [[nodiscard]] constexpr std::size_t end_index() const { return size(); }
 
+    constexpr const Array& array() const { return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_; }
+    constexpr Array& array() { return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_; }
+
     constexpr void increment_size(const std::size_t n = 1)
     {
         IMPLEMENTATION_DETAIL_DO_NOT_USE_size_ += n;
@@ -715,14 +715,8 @@ private:
     {
         IMPLEMENTATION_DETAIL_DO_NOT_USE_size_ = size;
     }
-    constexpr const OptionalT& array_unchecked_at(const std::size_t i) const
-    {
-        return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_[i];
-    }
-    constexpr OptionalT& array_unchecked_at(const std::size_t i)
-    {
-        return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_[i];
-    }
+    constexpr const OptionalT& array_unchecked_at(const std::size_t i) const { return array()[i]; }
+    constexpr OptionalT& array_unchecked_at(const std::size_t i) { return array()[i]; }
     constexpr const T& unchecked_at(const std::size_t i) const
     {
         return optional_storage_detail::get(array_unchecked_at(i));
