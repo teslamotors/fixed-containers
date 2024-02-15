@@ -230,7 +230,7 @@ TEST(FixedDeque, PushBack_ExceedsCapacity)
 {
     auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
     {
-        FixedDeque<int, 2> v{};
+        auto v = Factory::template create<int, 2>();
         v.push_back(0);
         const char value = 1;
         v.push_back(value);
@@ -290,7 +290,7 @@ TEST(FixedDeque, EmplaceBack_ExceedsCapacity)
 {
     auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
     {
-        FixedDeque<int, 2> v{};
+        auto v = Factory::template create<int, 2>();
         v.emplace_back(0);
         v.emplace_back(1);
         EXPECT_DEATH(v.emplace_back(2), "");
@@ -478,7 +478,7 @@ TEST(FixedDeque, PushFront_ExceedsCapacity)
 {
     auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
     {
-        FixedDeque<int, 2> v{};
+        auto v = Factory::template create<int, 2>();
         v.push_front(0);
         const char value = 1;
         v.push_front(value);
@@ -538,7 +538,7 @@ TEST(FixedDeque, EmplaceFront_ExceedsCapacity)
 {
     auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
     {
-        FixedDeque<int, 2> v{};
+        auto v = Factory::template create<int, 2>();
         v.emplace_front(0);
         v.emplace_front(1);
         EXPECT_DEATH(v.emplace_front(2), "");
@@ -1363,7 +1363,7 @@ TEST(FixedDeque, Emplace_ExceedsCapacity)
 {
     auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
     {
-        FixedDeque<int, 2> v{};
+        auto v = Factory::template create<int, 2>();
         v.emplace(v.begin(), 0);
         v.emplace(v.begin(), 1);
         EXPECT_DEATH(v.emplace(v.begin(), 2), "");
