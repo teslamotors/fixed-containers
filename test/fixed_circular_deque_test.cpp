@@ -602,18 +602,18 @@ TEST(FixedCircularDeque, PopFront)
         constexpr auto v1 = []()
         {
             auto v = Factory::template create<int, 11>({0, 1, 2});
-            v.pop_back();
+            v.pop_front();
             return v;
         }();
 
-        static_assert(v1.at(0) == 0);
-        static_assert(v1.at(1) == 1);
+        static_assert(v1.at(0) == 1);
+        static_assert(v1.at(1) == 2);
         static_assert(v1.size() == 2);
         static_assert(v1.max_size() == 11);
 
         auto v2 = Factory::template create<int, 17>({10, 11, 12});
-        v2.pop_back();
-        EXPECT_TRUE(std::ranges::equal(v2, std::array{10, 11}));
+        v2.pop_front();
+        EXPECT_TRUE(std::ranges::equal(v2, std::array{11, 12}));
     };
 
     run_test(FixedCircularDequeInitialStateFirstIndex{});
