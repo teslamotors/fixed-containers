@@ -484,40 +484,14 @@ public:
             }
         }
 
-        if (this->size() != other.size())
-        {
-            return false;
-        }
-
-        for (std::size_t i = 0; i < this->size(); i++)
-        {
-            if (this->at(i) != other.at(i))
-            {
-                return false;
-            }
-        }
-
-        return true;
+        return std::ranges::equal(*this, other);
     }
 
     template <std::size_t MAXIMUM_SIZE_2, customize::SequenceContainerChecking CheckingType2>
     constexpr auto operator<=>(const FixedDequeBase<T, MAXIMUM_SIZE_2, CheckingType2>& other) const
     {
-        using OrderingType = decltype(std::declval<T>() <=> std::declval<T>());
-        const std::size_t min_size = (std::min)(this->size(), other.size());
-        for (std::size_t i = 0; i < min_size; i++)
-        {
-            if (at(i) < other.at(i))
-            {
-                return OrderingType::less;
-            }
-            if (at(i) > other.at(i))
-            {
-                return OrderingType::greater;
-            }
-        }
-
-        return this->size() <=> other.size();
+        return std::lexicographical_compare_three_way(
+            cbegin(), cend(), other.cbegin(), other.cend());
     }
 
     constexpr reference operator[](size_type i) noexcept
