@@ -23,7 +23,6 @@ static_assert(NotTrivial<FixedStringType>);
 static_assert(StandardLayout<FixedStringType>);
 static_assert(IsStructuralType<FixedStringType>);
 
-void const_ref(const int&) {}
 void const_span_ref(const std::span<char>&) {}
 void const_span_of_const_ref(const std::span<const char>&) {}
 
@@ -670,7 +669,6 @@ TEST(FixedString, IterationBasic)
     }
     EXPECT_EQ(ctr, '6');
 
-    const_ref(v.at(0));
     const_span_ref(v);
     const_span_of_const_ref(v);
 }
@@ -1199,8 +1197,6 @@ TEST(FixedString, Equality)
     EXPECT_NE(v1, v4);
     EXPECT_NE(v1, v5);
 
-    const_ref(v1.at(0));
-    const_ref(v2.at(0));
     const_span_of_const_ref(v1);
     const_span_of_const_ref(v2);
 }

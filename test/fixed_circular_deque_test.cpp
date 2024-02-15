@@ -26,8 +26,6 @@ static_assert(StandardLayout<CircularDequeType>);
 static_assert(IsStructuralType<CircularDequeType>);
 }  // namespace trivially_copyable_vector
 
-void const_ref(const int&) {}
-
 struct ComplexStruct
 {
     constexpr ComplexStruct(int param_a, int param_b1, int param_b2, int param_c)
@@ -630,8 +628,6 @@ TEST(FixedCircularDeque, BracketOperator)
         static_assert(v1[2] == 102);
         static_assert(v1.size() == 3);
 
-        const_ref(v1[0]);
-
         auto v2 = Factory::template create<int, 11>({0, 1, 2});
         v2[1] = 901;
         EXPECT_EQ(v2[0], 0);
@@ -668,8 +664,6 @@ TEST(FixedCircularDeque, At)
         static_assert(v1.at(1) == 201);
         static_assert(v1.at(2) == 102);
         static_assert(v1.size() == 3);
-
-        const_ref(v1.at(0));
 
         auto v2 = Factory::template create<int, 11>({0, 1, 2});
         v2.at(1) = 901;
@@ -726,9 +720,6 @@ TEST(FixedCircularDeque, Equality)
         EXPECT_NE(v1, v3);
         EXPECT_NE(v1, v4);
         EXPECT_NE(v1, v5);
-
-        const_ref(v1.at(0));
-        const_ref(v2.at(0));
     };
 
     run_test(FixedCircularDequeInitialStateFirstIndex{});
@@ -1323,8 +1314,6 @@ TEST(FixedCircularDeque, IterationBasic)
             ctr += 2;
         }
         EXPECT_EQ(ctr, 6);
-
-        const_ref(v.at(0));
     };
 
     run_test(FixedCircularDequeInitialStateFirstIndex{});

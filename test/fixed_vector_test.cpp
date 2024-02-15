@@ -114,7 +114,6 @@ static_assert(
     std::is_same_v<typename std::pointer_traits<VecType::const_iterator>::element_type, const T>);
 }  // namespace not_trivially_copyable_vector
 
-void const_ref(const int&) {}
 void const_span_ref(const std::span<int>&) {}
 void const_span_of_const_ref(const std::span<const int>&) {}
 
@@ -653,7 +652,6 @@ TEST(FixedVector, BracketOperator)
         static_assert(v1[2] == 102);
         static_assert(v1.size() == 3);
 
-        const_ref(v1[0]);
         const_span_of_const_ref(v1);
 
         auto v2 = FixedVector<int, 11>{0, 1, 2};
@@ -688,7 +686,6 @@ TEST(FixedVector, At)
     static_assert(v1.at(2) == 102);
     static_assert(v1.size() == 3);
 
-    const_ref(v1.at(0));
     const_span_of_const_ref(v1);
 
     auto v2 = FixedVector<int, 11>{0, 1, 2};
@@ -735,8 +732,6 @@ TEST(FixedVector, Equality)
     EXPECT_NE(v1, v4);
     EXPECT_NE(v1, v5);
 
-    const_ref(v1.at(0));
-    const_ref(v2.at(0));
     const_span_of_const_ref(v1);
     const_span_of_const_ref(v2);
 }
@@ -1130,7 +1125,6 @@ TEST(FixedVector, IterationBasic)
     }
     EXPECT_EQ(ctr, 6);
 
-    const_ref(v.at(0));
     const_span_ref(v);
     const_span_of_const_ref(v);
 }
