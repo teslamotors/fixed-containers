@@ -668,9 +668,6 @@ TEST(FixedString, IterationBasic)
         ctr += 2;
     }
     EXPECT_EQ(ctr, '6');
-
-    const_span_ref(v);
-    const_span_of_const_ref(v);
 }
 
 TEST(FixedString, Empty)
@@ -1196,9 +1193,6 @@ TEST(FixedString, Equality)
     EXPECT_NE(v1, v3);
     EXPECT_NE(v1, v4);
     EXPECT_NE(v1, v5);
-
-    const_span_of_const_ref(v1);
-    const_span_of_const_ref(v2);
 }
 
 TEST(FixedString, Equality_NonFixedString)
@@ -1497,6 +1491,48 @@ TEST(FixedString, Full)
     static_assert(v1.max_size() == 4);
 
     EXPECT_TRUE(is_full(v1));
+}
+
+TEST(FixedString, Span)
+{
+    {
+        constexpr auto v1 = []()
+        {
+            FixedString<7> v{'0', '1', '2'};
+            return v;
+        }();
+
+        std::span<const char> as_span{v1};
+        ASSERT_EQ(3, as_span.size());
+        ASSERT_EQ('0', as_span[0]);
+        ASSERT_EQ('1', as_span[1]);
+        ASSERT_EQ('2', as_span[2]);
+    }
+    {
+        auto v1 = []()
+        {
+            FixedString<7> v{'0', '1', '2'};
+            return v;
+        }();
+
+        std::span<const char> as_span{v1};
+        ASSERT_EQ(3, as_span.size());
+        ASSERT_EQ('0', as_span[0]);
+        ASSERT_EQ('1', as_span[1]);
+        ASSERT_EQ('2', as_span[2]);
+    }
+
+    {
+        std::string v1{};
+        std::span<const char> as_span_const{v1};
+        std::span<char> as_span_non_cost{v1};
+    }
+
+    {
+        FixedString<7> v{'0', '1', '2'};
+        const_span_ref(v);
+        const_span_of_const_ref(v);
+    }
 }
 
 TEST(FixedString, MaxSizeDeduction)

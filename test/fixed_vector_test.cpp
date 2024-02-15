@@ -652,8 +652,6 @@ TEST(FixedVector, BracketOperator)
         static_assert(v1[2] == 102);
         static_assert(v1.size() == 3);
 
-        const_span_of_const_ref(v1);
-
         auto v2 = FixedVector<int, 11>{0, 1, 2};
         v2[1] = 901;
         EXPECT_EQ(v2[0], 0);
@@ -685,8 +683,6 @@ TEST(FixedVector, At)
     static_assert(v1.at(1) == 201);
     static_assert(v1.at(2) == 102);
     static_assert(v1.size() == 3);
-
-    const_span_of_const_ref(v1);
 
     auto v2 = FixedVector<int, 11>{0, 1, 2};
     v2.at(1) = 901;
@@ -731,9 +727,6 @@ TEST(FixedVector, Equality)
     EXPECT_NE(v1, v3);
     EXPECT_NE(v1, v4);
     EXPECT_NE(v1, v5);
-
-    const_span_of_const_ref(v1);
-    const_span_of_const_ref(v2);
 }
 
 TEST(FixedVector, Comparison)
@@ -1124,9 +1117,6 @@ TEST(FixedVector, IterationBasic)
         ctr += 2;
     }
     EXPECT_EQ(ctr, 6);
-
-    const_span_ref(v);
-    const_span_of_const_ref(v);
 }
 
 TEST(FixedVector, Resize)
@@ -1253,6 +1243,12 @@ TEST(FixedVector, Span)
         std::vector<int> v1{};
         std::span<const int> as_span_const{v1};
         std::span<int> as_span_non_cost{v1};
+    }
+
+    {
+        FixedVector<int, 7> v{0, 1, 2};
+        const_span_ref(v);
+        const_span_of_const_ref(v);
     }
 }
 
