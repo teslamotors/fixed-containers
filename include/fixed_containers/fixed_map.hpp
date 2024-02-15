@@ -638,12 +638,7 @@ public:
             }
         }
 
-        if (this->size() != other.size())
-        {
-            return false;
-        }
-
-        return std::equal(cbegin(), cend(), other.cbegin());
+        return std::ranges::equal(*this, other);
     }
 
 private:
