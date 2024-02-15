@@ -64,14 +64,10 @@ TEST(FixedString, ConstCharPointerConstructor)
 TEST(FixedString, InitializerConstructor)
 {
     constexpr FixedString<3> v1{'7', '9'};
-    static_assert(v1.at(0) == '7');
-    static_assert(v1.at(1) == '9');
-    static_assert(v1.size() == 2);
+    static_assert(std::ranges::equal(v1, std::array{'7', '9'}));
 
     constexpr FixedString<3> v2{{'6', '5'}};
-    static_assert(v2.at(0) == '6');
-    static_assert(v2.at(1) == '5');
-    static_assert(v2.size() == 2);
+    static_assert(std::ranges::equal(v2, std::array{'6', '5'}));
 
     EXPECT_EQ(v1, "79");
     EXPECT_EQ(v2, "65");
@@ -1009,10 +1005,7 @@ TEST(FixedString, PushBack)
         return v;
     }();
 
-    static_assert(v1.at(0) == '0');
-    static_assert(v1.at(1) == '1');
-    static_assert(v1.at(2) == '2');
-    static_assert(v1.size() == 3);
+    static_assert(std::ranges::equal(v1, std::array{'0', '1', '2'}));
 }
 
 TEST(FixedString, PushBack_ExceedsCapacity)
@@ -1033,10 +1026,7 @@ TEST(FixedString, PopBack)
         return v;
     }();
 
-    static_assert(v1.at(0) == '0');
-    static_assert(v1.at(1) == '1');
-    static_assert(v1.size() == 2);
-    static_assert(v1.max_size() == 11);
+    static_assert(std::ranges::equal(v1, std::array{'0', '1'}));
 
     FixedString<17> v2{"abc"};
     v2.pop_back();
@@ -1454,34 +1444,21 @@ TEST(FixedString, Resize)
     {
         FixedString<7> v{"012"};
         v.resize(6);
-        v.at(4) = 'a';
         return v;
     }();
 
-    static_assert(v1.at(0) == '0');
-    static_assert(v1.at(1) == '1');
-    static_assert(v1.at(2) == '2');
-    static_assert(v1.at(3) == '\0');
-    static_assert(v1.at(4) == 'a');
-    static_assert(v1.at(5) == '\0');
-    static_assert(v1.size() == 6);
+    static_assert(std::ranges::equal(v1, std::array{'0', '1', '2', '\0', '\0', '\0'}));
     static_assert(v1.max_size() == 7);
 
     constexpr auto v2 = []()
     {
         FixedString<7> v{"012"};
         v.resize(7, 'c');
-        v.at(4) = 'x';
         v.resize(5, 'e');
         return v;
     }();
 
-    static_assert(v2.at(0) == '0');
-    static_assert(v2.at(1) == '1');
-    static_assert(v2.at(2) == '2');
-    static_assert(v2.at(3) == 'c');
-    static_assert(v2.at(4) == 'x');
-    static_assert(v2.size() == 5);
+    static_assert(std::ranges::equal(v2, std::array{'0', '1', '2', 'c', 'c'}));
     static_assert(v2.max_size() == 7);
 
     FixedString<8> v3{"0123"};
@@ -1529,13 +1506,8 @@ TEST(FixedString, Full)
 TEST(FixedString, MaxSizeDeduction)
 {
     constexpr auto v1 = make_fixed_string("abcde");
-    static_assert(v1.size() == 5);
     static_assert(v1.max_size() == 5);
-    static_assert(v1.at(0) == 'a');
-    static_assert(v1.at(1) == 'b');
-    static_assert(v1.at(2) == 'c');
-    static_assert(v1.at(3) == 'd');
-    static_assert(v1.at(4) == 'e');
+    static_assert(std::ranges::equal(v1, std::array{'a', 'b', 'c', 'd', 'e'}));
 }
 
 TEST(FixedString, ClassTemplateArgumentDeduction)

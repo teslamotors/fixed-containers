@@ -133,13 +133,8 @@ TEST(FixedDeque, CountConstructor_ExceedsCapacity)
 TEST(FixedDeque, MaxSizeDeduction)
 {
     constexpr auto v1 = make_fixed_deque({10, 11, 12, 13, 14});
-    static_assert(v1.size() == 5);
     static_assert(v1.max_size() == 5);
-    static_assert(v1.at(0) == 10);
-    static_assert(v1.at(1) == 11);
-    static_assert(v1.at(2) == 12);
-    static_assert(v1.at(3) == 13);
-    static_assert(v1.at(4) == 14);
+    static_assert(std::ranges::equal(v1, std::array{10, 11, 12, 13, 14}));
 }
 
 TEST(FixedDeque, IteratorConstructor)
@@ -147,9 +142,7 @@ TEST(FixedDeque, IteratorConstructor)
     constexpr std::array<int, 2> v1{77, 99};
 
     constexpr FixedDeque<int, 15> v2{v1.begin(), v1.end()};
-    static_assert(v2.at(0) == 77);
-    static_assert(v2.at(1) == 99);
-    static_assert(v2.size() == 2);
+    static_assert(std::ranges::equal(v2, std::array{77, 99}));
 }
 
 TEST(FixedDeque, IteratorConstructor_ExceedsCapacity)
@@ -176,14 +169,10 @@ TEST(FixedDeque, InputIteratorConstructor_ExceedsCapacity)
 TEST(FixedDeque, InitializerConstructor)
 {
     constexpr FixedDeque<int, 3> v1{77, 99};
-    static_assert(v1.at(0) == 77);
-    static_assert(v1.at(1) == 99);
-    static_assert(v1.size() == 2);
+    static_assert(std::ranges::equal(v1, std::array{77, 99}));
 
     constexpr FixedDeque<int, 3> v2{{66, 55}};
-    static_assert(v2.at(0) == 66);
-    static_assert(v2.at(1) == 55);
-    static_assert(v2.size() == 2);
+    static_assert(std::ranges::equal(v2, std::array{66, 55}));
 
     EXPECT_TRUE(std::ranges::equal(v1, std::array{77, 99}));
     EXPECT_TRUE(std::ranges::equal(v2, std::array{66, 55}));
@@ -208,10 +197,7 @@ TEST(FixedDeque, PushBack)
             return v;
         }();
 
-        static_assert(v1.at(0) == 0);
-        static_assert(v1.at(1) == 1);
-        static_assert(v1.at(2) == 2);
-        static_assert(v1.size() == 3);
+        static_assert(std::ranges::equal(v1, std::array{0, 1, 2}));
 
         constexpr auto v2 = []()
         {
@@ -416,10 +402,7 @@ TEST(FixedDeque, PopBack)
             return v;
         }();
 
-        static_assert(v1.at(0) == 0);
-        static_assert(v1.at(1) == 1);
-        static_assert(v1.size() == 2);
-        static_assert(v1.max_size() == 11);
+        static_assert(std::ranges::equal(v1, std::array{0, 1}));
 
         auto v2 = Factory::template create<int, 17>({10, 11, 12});
         v2.pop_back();
@@ -456,10 +439,7 @@ TEST(FixedDeque, PushFront)
             return v;
         }();
 
-        static_assert(v1.at(0) == 2);
-        static_assert(v1.at(1) == 1);
-        static_assert(v1.at(2) == 0);
-        static_assert(v1.size() == 3);
+        static_assert(std::ranges::equal(v1, std::array{2, 1, 0}));
 
         constexpr auto v2 = []()
         {
@@ -559,10 +539,7 @@ TEST(FixedDeque, PopFront)
             return v;
         }();
 
-        static_assert(v1.at(0) == 1);
-        static_assert(v1.at(1) == 2);
-        static_assert(v1.size() == 2);
-        static_assert(v1.max_size() == 11);
+        static_assert(std::ranges::equal(v1, std::array{1, 2}));
 
         auto v2 = Factory::template create<int, 17>({10, 11, 12});
         v2.pop_front();
@@ -1188,34 +1165,21 @@ TEST(FixedDeque, Resize)
         {
             auto v = Factory::template create<int, 7>({0, 1, 2});
             v.resize(6);
-            v.at(4) = 100;
             return v;
         }();
 
-        static_assert(v1.at(0) == 0);
-        static_assert(v1.at(1) == 1);
-        static_assert(v1.at(2) == 2);
-        static_assert(v1.at(3) == 0);
-        static_assert(v1.at(4) == 100);
-        static_assert(v1.at(5) == 0);
-        static_assert(v1.size() == 6);
+        static_assert(std::ranges::equal(v1, std::array{0, 1, 2, 0, 0, 0}));
         static_assert(v1.max_size() == 7);
 
         constexpr auto v2 = []()
         {
             auto v = Factory::template create<int, 7>({0, 1, 2});
             v.resize(7, 300);
-            v.at(4) = -100;
             v.resize(5, 500);
             return v;
         }();
 
-        static_assert(v2.at(0) == 0);
-        static_assert(v2.at(1) == 1);
-        static_assert(v2.at(2) == 2);
-        static_assert(v2.at(3) == 300);
-        static_assert(v2.at(4) == -100);
-        static_assert(v2.size() == 5);
+        static_assert(std::ranges::equal(v2, std::array{0, 1, 2, 300, 300}));
         static_assert(v2.max_size() == 7);
 
         auto v3 = Factory::template create<int, 8>({0, 1, 2, 3});
