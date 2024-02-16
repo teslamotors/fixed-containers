@@ -79,7 +79,7 @@ public:
     {
         if constexpr (DIRECTION == IteratorDirection::REVERSE)
         {
-            advance();
+            operator++();
         }
     }
 
@@ -106,27 +106,41 @@ public:
 
     constexpr Self& operator++() noexcept
     {
-        advance();
+        if constexpr (DIRECTION == IteratorDirection::FORWARD)
+        {
+            reference_provider_.advance();
+        }
+        else
+        {
+            reference_provider_.recede();
+        }
         return *this;
     }
 
     constexpr Self operator++(int) & noexcept
     {
         Self tmp = *this;
-        advance();
+        operator++();
         return tmp;
     }
 
     constexpr Self& operator--() noexcept
     {
-        recede();
+        if constexpr (DIRECTION == IteratorDirection::FORWARD)
+        {
+            reference_provider_.recede();
+        }
+        else
+        {
+            reference_provider_.advance();
+        }
         return *this;
     }
 
     constexpr Self operator--(int) & noexcept
     {
         Self tmp = *this;
-        recede();
+        operator--();
         return tmp;
     }
 
@@ -146,30 +160,6 @@ public:
         ReverseBase out{reference_provider_};
         ++out;
         return out;
-    }
-
-private:
-    constexpr void advance() noexcept
-    {
-        if constexpr (DIRECTION == IteratorDirection::FORWARD)
-        {
-            reference_provider_.advance();
-        }
-        else
-        {
-            reference_provider_.recede();
-        }
-    }
-    constexpr void recede() noexcept
-    {
-        if constexpr (DIRECTION == IteratorDirection::FORWARD)
-        {
-            reference_provider_.recede();
-        }
-        else
-        {
-            reference_provider_.advance();
-        }
     }
 };
 
