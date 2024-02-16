@@ -409,8 +409,8 @@ template <typename K>
 }
 
 template <InputIterator InputIt>
-EnumSet(InputIt first, InputIt last) noexcept
-    -> EnumSet<typename std::iterator_traits<InputIt>::value_type>;
+EnumSet(InputIt first,
+        InputIt last) noexcept -> EnumSet<typename std::iterator_traits<InputIt>::value_type>;
 
 template <class K, class Predicate>
 constexpr typename EnumSet<K>::size_type erase_if(EnumSet<K>& c, Predicate predicate)

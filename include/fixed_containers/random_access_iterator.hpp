@@ -14,15 +14,9 @@ concept RandomAccessEntryProvider = requires(P p, P other, std::size_t unsigned_
     p.advance(unsigned_integer);
     p.recede(unsigned_integer);
     p.get();
-    {
-        p == other
-    } -> std::same_as<bool>;
-    {
-        p <=> other
-    };
-    {
-        p - other
-    } -> std::same_as<std::ptrdiff_t>;
+    { p == other } -> std::same_as<bool>;
+    { p <=> other };
+    { p - other } -> std::same_as<std::ptrdiff_t>;
 };
 
 template <RandomAccessEntryProvider ConstEntryProvider,

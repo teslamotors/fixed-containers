@@ -15,9 +15,7 @@ concept BidirectionalEntryProvider = DefaultConstructible<P> && requires(P p, P 
     p.advance();
     p.recede();
     p.get();
-    {
-        p == other
-    } -> std::same_as<bool>;
+    { p == other } -> std::same_as<bool>;
 };
 
 template <BidirectionalEntryProvider ConstEntryProvider,
