@@ -11,7 +11,6 @@
 
 #include <algorithm>
 #include <deque>
-#include <span>
 
 namespace fixed_containers
 {
