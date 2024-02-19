@@ -530,7 +530,6 @@ template <typename T,
 struct tuple_size<fixed_containers::FixedCircularDeque<T, MAXIMUM_SIZE, CheckingType>>
   : std::integral_constant<std::size_t, 0>
 {
-    static_assert(fixed_containers::AlwaysFalseV<T, decltype(MAXIMUM_SIZE), CheckingType>,
-                  "Implicit Structured Binding due to the fields being public is disabled");
+    // Implicit Structured Binding due to the fields being public is disabled
 };
 }  // namespace std

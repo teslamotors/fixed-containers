@@ -536,9 +536,6 @@ struct tuple_size<
         FixedSet<K, MAXIMUM_SIZE, Compare, COMPACTNESS, StorageTemplate, CheckingType>>
   : std::integral_constant<std::size_t, 0>
 {
-    static_assert(
-        fixed_containers::
-            AlwaysFalseV<K, decltype(MAXIMUM_SIZE), Compare, decltype(COMPACTNESS), CheckingType>,
-        "Implicit Structured Binding due to the fields being public is disabled");
+    // Implicit Structured Binding due to the fields being public is disabled
 };
 }  // namespace std
