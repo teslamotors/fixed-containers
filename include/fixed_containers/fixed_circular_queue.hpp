@@ -2,10 +2,10 @@
 
 #include "fixed_containers/concepts.hpp"
 #include "fixed_containers/fixed_circular_deque.hpp"
+#include "fixed_containers/max_size.hpp"
 #include "fixed_containers/queue_adapter.hpp"
 #include "fixed_containers/sequence_container_checking.hpp"
 #include "fixed_containers/source_location.hpp"
-#include "fixed_containers/max_size.hpp"
 
 namespace fixed_containers
 {
