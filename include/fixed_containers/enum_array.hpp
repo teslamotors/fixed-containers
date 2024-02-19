@@ -179,7 +179,6 @@ namespace std
 template <typename L, typename T>
 struct tuple_size<fixed_containers::EnumArray<L, T>> : std::integral_constant<std::size_t, 0>
 {
-    static_assert(fixed_containers::AlwaysFalseV<L, T>,
-                  "Implicit Structured Binding due to the fields being public is disabled");
+    // Implicit Structured Binding due to the fields being public is disabled
 };
 }  // namespace std

@@ -501,7 +501,6 @@ template <std::size_t MAXIMUM_LENGTH,
 struct tuple_size<fixed_containers::FixedString<MAXIMUM_LENGTH, CheckingType>>
   : std::integral_constant<std::size_t, 0>
 {
-    static_assert(fixed_containers::AlwaysFalseV<decltype(MAXIMUM_LENGTH), CheckingType>,
-                  "Implicit Structured Binding due to the fields being public is disabled");
+    // Implicit Structured Binding due to the fields being public is disabled
 };
 }  // namespace std
