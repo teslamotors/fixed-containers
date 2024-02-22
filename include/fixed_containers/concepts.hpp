@@ -155,4 +155,19 @@ template <auto... /*VALUES_TO_BE_PRINTED*/>
 struct CompileTimeValuePrinter
 {
 };
+
+// a "void-like" type, but without the hassle
+// e.g. EmptyValue& is a valid type
+struct EmptyValue
+{
+    static constexpr bool THIS_IS_EMPTY = true;
+    constexpr EmptyValue() = delete;
+};
+
+template <class T>
+concept IsEmpty = T::THIS_IS_EMPTY || std::is_void_v<T>;
+
+template <class T>
+concept IsNotEmpty = (!IsEmpty<T>);
+
 }  // namespace fixed_containers

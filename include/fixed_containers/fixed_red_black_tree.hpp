@@ -45,7 +45,7 @@ class FixedRedBlackTreeBase
 protected:  // [WORKAROUND-1]
     using KeyType = K;
     using ValueType = V;
-    static constexpr bool HAS_ASSOCIATED_VALUE = !std::is_same_v<V, EmptyValue>;
+    static constexpr bool HAS_ASSOCIATED_VALUE = IsNotEmpty<V>;
     using TreeStorage = FixedRedBlackTreeStorage<K, V, MAXIMUM_SIZE, COMPACTNESS, StorageTemplate>;
     using NodeType = typename TreeStorage::NodeType;
     using Ops = FixedRedBlackTreeOps<FixedRedBlackTreeBase>;
