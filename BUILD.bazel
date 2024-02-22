@@ -287,6 +287,24 @@ cc_library(
 )
 
 cc_library(
+    name = "wyhash",
+    hdrs = ["include/fixed_containers/wyhash.hpp"],
+    includes = ["include"],
+    copts = ["-std=c++20"],
+)
+
+cc_library(
+    name = "fixed_robinhood_hashtable",
+    hdrs = ["include/fixed_containers/fixed_robinhood_hashtable.hpp",],
+    includes = ["include"],
+    deps = [
+        ":map_entry",
+        ":fixed_doubly_linked_list",
+    ],
+    copts = ["-std=c++20"],
+)
+
+cc_library(
     name = "fixed_queue",
     hdrs = ["include/fixed_containers/fixed_queue.hpp"],
     includes = ["include"],
@@ -507,6 +525,17 @@ cc_library(
 )
 
 cc_library(
+    name = "map_entry",
+    hdrs = ["include/fixed_containers/map_entry.hpp"],
+    includes = ["include"],
+    deps = [
+        ":value_or_reference_storage",
+        ":concepts",
+        ],
+    copts = ["-std=c++20"],
+)
+
+cc_library(
     name = "preconditions",
     hdrs = ["include/fixed_containers/preconditions.hpp"],
     includes = ["include"],
@@ -674,7 +703,10 @@ cc_library(
 cc_library(
     name = "instance_counter",
     hdrs = ["test/instance_counter.hpp"],
-    deps = [":concepts"],
+    deps = [
+        ":concepts",
+        ":wyhash",
+    ],
     strip_include_prefix = "/test",
     copts = ["-std=c++20"],
     visibility = ["//visibility:private"],
@@ -966,6 +998,21 @@ cc_test(
         "@com_github_ericniebler_range-v3//:range-v3",
     ],
     copts = ["-std=c++20"],
+)
+
+cc_test(
+    name = "fixed_robinhood_hashtable_test",
+    srcs = ["test/fixed_robinhood_hashtable_test.cpp"],
+    deps = [
+        ":concepts",
+        ":fixed_robinhood_hashtable",
+        ":instance_counter",
+        ":test_utilities_common",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
+        "@com_github_ericniebler_range-v3//:range-v3",
+    ],
+    copts = ["-std=c++20",],
 )
 
 cc_test(
