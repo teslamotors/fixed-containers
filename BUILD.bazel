@@ -319,6 +319,20 @@ cc_library(
 )
 
 cc_library(
+    name = "fixed_set_adapter",
+    hdrs = ["include/fixed_containers/fixed_set_adapter.hpp"],
+    includes = ["include"],
+    deps = [
+        ":bidirectional_iterator",
+        ":erase_if",
+        ":source_location",
+        ":preconditions",
+        ":assert_or_abort",
+        ":emplace",
+    ],
+)
+
+cc_library(
     name = "fixed_unordered_map",
     hdrs = ["include/fixed_containers/fixed_unordered_map.hpp"],
     includes = ["include"],
@@ -327,6 +341,18 @@ cc_library(
         ":fixed_robinhood_hashtable",
         ":fixed_map_adapter",
         ":map_checking",
+    ]
+)
+
+cc_library(
+    name = "fixed_unordered_set",
+    hdrs = ["include/fixed_containers/fixed_unordered_set.hpp"],
+    includes = ["include"],
+    deps = [
+        ":wyhash",
+        ":fixed_robinhood_hashtable",
+        ":fixed_set_adapter",
+        ":set_checking",
     ]
 )
 
@@ -994,6 +1020,24 @@ cc_test(
     ],
     copts = ["-std=c++20"],
 )
+
+cc_test(
+    name = "fixed_unordered_set_test",
+    srcs = ["test/fixed_unordered_set_test.cpp"],
+    deps = [
+        ":concepts",
+        ":consteval_compare",
+        ":fixed_unordered_set",
+        ":instance_counter",
+        ":mock_testing_types",
+        ":test_utilities_common",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
+        "@com_github_ericniebler_range-v3//:range-v3",
+    ],
+    copts = ["-std=c++20"],
+)
+
 cc_test(
     name = "fixed_red_black_tree_test",
     srcs = ["test/fixed_red_black_tree_test.cpp"],
