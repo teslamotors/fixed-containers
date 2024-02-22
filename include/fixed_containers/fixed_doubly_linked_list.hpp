@@ -15,21 +15,22 @@ struct LinkedListIndices
     IndexType next{};
 };
 
-template <typename T, std::size_t MAXIMUM_SIZE>
+template <typename T, std::size_t MAXIMUM_SIZE, typename IndexType = std::size_t>
 class FixedDoublyLinkedListBase
 {
-    using IndexType = std::size_t;
+    static_assert(MAXIMUM_SIZE + 1 <= std::numeric_limits<IndexType>::max(),
+                  "must be able to index MAXIMUM_SIZE+1 elements with IndexType");
     using StorageType = FixedIndexBasedPoolStorage<T, MAXIMUM_SIZE>;
     using ChainEntryType = LinkedListIndices<IndexType>;
     using ChainType = std::array<ChainEntryType, MAXIMUM_SIZE + 1>;
 
 public:
-    static constexpr std::size_t NULL_INDEX = MAXIMUM_SIZE;
+    static constexpr IndexType NULL_INDEX = MAXIMUM_SIZE;
 
 public:  // Public so this type is a structural type and can thus be used in template parameters
     StorageType IMPLEMENTATION_DETAIL_DO_NOT_USE_storage_;
     ChainType IMPLEMENTATION_DETAIL_DO_NOT_USE_chain_;
-    std::size_t IMPLEMENTATION_DETAIL_DO_NOT_USE_size_;
+    IndexType IMPLEMENTATION_DETAIL_DO_NOT_USE_size_;
 
 public:
     constexpr FixedDoublyLinkedListBase() noexcept
@@ -45,7 +46,7 @@ public:
     }
 
 public:
-    [[nodiscard]] constexpr std::size_t size() const noexcept
+    [[nodiscard]] constexpr IndexType size() const noexcept
     {
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_size_;
     }
@@ -66,7 +67,8 @@ public:
     constexpr IndexType emplace_after_index_and_return_index(IndexType idx, Args&&... args)
     {
         increment_size();
-        IndexType new_idx = storage().emplace_and_return_index(std::forward<Args>(args)...);
+        IndexType new_idx =
+            static_cast<IndexType>(storage().emplace_and_return_index(std::forward<Args>(args)...));
         next_of(new_idx) = next_of(idx);
         prev_of(next_of(new_idx)) = new_idx;
         prev_of(new_idx) = idx;
@@ -135,11 +137,11 @@ private:
     constexpr const ChainType& chain() const { return IMPLEMENTATION_DETAIL_DO_NOT_USE_chain_; }
     constexpr ChainType& chain() { return IMPLEMENTATION_DETAIL_DO_NOT_USE_chain_; }
 
-    constexpr void increment_size(const std::size_t n = 1)
+    constexpr void increment_size(const IndexType n = 1)
     {
         IMPLEMENTATION_DETAIL_DO_NOT_USE_size_ += n;
     }
-    constexpr void decrement_size(const std::size_t n = 1)
+    constexpr void decrement_size(const IndexType n = 1)
     {
         IMPLEMENTATION_DETAIL_DO_NOT_USE_size_ -= n;
     }
@@ -150,10 +152,10 @@ private:
 namespace fixed_containers::fixed_doubly_linked_list_detail::specializations
 {
 
-template <typename T, std::size_t MAXIMUM_SIZE>
-class FixedDoublyLinkedList : public FixedDoublyLinkedListBase<T, MAXIMUM_SIZE>
+template <typename T, std::size_t MAXIMUM_SIZE, typename IndexType = std::size_t>
+class FixedDoublyLinkedList : public FixedDoublyLinkedListBase<T, MAXIMUM_SIZE, IndexType>
 {
-    using Base = FixedDoublyLinkedListBase<T, MAXIMUM_SIZE>;
+    using Base = FixedDoublyLinkedListBase<T, MAXIMUM_SIZE, IndexType>;
 
 public:
     // clang-format off
@@ -228,10 +230,11 @@ public:
     constexpr ~FixedDoublyLinkedList() noexcept { this->clear(); }
 };
 
-template <TriviallyCopyable T, std::size_t MAXIMUM_SIZE>
-class FixedDoublyLinkedList<T, MAXIMUM_SIZE> : public FixedDoublyLinkedListBase<T, MAXIMUM_SIZE>
+template <TriviallyCopyable T, std::size_t MAXIMUM_SIZE, typename IndexType>
+class FixedDoublyLinkedList<T, MAXIMUM_SIZE, IndexType>
+  : public FixedDoublyLinkedListBase<T, MAXIMUM_SIZE, IndexType>
 {
-    using Base = FixedDoublyLinkedListBase<T, MAXIMUM_SIZE>;
+    using Base = FixedDoublyLinkedListBase<T, MAXIMUM_SIZE, IndexType>;
 
 public:
     // clang-format off
@@ -245,7 +248,7 @@ namespace fixed_containers::fixed_doubly_linked_list_detail
 {
 // [WORKAROUND-1] due to destructors: manually do the split with template specialization.
 // See FixedVector which uses the same workaround for more details.
-template <typename T, std::size_t MAXIMUM_SIZE>
-using FixedDoublyLinkedList =
-    fixed_doubly_linked_list_detail::specializations::FixedDoublyLinkedList<T, MAXIMUM_SIZE>;
+template <typename T, std::size_t MAXIMUM_SIZE, typename IndexType = std::size_t>
+using FixedDoublyLinkedList = fixed_doubly_linked_list_detail::specializations::
+    FixedDoublyLinkedList<T, MAXIMUM_SIZE, IndexType>;
 }  // namespace fixed_containers::fixed_doubly_linked_list_detail

@@ -38,39 +38,52 @@
 namespace fixed_containers::fixed_robinhood_hashtable_detail
 {
 
+// TODO: Include a "giant bucket" to support > 2^24 elements
 struct Bucket
 {
+    using DistAndFingerprintType = std::uint32_t;
+    using ValueIndexType = std::uint32_t;
+
     // control how many bits to use for the hash fingerprint. The rest are used as the distance
     // between this element and its "ideal" location in the table
-    static constexpr std::uint32_t FINGERPRINT_BITS = 8;
+    static constexpr DistAndFingerprintType FINGERPRINT_BITS = 8;
 
-    static constexpr std::uint32_t DIST_INC = 1U << FINGERPRINT_BITS;
-    static constexpr std::uint32_t FINGERPRINT_MASK = DIST_INC - 1;
+    static constexpr DistAndFingerprintType DIST_INC = 1U << FINGERPRINT_BITS;
+    static constexpr DistAndFingerprintType FINGERPRINT_MASK = DIST_INC - 1;
 
-    std::uint32_t dist_and_fingerprint_;
-    std::uint32_t value_index_;
+    // we can only track a bucket this far away from its ideal location. In a pathological worst
+    // case, every bucket is a collision so we can only guarantee correct behavior up to this bucket
+    // count.
+    static constexpr std::size_t MAX_NUM_BUCKETS =
+        (1U << (sizeof(DistAndFingerprintType) * 8 - FINGERPRINT_BITS)) - 1;
 
-    [[nodiscard]] constexpr std::uint32_t dist() const
+    DistAndFingerprintType dist_and_fingerprint_;
+    ValueIndexType value_index_;
+
+    [[nodiscard]] constexpr DistAndFingerprintType dist() const
     {
         return dist_and_fingerprint_ >> FINGERPRINT_BITS;
     }
 
-    [[nodiscard]] constexpr std::uint32_t fingerprint() const
+    [[nodiscard]] constexpr DistAndFingerprintType fingerprint() const
     {
         return dist_and_fingerprint_ & FINGERPRINT_MASK;
     }
 
-    [[nodiscard]] static constexpr std::uint32_t dist_and_fingerprint_from_hash(std::uint64_t hash)
+    [[nodiscard]] static constexpr DistAndFingerprintType dist_and_fingerprint_from_hash(
+        std::uint64_t hash)
     {
-        return DIST_INC | (static_cast<std::uint32_t>(hash) & FINGERPRINT_MASK);
+        return DIST_INC | (static_cast<DistAndFingerprintType>(hash) & FINGERPRINT_MASK);
     }
 
-    [[nodiscard]] static constexpr std::uint32_t increment_dist(std::uint32_t dist_and_fingerprint)
+    [[nodiscard]] static constexpr DistAndFingerprintType increment_dist(
+        DistAndFingerprintType dist_and_fingerprint)
     {
         return dist_and_fingerprint + DIST_INC;
     }
 
-    [[nodiscard]] static constexpr std::uint32_t decrement_dist(std::uint32_t dist_and_fingerprint)
+    [[nodiscard]] static constexpr DistAndFingerprintType decrement_dist(
+        DistAndFingerprintType dist_and_fingerprint)
     {
         return dist_and_fingerprint - DIST_INC;
     }
@@ -98,19 +111,20 @@ public:
     using PairType = MapEntry<K, V>;
     using HashType = Hash;
     using KeyEqualType = KeyEqual;
-    // TODO: sanify the size types...
-    using SizeType = std::size_t;
+    using SizeType = Bucket::ValueIndexType;
 
     Hash IMPLEMENTATION_DETAIL_DO_NOT_USE_hash_{};
     KeyEqual IMPLEMENTATION_DETAIL_DO_NOT_USE_key_equal_{};
 
     static_assert(MAXIMUM_VALUE_COUNT <= BUCKET_COUNT,
                   "need at least enough buckets to point to every value in array");
-    static constexpr std::size_t MAXIMUM_NUM_ENTRIES = MAXIMUM_VALUE_COUNT;
+    static_assert(BUCKET_COUNT <= Bucket::MAX_NUM_BUCKETS,
+                  "specified too many buckets for the current bucket memory layout");
+
     static constexpr std::size_t CAPACITY = MAXIMUM_VALUE_COUNT;
     static constexpr std::size_t INTERNAL_TABLE_SIZE = BUCKET_COUNT;
 
-    fixed_doubly_linked_list_detail::FixedDoublyLinkedList<PairType, MAXIMUM_NUM_ENTRIES>
+    fixed_doubly_linked_list_detail::FixedDoublyLinkedList<PairType, CAPACITY, SizeType>
         IMPLEMENTATION_DETAIL_DO_NOT_USE_value_storage_{};
 
     std::array<Bucket, INTERNAL_TABLE_SIZE> IMPLEMENTATION_DETAIL_DO_NOT_USE_bucket_array_{};
@@ -121,7 +135,7 @@ public:
         // we need a dist_and_fingerprint for emplace(), but not for checks where the value exists.
         // We make this field pull double duty by setting it to 0 for keys that exist, but the valid
         // dist_and_fingerprint for those that don't.
-        std::uint32_t dist_and_fingerprint;
+        Bucket::DistAndFingerprintType dist_and_fingerprint;
     };
 
     using OpaqueIteratedType = SizeType;
@@ -210,9 +224,9 @@ public:
 
     //////////////////////// Common Interface Impl
 public:
-    [[nodiscard]] constexpr SizeType size() const
+    [[nodiscard]] constexpr std::size_t size() const
     {
-        return IMPLEMENTATION_DETAIL_DO_NOT_USE_value_storage_.size();
+        return static_cast<std::size_t>(IMPLEMENTATION_DETAIL_DO_NOT_USE_value_storage_.size());
     }
 
     [[nodiscard]] constexpr OpaqueIteratedType begin_index() const
@@ -262,7 +276,8 @@ public:
     constexpr OpaqueIndexType opaque_index_of(const K& k) const
     {
         std::uint64_t h = hash(k);
-        std::uint32_t dist_and_fingerprint = Bucket::dist_and_fingerprint_from_hash(h);
+        Bucket::DistAndFingerprintType dist_and_fingerprint =
+            Bucket::dist_and_fingerprint_from_hash(h);
         SizeType table_loc = bucket_index_from_hash(h);
         Bucket bucket = bucket_at(table_loc);
 
