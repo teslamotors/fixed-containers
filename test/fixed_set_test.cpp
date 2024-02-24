@@ -634,6 +634,51 @@ TEST(FixedSet, ReverseIteratorBase)
     static_assert(s1.contains(3));
 }
 
+TEST(FixedSet, IteratorInvalidation)
+{
+    FixedSet<int, 10> s1{10, 20, 30, 40};
+    auto it1 = s1.begin();
+    auto it2 = std::next(s1.begin(), 1);
+    auto it3 = std::next(s1.begin(), 2);
+    auto it4 = std::next(s1.begin(), 3);
+
+    EXPECT_EQ(10, *it1);
+    EXPECT_EQ(20, *it2);
+    EXPECT_EQ(30, *it3);
+    EXPECT_EQ(40, *it4);
+
+    const int* address_1{&*it1};
+    const int* address_2{&*it2};
+    const int* address_4{&*it4};
+
+    // Deletion
+    {
+        s1.erase(30);
+        EXPECT_EQ(10, *it1);
+        EXPECT_EQ(20, *it2);
+        EXPECT_EQ(40, *it4);
+
+        EXPECT_EQ(address_1, &*it1);
+        EXPECT_EQ(address_2, &*it2);
+        EXPECT_EQ(address_4, &*it4);
+    }
+
+    // Insertion
+    {
+        s1.insert(30);
+        s1.insert(1);
+        s1.insert(50);
+
+        EXPECT_EQ(10, *it1);
+        EXPECT_EQ(20, *it2);
+        EXPECT_EQ(40, *it4);
+
+        EXPECT_EQ(address_1, &*it1);
+        EXPECT_EQ(address_2, &*it2);
+        EXPECT_EQ(address_4, &*it4);
+    }
+}
+
 TEST(FixedSet, Equality)
 {
     constexpr FixedSet<int, 10> s1{{1, 4}};

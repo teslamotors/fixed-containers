@@ -1144,6 +1144,61 @@ TEST(FixedMap, ReverseIteratorBase)
     static_assert(s1.at(3) == 30);
 }
 
+TEST(FixedMap, IteratorInvalidation)
+{
+    FixedMap<int, int, 10> s1{{10, 100}, {20, 200}, {30, 300}, {40, 400}};
+    auto it1 = s1.begin();
+    auto it2 = std::next(s1.begin(), 1);
+    auto it3 = std::next(s1.begin(), 2);
+    auto it4 = std::next(s1.begin(), 3);
+
+    EXPECT_EQ(10, it1->first);
+    EXPECT_EQ(100, it1->second);
+    EXPECT_EQ(20, it2->first);
+    EXPECT_EQ(200, it2->second);
+    EXPECT_EQ(30, it3->first);
+    EXPECT_EQ(300, it3->second);
+    EXPECT_EQ(40, it4->first);
+    EXPECT_EQ(400, it4->second);
+
+    std::pair<const int*, const int*> addresses_1{&it1->first, &it1->second};
+    std::pair<const int*, const int*> addresses_2{&it2->first, &it2->second};
+    std::pair<const int*, const int*> addresses_4{&it4->first, &it4->second};
+
+    // Deletion
+    {
+        s1.erase(30);
+        EXPECT_EQ(10, it1->first);
+        EXPECT_EQ(100, it1->second);
+        EXPECT_EQ(20, it2->first);
+        EXPECT_EQ(200, it2->second);
+        EXPECT_EQ(40, it4->first);
+        EXPECT_EQ(400, it4->second);
+
+        EXPECT_EQ(addresses_1, (std::pair<const int*, const int*>{&it1->first, &it1->second}));
+        EXPECT_EQ(addresses_2, (std::pair<const int*, const int*>{&it2->first, &it2->second}));
+        EXPECT_EQ(addresses_4, (std::pair<const int*, const int*>{&it4->first, &it4->second}));
+    }
+
+    // Insertion
+    {
+        s1.try_emplace(30, 301);
+        s1.try_emplace(1, 11);
+        s1.try_emplace(50, 501);
+
+        EXPECT_EQ(10, it1->first);
+        EXPECT_EQ(100, it1->second);
+        EXPECT_EQ(20, it2->first);
+        EXPECT_EQ(200, it2->second);
+        EXPECT_EQ(40, it4->first);
+        EXPECT_EQ(400, it4->second);
+
+        EXPECT_EQ(addresses_1, (std::pair<const int*, const int*>{&it1->first, &it1->second}));
+        EXPECT_EQ(addresses_2, (std::pair<const int*, const int*>{&it2->first, &it2->second}));
+        EXPECT_EQ(addresses_4, (std::pair<const int*, const int*>{&it4->first, &it4->second}));
+    }
+}
+
 TEST(FixedMap, Find)
 {
     constexpr FixedMap<int, int, 10> s1{{2, 20}, {4, 40}};
