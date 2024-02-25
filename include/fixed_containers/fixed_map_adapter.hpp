@@ -1,9 +1,9 @@
 #pragma once
 
 #include "fixed_containers/assert_or_abort.hpp"
-#include "fixed_containers/bidirectional_iterator.hpp"
 #include "fixed_containers/emplace.hpp"
 #include "fixed_containers/erase_if.hpp"
+#include "fixed_containers/forward_iterator.hpp"
 #include "fixed_containers/max_size.hpp"
 #include "fixed_containers/preconditions.hpp"
 #include "fixed_containers/source_location.hpp"
@@ -67,8 +67,6 @@ private:
 
         constexpr void advance() noexcept { current_index_ = table_->next_of(current_index_); }
 
-        constexpr void recede() noexcept { current_index_ = table_->prev_of(current_index_); }
-
         constexpr std::conditional_t<IS_CONST, const_reference, reference> get() const noexcept
         {
             // auto for auto const/mut
@@ -82,18 +80,12 @@ private:
         }
     };
 
-    template <IteratorConstness CONSTNESS, IteratorDirection DIRECTION>
-    using Iterator =
-        BidirectionalIterator<PairProvider<true>, PairProvider<false>, CONSTNESS, DIRECTION>;
+    template <IteratorConstness CONSTNESS>
+    using Iterator = ForwardIterator<PairProvider<true>, PairProvider<false>, CONSTNESS>;
 
 public:
-    using const_iterator =
-        Iterator<IteratorConstness::CONSTANT_ITERATOR, IteratorDirection::FORWARD>;
-    using iterator = Iterator<IteratorConstness::MUTABLE_ITERATOR, IteratorDirection::FORWARD>;
-    using const_reverse_iterator =
-        Iterator<IteratorConstness::CONSTANT_ITERATOR, IteratorDirection::REVERSE>;
-    using reverse_iterator =
-        Iterator<IteratorConstness::MUTABLE_ITERATOR, IteratorDirection::REVERSE>;
+    using const_iterator = Iterator<IteratorConstness::CONSTANT_ITERATOR>;
+    using iterator = Iterator<IteratorConstness::MUTABLE_ITERATOR>;
 
     using size_type = std::size_t;
     using difference_type = ptrdiff_t;
@@ -184,25 +176,6 @@ public:
     constexpr iterator end() noexcept
     {
         return iterator{PairProvider<false>{&table(), table().end_index()}};
-    }
-
-    constexpr reverse_iterator rbegin() noexcept
-    {
-        return reverse_iterator{PairProvider<false>{&table(), table().end_index()}};
-    }
-    constexpr const_reverse_iterator rbegin() const noexcept { return crbegin(); }
-    constexpr const_reverse_iterator crbegin() const noexcept
-    {
-        return const_reverse_iterator{PairProvider<true>{&table(), table().end_index()}};
-    }
-    constexpr reverse_iterator rend() noexcept
-    {
-        return reverse_iterator{PairProvider<false>{&table(), table().begin_index()}};
-    }
-    constexpr const_reverse_iterator rend() const noexcept { return crend(); }
-    constexpr const_reverse_iterator crend() const noexcept
-    {
-        return const_reverse_iterator{PairProvider<true>{&table(), table().begin_index()}};
     }
 
     [[nodiscard]] constexpr size_type max_size() const noexcept { return static_max_size(); }
@@ -484,19 +457,6 @@ private:
     constexpr const_iterator create_const_iterator(const TableIndex& start_index) const noexcept
     {
         return const_iterator{
-            PairProvider<true>{&table(), table().iterated_index_from(start_index)}};
-    }
-
-    constexpr reverse_iterator create_reverse_iterator(const TableIndex& start_index) noexcept
-    {
-        return reverse_iterator{
-            PairProvider<false>{&table(), table().iterated_index_from(start_index)}};
-    }
-
-    constexpr const_reverse_iterator create_const_reverse_iterator(
-        const TableIndex& start_index) const noexcept
-    {
-        return const_reverse_iterator{
             PairProvider<true>{&table(), table().iterated_index_from(start_index)}};
     }
 

@@ -26,8 +26,8 @@ static_assert(TriviallyCopyAssignable<ES_1>);
 static_assert(TriviallyMoveAssignable<ES_1>);
 static_assert(IsStructuralType<ES_1>);
 
-static_assert(std::bidirectional_iterator<ES_1::iterator>);
-static_assert(std::bidirectional_iterator<ES_1::const_iterator>);
+static_assert(std::forward_iterator<ES_1::iterator>);
+static_assert(std::forward_iterator<ES_1::const_iterator>);
 static_assert(!std::random_access_iterator<ES_1::iterator>);
 static_assert(!std::random_access_iterator<ES_1::const_iterator>);
 
@@ -36,7 +36,7 @@ static_assert(std::is_same_v<std::iter_reference_t<ES_1::iterator>, const int&>)
 static_assert(std::is_same_v<std::iter_difference_t<ES_1::iterator>, std::ptrdiff_t>);
 static_assert(std::is_same_v<typename std::iterator_traits<ES_1::iterator>::pointer, const int*>);
 static_assert(std::is_same_v<typename std::iterator_traits<ES_1::iterator>::iterator_category,
-                             std::bidirectional_iterator_tag>);
+                             std::forward_iterator_tag>);
 
 static_assert(std::is_same_v<std::iter_value_t<ES_1::const_iterator>, int>);
 static_assert(std::is_same_v<std::iter_reference_t<ES_1::const_iterator>, const int&>);
@@ -44,7 +44,7 @@ static_assert(std::is_same_v<std::iter_difference_t<ES_1::const_iterator>, std::
 static_assert(
     std::is_same_v<typename std::iterator_traits<ES_1::const_iterator>::pointer, const int*>);
 static_assert(std::is_same_v<typename std::iterator_traits<ES_1::const_iterator>::iterator_category,
-                             std::bidirectional_iterator_tag>);
+                             std::forward_iterator_tag>);
 
 }  // namespace
 
@@ -488,11 +488,6 @@ TEST(FixedUnorderedSet, IteratorBasic)
     static_assert(*std::next(s1.begin(), 1) == 2);
     static_assert(*std::next(s1.begin(), 2) == 3);
     static_assert(*std::next(s1.begin(), 3) == 4);
-
-    static_assert(*std::prev(s1.end(), 1) == 4);
-    static_assert(*std::prev(s1.end(), 2) == 3);
-    static_assert(*std::prev(s1.end(), 3) == 2);
-    static_assert(*std::prev(s1.end(), 4) == 1);
 }
 
 TEST(FixedUnorderedSet, Iterator_OffByOneIssues)
@@ -503,9 +498,6 @@ TEST(FixedUnorderedSet, Iterator_OffByOneIssues)
 
     static_assert(*s1.begin() == 1);
     static_assert(*std::next(s1.begin(), 1) == 4);
-
-    static_assert(*std::prev(s1.end(), 1) == 4);
-    static_assert(*std::prev(s1.end(), 2) == 1);
 }
 
 TEST(FixedUnorderedSet, Iterator_EnsureOrder)
@@ -524,44 +516,6 @@ TEST(FixedUnorderedSet, Iterator_EnsureOrder)
     static_assert(*s1.begin() == 3);
     static_assert(*std::next(s1.begin(), 1) == 4);
     static_assert(*std::next(s1.begin(), 2) == 1);
-
-    static_assert(*std::prev(s1.end(), 1) == 1);
-    static_assert(*std::prev(s1.end(), 2) == 4);
-    static_assert(*std::prev(s1.end(), 3) == 3);
-}
-
-TEST(FixedUnorderedSet, ReverseIteratorBasic)
-{
-    constexpr FixedUnorderedSet<int, 10> s1{1, 2, 3, 4};
-
-    static_assert(consteval_compare::equal<4, std::distance(s1.crbegin(), s1.crend())>);
-
-    static_assert(*s1.rbegin() == 4);
-    static_assert(*std::next(s1.rbegin(), 1) == 3);
-    static_assert(*std::next(s1.crbegin(), 2) == 2);
-    static_assert(*std::next(s1.rbegin(), 3) == 1);
-
-    static_assert(*std::prev(s1.rend(), 1) == 1);
-    static_assert(*std::prev(s1.crend(), 2) == 2);
-    static_assert(*std::prev(s1.rend(), 3) == 3);
-    static_assert(*std::prev(s1.rend(), 4) == 4);
-}
-
-TEST(FixedUnorderedSet, ReverseIteratorBase)
-{
-    constexpr auto s1 = []()
-    {
-        FixedUnorderedSet<int, 7> s{1, 2, 3};
-        auto it = s.rbegin();  // points to 3
-        std::advance(it, 1);   // points to 2
-        // https://stackoverflow.com/questions/1830158/how-to-call-erase-with-a-reverse-iterator
-        s.erase(std::next(it).base());
-        return s;
-    }();
-
-    static_assert(s1.size() == 2);
-    static_assert(s1.contains(1));
-    static_assert(s1.contains(3));
 }
 
 TEST(FixedUnorderedSet, IteratorInvalidation)

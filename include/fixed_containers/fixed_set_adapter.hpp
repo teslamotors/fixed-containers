@@ -1,9 +1,9 @@
 #pragma once
 
 #include "fixed_containers/assert_or_abort.hpp"
-#include "fixed_containers/bidirectional_iterator.hpp"
 #include "fixed_containers/emplace.hpp"
 #include "fixed_containers/erase_if.hpp"
+#include "fixed_containers/forward_iterator.hpp"
 #include "fixed_containers/preconditions.hpp"
 #include "fixed_containers/source_location.hpp"
 
@@ -49,24 +49,17 @@ private:
 
         constexpr void advance() noexcept { current_index_ = table_->next_of(current_index_); }
 
-        constexpr void recede() noexcept { current_index_ = table_->prev_of(current_index_); }
-
         constexpr const_reference get() const noexcept { return table_->key_at(current_index_); }
 
         constexpr bool operator==(const ReferenceProvider& other) const noexcept = default;
     };
 
-    template <IteratorConstness CONSTNESS, IteratorDirection DIRECTION>
-    using Iterator =
-        BidirectionalIterator<ReferenceProvider, ReferenceProvider, CONSTNESS, DIRECTION>;
+    template <IteratorConstness CONSTNESS>
+    using Iterator = ForwardIterator<ReferenceProvider, ReferenceProvider, CONSTNESS>;
 
 public:
-    using const_iterator =
-        Iterator<IteratorConstness::CONSTANT_ITERATOR, IteratorDirection::FORWARD>;
+    using const_iterator = Iterator<IteratorConstness::CONSTANT_ITERATOR>;
     using iterator = const_iterator;
-    using const_reverse_iterator =
-        Iterator<IteratorConstness::CONSTANT_ITERATOR, IteratorDirection::REVERSE>;
-    using reverse_iterator = const_reverse_iterator;
 
     using size_type = std::size_t;
     using difference_type = ptrdiff_t;
@@ -103,17 +96,6 @@ public:
     }
     constexpr const_iterator begin() const noexcept { return cbegin(); }
     constexpr const_iterator end() const noexcept { return cend(); }
-
-    constexpr const_reverse_iterator rbegin() const noexcept { return crbegin(); }
-    constexpr const_reverse_iterator crbegin() const noexcept
-    {
-        return const_reverse_iterator{ReferenceProvider{&table(), table().end_index()}};
-    }
-    constexpr const_reverse_iterator rend() const noexcept { return crend(); }
-    constexpr const_reverse_iterator crend() const noexcept
-    {
-        return const_reverse_iterator{ReferenceProvider{&table(), table().begin_index()}};
-    }
 
     [[nodiscard]] constexpr size_type max_size() const noexcept { return static_max_size(); }
     [[nodiscard]] constexpr std::size_t size() const noexcept { return table().size(); }
@@ -338,12 +320,6 @@ private:
     constexpr iterator create_const_iterator(const TableIndex& start_index) noexcept
     {
         return iterator{ReferenceProvider{&table(), table().iterated_index_from(start_index)}};
-    }
-
-    constexpr iterator create_const_reverse_iterator(const TableIndex& start_index) noexcept
-    {
-        return reverse_iterator{
-            ReferenceProvider{&table(), table().iterated_index_from(start_index)}};
     }
 
     constexpr void check_not_full(const std_transition::source_location& loc) const

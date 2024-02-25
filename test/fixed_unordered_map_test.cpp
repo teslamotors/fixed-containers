@@ -30,15 +30,13 @@ static_assert(TriviallyCopyAssignable<ES_1>);
 static_assert(TriviallyMoveAssignable<ES_1>);
 static_assert(IsStructuralType<ES_1>);
 
-static_assert(std::bidirectional_iterator<ES_1::iterator>);
-static_assert(std::bidirectional_iterator<ES_1::const_iterator>);
+static_assert(std::forward_iterator<ES_1::iterator>);
+static_assert(std::forward_iterator<ES_1::const_iterator>);
 static_assert(!std::random_access_iterator<ES_1::iterator>);
 static_assert(!std::random_access_iterator<ES_1::const_iterator>);
 
 static_assert(std::is_trivially_copyable_v<ES_1::const_iterator>);
 static_assert(std::is_trivially_copyable_v<ES_1::iterator>);
-static_assert(std::is_trivially_copyable_v<ES_1::reverse_iterator>);
-static_assert(std::is_trivially_copyable_v<ES_1::const_reverse_iterator>);
 
 static_assert(std::is_same_v<std::iter_value_t<ES_1::iterator>, std::pair<const int&, int&>>);
 static_assert(std::is_same_v<std::iter_reference_t<ES_1::iterator>, std::pair<const int&, int&>>);
@@ -46,7 +44,7 @@ static_assert(std::is_same_v<std::iter_difference_t<ES_1::iterator>, std::ptrdif
 static_assert(std::is_same_v<typename std::iterator_traits<ES_1::iterator>::pointer,
                              ArrowProxy<std::pair<const int&, int&>>>);
 static_assert(std::is_same_v<typename std::iterator_traits<ES_1::iterator>::iterator_category,
-                             std::bidirectional_iterator_tag>);
+                             std::forward_iterator_tag>);
 
 static_assert(
     std::is_same_v<std::iter_value_t<ES_1::const_iterator>, std::pair<const int&, const int&>>);
@@ -56,7 +54,7 @@ static_assert(std::is_same_v<std::iter_difference_t<ES_1::const_iterator>, std::
 static_assert(std::is_same_v<typename std::iterator_traits<ES_1::const_iterator>::pointer,
                              ArrowProxy<std::pair<const int&, const int&>>>);
 static_assert(std::is_same_v<typename std::iterator_traits<ES_1::const_iterator>::iterator_category,
-                             std::bidirectional_iterator_tag>);
+                             std::forward_iterator_tag>);
 
 static_assert(std::is_same_v<ES_1::reference, ES_1::iterator::reference>);
 
@@ -775,15 +773,6 @@ TEST(FixedUnorderedMap, IteratorBasic)
     static_assert(std::next(s1.begin(), 2)->second == 30);
     static_assert(std::next(s1.begin(), 3)->first == 4);
     static_assert(std::next(s1.begin(), 3)->second == 40);
-
-    static_assert(std::prev(s1.end(), 1)->first == 4);
-    static_assert(std::prev(s1.end(), 1)->second == 40);
-    static_assert(std::prev(s1.end(), 2)->first == 3);
-    static_assert(std::prev(s1.end(), 2)->second == 30);
-    static_assert(std::prev(s1.end(), 3)->first == 2);
-    static_assert(std::prev(s1.end(), 3)->second == 20);
-    static_assert(std::prev(s1.end(), 4)->first == 1);
-    static_assert(std::prev(s1.end(), 4)->second == 10);
 }
 
 TEST(FixedUnorderedMap, IteratorTypes)
@@ -925,11 +914,6 @@ TEST(FixedUnorderedMap, IteratorMutableValue)
     static_assert(s1.begin()->second == 40);
     static_assert(std::next(s1.begin(), 1)->first == 4);
     static_assert(std::next(s1.begin(), 1)->second == 80);
-
-    static_assert(std::prev(s1.end(), 1)->first == 4);
-    static_assert(std::prev(s1.end(), 1)->second == 80);
-    static_assert(std::prev(s1.end(), 2)->first == 2);
-    static_assert(std::prev(s1.end(), 2)->second == 40);
 }
 
 TEST(FixedUnorderedMap, IteratorComparisonOperator)
@@ -945,7 +929,6 @@ TEST(FixedUnorderedMap, IteratorComparisonOperator)
     static_assert(s1.begin() != s1.cend());
 
     static_assert(std::next(s1.begin(), 2) == s1.end());
-    static_assert(std::prev(s1.end(), 2) == s1.begin());
 }
 
 TEST(FixedUnorderedMap, IteratorAssignment)
@@ -1015,11 +998,6 @@ TEST(FixedUnorderedMap, Iterator_OffByOneIssues)
     static_assert(s1.begin()->second == 10);
     static_assert(std::next(s1.begin(), 1)->first == 4);
     static_assert(std::next(s1.begin(), 1)->second == 40);
-
-    static_assert(std::prev(s1.end(), 1)->first == 4);
-    static_assert(std::prev(s1.end(), 1)->second == 40);
-    static_assert(std::prev(s1.end(), 2)->first == 1);
-    static_assert(std::prev(s1.end(), 2)->second == 10);
 }
 
 TEST(FixedUnorderedMap, Iterator_EnsureOrder)
@@ -1041,13 +1019,6 @@ TEST(FixedUnorderedMap, Iterator_EnsureOrder)
     static_assert(std::next(s1.begin(), 1)->second == 30);
     static_assert(std::next(s1.begin(), 2)->first == 4);
     static_assert(std::next(s1.begin(), 2)->second == 40);
-
-    static_assert(std::prev(s1.end(), 1)->first == 4);
-    static_assert(std::prev(s1.end(), 1)->second == 40);
-    static_assert(std::prev(s1.end(), 2)->first == 3);
-    static_assert(std::prev(s1.end(), 2)->second == 30);
-    static_assert(std::prev(s1.end(), 3)->first == 1);
-    static_assert(std::prev(s1.end(), 3)->second == 10);
 }
 
 TEST(FixedUnorderedMap, DereferencedIteratorAssignability)
@@ -1105,48 +1076,6 @@ TEST(FixedUnorderedMap, IteratorDereferenceLiveness)
         EXPECT_EQ(100, ref.second);
          */
     }
-}
-
-TEST(FixedUnorderedMap, ReverseIteratorBasic)
-{
-    constexpr FixedUnorderedMap<int, int, 10> s1{{1, 10}, {2, 20}, {3, 30}, {4, 40}};
-
-    static_assert(consteval_compare::equal<4, std::distance(s1.crbegin(), s1.crend())>);
-
-    static_assert(consteval_compare::equal<4, s1.rbegin()->first>);
-    static_assert(consteval_compare::equal<40, s1.rbegin()->second>);
-    static_assert(consteval_compare::equal<3, std::next(s1.rbegin(), 1)->first>);
-    static_assert(consteval_compare::equal<30, std::next(s1.rbegin(), 1)->second>);
-    static_assert(consteval_compare::equal<2, std::next(s1.rbegin(), 2)->first>);
-    static_assert(consteval_compare::equal<20, std::next(s1.rbegin(), 2)->second>);
-    static_assert(consteval_compare::equal<1, std::next(s1.rbegin(), 3)->first>);
-    static_assert(consteval_compare::equal<10, std::next(s1.rbegin(), 3)->second>);
-
-    static_assert(consteval_compare::equal<1, std::prev(s1.rend(), 1)->first>);
-    static_assert(consteval_compare::equal<10, std::prev(s1.rend(), 1)->second>);
-    static_assert(consteval_compare::equal<2, std::prev(s1.rend(), 2)->first>);
-    static_assert(consteval_compare::equal<20, std::prev(s1.rend(), 2)->second>);
-    static_assert(consteval_compare::equal<3, std::prev(s1.rend(), 3)->first>);
-    static_assert(consteval_compare::equal<30, std::prev(s1.rend(), 3)->second>);
-    static_assert(consteval_compare::equal<4, std::prev(s1.rend(), 4)->first>);
-    static_assert(consteval_compare::equal<40, std::prev(s1.rend(), 4)->second>);
-}
-
-TEST(FixedUnorderedMap, ReverseIteratorBase)
-{
-    constexpr auto s1 = []()
-    {
-        FixedUnorderedMap<int, int, 7> s{{1, 10}, {2, 20}, {3, 30}};
-        auto it = s.rbegin();  // points to 3
-        std::advance(it, 1);   // points to 2
-        // https://stackoverflow.com/questions/1830158/how-to-call-erase-with-a-reverse-iterator
-        s.erase(std::next(it).base());
-        return s;
-    }();
-
-    static_assert(s1.size() == 2);
-    static_assert(s1.at(1) == 10);
-    static_assert(s1.at(3) == 30);
 }
 
 TEST(FixedUnorderedMap, IteratorInvalidation)
