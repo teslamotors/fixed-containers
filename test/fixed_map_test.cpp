@@ -14,7 +14,9 @@
 
 #include <algorithm>
 #include <cmath>
+#include <map>
 #include <memory>
+#include <tuple>
 
 namespace fixed_containers
 {
