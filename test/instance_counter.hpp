@@ -1,6 +1,7 @@
 #pragma once
 
 #include "fixed_containers/concepts.hpp"
+#include "fixed_containers/wyhash.hpp"
 
 #include <compare>
 #include <cstddef>
@@ -85,3 +86,30 @@ template <class UniqueDifferentiator>
 int InstanceCounterTrivialAssignment<UniqueDifferentiator>::counter = 0;
 
 }  // namespace fixed_containers::instance_counter
+
+namespace std
+{
+
+template <typename T>
+struct hash<fixed_containers::instance_counter::InstanceCounterNonTrivialAssignment<T>>
+{
+    constexpr std::uint64_t operator()(
+        const fixed_containers::instance_counter::InstanceCounterNonTrivialAssignment<T>& val)
+        const noexcept
+    {
+        return hash<int>{}(val.value);
+    }
+};
+
+template <typename T>
+struct hash<fixed_containers::instance_counter::InstanceCounterTrivialAssignment<T>>
+{
+    constexpr std::uint64_t operator()(
+        const fixed_containers::instance_counter::InstanceCounterTrivialAssignment<T>& val)
+        const noexcept
+    {
+        return hash<int>{}(val.value);
+    }
+};
+
+}  // namespace std
