@@ -2,6 +2,7 @@
 
 #include "fixed_containers/concepts.hpp"
 
+#include <tuple>
 #include <utility>
 
 namespace fixed_containers::emplace_detail
