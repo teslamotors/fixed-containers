@@ -1438,7 +1438,7 @@ static constexpr int INT_VALUE_30 = 30;
 TEST(FixedMap, ConstRef)
 {
     {
-#ifndef _LIBCPP_VERSION
+#if !defined(_LIBCPP_VERSION)
         std::map<int, const int&> s{{1, INT_VALUE_10}};
         s.insert({2, INT_VALUE_20});
         s.emplace(3, INT_VALUE_30);
