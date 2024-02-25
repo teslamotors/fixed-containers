@@ -22,11 +22,21 @@ constexpr inline void mum(std::uint64_t* a, std::uint64_t* b)
     r *= *b;
     *a = static_cast<std::uint64_t>(r);
     *b = static_cast<std::uint64_t>(r >> 64U);
+    // Disabled because `_umul128` is not constexpr
+/*
 #elif defined(_MSC_VER) && defined(_M_X64)
     *a = _umul128(*a, *b, b);
+ */
+#else
+#if defined(_MSC_VER)
+    static_assert(1ULL >> 32U == 1ULL / 0x100000000ULL);
+    // Use division, because `>>` causes msvc to ICE
+    std::uint64_t ha = *a / 0x100000000ULL;
+    std::uint64_t hb = *b / 0x100000000ULL;
 #else
     std::uint64_t ha = *a >> 32U;
     std::uint64_t hb = *b >> 32U;
+#endif
     std::uint64_t la = static_cast<std::uint32_t>(*a);
     std::uint64_t lb = static_cast<std::uint32_t>(*b);
     std::uint64_t hi{};
