@@ -31,6 +31,7 @@ cc_library(
     includes = ["include"],
     deps = [
         ":arrow_proxy",
+        ":concepts",
         ":iterator_utils",
     ],
     copts = ["-std=c++20"],
@@ -464,6 +465,18 @@ cc_library(
         ":random_access_iterator_transformer",
         ":sequence_container_checking",
         ":source_location",
+    ],
+    copts = ["-std=c++20"],
+)
+
+cc_library(
+    name = "forward_iterator",
+    hdrs = ["include/fixed_containers/forward_iterator.hpp"],
+    includes = ["include"],
+    deps = [
+        ":arrow_proxy",
+        ":concepts",
+        ":iterator_utils",
     ],
     copts = ["-std=c++20"],
 )
