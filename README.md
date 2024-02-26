@@ -17,17 +17,24 @@ Header-only C++20 library that provides containers with the following properties
 
 # Features
 
-* `FixedVector` - Vector implementation with `std::vector` API and "fixed container" properties
-* `FixedMap`/`FixedSet` - Red-Black Tree map/set implementation with `std::map`/`std::set` API and "fixed container" properties.
-* `EnumMap`/`EnumSet` - For enum keys only, Map/Set implementation with `std::map`/`std::set` API and "fixed container" properties. O(1) lookups.
-* `FixedDeque` - Deque implementation with `std::deque` API and "fixed container" properties
-* `FixedQueue` - Queue implementation with `std::queue` API and "fixed container" properties
-* `FixedStack` - Stack implementation with `std::stack` API and "fixed container" properties
-* `FixedCircularDeque` - Circular buffer implementation with `std::deque` API and "fixed container" properties
-* `FixedCircularQueue` - Circular buffer implementation with `std::queue` API and "fixed container" properties
-* `FixedString` - String implementation with `std::string` API and "fixed container" properties
+* The following are equivalent in functionality/API with std-containers and have "fixed container properties":
+
+   | fixed-container      | std-container equivalent                        |
+   |:---------------------|:------------------------------------------------|
+   | `FixedVector`        | `std::vector`                                   |
+   | `FixedDeque`         | `std::deque`                                    |
+   | `FixedQueue`         | `std::queue`                                    |
+   | `FixedStack`         | `std::stack`                                    |
+   | `FixedCircularDeque` | `std::deque` API with Circular Buffer semantics |
+   | `FixedCircularQueue` | `std::queue` API with Circular Buffer semantics |
+   | `FixedString`        | `std::string`                                   |
+   | `FixedMap`           | `std::map`                                      |
+   | `FixedSet`           | `std::set`                                      |
+   | `EnumMap`            | `std::map` for enum keys only                   |
+   | `EnumSet`            | `std::set` for enum keys only                   |
+   | `EnumArray`          | `std::array` but with typed accessors           |
+
 * `StringLiteral` - Compile-time null-terminated literal string.
-* `EnumArray` - For enum keys only, similar to `std::array` but with typed accessors and "fixed container" properties
 * Rich enums - `enum` & `class` hybrid.
 
 ## Rich enum features
@@ -68,81 +75,6 @@ More examples can be found [here](test/enums_test_common.hpp).
     static_assert(v1.capacity() == 11);
     ```
 
-- FixedMap
-    ```C++
-    constexpr auto m1 = []()
-    {
-        FixedMap<int, int, 11> m{};
-        m.insert({2, 20});
-        m[4] = 40;
-        return m;
-    }();
-    static_assert(!m1.contains(1));
-    static_assert(m1.contains(2));
-    static_assert(m1.at(4) == 40);
-    static_assert(m1.size() == 2);
-    static_assert(m1.capacity() == 11);
-    ```
-
-- FixedSet
-    ```C++
-    constexpr auto s1 = []()
-    {
-        FixedSet<int, 11> s{};
-        s.insert(2);
-        s.insert(4);
-        return s;
-    }();
-    static_assert(!s1.contains(1));
-    static_assert(s1.contains(2));
-    static_assert(s1.size() == 2);
-    static_assert(s1.capacity() == 11);
-    ```
-
-- EnumMap
-    ```C++
-    enum class Color { RED, YELLOW, BLUE};
-
-    constexpr auto m1 = []()
-    {
-        EnumMap<Color, int> m{};
-        m.insert({Color::RED, 20});
-        m[Color::YELLOW] = 40;
-        return m;
-    }();
-    static_assert(!m1.contains(Color::BLUE));
-    static_assert(m1.contains(Color::RED));
-    static_assert(m1.at(Color::YELLOW) == 40);
-    static_assert(m1.size() == 2);
-
-    // Ensures all keys are specified, at compile-time
-    constexpr auto m2 = EnumMap<Color, int>::create_with_all_entries({
-        {Color::BLUE, 42},
-        {Color::YELLOW, 7},
-        {Color::BLUE, 42},
-    });
-    ```
-
-- EnumSet
-    ```C++
-    enum class Color { RED, YELLOW, BLUE};
-
-    constexpr auto s1 = []()
-    {
-        EnumSet<Color> s{};
-        s.insert(Color::RED);
-        s.insert(Color::YELLOW);
-        return s;
-    }();
-    static_assert(!s1.contains(Color::BLUE));
-    static_assert(s1.contains(Color::RED));
-    static_assert(s1.size() == 2);
-
-    constexpr auto s2 = EnumSet<Color>::all(); // full set
-    constexpr auto s3 = EnumSet<Color>::none(); // empty set
-    constexpr auto s4 = EnumSet<Color>::complement_of(s2); // empty set
-    ```
-  
 - FixedDeque
     ```C++
     constexpr auto v1 = []()
@@ -244,11 +176,79 @@ More examples can be found [here](test/enums_test_common.hpp).
     static_assert(v1.size() == 3);
     ```
 
-- StringLiteral
+- FixedMap
     ```C++
-    static constexpr const char* s = "blah"; // strlen==4, sizeof==8
-    static constexpr const char s[5] = "blah";  // strlen==4, sizeof==5 (null terminator)
-    static constexpr StringLiteral s = "blah";  // constexpr .size()==4
+    constexpr auto m1 = []()
+    {
+        FixedMap<int, int, 11> m{};
+        m.insert({2, 20});
+        m[4] = 40;
+        return m;
+    }();
+    static_assert(!m1.contains(1));
+    static_assert(m1.contains(2));
+    static_assert(m1.at(4) == 40);
+    static_assert(m1.size() == 2);
+    static_assert(m1.capacity() == 11);
+    ```
+
+- FixedSet
+    ```C++
+    constexpr auto s1 = []()
+    {
+        FixedSet<int, 11> s{};
+        s.insert(2);
+        s.insert(4);
+        return s;
+    }();
+    static_assert(!s1.contains(1));
+    static_assert(s1.contains(2));
+    static_assert(s1.size() == 2);
+    static_assert(s1.capacity() == 11);
+    ```
+
+- EnumMap
+    ```C++
+    enum class Color { RED, YELLOW, BLUE};
+
+    constexpr auto m1 = []()
+    {
+        EnumMap<Color, int> m{};
+        m.insert({Color::RED, 20});
+        m[Color::YELLOW] = 40;
+        return m;
+    }();
+    static_assert(!m1.contains(Color::BLUE));
+    static_assert(m1.contains(Color::RED));
+    static_assert(m1.at(Color::YELLOW) == 40);
+    static_assert(m1.size() == 2);
+
+    // Ensures all keys are specified, at compile-time
+    constexpr auto m2 = EnumMap<Color, int>::create_with_all_entries({
+        {Color::BLUE, 42},
+        {Color::YELLOW, 7},
+        {Color::BLUE, 42},
+    });
+    ```
+
+- EnumSet
+    ```C++
+    enum class Color { RED, YELLOW, BLUE};
+
+    constexpr auto s1 = []()
+    {
+        EnumSet<Color> s{};
+        s.insert(Color::RED);
+        s.insert(Color::YELLOW);
+        return s;
+    }();
+    static_assert(!s1.contains(Color::BLUE));
+    static_assert(s1.contains(Color::RED));
+    static_assert(s1.size() == 2);
+
+    constexpr auto s2 = EnumSet<Color>::all(); // full set
+    constexpr auto s3 = EnumSet<Color>::none(); // empty set
+    constexpr auto s4 = EnumSet<Color>::complement_of(s2); // empty set
     ```
 
 - EnumArray
@@ -259,6 +259,13 @@ More examples can be found [here](test/enums_test_common.hpp).
     static_assert(s1.at(TestEnum1::TWO) == 0);
     static_assert(s1.at(TestEnum1::THREE) == 0);
     static_assert(s1.at(TestEnum1::FOUR) == 40);
+    ```
+
+- StringLiteral
+    ```C++
+    static constexpr const char* s = "blah"; // strlen==4, sizeof==8
+    static constexpr const char s[5] = "blah";  // strlen==4, sizeof==5 (null terminator)
+    static constexpr StringLiteral s = "blah";  // constexpr .size()==4
     ```
 
 - Using instances as non-type template parameters
