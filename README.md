@@ -23,6 +23,7 @@ Header-only C++20 library that provides containers with the following properties
    |:---------------------|:------------------------------------------------|
    | `FixedVector`        | `std::vector`                                   |
    | `FixedDeque`         | `std::deque`                                    |
+   | `FixedList `         | `std::list`                                     |
    | `FixedQueue`         | `std::queue`                                    |
    | `FixedStack`         | `std::stack`                                    |
    | `FixedCircularDeque` | `std::deque` API with Circular Buffer semantics |
@@ -30,6 +31,8 @@ Header-only C++20 library that provides containers with the following properties
    | `FixedString`        | `std::string`                                   |
    | `FixedMap`           | `std::map`                                      |
    | `FixedSet`           | `std::set`                                      |
+   | `FixedUnorderedMap`  | `std::unordered_map`                            |
+   | `FixedUnorderedSet`  | `std::unordered_set`                            |
    | `EnumMap`            | `std::map` for enum keys only                   |
    | `EnumSet`            | `std::set` for enum keys only                   |
    | `EnumArray`          | `std::array` but with typed accessors           |
@@ -71,6 +74,23 @@ More examples can be found [here](test/enums_test_common.hpp).
     static_assert(v1[0] == 0);
     static_assert(v1[1] == 1);
     static_assert(v1[2] == 2);
+    static_assert(v1.size() == 3);
+    static_assert(v1.capacity() == 11);
+    ```
+
+- FixedList
+    ```C++
+    constexpr auto v1 = []()
+    {
+        FixedList<int, 11> v{};
+        v.push_back(0);
+        v.emplace_back(1);
+        v.push_front(2);
+        return v;
+    }();
+    static_assert(v1[0] == 2);
+    static_assert(v1[1] == 0);
+    static_assert(v1[2] == 1);
     static_assert(v1.size() == 3);
     static_assert(v1.capacity() == 11);
     ```
@@ -197,6 +217,37 @@ More examples can be found [here](test/enums_test_common.hpp).
     constexpr auto s1 = []()
     {
         FixedSet<int, 11> s{};
+        s.insert(2);
+        s.insert(4);
+        return s;
+    }();
+    static_assert(!s1.contains(1));
+    static_assert(s1.contains(2));
+    static_assert(s1.size() == 2);
+    static_assert(s1.capacity() == 11);
+    ```
+
+- FixedUnorderedMap
+    ```C++
+    constexpr auto m1 = []()
+    {
+        FixedUnorderedMap<int, int, 11> m{};
+        m.insert({2, 20});
+        m[4] = 40;
+        return m;
+    }();
+    static_assert(!m1.contains(1));
+    static_assert(m1.contains(2));
+    static_assert(m1.at(4) == 40);
+    static_assert(m1.size() == 2);
+    static_assert(m1.capacity() == 11);
+    ```
+
+- FixedUnorderedSet
+    ```C++
+    constexpr auto s1 = []()
+    {
+        FixedUnorderedSet<int, 11> s{};
         s.insert(2);
         s.insert(4);
         return s;
