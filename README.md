@@ -17,7 +17,8 @@ Header-only C++20 library that provides containers with the following properties
 
 # Features
 
-* The following are equivalent in functionality/API with std-containers and have "fixed container properties":
+* The following table shows the available fixed containers and their equivalent std-containers.
+The fixed-container types have identical APIs to their std:: equivalents, so you can refer to the traditional C++ docs for how to use them.
 
    | fixed-container      | std-container equivalent                        |
    |:---------------------|:------------------------------------------------|
