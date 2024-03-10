@@ -344,6 +344,35 @@ public:
         this->insert(cend(), ilist, loc);
     }
 
+    template <typename Predicate>
+    constexpr size_type remove_if(Predicate predicate)
+    {
+        // Elements shall not move, so erase-remove idiom does not work.
+        const std::size_t first_index = front_index();
+        const std::size_t last_index = end_index();
+
+        size_type removed_counter = 0;
+
+        for (std::size_t i = first_index; i != last_index;)
+        {
+            if (predicate(list().at(i)))
+            {
+                i = list().delete_at_and_return_next_index(i);
+                ++removed_counter;
+            }
+            else
+            {
+                i = list().next_of(i);
+            }
+        }
+
+        return removed_counter;
+    }
+    constexpr size_type remove(const T& value)
+    {
+        return remove_if([&value](const T& v) { return v == value; });
+    }
+
     constexpr iterator erase(const_iterator first,
                              const_iterator last,
                              const std_transition::source_location& /*loc*/ =

@@ -1427,6 +1427,96 @@ TEST(FixedList, InsertInitializerList_ExceedsCapacity)
     EXPECT_DEATH(v1.insert(std::next(v1.begin(), 1), {3, 4}), "");
 }
 
+TEST(FixedList, Remove)
+{
+    constexpr auto v1 = []()
+    {
+        FixedList<int, 8> v{3, 0, 1, 2, 3, 4, 5, 3};
+        std::size_t removed_count = v.remove(3);
+        assert_or_abort(3 == removed_count);
+        return v;
+    }();
+
+    static_assert(std::ranges::equal(v1, std::array<int, 5>{0, 1, 2, 4, 5}));
+}
+
+TEST(FixedList, Remove_Invalidation)
+{
+    FixedList<int, 10> v{10, 20, 30, 40, 50};
+    auto it1 = v.begin();
+    auto it2 = std::next(v.begin(), 1);
+    auto it3 = std::next(v.begin(), 2);
+    auto it4 = std::next(v.begin(), 3);
+    auto it5 = std::next(v.begin(), 4);
+
+    EXPECT_EQ(10, *it1);
+    EXPECT_EQ(20, *it2);
+    EXPECT_EQ(30, *it3);
+    EXPECT_EQ(40, *it4);
+    EXPECT_EQ(50, *it5);
+
+    const int* address_1{&*it1};
+    const int* address_2{&*it2};
+    const int* address_4{&*it4};
+    const int* address_5{&*it5};
+
+    v.remove(30);
+    EXPECT_EQ(10, *it1);
+    EXPECT_EQ(20, *it2);
+    EXPECT_EQ(40, *it4);
+    EXPECT_EQ(50, *it5);
+
+    EXPECT_EQ(address_1, &*it1);
+    EXPECT_EQ(address_2, &*it2);
+    EXPECT_EQ(address_4, &*it4);
+    EXPECT_EQ(address_5, &*it5);
+}
+
+TEST(FixedList, RemoveIf)
+{
+    constexpr auto v1 = []()
+    {
+        FixedList<int, 8> v{0, 1, 2, 3, 4, 5};
+        std::size_t removed_count = v.remove_if([](const int& a) { return (a % 2) == 0; });
+        assert_or_abort(3 == removed_count);
+        return v;
+    }();
+
+    static_assert(std::ranges::equal(v1, std::array<int, 3>{1, 3, 5}));
+}
+
+TEST(FixedList, RemoveIf_Invalidation)
+{
+    FixedList<int, 10> v{10, 20, 30, 40, 50};
+    auto it1 = v.begin();
+    auto it2 = std::next(v.begin(), 1);
+    auto it3 = std::next(v.begin(), 2);
+    auto it4 = std::next(v.begin(), 3);
+    auto it5 = std::next(v.begin(), 4);
+
+    EXPECT_EQ(10, *it1);
+    EXPECT_EQ(20, *it2);
+    EXPECT_EQ(30, *it3);
+    EXPECT_EQ(40, *it4);
+    EXPECT_EQ(50, *it5);
+
+    const int* address_1{&*it1};
+    const int* address_2{&*it2};
+    const int* address_4{&*it4};
+    const int* address_5{&*it5};
+
+    v.remove_if([](const int& a) { return (a % 30) == 0; });
+    EXPECT_EQ(10, *it1);
+    EXPECT_EQ(20, *it2);
+    EXPECT_EQ(40, *it4);
+    EXPECT_EQ(50, *it5);
+
+    EXPECT_EQ(address_1, &*it1);
+    EXPECT_EQ(address_2, &*it2);
+    EXPECT_EQ(address_4, &*it4);
+    EXPECT_EQ(address_5, &*it5);
+}
+
 TEST(FixedList, EraseRange)
 {
     constexpr auto v1 = []()
