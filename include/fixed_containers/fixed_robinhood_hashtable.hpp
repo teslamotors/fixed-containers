@@ -369,7 +369,7 @@ public:
     }
 
     // disable trivial copyability when using reference value types
-    // this is an artificial limitation needed beacause `std::reference_wrapper` is trivially
+    // this is an artificial limitation needed because `std::reference_wrapper` is trivially
     // copyable
     constexpr FixedRobinhoodHashtable(const FixedRobinhoodHashtable& other)
         requires IsReference<V>
