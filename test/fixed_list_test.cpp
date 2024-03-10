@@ -1660,15 +1660,24 @@ TEST(FixedList, Erase_Empty)
 
 TEST(FixedList, EraseFreeFunction)
 {
-    constexpr auto v1 = []()
     {
-        FixedList<int, 8> v{3, 0, 1, 2, 3, 4, 5, 3};
-        std::size_t removed_count = fixed_containers::erase(v, 3);
-        assert_or_abort(3 == removed_count);
-        return v;
-    }();
+        constexpr auto v1 = []()
+        {
+            FixedList<int, 8> v{3, 0, 1, 2, 3, 4, 5, 3};
+            std::size_t removed_count = fixed_containers::erase(v, 3);
+            assert_or_abort(3 == removed_count);
+            return v;
+        }();
 
-    static_assert(std::ranges::equal(v1, std::array<int, 5>{0, 1, 2, 4, 5}));
+        static_assert(std::ranges::equal(v1, std::array<int, 5>{0, 1, 2, 4, 5}));
+    }
+
+    {
+        // Accepts heterogeneous types
+        // Compile-only test
+        FixedList<MockAComparableToB, 5> v{};
+        erase(v, MockBComparableToA{});
+    }
 }
 
 TEST(FixedList, EraseFreeFunction_Invalidation)

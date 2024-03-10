@@ -1812,15 +1812,24 @@ TEST(FixedDeque, EraseFreeFunction)
 {
     auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
     {
-        constexpr auto v1 = []()
         {
-            auto v = Factory::template create<int, 8>({3, 0, 1, 2, 3, 4, 5, 3});
-            std::size_t removed_count = fixed_containers::erase(v, 3);
-            assert_or_abort(3 == removed_count);
-            return v;
-        }();
+            constexpr auto v1 = []()
+            {
+                auto v = Factory::template create<int, 8>({3, 0, 1, 2, 3, 4, 5, 3});
+                std::size_t removed_count = fixed_containers::erase(v, 3);
+                assert_or_abort(3 == removed_count);
+                return v;
+            }();
 
-        static_assert(std::ranges::equal(v1, std::array<int, 5>{0, 1, 2, 4, 5}));
+            static_assert(std::ranges::equal(v1, std::array<int, 5>{0, 1, 2, 4, 5}));
+        }
+
+        {
+            // Accepts heterogeneous types
+            // Compile-only test
+            auto v = Factory::template create<MockAComparableToB, 5>();
+            erase(v, MockBComparableToA{});
+        }
     };
 
     run_test(FixedDequeInitialStateFirstIndex{});
