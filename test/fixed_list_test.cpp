@@ -1610,6 +1610,38 @@ TEST(FixedList, EraseFreeFunction)
     static_assert(std::ranges::equal(v1, std::array<int, 5>{0, 1, 2, 4, 5}));
 }
 
+TEST(FixedList, EraseFreeFunction_Invalidation)
+{
+    FixedList<int, 10> v{10, 20, 30, 40, 50};
+    auto it1 = v.begin();
+    auto it2 = std::next(v.begin(), 1);
+    auto it3 = std::next(v.begin(), 2);
+    auto it4 = std::next(v.begin(), 3);
+    auto it5 = std::next(v.begin(), 4);
+
+    EXPECT_EQ(10, *it1);
+    EXPECT_EQ(20, *it2);
+    EXPECT_EQ(30, *it3);
+    EXPECT_EQ(40, *it4);
+    EXPECT_EQ(50, *it5);
+
+    const int* address_1{&*it1};
+    const int* address_2{&*it2};
+    const int* address_4{&*it4};
+    const int* address_5{&*it5};
+
+    erase(v, 30);
+    EXPECT_EQ(10, *it1);
+    EXPECT_EQ(20, *it2);
+    EXPECT_EQ(40, *it4);
+    EXPECT_EQ(50, *it5);
+
+    EXPECT_EQ(address_1, &*it1);
+    EXPECT_EQ(address_2, &*it2);
+    EXPECT_EQ(address_4, &*it4);
+    EXPECT_EQ(address_5, &*it5);
+}
+
 TEST(FixedList, EraseIf)
 {
     constexpr auto v1 = []()
@@ -1622,6 +1654,38 @@ TEST(FixedList, EraseIf)
     }();
 
     static_assert(std::ranges::equal(v1, std::array<int, 3>{1, 3, 5}));
+}
+
+TEST(FixedList, EraseIf_Invalidation)
+{
+    FixedList<int, 10> v{10, 20, 30, 40, 50};
+    auto it1 = v.begin();
+    auto it2 = std::next(v.begin(), 1);
+    auto it3 = std::next(v.begin(), 2);
+    auto it4 = std::next(v.begin(), 3);
+    auto it5 = std::next(v.begin(), 4);
+
+    EXPECT_EQ(10, *it1);
+    EXPECT_EQ(20, *it2);
+    EXPECT_EQ(30, *it3);
+    EXPECT_EQ(40, *it4);
+    EXPECT_EQ(50, *it5);
+
+    const int* address_1{&*it1};
+    const int* address_2{&*it2};
+    const int* address_4{&*it4};
+    const int* address_5{&*it5};
+
+    erase_if(v, [](const int& a) { return (a % 30) == 0; });
+    EXPECT_EQ(10, *it1);
+    EXPECT_EQ(20, *it2);
+    EXPECT_EQ(40, *it4);
+    EXPECT_EQ(50, *it5);
+
+    EXPECT_EQ(address_1, &*it1);
+    EXPECT_EQ(address_2, &*it2);
+    EXPECT_EQ(address_4, &*it4);
+    EXPECT_EQ(address_5, &*it5);
 }
 
 TEST(FixedList, Front)

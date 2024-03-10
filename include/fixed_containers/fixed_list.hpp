@@ -625,18 +625,14 @@ template <typename T, std::size_t MAXIMUM_SIZE, typename CheckingType, typename 
 constexpr typename FixedList<T, MAXIMUM_SIZE, CheckingType>::size_type erase(
     FixedList<T, MAXIMUM_SIZE, CheckingType>& c, const U& value)
 {
-    const auto original_size = c.size();
-    c.erase(std::remove(c.begin(), c.end(), value), c.end());
-    return original_size - c.size();
+    return c.remove_if([&value](const T& v) { return v == value; });
 }
 
 template <typename T, std::size_t MAXIMUM_SIZE, typename CheckingType, typename Predicate>
 constexpr typename FixedList<T, MAXIMUM_SIZE, CheckingType>::size_type erase_if(
     FixedList<T, MAXIMUM_SIZE, CheckingType>& c, Predicate predicate)
 {
-    const auto original_size = c.size();
-    c.erase(std::remove_if(c.begin(), c.end(), predicate), c.end());
-    return original_size - c.size();
+    return c.remove_if(predicate);
 }
 
 /**
