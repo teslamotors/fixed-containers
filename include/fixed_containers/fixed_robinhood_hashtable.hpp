@@ -113,9 +113,6 @@ public:
     using KeyEqualType = KeyEqual;
     using SizeType = Bucket::ValueIndexType;
 
-    Hash IMPLEMENTATION_DETAIL_DO_NOT_USE_hash_{};
-    KeyEqual IMPLEMENTATION_DETAIL_DO_NOT_USE_key_equal_{};
-
     static_assert(MAXIMUM_VALUE_COUNT <= BUCKET_COUNT,
                   "need at least enough buckets to point to every value in array");
     static_assert(BUCKET_COUNT <= Bucket::MAX_NUM_BUCKETS,
@@ -124,9 +121,10 @@ public:
     static constexpr std::size_t CAPACITY = MAXIMUM_VALUE_COUNT;
     static constexpr std::size_t INTERNAL_TABLE_SIZE = BUCKET_COUNT;
 
+    Hash IMPLEMENTATION_DETAIL_DO_NOT_USE_hash_{};
+    KeyEqual IMPLEMENTATION_DETAIL_DO_NOT_USE_key_equal_{};
     fixed_doubly_linked_list_detail::FixedDoublyLinkedList<PairType, CAPACITY, SizeType>
         IMPLEMENTATION_DETAIL_DO_NOT_USE_value_storage_{};
-
     std::array<Bucket, INTERNAL_TABLE_SIZE> IMPLEMENTATION_DETAIL_DO_NOT_USE_bucket_array_{};
 
     struct OpaqueIndexType
