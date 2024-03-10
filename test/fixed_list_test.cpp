@@ -1538,6 +1538,35 @@ TEST(FixedList, EraseRange)
     EXPECT_TRUE(std::ranges::equal(v2, std::array<int, 4>{{2, 5, 0, 3}}));
 }
 
+TEST(FixedList, EraseRange_Invalidation)
+{
+    FixedList<int, 10> v{10, 20, 30, 40, 50};
+    auto it1 = v.begin();
+    auto it2 = std::next(v.begin(), 1);
+    auto it3 = std::next(v.begin(), 2);
+    auto it4 = std::next(v.begin(), 3);
+    auto it5 = std::next(v.begin(), 4);
+
+    EXPECT_EQ(10, *it1);
+    EXPECT_EQ(20, *it2);
+    EXPECT_EQ(30, *it3);
+    EXPECT_EQ(40, *it4);
+    EXPECT_EQ(50, *it5);
+
+    const int* address_1{&*it1};
+    const int* address_2{&*it2};
+    const int* address_5{&*it5};
+
+    v.erase(it3, it5);
+    EXPECT_EQ(10, *it1);
+    EXPECT_EQ(20, *it2);
+    EXPECT_EQ(50, *it5);
+
+    EXPECT_EQ(address_1, &*it1);
+    EXPECT_EQ(address_2, &*it2);
+    EXPECT_EQ(address_5, &*it5);
+}
+
 TEST(FixedList, EraseOne)
 {
     constexpr auto v1 = []()
@@ -1568,6 +1597,38 @@ TEST(FixedList, EraseOne)
     EXPECT_EQ(it, v2.cend());
     // EXPECT_EQ(*it, 3); // Not dereferenceable
     EXPECT_TRUE(std::ranges::equal(v2, std::array<int, 3>{{1, 4, 0}}));
+}
+
+TEST(FixedList, EraseOne_Invalidation)
+{
+    FixedList<int, 10> v{10, 20, 30, 40, 50};
+    auto it1 = v.begin();
+    auto it2 = std::next(v.begin(), 1);
+    auto it3 = std::next(v.begin(), 2);
+    auto it4 = std::next(v.begin(), 3);
+    auto it5 = std::next(v.begin(), 4);
+
+    EXPECT_EQ(10, *it1);
+    EXPECT_EQ(20, *it2);
+    EXPECT_EQ(30, *it3);
+    EXPECT_EQ(40, *it4);
+    EXPECT_EQ(50, *it5);
+
+    const int* address_1{&*it1};
+    const int* address_2{&*it2};
+    const int* address_4{&*it4};
+    const int* address_5{&*it5};
+
+    v.erase(it3);
+    EXPECT_EQ(10, *it1);
+    EXPECT_EQ(20, *it2);
+    EXPECT_EQ(40, *it4);
+    EXPECT_EQ(50, *it5);
+
+    EXPECT_EQ(address_1, &*it1);
+    EXPECT_EQ(address_2, &*it2);
+    EXPECT_EQ(address_4, &*it4);
+    EXPECT_EQ(address_5, &*it5);
 }
 
 TEST(FixedList, Erase_Empty)
