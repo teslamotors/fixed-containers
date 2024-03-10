@@ -2148,10 +2148,10 @@ TEST(FixedCircularDeque, EraseIf)
     {
         constexpr auto v1 = []()
         {
-            auto v = Factory::template create<int, 8>({0, 1, 2, 3, 4, 5});
+            auto v = Factory::template create<int, 8>({0, 1, 2, 3, 4, 5, 6});
             std::size_t removed_count =
                 fixed_containers::erase_if(v, [](const int& a) { return (a % 2) == 0; });
-            assert_or_abort(3 == removed_count);
+            assert_or_abort(4 == removed_count);
             return v;
         }();
 
