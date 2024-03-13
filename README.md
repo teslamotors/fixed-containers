@@ -89,11 +89,9 @@ More examples can be found [here](test/enums_test_common.hpp).
         v.push_front(2);
         return v;
     }();
-    static_assert(v1[0] == 2);
-    static_assert(v1[1] == 0);
-    static_assert(v1[2] == 1);
+    static_assert(*v1.begin() == 2);
     static_assert(v1.size() == 3);
-    static_assert(v1.capacity() == 11);
+    static_assert(v1.max_size() == 11);
     ```
 
 - FixedDeque
@@ -110,9 +108,9 @@ More examples can be found [here](test/enums_test_common.hpp).
     static_assert(v1[1] == 0);
     static_assert(v1[2] == 1);
     static_assert(v1.size() == 3);
-    static_assert(v1.capacity() == 11);
+    static_assert(v1.max_size() == 11);
     ```
-  
+
 - FixedQueue
     ```C++
     constexpr auto s1 = []()
@@ -210,7 +208,7 @@ More examples can be found [here](test/enums_test_common.hpp).
     static_assert(m1.contains(2));
     static_assert(m1.at(4) == 40);
     static_assert(m1.size() == 2);
-    static_assert(m1.capacity() == 11);
+    static_assert(m1.max_size() == 11);
     ```
 
 - FixedSet
@@ -225,7 +223,7 @@ More examples can be found [here](test/enums_test_common.hpp).
     static_assert(!s1.contains(1));
     static_assert(s1.contains(2));
     static_assert(s1.size() == 2);
-    static_assert(s1.capacity() == 11);
+    static_assert(s1.max_size() == 11);
     ```
 
 - FixedUnorderedMap
@@ -241,7 +239,7 @@ More examples can be found [here](test/enums_test_common.hpp).
     static_assert(m1.contains(2));
     static_assert(m1.at(4) == 40);
     static_assert(m1.size() == 2);
-    static_assert(m1.capacity() == 11);
+    static_assert(m1.max_size() == 11);
     ```
 
 - FixedUnorderedSet
@@ -256,7 +254,7 @@ More examples can be found [here](test/enums_test_common.hpp).
     static_assert(!s1.contains(1));
     static_assert(s1.contains(2));
     static_assert(s1.size() == 2);
-    static_assert(s1.capacity() == 11);
+    static_assert(s1.max_size() == 11);
     ```
 
 - EnumMap
@@ -277,9 +275,9 @@ More examples can be found [here](test/enums_test_common.hpp).
 
     // Ensures all keys are specified, at compile-time
     constexpr auto m2 = EnumMap<Color, int>::create_with_all_entries({
-        {Color::BLUE, 42},
+        {Color::RED, 42},
         {Color::YELLOW, 7},
-        {Color::BLUE, 42},
+        {Color::BLUE, 6},
     });
     ```
 
