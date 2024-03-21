@@ -19,6 +19,8 @@ using EnumWithNoConstants = rich_enums::EnumWithNoConstants;
 
 static_assert(TriviallyCopyable<EnumArray<TestEnum1, int>>);
 static_assert(IsStructuralType<EnumArray<TestEnum1, int>>);
+
+static_assert(NotDefaultConstructible<EnumArray<TestEnum1, MockNonDefaultConstructible>>);
 }  // namespace
 
 TEST(EnumArray, DefaultConstructorDefaultInitialization)
