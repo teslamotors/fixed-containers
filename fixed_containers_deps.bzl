@@ -7,7 +7,7 @@ def fixed_containers_deps():
     maybe(
         http_archive,
         name = "com_github_neargye_magic_enum",
-        urls = ["https://github.com/Neargye/magic_enum/archive/41c916432bfc1a51560f9f165d52ed5c89d4932e.tar.gz"],
-        strip_prefix = "magic_enum-41c916432bfc1a51560f9f165d52ed5c89d4932e",
-        sha256 = "cac49b49ec8a9f61fe161874ad30bbd1ca3b104b156246d533f0b1ea480e481e",
+        urls = ["https://github.com/Neargye/magic_enum/archive/d63a9d63717640705c6c9654d68fa6575d39bab8.tar.gz"],
+        strip_prefix = "magic_enum-d63a9d63717640705c6c9654d68fa6575d39bab8",
+        sha256 = "9b2b1788dd651feab88bcffb0b2ae3ded4c27142a295d6ede882c8fc8a327a35",
     )
