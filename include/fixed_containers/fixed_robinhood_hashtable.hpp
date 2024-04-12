@@ -394,7 +394,14 @@ public:
         return end_value_index;
     }
 
-    constexpr void clear() { erase_range(begin_index(), end_index()); }
+    constexpr void clear()
+    {
+        // reset the backing linked list
+        IMPLEMENTATION_DETAIL_DO_NOT_USE_value_storage_.clear();
+
+        // reset the bucket array
+        IMPLEMENTATION_DETAIL_DO_NOT_USE_bucket_array_.fill({});
+    }
 
 public:
     constexpr FixedRobinhoodHashtable() = default;
