@@ -123,8 +123,17 @@ public:
 
     Hash IMPLEMENTATION_DETAIL_DO_NOT_USE_hash_{};
     KeyEqual IMPLEMENTATION_DETAIL_DO_NOT_USE_key_equal_{};
+
+    // this stores the Key, Value pairs that we actually need to store. The LinkedList is what
+    // provides a stable iteration order.
     fixed_doubly_linked_list_detail::FixedDoublyLinkedList<PairType, CAPACITY, SizeType>
         IMPLEMENTATION_DETAIL_DO_NOT_USE_value_storage_{};
+    // this stores a "backlink" from a given Value array index to the bucket index that points at it
+    std::array<SizeType, CAPACITY> IMPLEMENTATION_DETAIL_DO_NOT_USE_value_index_to_bucket_index_{};
+
+    // this is the array that is indexed by the hash of the key. Each "bucket" contains an index to
+    // a slot in the `value_storage_`, as well as a `dist_and_fingerprint` that is needed to
+    // implement robinhood hashing
     std::array<Bucket, INTERNAL_TABLE_SIZE> IMPLEMENTATION_DETAIL_DO_NOT_USE_bucket_array_{};
 
     struct OpaqueIndexType
@@ -147,6 +156,16 @@ public:
     [[nodiscard]] constexpr const Bucket& bucket_at(SizeType idx) const
     {
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_bucket_array_[idx];
+    }
+
+    [[nodiscard]] constexpr SizeType& bucket_for_value_index(SizeType value_idx)
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_value_index_to_bucket_index_[value_idx];
+    }
+
+    [[nodiscard]] constexpr const SizeType& bucket_for_value_index(SizeType value_idx) const
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_value_index_to_bucket_index_[value_idx];
     }
 
     template <typename Key>
@@ -190,10 +209,20 @@ public:
         // until we hit an empty one
         while (0 != bucket_at(table_loc).dist_and_fingerprint_)
         {
+            // update the backlink of the value pointed to by the bucket we're about to put in
+            // table_loc
+            bucket_for_value_index(bucket.value_index_) = table_loc;
+            // put `bucket` in `table_loc` and then assign `bucket` to whatever used to be in
+            // `table_loc`
             bucket = std::exchange(bucket_at(table_loc), bucket);
+            // increment the distance of the thing we just evicted, it will be placed one slot over
+            // at the top of this loop
             bucket = bucket.plus_dist();
+            // go to the next table slot
             table_loc = next_bucket_index(table_loc);
         }
+        // update the backlink of the value pointed to by the bucket we're about to put in table_loc
+        bucket_for_value_index(bucket.value_index_) = table_loc;
         bucket_at(table_loc) = bucket;
     }
 
@@ -205,9 +234,18 @@ public:
         SizeType next_loc = next_bucket_index(table_loc);
         while (bucket_at(next_loc).dist_and_fingerprint_ >= Bucket::DIST_INC * 2)
         {
+            // overwrite the bucket at table_loc with the bucket at next_loc (accounting for the
+            // change in distance)
             bucket_at(table_loc) = bucket_at(next_loc).minus_dist();
+
+            // update the backlink for the shifted element
+            bucket_for_value_index(bucket_at(table_loc).value_index_) = table_loc;
+
+            // shift both table_loc and next_loc forward one index
             table_loc = std::exchange(next_loc, next_bucket_index(next_loc));
         }
+        // zero out the thing we're pointed at now, it was copied back one (or it is the thing we
+        // wanted to delete)
         bucket_at(table_loc) = {};
     }
 
@@ -349,7 +387,8 @@ public:
         SizeType cur_index = start_value_index;
         while (cur_index != end_value_index)
         {
-            cur_index = erase(opaque_index_of(key_at(cur_index)));
+            OpaqueIndexType i = {bucket_for_value_index(cur_index), 0};
+            cur_index = erase(i);
         }
 
         return end_value_index;

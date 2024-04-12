@@ -121,6 +121,7 @@ TEST(MapOperations, Emplace)
     EXPECT_EQ(map.bucket_at(3).dist(), 1);
     EXPECT_EQ(map.bucket_at(3).fingerprint(), 13);
     EXPECT_EQ(map.bucket_at(3).value_index_, 0);
+    EXPECT_EQ(map.bucket_for_value_index(0), 3);
     EXPECT_EQ(map.key_at(0), 13);
     EXPECT_EQ(map.value_at(0), 1);
 
@@ -132,12 +133,14 @@ TEST(MapOperations, Emplace)
     EXPECT_EQ(map.bucket_at(3).dist(), 1);
     EXPECT_EQ(map.bucket_at(3).fingerprint(), 33);
     EXPECT_EQ(map.bucket_at(3).value_index_, 1);
+    EXPECT_EQ(map.bucket_for_value_index(1), 3);
     EXPECT_EQ(map.key_at(1), 33);
     EXPECT_EQ(map.value_at(1), 42);
 
     EXPECT_EQ(map.bucket_at(4).dist(), 2);
     EXPECT_EQ(map.bucket_at(4).fingerprint(), 13);
     EXPECT_EQ(map.bucket_at(4).value_index_, 0);
+    EXPECT_EQ(map.bucket_for_value_index(0), 4);
     EXPECT_EQ(map.key_at(0), 13);
     EXPECT_EQ(map.value_at(0), 1);
 
@@ -150,6 +153,7 @@ TEST(MapOperations, Emplace)
     EXPECT_EQ(map.bucket_at(9).dist(), 1);
     EXPECT_EQ(map.bucket_at(9).fingerprint(), 9);
     EXPECT_EQ(map.bucket_at(9).value_index_, 2);
+    EXPECT_EQ(map.bucket_for_value_index(2), 9);
     EXPECT_EQ(map.key_at(2), 9);
     EXPECT_EQ(map.value_at(2), 123);
 
@@ -162,18 +166,21 @@ TEST(MapOperations, Emplace)
     EXPECT_EQ(map.bucket_at(3).dist(), 1);
     EXPECT_EQ(map.bucket_at(3).fingerprint(), 43);
     EXPECT_EQ(map.bucket_at(3).value_index_, 3);
+    EXPECT_EQ(map.bucket_for_value_index(3), 3);
     EXPECT_EQ(map.key_at(3), 43);
     EXPECT_EQ(map.value_at(3), 999);
 
     EXPECT_EQ(map.bucket_at(4).dist(), 2);
     EXPECT_EQ(map.bucket_at(4).fingerprint(), 33);
     EXPECT_EQ(map.bucket_at(4).value_index_, 1);
+    EXPECT_EQ(map.bucket_for_value_index(1), 4);
     EXPECT_EQ(map.key_at(1), 33);
     EXPECT_EQ(map.value_at(1), 42);
 
     EXPECT_EQ(map.bucket_at(5).dist(), 3);
     EXPECT_EQ(map.bucket_at(5).fingerprint(), 13);
     EXPECT_EQ(map.bucket_at(5).value_index_, 0);
+    EXPECT_EQ(map.bucket_for_value_index(0), 5);
     EXPECT_EQ(map.key_at(0), 13);
     EXPECT_EQ(map.value_at(0), 1);
 
@@ -185,6 +192,7 @@ TEST(MapOperations, Emplace)
     EXPECT_EQ(map.bucket_at(6).dist(), 1);
     EXPECT_EQ(map.bucket_at(6).fingerprint(), 6);
     EXPECT_EQ(map.bucket_at(6).value_index_, 4);
+    EXPECT_EQ(map.bucket_for_value_index(4), 6);
     EXPECT_EQ(map.key_at(4), 6);
     EXPECT_EQ(map.value_at(4), 1000);
 
@@ -198,30 +206,35 @@ TEST(MapOperations, Emplace)
     EXPECT_EQ(map.bucket_at(3).dist(), 1);
     EXPECT_EQ(map.bucket_at(3).fingerprint(), 43);
     EXPECT_EQ(map.bucket_at(3).value_index_, 3);
+    EXPECT_EQ(map.bucket_for_value_index(3), 3);
     EXPECT_EQ(map.key_at(3), 43);
     EXPECT_EQ(map.value_at(3), 999);
 
     EXPECT_EQ(map.bucket_at(4).dist(), 2);
     EXPECT_EQ(map.bucket_at(4).fingerprint(), 33);
     EXPECT_EQ(map.bucket_at(4).value_index_, 1);
+    EXPECT_EQ(map.bucket_for_value_index(1), 4);
     EXPECT_EQ(map.key_at(1), 33);
     EXPECT_EQ(map.value_at(1), 42);
 
     EXPECT_EQ(map.bucket_at(5).dist(), 3);
     EXPECT_EQ(map.bucket_at(5).fingerprint(), 23);
     EXPECT_EQ(map.bucket_at(5).value_index_, 5);
+    EXPECT_EQ(map.bucket_for_value_index(5), 5);
     EXPECT_EQ(map.key_at(5), 23);
     EXPECT_EQ(map.value_at(5), 3232);
 
     EXPECT_EQ(map.bucket_at(6).dist(), 4);
     EXPECT_EQ(map.bucket_at(6).fingerprint(), 13);
     EXPECT_EQ(map.bucket_at(6).value_index_, 0);
+    EXPECT_EQ(map.bucket_for_value_index(0), 6);
     EXPECT_EQ(map.key_at(0), 13);
     EXPECT_EQ(map.value_at(0), 1);
 
     EXPECT_EQ(map.bucket_at(7).dist(), 2);
     EXPECT_EQ(map.bucket_at(7).fingerprint(), 6);
     EXPECT_EQ(map.bucket_at(7).value_index_, 4);
+    EXPECT_EQ(map.bucket_for_value_index(4), 7);
     EXPECT_EQ(map.key_at(4), 6);
     EXPECT_EQ(map.value_at(4), 1000);
 
@@ -233,18 +246,21 @@ TEST(MapOperations, Emplace)
     EXPECT_EQ(map.bucket_at(6).dist(), 4);
     EXPECT_EQ(map.bucket_at(6).fingerprint(), 13);
     EXPECT_EQ(map.bucket_at(6).value_index_, 0);
+    EXPECT_EQ(map.bucket_for_value_index(0), 6);
     EXPECT_EQ(map.key_at(0), 13);
     EXPECT_EQ(map.value_at(0), 1);
 
     EXPECT_EQ(map.bucket_at(7).dist(), 2);
     EXPECT_EQ(map.bucket_at(7).fingerprint(), 66);
     EXPECT_EQ(map.bucket_at(7).value_index_, 6);
+    EXPECT_EQ(map.bucket_for_value_index(6), 7);
     EXPECT_EQ(map.key_at(6), 66);
     EXPECT_EQ(map.value_at(6), 66);
 
     EXPECT_EQ(map.bucket_at(8).dist(), 3);
     EXPECT_EQ(map.bucket_at(8).fingerprint(), 6);
     EXPECT_EQ(map.bucket_at(8).value_index_, 4);
+    EXPECT_EQ(map.bucket_for_value_index(4), 8);
     EXPECT_EQ(map.key_at(4), 6);
     EXPECT_EQ(map.value_at(4), 1000);
 
@@ -257,18 +273,21 @@ TEST(MapOperations, Emplace)
     EXPECT_EQ(map.bucket_at(8).dist(), 3);
     EXPECT_EQ(map.bucket_at(8).fingerprint(), 6);
     EXPECT_EQ(map.bucket_at(8).value_index_, 4);
+    EXPECT_EQ(map.bucket_for_value_index(4), 8);
     EXPECT_EQ(map.key_at(4), 6);
     EXPECT_EQ(map.value_at(4), 1000);
 
     EXPECT_EQ(map.bucket_at(9).dist(), 2);
     EXPECT_EQ(map.bucket_at(9).fingerprint(), 128);
     EXPECT_EQ(map.bucket_at(9).value_index_, 7);
+    EXPECT_EQ(map.bucket_for_value_index(7), 9);
     EXPECT_EQ(map.key_at(7), 128);
     EXPECT_EQ(map.value_at(7), 256);
 
     EXPECT_EQ(map.bucket_at(0).dist(), 2);
     EXPECT_EQ(map.bucket_at(0).fingerprint(), 9);
     EXPECT_EQ(map.bucket_at(0).value_index_, 2);
+    EXPECT_EQ(map.bucket_for_value_index(2), 0);
     EXPECT_EQ(map.key_at(2), 9);
     EXPECT_EQ(map.value_at(2), 123);
 
@@ -279,12 +298,14 @@ TEST(MapOperations, Emplace)
     EXPECT_EQ(map.bucket_at(0).dist(), 2);
     EXPECT_EQ(map.bucket_at(0).fingerprint(), 9);
     EXPECT_EQ(map.bucket_at(0).value_index_, 2);
+    EXPECT_EQ(map.bucket_for_value_index(2), 0);
     EXPECT_EQ(map.key_at(2), 9);
     EXPECT_EQ(map.value_at(2), 123);
 
     EXPECT_EQ(map.bucket_at(1).dist(), 2);
     EXPECT_EQ(map.bucket_at(1).fingerprint(), 0);
     EXPECT_EQ(map.bucket_at(1).value_index_, 8);
+    EXPECT_EQ(map.bucket_for_value_index(8), 1);
     EXPECT_EQ(map.key_at(8), 0);
     EXPECT_EQ(map.value_at(8), -1);
 }
@@ -434,6 +455,7 @@ TEST(MapOperations, Erase)
     EXPECT_EQ(map.bucket_at(0).dist(), 2);
     EXPECT_EQ(map.bucket_at(0).fingerprint(), 9);
     EXPECT_EQ(map.bucket_at(0).value_index_, 2);
+    EXPECT_EQ(map.bucket_for_value_index(2), 0);
     EXPECT_EQ(map.key_at(2), 9);
     EXPECT_EQ(map.value_at(2), 123);
 
@@ -457,12 +479,14 @@ TEST(MapOperations, Erase)
     EXPECT_EQ(map.bucket_at(8).dist(), 1);
     EXPECT_EQ(map.bucket_at(8).fingerprint(), 128);
     EXPECT_EQ(map.bucket_at(8).value_index_, 7);
+    EXPECT_EQ(map.bucket_for_value_index(7), 8);
     EXPECT_EQ(map.key_at(7), 128);
     EXPECT_EQ(map.value_at(7), 256);
 
     EXPECT_EQ(map.bucket_at(9).dist(), 1);
     EXPECT_EQ(map.bucket_at(9).fingerprint(), 9);
     EXPECT_EQ(map.bucket_at(9).value_index_, 2);
+    EXPECT_EQ(map.bucket_for_value_index(2), 9);
     EXPECT_EQ(map.key_at(2), 9);
     EXPECT_EQ(map.value_at(2), 123);
 
@@ -494,12 +518,14 @@ TEST(MapOperations, Erase)
     EXPECT_EQ(map.bucket_at(5).dist(), 3);
     EXPECT_EQ(map.bucket_at(5).fingerprint(), 13);
     EXPECT_EQ(map.bucket_at(5).value_index_, 0);
+    EXPECT_EQ(map.bucket_for_value_index(0), 5);
     EXPECT_EQ(map.key_at(0), 13);
     EXPECT_EQ(map.value_at(0), 1);
 
     EXPECT_EQ(map.bucket_at(6).dist(), 1);
     EXPECT_EQ(map.bucket_at(6).fingerprint(), 66);
     EXPECT_EQ(map.bucket_at(6).value_index_, 6);
+    EXPECT_EQ(map.bucket_for_value_index(6), 6);
     EXPECT_EQ(map.key_at(6), 66);
     EXPECT_EQ(map.value_at(6), 66);
 
@@ -509,6 +535,7 @@ TEST(MapOperations, Erase)
     EXPECT_EQ(map.bucket_at(8).dist(), 1);
     EXPECT_EQ(map.bucket_at(8).fingerprint(), 128);
     EXPECT_EQ(map.bucket_at(8).value_index_, 7);
+    EXPECT_EQ(map.bucket_for_value_index(7), 8);
     EXPECT_EQ(map.key_at(7), 128);
     EXPECT_EQ(map.value_at(7), 256);
 
@@ -766,12 +793,14 @@ TEST(MapCornerCases, PerfectCollisions)
     EXPECT_EQ(map.bucket_at(3).dist(), 1);
     EXPECT_EQ(map.bucket_at(3).fingerprint(), 13);
     EXPECT_EQ(map.bucket_at(3).value_index_, 0);
+    EXPECT_EQ(map.bucket_for_value_index(0), 3);
     EXPECT_EQ(map.key_at(0), 13);
     EXPECT_EQ(map.value_at(0), 0);
 
     EXPECT_EQ(map.bucket_at(4).dist(), 2);
     EXPECT_EQ(map.bucket_at(4).fingerprint(), 13);
     EXPECT_EQ(map.bucket_at(4).value_index_, 1);
+    EXPECT_EQ(map.bucket_for_value_index(1), 4);
     EXPECT_EQ(map.key_at(1), 1293);
     EXPECT_EQ(map.value_at(1), 1);
 
@@ -800,18 +829,21 @@ TEST(MapCornerCases, PerfectCollisions)
     EXPECT_EQ(map.bucket_at(3).dist(), 1);
     EXPECT_EQ(map.bucket_at(3).fingerprint(), 23);
     EXPECT_EQ(map.bucket_at(3).value_index_, 2);
+    EXPECT_EQ(map.bucket_for_value_index(2), 3);
     EXPECT_EQ(map.key_at(2), 23);
     EXPECT_EQ(map.value_at(2), 2);
 
     EXPECT_EQ(map.bucket_at(4).dist(), 2);
     EXPECT_EQ(map.bucket_at(4).fingerprint(), 13);
     EXPECT_EQ(map.bucket_at(4).value_index_, 0);
+    EXPECT_EQ(map.bucket_for_value_index(0), 4);
     EXPECT_EQ(map.key_at(0), 13);
     EXPECT_EQ(map.value_at(0), 0);
 
     EXPECT_EQ(map.bucket_at(5).dist(), 3);
     EXPECT_EQ(map.bucket_at(5).fingerprint(), 13);
     EXPECT_EQ(map.bucket_at(5).value_index_, 1);
+    EXPECT_EQ(map.bucket_for_value_index(1), 5);
     EXPECT_EQ(map.key_at(1), 1293);
     EXPECT_EQ(map.value_at(1), 1);
 
@@ -836,24 +868,28 @@ TEST(MapCornerCases, PerfectCollisions)
     EXPECT_EQ(map.bucket_at(3).dist(), 1);
     EXPECT_EQ(map.bucket_at(3).fingerprint(), 23);
     EXPECT_EQ(map.bucket_at(3).value_index_, 2);
+    EXPECT_EQ(map.bucket_for_value_index(2), 3);
     EXPECT_EQ(map.key_at(2), 23);
     EXPECT_EQ(map.value_at(2), 2);
 
     EXPECT_EQ(map.bucket_at(4).dist(), 2);
     EXPECT_EQ(map.bucket_at(4).fingerprint(), 13);
     EXPECT_EQ(map.bucket_at(4).value_index_, 0);
+    EXPECT_EQ(map.bucket_for_value_index(0), 4);
     EXPECT_EQ(map.key_at(0), 13);
     EXPECT_EQ(map.value_at(0), 0);
 
     EXPECT_EQ(map.bucket_at(5).dist(), 3);
     EXPECT_EQ(map.bucket_at(5).fingerprint(), 13);
     EXPECT_EQ(map.bucket_at(5).value_index_, 1);
+    EXPECT_EQ(map.bucket_for_value_index(1), 5);
     EXPECT_EQ(map.key_at(1), 1293);
     EXPECT_EQ(map.value_at(1), 1);
 
     EXPECT_EQ(map.bucket_at(6).dist(), 3);
     EXPECT_EQ(map.bucket_at(6).fingerprint(), 24);
     EXPECT_EQ(map.bucket_at(6).value_index_, 3);
+    EXPECT_EQ(map.bucket_for_value_index(3), 6);
     EXPECT_EQ(map.key_at(3), 24);
     EXPECT_EQ(map.value_at(3), 3);
 
