@@ -445,14 +445,7 @@ public:
         const NodeIndex successor_index = tree().delete_at_and_return_successor(i);
         return create_iterator(successor_index);
     }
-    constexpr iterator erase(iterator pos) noexcept
-    {
-        assert_or_abort(pos != end());
-        const NodeIndex i = tree().index_of_node_or_null(pos->first);
-        assert_or_abort(tree().contains_at(i));
-        const NodeIndex successor_index = tree().delete_at_and_return_successor(i);
-        return create_iterator(successor_index);
-    }
+    constexpr iterator erase(iterator pos) noexcept { return erase(const_iterator{pos}); }
 
     constexpr iterator erase(const_iterator first, const_iterator last) noexcept
     {
