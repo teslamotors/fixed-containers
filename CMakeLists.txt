@@ -62,6 +62,7 @@ if(${USING_CLANG})
 
         # due to gtest
         -Wno-covered-switch-default # v1.11.0 fails (needs new release). bazel points to a newer commit with the fix.
+        -Wno-switch-default
         -Wno-exit-time-destructors
         -Wno-used-but-marked-unused
 

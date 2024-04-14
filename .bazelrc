@@ -38,5 +38,6 @@ build:clang --copt -Wno-range-loop-bind-reference
 # due to gtest
 build:clang --copt -Wno-exit-time-destructors
 build:clang --copt -Wno-used-but-marked-unused
+build:clang --copt -Wno-switch-default
 #
 build:clang --copt -Wno-poison-system-directories
