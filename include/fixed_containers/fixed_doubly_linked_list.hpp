@@ -18,6 +18,7 @@ struct LinkedListIndices
 template <typename T, std::size_t MAXIMUM_SIZE, typename IndexType = std::size_t>
 class FixedDoublyLinkedListBase
 {
+protected:
     static_assert(MAXIMUM_SIZE + 1 <= std::numeric_limits<IndexType>::max(),
                   "must be able to index MAXIMUM_SIZE+1 elements with IndexType");
     using StorageType = FixedIndexBasedPoolStorage<T, MAXIMUM_SIZE>;
@@ -51,11 +52,6 @@ public:
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_size_;
     }
     [[nodiscard]] constexpr bool full() const noexcept { return storage().full(); }
-
-    constexpr void clear() noexcept
-    {
-        delete_range_and_return_next_index(front_index(), MAXIMUM_SIZE);
-    }
 
     constexpr const T& at(const IndexType i) const { return storage().at(i); }
     constexpr T& at(const IndexType i) { return storage().at(i); }
@@ -227,6 +223,11 @@ public:
         return *this;
     }
 
+    constexpr void clear() noexcept
+    {
+        this->delete_range_and_return_next_index(this->front_index(), MAXIMUM_SIZE);
+    }
+
     constexpr ~FixedDoublyLinkedList() noexcept { this->clear(); }
 };
 
@@ -240,6 +241,22 @@ public:
     // clang-format off
     constexpr FixedDoublyLinkedList() noexcept : Base() { }
     // clang-format on
+
+    constexpr void clear() noexcept
+    {
+        // Instead of iterating over the elements of the linked list (slow), just reset the backing
+        // storage
+        std::construct_at(&(this->IMPLEMENTATION_DETAIL_DO_NOT_USE_storage_));
+
+        // And reset the start/end sentinel to point at itself.
+        // The remaining links of the linked list will be overwritten as elements are allocated, so
+        // we don't have to reset the entire chain_ array
+        this->next_of(MAXIMUM_SIZE) = MAXIMUM_SIZE;
+        this->prev_of(MAXIMUM_SIZE) = MAXIMUM_SIZE;
+
+        // Finally, set the size back to 0
+        this->IMPLEMENTATION_DETAIL_DO_NOT_USE_size_ = 0;
+    }
 };
 
 }  // namespace fixed_containers::fixed_doubly_linked_list_detail::specializations
