@@ -33,7 +33,9 @@ using IT = typename IntIntMap10::OpaqueIteratedType;
 
 static_assert(IsStructuralType<IntIntMap10>);
 
+#if defined(__clang__) && __clang_major__ >= 16
 static_assert(TriviallyCopyable<IntIntMap10>);
+#endif
 static_assert(TriviallyCopyAssignable<IntIntMap10>);
 static_assert(TriviallyMoveAssignable<IntIntMap10>);
 static_assert(StandardLayout<IntIntMap10>);
