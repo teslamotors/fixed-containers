@@ -400,11 +400,11 @@ public:
         iterator read_end_it = std::next(read_start_it, entry_count_to_move);
         iterator write_start_it = const_to_mutable_it(first);
 
-        // Clean out the gap
-        destroy_range(write_start_it, std::next(write_start_it, entry_count_to_remove));
-
         // Do the move
-        std::move(read_start_it, read_end_it, write_start_it);
+        iterator write_end_it = std::move(read_start_it, read_end_it, write_start_it);
+
+        // Clean out the tail
+        destroy_range(write_end_it, read_end_it);
 
         decrement_size(static_cast<std::size_t>(entry_count_to_remove));
         return write_start_it;

@@ -1725,12 +1725,22 @@ TEST(FixedDeque, EraseRange)
         static_assert(v1.size() == 4);
         static_assert(v1.max_size() == 8);
 
-        auto v2 = Factory::template create<int, 8>({2, 1, 4, 5, 0, 3});
+        {
+            auto v2 = Factory::template create<int, 8>({2, 1, 4, 5, 0, 3});
 
-        auto it = v2.erase(std::next(v2.begin(), 1), std::next(v2.cbegin(), 3));
-        EXPECT_EQ(it, std::next(v2.begin(), 1));
-        EXPECT_EQ(*it, 5);
-        EXPECT_TRUE(std::ranges::equal(v2, std::array<int, 4>{{2, 5, 0, 3}}));
+            auto it = v2.erase(std::next(v2.begin(), 1), std::next(v2.cbegin(), 3));
+            EXPECT_EQ(it, std::next(v2.begin(), 1));
+            EXPECT_EQ(*it, 5);
+            EXPECT_TRUE(std::ranges::equal(v2, std::array<int, 4>{{2, 5, 0, 3}}));
+        }
+        {
+            auto v =
+                Factory::template create<std::vector<int>, 8>({{1, 2, 3}, {4, 5}, {}, {6, 7, 8}});
+            auto it = v.erase(v.begin(), std::next(v.begin(), 2));
+            EXPECT_EQ(it, v.begin());
+            EXPECT_EQ(v.size(), 2u);
+            EXPECT_TRUE(std::ranges::equal(v, std::vector<std::vector<int>>{{}, {6, 7, 8}}));
+        }
     };
 
     run_test(FixedDequeInitialStateFirstIndex{});
@@ -1753,22 +1763,41 @@ TEST(FixedDeque, EraseOne)
         static_assert(v1.size() == 4);
         static_assert(v1.max_size() == 8);
 
-        auto v2 = Factory::template create<int, 8>({2, 1, 4, 5, 0, 3});
+        {
+            auto v2 = Factory::template create<int, 8>({2, 1, 4, 5, 0, 3});
 
-        auto it = v2.erase(v2.begin());
-        EXPECT_EQ(it, v2.begin());
-        EXPECT_EQ(*it, 1);
-        EXPECT_TRUE(std::ranges::equal(v2, std::array<int, 5>{{1, 4, 5, 0, 3}}));
-        std::advance(it, 2);
-        it = v2.erase(it);
-        EXPECT_EQ(it, std::next(v2.begin(), 2));
-        EXPECT_EQ(*it, 0);
-        EXPECT_TRUE(std::ranges::equal(v2, std::array<int, 4>{{1, 4, 0, 3}}));
-        ++it;
-        it = v2.erase(it);
-        EXPECT_EQ(it, v2.cend());
-        // EXPECT_EQ(*it, 3);  // Not dereferenceable
-        EXPECT_TRUE(std::ranges::equal(v2, std::array<int, 3>{{1, 4, 0}}));
+            auto it = v2.erase(v2.begin());
+            EXPECT_EQ(it, v2.begin());
+            EXPECT_EQ(*it, 1);
+            EXPECT_TRUE(std::ranges::equal(v2, std::array<int, 5>{{1, 4, 5, 0, 3}}));
+            std::advance(it, 2);
+            it = v2.erase(it);
+            EXPECT_EQ(it, std::next(v2.begin(), 2));
+            EXPECT_EQ(*it, 0);
+            EXPECT_TRUE(std::ranges::equal(v2, std::array<int, 4>{{1, 4, 0, 3}}));
+            ++it;
+            it = v2.erase(it);
+            EXPECT_EQ(it, v2.cend());
+            // EXPECT_EQ(*it, 3);  // Not dereferenceable
+            EXPECT_TRUE(std::ranges::equal(v2, std::array<int, 3>{{1, 4, 0}}));
+        }
+        {
+            auto v =
+                Factory::template create<std::vector<int>, 8>({{1, 2, 3}, {4, 5}, {}, {6, 7, 8}});
+            auto it = v.erase(v.begin());
+            EXPECT_EQ(it, v.begin());
+            EXPECT_EQ(v.size(), 3u);
+            EXPECT_TRUE(
+                std::ranges::equal(v, std::vector<std::vector<int>>{{4, 5}, {}, {6, 7, 8}}));
+            it = v.erase(std::next(v.begin(), 1));
+            EXPECT_EQ(it, std::next(v.begin(), 1));
+            EXPECT_EQ(v.size(), 2u);
+            EXPECT_TRUE(std::ranges::equal(v, std::vector<std::vector<int>>{{4, 5}, {6, 7, 8}}));
+            it = v.erase(std::next(v.begin(), 1));
+            EXPECT_EQ(it, v.end());
+            EXPECT_EQ(v.size(), 1u);
+            EXPECT_TRUE(std::ranges::equal(v, std::vector<std::vector<int>>{{4, 5}}));
+        }
     };
 
     run_test(FixedDequeInitialStateFirstIndex{});
