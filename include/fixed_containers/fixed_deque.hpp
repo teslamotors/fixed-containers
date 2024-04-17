@@ -565,7 +565,7 @@ private:
         auto read_end_it = std::next(read_start_it, value_count_to_move);
         auto write_end_it =
             std::next(read_start_it, static_cast<std::ptrdiff_t>(n) + value_count_to_move);
-        algorithm::emplace_move_backward(read_start_it, read_end_it, write_end_it);
+        algorithm::uninitialized_relocate_backward(read_start_it, read_end_it, write_end_it);
 
         return read_start_it;
     }
