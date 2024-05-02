@@ -122,18 +122,6 @@ constexpr T&& get(T&& value)
     return value;
 }
 
-template <typename T, typename... Args>
-constexpr void construct_at(OptionalStorage<T>* p, Args&&... args)
-{
-    std::construct_at(p, std::in_place, std::forward<Args>(args)...);
-}
-
-template <typename T, typename... Args>
-constexpr void construct_at(T* p, Args&&... args)
-{
-    std::construct_at(p, std::forward<Args>(args)...);
-}
-
 // "Transparent" here means there will be no wrapping for simple types.
 template <typename T>
 using OptionalStorageTransparent =

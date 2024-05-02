@@ -724,15 +724,13 @@ private:
     }
     constexpr void set_size(const std::size_t size) { starting_index_and_size().distance = size; }
 
-    constexpr const OptionalT& array_unchecked_at(const std::size_t i) const { return array()[i]; }
-    constexpr OptionalT& array_unchecked_at(const std::size_t i) { return array()[i]; }
     constexpr const T& unchecked_at(const std::size_t i) const
     {
-        return optional_storage_detail::get(array_unchecked_at(i));
+        return optional_storage_detail::get(array()[i]);
     }
     constexpr T& unchecked_at(const std::size_t i)
     {
-        return optional_storage_detail::get(array_unchecked_at(i));
+        return optional_storage_detail::get(array()[i]);
     }
 
     constexpr void destroy_at(std::size_t)
@@ -742,7 +740,7 @@ private:
     constexpr void destroy_at(std::size_t i)
         requires NotTriviallyDestructible<T>
     {
-        std::destroy_at(&array_unchecked_at(i).value);
+        std::destroy_at(&unchecked_at(i));
     }
 
     constexpr void destroy_range(iterator /*first*/, iterator /*last*/)
@@ -760,17 +758,17 @@ private:
 
     constexpr void place_at(const std::size_t i, const value_type& v)
     {
-        std::construct_at(&array_unchecked_at(i), v);
+        std::construct_at(&unchecked_at(i), v);
     }
     constexpr void place_at(const std::size_t i, value_type&& v)
     {
-        std::construct_at(&array_unchecked_at(i), std::move(v));
+        std::construct_at(&unchecked_at(i), std::move(v));
     }
 
     template <class... Args>
     constexpr void emplace_at(const std::size_t i, Args&&... args)
     {
-        optional_storage_detail::construct_at(&array_unchecked_at(i), std::forward<Args>(args)...);
+        std::construct_at(&unchecked_at(i), std::forward<Args>(args)...);
     }
 
     // [WORKAROUND-1] - Needed by the non-trivially-copyable flavor of FixedDeque
