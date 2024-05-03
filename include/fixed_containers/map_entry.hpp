@@ -50,7 +50,7 @@ class MapEntry<K, EmptyValue>
 public:
     using KeyType = K;
     using ValueType = EmptyValue;
-    static constexpr bool HAS_ASSOCIATED_VALUE = true;
+    static constexpr bool HAS_ASSOCIATED_VALUE = false;
 
 public:  // Public so this type is a structural type and can thus be used in template parameters
     K IMPLEMENTATION_DETAIL_DO_NOT_USE_key_;
