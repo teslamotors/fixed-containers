@@ -245,6 +245,17 @@ cc_library(
 )
 
 cc_library(
+    name = "fixed_doubly_linked_list_raw_view",
+    hdrs = ["include/fixed_containers/fixed_doubly_linked_list_raw_view.hpp"],
+    includes = ["include"],
+    deps = [
+        ":fixed_doubly_linked_list",
+        ":forward_iterator",
+    ],
+    copts = ["-std=c++20"],
+)
+
+cc_library(
     name = "fixed_index_based_storage",
     hdrs = ["include/fixed_containers/fixed_index_based_storage.hpp"],
     includes = ["include"],
@@ -978,6 +989,21 @@ cc_test(
     srcs = ["test/fixed_doubly_linked_list_test.cpp"],
     deps = [
         ":fixed_doubly_linked_list",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
+    ],
+    copts = ["-std=c++20"],
+)
+
+cc_test(
+    name = "fixed_doubly_linked_list_raw_view_test",
+    srcs = ["test/fixed_doubly_linked_list_raw_view_test.cpp"],
+    deps = [
+        ":concepts",
+        ":fixed_list",
+        ":fixed_doubly_linked_list",
+        ":fixed_doubly_linked_list_raw_view",
+        ":test_utilities_common",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
