@@ -11,13 +11,16 @@ namespace fixed_containers::instance_counter
 // These classes use a static fields to count instances. The template parameters
 // ensure that each type gets its own static instance and doesn't interfere with other counters.
 template <class /*UniqueDifferentiator*/>
-struct InstanceCounterNonTrivialAssignment
+class InstanceCounterNonTrivialAssignment
 {
+public:
     static int counter;
     using Self = InstanceCounterNonTrivialAssignment;
 
+private:
     int value;
 
+public:
     InstanceCounterNonTrivialAssignment(int value_in_ctor = 0)
       : value{value_in_ctor}
     {
@@ -45,6 +48,8 @@ struct InstanceCounterNonTrivialAssignment
     }
     ~InstanceCounterNonTrivialAssignment() { counter--; }
 
+    int get() const { return value; }
+
     bool operator==(const Self& other) const { return value == other.value; }
     std::strong_ordering operator<=>(const Self& other) const { return value <=> other.value; }
 };
@@ -52,25 +57,28 @@ template <class UniqueDifferentiator>
 int InstanceCounterNonTrivialAssignment<UniqueDifferentiator>::counter = 0;
 
 template <class /*UniqueDifferentiator*/>
-struct InstanceCounterTrivialAssignment
+class InstanceCounterTrivialAssignment
 {
+public:
     static int counter;
     using Self = InstanceCounterTrivialAssignment;
 
-    int value;
+private:
+    int value_;
 
+public:
     InstanceCounterTrivialAssignment(int value_in_ctor = 0)
-      : value{value_in_ctor}
+      : value_{value_in_ctor}
     {
         counter++;
     }
     InstanceCounterTrivialAssignment(const Self& other)
-      : value{other.value}
+      : value_{other.value_}
     {
         counter++;
     }
     InstanceCounterTrivialAssignment(Self&& other) noexcept
-      : value{other.value}
+      : value_{other.value_}
     {
         counter++;
     }
@@ -78,8 +86,10 @@ struct InstanceCounterTrivialAssignment
     InstanceCounterTrivialAssignment& operator=(Self&&) noexcept = default;
     ~InstanceCounterTrivialAssignment() { counter--; }
 
-    bool operator==(const Self& other) const { return value == other.value; }
-    std::strong_ordering operator<=>(const Self& other) const { return value <=> other.value; }
+    [[nodiscard]] int get() const { return value_; }
+
+    bool operator==(const Self& other) const { return value_ == other.value_; }
+    std::strong_ordering operator<=>(const Self& other) const { return value_ <=> other.value_; }
 };
 
 template <class UniqueDifferentiator>
@@ -97,7 +107,7 @@ struct hash<fixed_containers::instance_counter::InstanceCounterNonTrivialAssignm
         const fixed_containers::instance_counter::InstanceCounterNonTrivialAssignment<T>& val)
         const noexcept
     {
-        return hash<int>{}(val.value);
+        return hash<int>{}(val.get());
     }
 };
 
@@ -108,7 +118,7 @@ struct hash<fixed_containers::instance_counter::InstanceCounterTrivialAssignment
         const fixed_containers::instance_counter::InstanceCounterTrivialAssignment<T>& val)
         const noexcept
     {
-        return hash<int>{}(val.value);
+        return hash<int>{}(val.get());
     }
 };
 
