@@ -1992,6 +1992,64 @@ TEST(FixedDeque, MoveableButNotCopyable)
     }
 }
 
+TEST(FixedDeque, NonTriviallyCopyableCopyConstructor)
+{
+    FixedDeque<MockNonTrivialInt, 11> v1{};
+    v1.emplace_back(1);
+    v1.emplace_back(2);
+
+    FixedDeque<MockNonTrivialInt, 11> v2{v1};
+
+    EXPECT_TRUE(std::ranges::equal(v1, std::array<MockNonTrivialInt, 2>{1, 2}));
+    EXPECT_TRUE(std::ranges::equal(v2, std::array<MockNonTrivialInt, 2>{1, 2}));
+}
+
+TEST(FixedDeque, NonTriviallyCopyableCopyAssignment)
+{
+    FixedDeque<MockNonTrivialInt, 11> v1{};
+    v1.emplace_back(1);
+    v1.emplace_back(2);
+
+    FixedDeque<MockNonTrivialInt, 11> v2 = v1;
+
+    EXPECT_TRUE(std::ranges::equal(v1, std::array<MockNonTrivialInt, 2>{1, 2}));
+    EXPECT_TRUE(std::ranges::equal(v2, std::array<MockNonTrivialInt, 2>{1, 2}));
+
+    // Self-assignment
+    auto& v3 = v2;
+    v2 = v3;
+    EXPECT_TRUE(std::ranges::equal(v2, std::array<MockNonTrivialInt, 2>{1, 2}));
+}
+
+TEST(FixedDeque, NonTriviallyCopyableMoveConstructor)
+{
+    FixedDeque<MockNonTrivialInt, 11> v1{};
+    v1.emplace_back(1);
+    v1.emplace_back(2);
+
+    FixedDeque<MockNonTrivialInt, 11> v2{std::move(v1)};
+
+    // Formally,v1 is in an unspecified-state
+    EXPECT_TRUE(std::ranges::equal(v2, std::array<MockNonTrivialInt, 2>{1, 2}));
+}
+
+TEST(FixedDeque, NonTriviallyCopyableMoveAssignment)
+{
+    FixedDeque<MockNonTrivialInt, 11> v1{};
+    v1.emplace_back(1);
+    v1.emplace_back(2);
+
+    FixedDeque<MockNonTrivialInt, 11> v2 = std::move(v1);
+
+    // Formally,v1 is in an unspecified-state
+    EXPECT_TRUE(std::ranges::equal(v2, std::array<MockNonTrivialInt, 2>{1, 2}));
+
+    // Self-assignment
+    auto& v3 = v2;
+    v2 = std::move(v3);
+    EXPECT_TRUE(std::ranges::equal(v2, std::array<MockNonTrivialInt, 2>{1, 2}));
+}
+
 TEST(FixedDeque, ClassTemplateArgumentDeduction)
 {
     // Compile-only test
