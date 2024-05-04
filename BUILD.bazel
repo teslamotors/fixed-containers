@@ -8,6 +8,9 @@ cc_library(
     name = "algorithm",
     hdrs = ["include/fixed_containers/algorithm.hpp"],
     includes = ["include"],
+    deps = [
+        ":memory",
+    ],
     copts = ["-std=c++20"],
 )
 
@@ -220,6 +223,7 @@ cc_library(
         ":integer_range",
         ":iterator_utils",
         ":max_size",
+        ":memory",
         ":optional_storage",
         ":preconditions",
         ":random_access_iterator",
@@ -460,6 +464,7 @@ cc_library(
         ":consteval_compare",
         ":iterator_utils",
         ":max_size",
+        ":memory",
         ":optional_storage",
         ":preconditions",
         ":random_access_iterator_transformer",

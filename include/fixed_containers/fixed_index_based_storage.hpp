@@ -4,6 +4,7 @@
 #include "fixed_containers/consteval_compare.hpp"
 #include "fixed_containers/fixed_vector.hpp"
 #include "fixed_containers/index_or_value_storage.hpp"
+#include "fixed_containers/memory.hpp"
 
 #include <array>
 #include <cstddef>
@@ -100,7 +101,7 @@ private:
         std::construct_at(&array_unchecked_at(i), std::in_place, std::forward<Args>(args)...);
     }
 
-    constexpr void destroy_at(std::size_t i) { std::destroy_at(&array_unchecked_at(i).value); }
+    constexpr void destroy_at(std::size_t i) { memory::destroy_at_address_of(array_unchecked_at(i).value); }
 };
 
 // This allocator keeps entries contiguous in memory - no gaps.

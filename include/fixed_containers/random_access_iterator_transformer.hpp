@@ -4,6 +4,7 @@
 
 #include <compare>
 #include <iterator>
+#include <memory>
 #include <type_traits>
 #include <utility>
 
@@ -87,7 +88,10 @@ public:
 
     constexpr reference operator*() const noexcept { return unary_function_(*iterator_); }
 
-    constexpr pointer operator->() const noexcept { return &unary_function_(*iterator_); }
+    constexpr pointer operator->() const noexcept
+    {
+        return std::addressof(unary_function_(*iterator_));
+    }
 
     constexpr reference operator[](difference_type off) const
     {

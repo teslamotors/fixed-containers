@@ -1,5 +1,7 @@
 #pragma once
 
+#include "fixed_containers/memory.hpp"
+
 #include <memory>
 
 namespace fixed_containers::algorithm
@@ -11,8 +13,8 @@ constexpr FwdIt2 uninitialized_relocate(FwdIt1 first, FwdIt1 last, FwdIt2 d_firs
 {
     while (first != last)
     {
-        std::construct_at(&*d_first, std::move(*first));
-        std::destroy_at(&*first);
+        memory::construct_at_address_of(*d_first, std::move(*first));
+        memory::destroy_at_address_of(*first);
         ++d_first;
         ++first;
     }
@@ -28,8 +30,8 @@ constexpr BidirIt2 uninitialized_relocate_backward(BidirIt1 first, BidirIt1 last
     {
         --d_last;
         --last;
-        std::construct_at(&*d_last, std::move(*last));
-        std::destroy_at(&*last);
+        memory::construct_at_address_of(*d_last, std::move(*last));
+        memory::destroy_at_address_of(*last);
     }
     return d_last;
 }

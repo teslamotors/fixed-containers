@@ -1918,6 +1918,61 @@ TEST(FixedVector, NonTriviallyCopyableMoveAssignment)
     EXPECT_TRUE(std::ranges::equal(v2, std::array<MockNonTrivialInt, 2>{1, 2}));
 }
 
+TEST(FixedVector, OverloadedAddressOfOperator)
+{
+    {
+        FixedVector<MockFailingAddressOfOperator, 15> v{};
+        v.push_back({});
+        v.assign(10, {});
+        v.insert(v.begin(), {});
+        v.emplace(v.begin());
+        v.emplace_back();
+        v.erase(v.begin());
+        v.pop_back();
+        v.clear();
+        ASSERT_TRUE(v.empty());
+    }
+
+    {
+        constexpr FixedVector<MockFailingAddressOfOperator, 15> v{5};
+        static_assert(!v.empty());
+    }
+
+    {
+        FixedVector<MockFailingAddressOfOperator, 15> v{5};
+        ASSERT_FALSE(v.empty());
+        auto it = v.begin();
+        auto it_ref = *it;
+        it_ref.do_nothing();
+        it->do_nothing();
+        (void)it++;
+        (void)it--;
+        ++it;
+        --it;
+        auto it_ref2 = *it;
+        it_ref2.do_nothing();
+        it->do_nothing();
+        it[0].do_nothing();
+    }
+
+    {
+        constexpr FixedVector<MockFailingAddressOfOperator, 15> v{5};
+        static_assert(!v.empty());
+        auto it = v.cbegin();
+        auto it_ref = *it;
+        it_ref.do_nothing();
+        it->do_nothing();
+        (void)it++;
+        (void)it--;
+        ++it;
+        --it;
+        auto it_ref2 = *it;
+        it_ref2.do_nothing();
+        it->do_nothing();
+        it[0].do_nothing();
+    }
+}
+
 TEST(FixedVector, ClassTemplateArgumentDeduction)
 {
     // Compile-only test
