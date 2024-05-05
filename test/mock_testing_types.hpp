@@ -340,4 +340,51 @@ struct MockNonAggregate
 };
 static_assert(NotAggregate<MockNonAggregate>);
 
+class MockFailingAddressOfOperator
+{
+    using Self = MockFailingAddressOfOperator;
+
+public:
+    int value_;
+
+public:
+    constexpr MockFailingAddressOfOperator()
+      : value_{}
+    {
+    }
+    constexpr MockFailingAddressOfOperator(int value)
+      : value_{value}
+    {
+    }
+
+    // Makes some errors related to operator& compile-time whereas using something like int* or
+    // void* might mask it (the former because many tests use int as a type)
+    struct InaccessibleType
+    {
+    };
+
+public:
+    [[noreturn]] InaccessibleType* operator&() const noexcept { std::abort(); }
+
+    void do_nothing() const {}
+
+    [[nodiscard]] constexpr int get() const { return value_; }
+
+    constexpr bool operator==(const Self& other) const { return value_ == other.value_; }
+    constexpr std::strong_ordering operator<=>(const Self& other) const
+    {
+        return value_ <=> other.value_;
+    }
+};
+
 }  // namespace fixed_containers
+
+template <>
+struct std::hash<fixed_containers::MockFailingAddressOfOperator>
+{
+    constexpr std::uint64_t operator()(
+        const fixed_containers::MockFailingAddressOfOperator& val) const noexcept
+    {
+        return static_cast<std::uint64_t>(val.get());
+    }
+};
