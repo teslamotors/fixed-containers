@@ -276,7 +276,7 @@ public:
             {
                 if (!OUTPUT.contains(key))
                 {
-                    out.push_back(&key);
+                    out.push_back(std::addressof(key));
                 }
             }
             return out;

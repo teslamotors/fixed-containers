@@ -1295,6 +1295,7 @@ cc_test(
     srcs = ["test/pair_view_test.cpp"],
     deps = [
         ":concepts",
+        ":mock_testing_types",
         ":pair_view",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",

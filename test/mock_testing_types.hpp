@@ -5,6 +5,7 @@
 #include <cassert>
 #include <compare>
 #include <concepts>
+#include <memory>
 #include <optional>
 #include <type_traits>
 
@@ -249,7 +250,7 @@ class MockIntegralStream
         }
 
         explicit constexpr MockInputIterator(T& remaining) noexcept
-          : remaining_(&remaining)
+          : remaining_(std::addressof(remaining))
         {
         }
 

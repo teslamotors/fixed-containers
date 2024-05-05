@@ -1,5 +1,7 @@
 #include "fixed_containers/pair_view.hpp"
 
+#include "mock_testing_types.hpp"
+
 #include "fixed_containers/concepts.hpp"
 
 #include <gtest/gtest.h>
@@ -170,6 +172,20 @@ TEST(AssignablePairView, Assignability)
 
     static_assert(CopyAssignable<pair_view_detail::AssignablePairView<int, double>>);
     static_assert(MoveAssignable<pair_view_detail::AssignablePairView<int, double>>);
+}
+
+TEST(PairView, MockFailingAddressOfOperator)
+{
+    MockFailingAddressOfOperator a{1};
+    MockFailingAddressOfOperator b{2};
+
+    PairView<MockFailingAddressOfOperator, MockFailingAddressOfOperator> pair_view{
+        std::addressof(a), std::addressof(b)};
+
+    auto pair_view_copy = pair_view;
+
+    EXPECT_EQ(pair_view_copy.first(), 1);
+    EXPECT_EQ(pair_view_copy.second(), 2);
 }
 
 }  // namespace fixed_containers

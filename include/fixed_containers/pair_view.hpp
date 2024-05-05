@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include <memory>
 #include <tuple>
 #include <type_traits>
 #include <utility>
@@ -73,8 +74,8 @@ public:
     // Might need to do something similar
     template <class T1, class T2>
     constexpr PairView(const PairView<T1, T2>& other)
-      : first_(&other.first())
-      , second_(&other.second())
+      : first_(std::addressof(other.first()))
+      , second_(std::addressof(other.second()))
     {
     }
 
