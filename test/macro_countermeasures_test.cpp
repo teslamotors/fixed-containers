@@ -29,6 +29,8 @@ error: expected unqualified-id if (const auto __len = std::min(__d1, __d2))
 #include "fixed_containers/fixed_set.hpp"
 #include "fixed_containers/fixed_stack.hpp"
 #include "fixed_containers/fixed_string.hpp"
+#include "fixed_containers/fixed_unordered_map.hpp"
+#include "fixed_containers/fixed_unordered_set.hpp"
 #include "fixed_containers/fixed_vector.hpp"
 
 namespace fixed_containers
@@ -105,6 +107,14 @@ TEST(MacroCountermeasures, DummyUsagesOfContainers)
     }
     {
         FixedString<5> s{};
+        (void)s;
+    }
+    {
+        FixedUnorderedMap<int, int, 5> s{};
+        (void)s;
+    }
+    {
+        FixedUnorderedSet<int, 5> s{};
         (void)s;
     }
     {

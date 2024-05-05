@@ -18,7 +18,7 @@ struct LinkedListIndices
 template <typename T, std::size_t MAXIMUM_SIZE, typename IndexType = std::size_t>
 class FixedDoublyLinkedListBase
 {
-    static_assert(MAXIMUM_SIZE + 1 <= std::numeric_limits<IndexType>::max(),
+    static_assert(MAXIMUM_SIZE + 1 <= (std::numeric_limits<IndexType>::max)(),
                   "must be able to index MAXIMUM_SIZE+1 elements with IndexType");
     using StorageType = FixedIndexBasedPoolStorage<T, MAXIMUM_SIZE>;
     using ChainEntryType = LinkedListIndices<IndexType>;

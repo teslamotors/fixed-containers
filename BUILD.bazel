@@ -1232,6 +1232,8 @@ cc_test(
         ":fixed_set",
         ":fixed_stack",
         ":fixed_string",
+        ":fixed_unordered_map",
+        ":fixed_unordered_set",
         ":fixed_vector",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
