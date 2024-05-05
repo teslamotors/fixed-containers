@@ -585,6 +585,12 @@ TEST(Reflection, ForEachField_EmptyStruct)
     static_assert(COUNTER == 0);
 }
 
+TEST(Reflection, MockFailingAddressOfOperator)
+{
+    MockFailingAddressOfOperator a{};
+    reflection::for_each_field(a, [&]<typename T>(const std::string_view& /*name*/, const T&) {});
+}
+
 }  // namespace fixed_containers
 
 #endif

@@ -9,6 +9,7 @@
 
 #include <array>
 #include <concepts>
+#include <memory>
 #include <optional>
 #include <string_view>
 #include <tuple>
@@ -173,7 +174,7 @@ constexpr void for_each_parsed_field_entry(const T& instance, Func func)
     };
 
     LayerTracker<> layer_tracker{};
-    __builtin_dump_struct(&instance, converter, in_out{layer_tracker});
+    __builtin_dump_struct(std::addressof(instance), converter, in_out{layer_tracker});
     assert_or_abort(
         layer_tracker.is_null_layer() &&
         "If you are hitting this, a possible reason can be that clang-16 or lower has a limit "
