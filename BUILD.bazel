@@ -1188,6 +1188,7 @@ cc_test(
     srcs = ["test/in_out_test.cpp"],
     deps = [
         ":in_out",
+        ":mock_testing_types",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
@@ -1268,6 +1269,7 @@ cc_test(
     name = "out_test",
     srcs = ["test/out_test.cpp"],
     deps = [
+        ":mock_testing_types",
         ":out",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",

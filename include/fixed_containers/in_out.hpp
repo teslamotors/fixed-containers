@@ -1,6 +1,7 @@
 #pragma once
 
 #include <concepts>
+#include <memory>
 
 namespace fixed_containers
 {
@@ -53,8 +54,8 @@ public:
     constexpr in_out& operator=(in_out&& original) = delete;
 
     // non-cost overloads only, to prevent passing by `const`/`const&`
-    constexpr T* operator->() noexcept { return &t_; }
-    constexpr T* operator&() noexcept { return &t_; }
+    constexpr T* operator->() noexcept { return std::addressof(t_); }
+    constexpr T* operator&() noexcept { return std::addressof(t_); }
     constexpr T& operator*() noexcept { return t_; }
 
 private:

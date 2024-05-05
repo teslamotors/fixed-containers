@@ -1,6 +1,10 @@
 #include "fixed_containers/out.hpp"
 
+#include "mock_testing_types.hpp"
+
 #include <gtest/gtest.h>
+
+#include <memory>
 
 namespace fixed_containers
 {
@@ -64,4 +68,24 @@ TEST(Out, Usage2)
         EXPECT_EQ(2, s.b);
     }
 }
+
+TEST(Out, MockFailingAddressOfOperator)
+{
+    MockFailingAddressOfOperator a = 5;
+    out b{a};
+
+    int result = b->get();
+    ASSERT_EQ(5, result);
+}
+
+TEST(Out, ArrowOperator)
+{
+    std::unique_ptr<int> a = std::make_unique_for_overwrite<int>();
+    *a = 5;
+    out<std::unique_ptr<int>> b{a};
+
+    int result = *(b->get());
+    ASSERT_EQ(5, result);
+}
+
 }  // namespace fixed_containers
