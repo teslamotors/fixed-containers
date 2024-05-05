@@ -2325,7 +2325,8 @@ struct FixedCircularDequeInstanceCounterUniquenessToken
 using InstanceCounterNonTrivialAssignment = instance_counter::InstanceCounterNonTrivialAssignment<
     FixedCircularDequeInstanceCounterUniquenessToken>;
 
-using FixedDequeOfInstanceCounterNonTrivial = FixedDeque<InstanceCounterNonTrivialAssignment, 5>;
+using FixedDequeOfInstanceCounterNonTrivial =
+    FixedCircularDeque<InstanceCounterNonTrivialAssignment, 5>;
 static_assert(!TriviallyCopyAssignable<FixedDequeOfInstanceCounterNonTrivial>);
 static_assert(!TriviallyMoveAssignable<FixedDequeOfInstanceCounterNonTrivial>);
 static_assert(!TriviallyDestructible<FixedDequeOfInstanceCounterNonTrivial>);
@@ -2333,7 +2334,7 @@ static_assert(!TriviallyDestructible<FixedDequeOfInstanceCounterNonTrivial>);
 using InstanceCounterTrivialAssignment = instance_counter::InstanceCounterTrivialAssignment<
     FixedCircularDequeInstanceCounterUniquenessToken>;
 
-using FixedDequeOfInstanceCounterTrivial = FixedDeque<InstanceCounterTrivialAssignment, 5>;
+using FixedDequeOfInstanceCounterTrivial = FixedCircularDeque<InstanceCounterTrivialAssignment, 5>;
 static_assert(TriviallyCopyAssignable<FixedDequeOfInstanceCounterTrivial>);
 static_assert(TriviallyMoveAssignable<FixedDequeOfInstanceCounterTrivial>);
 static_assert(!TriviallyDestructible<FixedDequeOfInstanceCounterTrivial>);
@@ -2524,8 +2525,8 @@ REGISTER_TYPED_TEST_SUITE_P(FixedCircularDequeInstanceCheckFixture,
 using FixedCircularDequeInstanceCheckTypes =
     testing::Types<std::deque<InstanceCounterNonTrivialAssignment>,
                    std::deque<InstanceCounterTrivialAssignment>,
-                   FixedDeque<InstanceCounterNonTrivialAssignment, 17>,
-                   FixedDeque<InstanceCounterTrivialAssignment, 17>>;
+                   FixedCircularDeque<InstanceCounterNonTrivialAssignment, 17>,
+                   FixedCircularDeque<InstanceCounterTrivialAssignment, 17>>;
 
 INSTANTIATE_TYPED_TEST_SUITE_P(FixedCircularDeque,
                                FixedCircularDequeInstanceCheckFixture,
