@@ -9,6 +9,7 @@
 #include "fixed_containers/filtered_integer_range_iterator.hpp"
 #include "fixed_containers/fixed_vector.hpp"
 #include "fixed_containers/max_size.hpp"
+#include "fixed_containers/memory.hpp"
 #include "fixed_containers/optional_storage.hpp"
 #include "fixed_containers/pair.hpp"
 #include "fixed_containers/preconditions.hpp"
@@ -424,7 +425,7 @@ public:
 
         increment_size();
         array_set_unchecked_at(ordinal) = true;
-        std::construct_at(&values_unchecked_at(ordinal), value.second);
+        memory::construct_at_address_of(values_unchecked_at(ordinal), value.second);
         return {create_iterator(ordinal), true};
     }
     constexpr std::pair<iterator, bool> insert(value_type&& value) noexcept
@@ -437,7 +438,7 @@ public:
 
         increment_size();
         array_set_unchecked_at(ordinal) = true;
-        std::construct_at(&values_unchecked_at(ordinal), std::move(value.second));
+        memory::construct_at_address_of(values_unchecked_at(ordinal), std::move(value.second));
         return {create_iterator(ordinal), true};
     }
 
@@ -486,8 +487,8 @@ public:
 
         increment_size();
         array_set_unchecked_at(ordinal) = true;
-        std::construct_at(
-            &values_unchecked_at(ordinal), std::in_place, std::forward<Args>(args)...);
+        memory::construct_at_address_of(
+            values_unchecked_at(ordinal), std::in_place, std::forward<Args>(args)...);
         return {create_iterator(ordinal), true};
     }
     template <class... Args>
@@ -625,7 +626,7 @@ private:
 
         increment_size();
         array_set_unchecked_at(ordinal) = true;
-        std::construct_at(&values_unchecked_at(ordinal), std::in_place);
+        memory::construct_at_address_of(values_unchecked_at(ordinal), std::in_place);
     }
 
     constexpr iterator create_iterator(const std::size_t start_index) noexcept
@@ -654,7 +655,7 @@ private:
         assert_or_abort(contains_at(i));
         if constexpr (NotTriviallyDestructible<V>)  // if-check needed by clang
         {
-            std::destroy_at(&unchecked_at(i));
+            memory::destroy_at_address_of(unchecked_at(i));
         }
         array_set_unchecked_at(i) = false;
         decrement_size();
@@ -814,7 +815,8 @@ public:
         {
             if (this->contains_at(i))
             {
-                std::construct_at(&this->values_unchecked_at(i), other.values_unchecked_at(i));
+                memory::construct_at_address_of(this->values_unchecked_at(i),
+                                                other.values_unchecked_at(i));
             }
         }
     }
@@ -827,8 +829,8 @@ public:
         {
             if (this->contains_at(i))
             {
-                std::construct_at(&this->values_unchecked_at(i),
-                                  std::move(other.values_unchecked_at(i)));
+                memory::construct_at_address_of(this->values_unchecked_at(i),
+                                                std::move(other.values_unchecked_at(i)));
             }
         }
         // Clear the moved-out-of-map. This is consistent with both std::map
@@ -849,7 +851,8 @@ public:
         {
             if (this->contains_at(i))
             {
-                std::construct_at(&this->values_unchecked_at(i), other.values_unchecked_at(i));
+                memory::construct_at_address_of(this->values_unchecked_at(i),
+                                                other.values_unchecked_at(i));
             }
         }
         return *this;
@@ -868,8 +871,8 @@ public:
         {
             if (this->contains_at(i))
             {
-                std::construct_at(&this->values_unchecked_at(i),
-                                  std::move(other.values_unchecked_at(i)));
+                memory::construct_at_address_of(this->values_unchecked_at(i),
+                                                std::move(other.values_unchecked_at(i)));
             }
         }
         // The trivial assignment operator does not `other.clear()`, so don't do it here either for

@@ -125,6 +125,7 @@ cc_library(
         ":filtered_integer_range_iterator",
         ":fixed_vector",
         ":max_size",
+        ":memory",
         ":optional_storage",
         ":pair",
         ":preconditions",
