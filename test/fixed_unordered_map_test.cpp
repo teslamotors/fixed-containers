@@ -1149,7 +1149,7 @@ TEST(FixedUnorderedMap, Find)
 
 // TEST(FixedUnorderedMap, Find_TransparentComparator)
 // {
-//     constexpr FixedMap<MockAComparableToB, int, 3, std::less<>> s{};
+//     constexpr FixedUnorderedMap<MockAComparableToB, int, 3, std::less<>> s{};
 //     constexpr MockBComparableToA b{5};
 //     static_assert(s.find(b) == s.end());
 // }
@@ -1186,7 +1186,7 @@ TEST(FixedUnorderedMap, Contains)
 
 // TEST(FixedUnorderedMap, Contains_TransparentComparator)
 // {
-//     constexpr FixedMap<MockAComparableToB, int, 5, std::less<>> s{
+//     constexpr FixedUnorderedMap<MockAComparableToB, int, 5, std::less<>> s{
 //         {MockAComparableToB{1}, 10}, {MockAComparableToB{3}, 30}, {MockAComparableToB{5}, 50}};
 //     constexpr MockBComparableToA b{5};
 //     static_assert(s.contains(b));
@@ -1208,7 +1208,7 @@ TEST(FixedUnorderedMap, Count)
 
 // TEST(FixedUnorderedMap, Count_TransparentComparator)
 // {
-//     constexpr FixedMap<MockAComparableToB, int, 5, std::less<>> s{
+//     constexpr FixedUnorderedMap<MockAComparableToB, int, 5, std::less<>> s{
 //         {MockAComparableToB{1}, 10}, {MockAComparableToB{3}, 30}, {MockAComparableToB{5}, 50}};
 //     constexpr MockBComparableToA b{5};
 //     static_assert(s.count(b) == 1);
