@@ -1392,6 +1392,62 @@ TEST(FixedMap, Ranges)
     EXPECT_EQ(10, first_entry);
 }
 
+TEST(FixedMap, OverloadedAddressOfOperator)
+{
+    {
+        FixedMap<MockFailingAddressOfOperator, MockFailingAddressOfOperator, 15> v{};
+        v[1] = {};
+        v.at(1) = {};
+        v.insert({2, {}});
+        v.emplace(3, MockFailingAddressOfOperator{});
+        v.erase(3);
+        v.try_emplace(4, MockFailingAddressOfOperator{});
+        v.clear();
+        v.insert_or_assign(2, MockFailingAddressOfOperator{});
+        v.insert_or_assign(2, MockFailingAddressOfOperator{});
+        v.clear();
+        ASSERT_TRUE(v.empty());
+    }
+
+    {
+        constexpr FixedMap<MockFailingAddressOfOperator, MockFailingAddressOfOperator, 15> v{
+            {2, {}}};
+        static_assert(!v.empty());
+    }
+
+    {
+        FixedMap<MockFailingAddressOfOperator, MockFailingAddressOfOperator, 15> v{
+            {2, {}},
+            {3, {}},
+            {4, {}},
+        };
+        ASSERT_FALSE(v.empty());
+        auto it = v.begin();
+        it->second.do_nothing();
+        (void)it++;
+        (void)it--;
+        ++it;
+        --it;
+        it->second.do_nothing();
+    }
+
+    {
+        constexpr FixedMap<MockFailingAddressOfOperator, MockFailingAddressOfOperator, 15> v{
+            {2, {}},
+            {3, {}},
+            {4, {}},
+        };
+        static_assert(!v.empty());
+        auto it = v.cbegin();
+        it->second.do_nothing();
+        (void)it++;
+        (void)it--;
+        ++it;
+        --it;
+        it->second.do_nothing();
+    }
+}
+
 TEST(FixedMap, ClassTemplateArgumentDeduction)
 {
     // Compile-only test

@@ -1430,6 +1430,61 @@ TEST(EnumMap, Ranges)
     EXPECT_EQ(10, first_entry);
 }
 
+TEST(EnumMap, OverloadedAddressOfOperator)
+{
+    {
+        EnumMap<TestEnum1, MockFailingAddressOfOperator> v{};
+        v[TestEnum1::ONE] = {};
+        v.at(TestEnum1::ONE) = {};
+        v.insert({TestEnum1::TWO, {}});
+        v.emplace(TestEnum1::THREE, MockFailingAddressOfOperator{});
+        v.erase(TestEnum1::THREE);
+        v.try_emplace(TestEnum1::FOUR, MockFailingAddressOfOperator{});
+        v.clear();
+        v.insert_or_assign(TestEnum1::TWO, MockFailingAddressOfOperator{});
+        v.insert_or_assign(TestEnum1::TWO, MockFailingAddressOfOperator{});
+        v.clear();
+        ASSERT_TRUE(v.empty());
+    }
+
+    {
+        constexpr EnumMap<TestEnum1, MockFailingAddressOfOperator> v{{TestEnum1::TWO, {}}};
+        static_assert(!v.empty());
+    }
+
+    {
+        EnumMap<TestEnum1, MockFailingAddressOfOperator> v{
+            {TestEnum1::TWO, {}},
+            {TestEnum1::THREE, {}},
+            {TestEnum1::FOUR, {}},
+        };
+        ASSERT_FALSE(v.empty());
+        auto it = v.begin();
+        it->second.do_nothing();
+        (void)it++;
+        (void)it--;
+        ++it;
+        --it;
+        it->second.do_nothing();
+    }
+
+    {
+        constexpr EnumMap<TestEnum1, MockFailingAddressOfOperator> v{
+            {TestEnum1::TWO, {}},
+            {TestEnum1::THREE, {}},
+            {TestEnum1::FOUR, {}},
+        };
+        static_assert(!v.empty());
+        auto it = v.cbegin();
+        it->second.do_nothing();
+        (void)it++;
+        (void)it--;
+        ++it;
+        --it;
+        it->second.do_nothing();
+    }
+}
+
 TEST(EnumMap, ClassTemplateArgumentDeduction)
 {
     // Compile-only test

@@ -589,6 +589,43 @@ TEST(FixedUnorderedSet, Ranges)
     EXPECT_EQ(4, *f.begin());
 }
 
+TEST(FixedUnorderedSet, OverloadedAddressOfOperator)
+{
+    {
+        FixedUnorderedSet<MockFailingAddressOfOperator, 15> v{};
+        v.insert({2});
+        v.emplace(3);
+        v.erase(3);
+        v.clear();
+        ASSERT_TRUE(v.empty());
+    }
+
+    {
+        constexpr FixedUnorderedSet<MockFailingAddressOfOperator, 15> v{{2, {}}};
+        static_assert(!v.empty());
+    }
+
+    {
+        FixedUnorderedSet<MockFailingAddressOfOperator, 15> v{{2, 3, 4}};
+        ASSERT_FALSE(v.empty());
+        auto it = v.begin();
+        it->do_nothing();
+        (void)it++;
+        ++it;
+        it->do_nothing();
+    }
+
+    {
+        constexpr FixedUnorderedSet<MockFailingAddressOfOperator, 15> v{{2, 3, 4}};
+        static_assert(!v.empty());
+        auto it = v.cbegin();
+        it->do_nothing();
+        (void)it++;
+        ++it;
+        it->do_nothing();
+    }
+}
+
 TEST(FixedUnorderedSet, ClassTemplateArgumentDeduction)
 {
     // Compile-only test

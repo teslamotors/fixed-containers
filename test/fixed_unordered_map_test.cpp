@@ -1254,6 +1254,59 @@ TEST(FixedUnorderedMap, Ranges)
     EXPECT_EQ(10, first_entry);
 }
 
+TEST(FixedUnorderedMap, OverloadedAddressOfOperator)
+{
+    {
+        FixedUnorderedMap<MockFailingAddressOfOperator, MockFailingAddressOfOperator, 15> v{};
+        v[1] = {};
+        v.at(1) = {};
+        v.insert({2, {}});
+        v.emplace(3, MockFailingAddressOfOperator{});
+        v.erase(3);
+        v.try_emplace(4, MockFailingAddressOfOperator{});
+        v.clear();
+        v.insert_or_assign(2, MockFailingAddressOfOperator{});
+        v.insert_or_assign(2, MockFailingAddressOfOperator{});
+        v.clear();
+        ASSERT_TRUE(v.empty());
+    }
+
+    {
+        constexpr FixedUnorderedMap<MockFailingAddressOfOperator, MockFailingAddressOfOperator, 15>
+            v{{2, {}}};
+        static_assert(!v.empty());
+    }
+
+    {
+        FixedUnorderedMap<MockFailingAddressOfOperator, MockFailingAddressOfOperator, 15> v{
+            {2, {}},
+            {3, {}},
+            {4, {}},
+        };
+        ASSERT_FALSE(v.empty());
+        auto it = v.begin();
+        it->second.do_nothing();
+        (void)it++;
+        ++it;
+        it->second.do_nothing();
+    }
+
+    {
+        constexpr FixedUnorderedMap<MockFailingAddressOfOperator, MockFailingAddressOfOperator, 15>
+            v{
+                {2, {}},
+                {3, {}},
+                {4, {}},
+            };
+        static_assert(!v.empty());
+        auto it = v.cbegin();
+        it->second.do_nothing();
+        (void)it++;
+        ++it;
+        it->second.do_nothing();
+    }
+}
+
 TEST(FixedUnorderedMap, ClassTemplateArgumentDeduction)
 {
     // Compile-only test

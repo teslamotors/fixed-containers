@@ -705,6 +705,47 @@ TEST(FixedSet, Ranges)
     EXPECT_EQ(4, *f.begin());
 }
 
+TEST(FixedSet, OverloadedAddressOfOperator)
+{
+    {
+        FixedSet<MockFailingAddressOfOperator, 15> v{};
+        v.insert({2});
+        v.emplace(3);
+        v.erase(3);
+        v.clear();
+        ASSERT_TRUE(v.empty());
+    }
+
+    {
+        constexpr FixedSet<MockFailingAddressOfOperator, 15> v{{2, {}}};
+        static_assert(!v.empty());
+    }
+
+    {
+        FixedSet<MockFailingAddressOfOperator, 15> v{{2, 3, 4}};
+        ASSERT_FALSE(v.empty());
+        auto it = v.begin();
+        it->do_nothing();
+        (void)it++;
+        (void)it--;
+        ++it;
+        --it;
+        it->do_nothing();
+    }
+
+    {
+        constexpr FixedSet<MockFailingAddressOfOperator, 15> v{{2, 3, 4}};
+        static_assert(!v.empty());
+        auto it = v.cbegin();
+        it->do_nothing();
+        (void)it++;
+        (void)it--;
+        ++it;
+        --it;
+        it->do_nothing();
+    }
+}
+
 TEST(FixedSet, ClassTemplateArgumentDeduction)
 {
     // Compile-only test

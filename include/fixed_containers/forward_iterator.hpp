@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <iterator>
+#include <memory>
 
 namespace fixed_containers
 {
@@ -78,7 +79,7 @@ public:
     {
         if constexpr (SAFE_LIFETIME)
         {
-            return &reference_provider_.get();
+            return std::addressof(reference_provider_.get());
         }
         else
         {
