@@ -631,23 +631,27 @@ private:
 
     constexpr iterator create_iterator(const std::size_t start_index) noexcept
     {
-        return iterator{PairProvider<false>{&array_set(), &values(), start_index}};
+        return iterator{PairProvider<false>{
+            std::addressof(array_set()), std::addressof(values()), start_index}};
     }
 
     constexpr const_iterator create_const_iterator(const std::size_t start_index) const noexcept
     {
-        return const_iterator{PairProvider<true>{&array_set(), &values(), start_index}};
+        return const_iterator{
+            PairProvider<true>{std::addressof(array_set()), std::addressof(values()), start_index}};
     }
 
     constexpr reverse_iterator create_reverse_iterator(const std::size_t start_index) noexcept
     {
-        return reverse_iterator{PairProvider<false>{&array_set(), &values(), start_index}};
+        return reverse_iterator{PairProvider<false>{
+            std::addressof(array_set()), std::addressof(values()), start_index}};
     }
 
     constexpr const_reverse_iterator create_const_reverse_iterator(
         const std::size_t start_index) const noexcept
     {
-        return const_reverse_iterator{PairProvider<true>{&array_set(), &values(), start_index}};
+        return const_reverse_iterator{
+            PairProvider<true>{std::addressof(array_set()), std::addressof(values()), start_index}};
     }
 
     constexpr void reset_at(const std::size_t i) noexcept
@@ -1047,9 +1051,9 @@ template <typename K, typename V, fixed_containers::customize::EnumMapChecking<K
 }
 
 template <InputIterator InputIt>
-EnumMap(InputIt first,
-        InputIt last) -> EnumMap<typename std::iterator_traits<InputIt>::value_type::first_type,
-                                 typename std::iterator_traits<InputIt>::value_type::second_type>;
+EnumMap(InputIt first, InputIt last)
+    -> EnumMap<typename std::iterator_traits<InputIt>::value_type::first_type,
+               typename std::iterator_traits<InputIt>::value_type::second_type>;
 
 template <class K, class V, customize::EnumMapChecking<K> CheckingType, class Predicate>
 constexpr typename EnumMap<K, V, CheckingType>::size_type erase_if(EnumMap<K, V, CheckingType>& c,

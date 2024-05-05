@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <functional>
+#include <memory>
 
 namespace fixed_containers
 {
@@ -403,12 +404,12 @@ private:
     constexpr const_iterator create_const_iterator(const NodeIndex& start_index) const noexcept
     {
         const NodeIndex i = replace_null_index_with_max_size_for_end_iterator(start_index);
-        return const_iterator{ReferenceProvider{&tree(), i}};
+        return const_iterator{ReferenceProvider{std::addressof(tree()), i}};
     }
     constexpr const_reverse_iterator create_const_reverse_iterator(
         const NodeIndex& start_index) const noexcept
     {
-        return const_reverse_iterator{ReferenceProvider{&tree(), start_index}};
+        return const_reverse_iterator{ReferenceProvider{std::addressof(tree()), start_index}};
     }
 
     constexpr void check_not_full(const std_transition::source_location& loc) const

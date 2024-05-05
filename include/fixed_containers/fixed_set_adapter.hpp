@@ -7,6 +7,8 @@
 #include "fixed_containers/preconditions.hpp"
 #include "fixed_containers/source_location.hpp"
 
+#include <memory>
+
 namespace fixed_containers
 {
 
@@ -87,12 +89,12 @@ public:
 public:
     constexpr const_iterator cbegin() const noexcept
     {
-        return const_iterator{ReferenceProvider{&table(), table().begin_index()}};
+        return const_iterator{ReferenceProvider{std::addressof(table()), table().begin_index()}};
     }
 
     constexpr const_iterator cend() const noexcept
     {
-        return const_iterator{ReferenceProvider{&table(), table().end_index()}};
+        return const_iterator{ReferenceProvider{std::addressof(table()), table().end_index()}};
     }
     constexpr const_iterator begin() const noexcept { return cbegin(); }
     constexpr const_iterator end() const noexcept { return cend(); }
@@ -234,7 +236,7 @@ public:
         TableIndex idx = table().opaque_index_of(*pos);
         assert_or_abort(table().exists(idx));
         TableIteratedIndex next_idx = table().erase(idx);
-        return iterator{ReferenceProvider{&table(), next_idx}};
+        return iterator{ReferenceProvider{std::addressof(table()), next_idx}};
     }
 
     constexpr iterator erase(const_iterator first, const_iterator last) noexcept
@@ -244,7 +246,7 @@ public:
         const ReferenceProvider& end =
             last.template private_reference_provider<const ReferenceProvider&>();
         TableIteratedIndex next_idx = table().erase_range(start.current_index_, end.current_index_);
-        return iterator{ReferenceProvider{&table(), next_idx}};
+        return iterator{ReferenceProvider{std::addressof(table()), next_idx}};
     }
 
     constexpr size_type erase(const key_type& key) noexcept
@@ -319,7 +321,8 @@ private:
 
     constexpr iterator create_const_iterator(const TableIndex& start_index) noexcept
     {
-        return iterator{ReferenceProvider{&table(), table().iterated_index_from(start_index)}};
+        return iterator{
+            ReferenceProvider{std::addressof(table()), table().iterated_index_from(start_index)}};
     }
 
     constexpr void check_not_full(const std_transition::source_location& loc) const

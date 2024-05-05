@@ -641,24 +641,24 @@ private:
     constexpr iterator create_iterator(const NodeIndex& start_index) noexcept
     {
         const NodeIndex i = replace_null_index_with_max_size_for_end_iterator(start_index);
-        return iterator{PairProvider<false>{&tree(), i}};
+        return iterator{PairProvider<false>{std::addressof(tree()), i}};
     }
 
     constexpr const_iterator create_const_iterator(const NodeIndex& start_index) const noexcept
     {
         const NodeIndex i = replace_null_index_with_max_size_for_end_iterator(start_index);
-        return const_iterator{PairProvider<true>{&tree(), i}};
+        return const_iterator{PairProvider<true>{std::addressof(tree()), i}};
     }
 
     constexpr reverse_iterator create_reverse_iterator(const NodeIndex& start_index) noexcept
     {
-        return reverse_iterator{PairProvider<false>{&tree(), start_index}};
+        return reverse_iterator{PairProvider<false>{std::addressof(tree()), start_index}};
     }
 
     constexpr const_reverse_iterator create_const_reverse_iterator(
         const NodeIndex& start_index) const noexcept
     {
-        return const_reverse_iterator{PairProvider<true>{&tree(), start_index}};
+        return const_reverse_iterator{PairProvider<true>{std::addressof(tree()), start_index}};
     }
 
     constexpr void check_not_full(const std_transition::source_location& loc) const

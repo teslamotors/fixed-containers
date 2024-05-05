@@ -11,6 +11,7 @@
 #include <array>
 #include <cstddef>
 #include <initializer_list>
+#include <memory>
 
 namespace fixed_containers::enum_set_detail
 {
@@ -381,12 +382,12 @@ private:
 
     constexpr const_iterator create_const_iterator(const std::size_t start_index) const noexcept
     {
-        return const_iterator{ReferenceProvider{&array_set(), start_index}};
+        return const_iterator{ReferenceProvider{std::addressof(array_set()), start_index}};
     }
     constexpr const_reverse_iterator create_const_reverse_iterator(
         const std::size_t start_index) const noexcept
     {
-        return const_reverse_iterator{ReferenceProvider{&array_set(), start_index}};
+        return const_reverse_iterator{ReferenceProvider{std::addressof(array_set()), start_index}};
     }
 
     [[nodiscard]] constexpr bool contains_at(const std::size_t i) const noexcept
@@ -409,8 +410,8 @@ template <typename K>
 }
 
 template <InputIterator InputIt>
-EnumSet(InputIt first,
-        InputIt last) noexcept -> EnumSet<typename std::iterator_traits<InputIt>::value_type>;
+EnumSet(InputIt first, InputIt last) noexcept
+    -> EnumSet<typename std::iterator_traits<InputIt>::value_type>;
 
 template <class K, class Predicate>
 constexpr typename EnumSet<K>::size_type erase_if(EnumSet<K>& c, Predicate predicate)
