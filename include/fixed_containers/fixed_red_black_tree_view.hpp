@@ -80,7 +80,7 @@ public:
 
         constexpr const_reference operator*() const { return cur_pointer_; }
 
-        constexpr const_pointer operator->() const { return &cur_pointer_; }
+        constexpr const_pointer operator->() const { return std::addressof(cur_pointer_); }
 
         Iterator& operator++()
         {
