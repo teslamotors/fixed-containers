@@ -26,13 +26,15 @@ public:
 
         explicit constexpr ReferenceProvider(const FixedDoublyLinkedListRawView* parent) noexcept
           : parent_{parent}
-          , current_idx_{parent_->max_elem_count_}  // the start/end sentinel is at this index
+          , current_idx_{static_cast<IndexType>(parent_->max_elem_count_)}
+        // the start/end sentinel is at this index
         {
         }
 
     public:
         constexpr ReferenceProvider() noexcept
-          : ReferenceProvider(nullptr, {}, {})
+          : parent_{nullptr}
+          , current_idx_{0}
         {
         }
 
@@ -68,11 +70,11 @@ public:
 
     Iterator end() const { return Iterator{ReferenceProvider{this}}; }
 
-    std::size_t size() const
+    IndexType size() const
     {
         // this is _very_ _very_ brittle and reliant on the size of every field in the
         // `FixedDoublyLinkedList`!
-        return *reinterpret_cast<const std::size_t*>(
+        return *reinterpret_cast<const IndexType*>(
             std::next(list_ptr_, value_storage_size() + chain_size()));
     }
 

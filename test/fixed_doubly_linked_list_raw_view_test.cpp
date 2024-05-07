@@ -116,6 +116,56 @@ TEST(FixedDoublyLinkedListRawView, ViewOfStructList)
     EXPECT_EQ(it, view.end());
 }
 
+TEST(FixedDoubleLinkedListRawView, ViewOfDifferentSizeType)
+{
+    FixedDoublyLinkedList<int, 10, uint8_t> list;
+
+    uint8_t ten = list.emplace_back_and_return_index(10);
+    list.emplace_back_and_return_index(20);
+    list.emplace_back_and_return_index(30);
+
+    auto view =
+        FixedDoublyLinkedListRawView<uint8_t>(reinterpret_cast<void*>(&list), sizeof(int), 10);
+
+    EXPECT_EQ(offsetof(decltype(list), IMPLEMENTATION_DETAIL_DO_NOT_USE_storage_), 0);
+    EXPECT_EQ(offsetof(decltype(list), IMPLEMENTATION_DETAIL_DO_NOT_USE_chain_),
+              view.value_storage_size());
+    EXPECT_EQ(offsetof(decltype(list), IMPLEMENTATION_DETAIL_DO_NOT_USE_size_),
+              view.value_storage_size() + view.chain_size());
+
+    EXPECT_EQ(view.size(), 3);
+
+    auto it = view.begin();
+    EXPECT_EQ(get_from_ptr<int>(*it), 10);
+    it = std::next(it);
+    EXPECT_EQ(get_from_ptr<int>(*it), 20);
+    it = std::next(it);
+    EXPECT_EQ(get_from_ptr<int>(*it), 30);
+    it = std::next(it);
+    EXPECT_EQ(it, view.end());
+
+    list.emplace_front_and_return_index(-10);
+    list.emplace_front_and_return_index(-20);
+    list.emplace_back_and_return_index(40);
+    list.delete_at_and_return_next_index(ten);
+
+    // list is now -20, -10, 20, 30, 40 but with physical storage mixed around a bit
+    EXPECT_EQ(view.size(), 5);
+
+    it = view.begin();
+    EXPECT_EQ(get_from_ptr<int>(*it), -20);
+    it = std::next(it);
+    EXPECT_EQ(get_from_ptr<int>(*it), -10);
+    it = std::next(it);
+    EXPECT_EQ(get_from_ptr<int>(*it), 20);
+    it = std::next(it);
+    EXPECT_EQ(get_from_ptr<int>(*it), 30);
+    it = std::next(it);
+    EXPECT_EQ(get_from_ptr<int>(*it), 40);
+    it = std::next(it);
+    EXPECT_EQ(it, view.end());
+}
+
 TEST(FixedDoublyLinkedListRawView, ViewOfFixedList)
 {
     auto list = make_fixed_list({1.0, 2.9, 3.8, 4.7});
