@@ -362,6 +362,17 @@ cc_library(
 )
 
 cc_library(
+    name = "fixed_unordered_map_raw_view",
+    hdrs = ["include/fixed_containers/fixed_unordered_map_raw_view.hpp"],
+    includes = ["inclue"],
+    deps = [
+        ":fixed_doubly_linked_list_raw_view",
+        ":forward_iterator",
+    ],
+    copts = ["-std=c++20"],
+)
+
+cc_library(
     name = "fixed_unordered_set",
     hdrs = ["include/fixed_containers/fixed_unordered_set.hpp"],
     includes = ["include"],
@@ -1070,6 +1081,22 @@ cc_test(
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
         "@com_github_ericniebler_range-v3//:range-v3",
+    ],
+    copts = ["-std=c++20"],
+)
+
+cc_test(
+    name = "fixed_unordered_map_raw_view_test",
+    srcs = ["test/fixed_unordered_map_raw_view_test.cpp"],
+    deps = [
+        ":concepts",
+        ":map_entry",
+        ":fixed_unordered_map",
+        ":fixed_unordered_map_raw_view",
+        ":mock_testing_types",
+        ":test_utilities_common",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
     ],
     copts = ["-std=c++20"],
 )
