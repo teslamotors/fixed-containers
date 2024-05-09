@@ -452,6 +452,12 @@ private:
     constexpr FixedVecStorage& vec() { return IMPLEMENTATION_DETAIL_DO_NOT_USE_data_; }
 };
 
+template<std::size_t MAXIMUM_LENGTH, typename CheckingType>
+std::ostream& operator<<(std::ostream& os, const FixedString<MAXIMUM_LENGTH, CheckingType>& str)
+{
+    return os << std::string_view{str};
+}
+
 template <std::size_t MAXIMUM_LENGTH, typename CheckingType>
 [[nodiscard]] constexpr typename FixedString<MAXIMUM_LENGTH, CheckingType>::size_type is_full(
     const FixedString<MAXIMUM_LENGTH, CheckingType>& c)

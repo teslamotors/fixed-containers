@@ -11,6 +11,7 @@
 #include <ranges>
 #include <span>
 #include <string>
+#include <sstream>
 
 namespace fixed_containers
 {
@@ -1549,6 +1550,15 @@ TEST(FixedString, ClassTemplateArgumentDeduction)
     // Compile-only test
     FixedString a = FixedString<5>{};
     (void)a;
+}
+
+TEST(FixedStringTest, OStreamOperator) {
+    FixedString<5> str {"hello"};
+
+    std::stringstream ss;
+    ss << str;
+
+    EXPECT_EQ(ss.str(), "hello");
 }
 
 namespace
