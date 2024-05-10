@@ -1,5 +1,6 @@
 #include "fixed_containers/fixed_doubly_linked_list_raw_view.hpp"
 
+#include "mock_testing_types.hpp"
 #include "test_utilities_common.hpp"
 
 #include "fixed_containers/fixed_doubly_linked_list.hpp"
@@ -29,7 +30,7 @@ TEST(FixedDoublyLinkedListRawView, ViewOfIntegerList)
     list.emplace_back_and_return_index(20);
     list.emplace_back_and_return_index(30);
 
-    auto view = FixedDoublyLinkedListRawView(&list, sizeof(int), 10);
+    auto view = FixedDoublyLinkedListRawView(&list, sizeof(int), alignof(int), 10);
 
     EXPECT_EQ(offsetof(decltype(list), IMPLEMENTATION_DETAIL_DO_NOT_USE_storage_), 0);
     EXPECT_EQ(offsetof(decltype(list), IMPLEMENTATION_DETAIL_DO_NOT_USE_chain_),
@@ -91,8 +92,10 @@ TEST(FixedDoublyLinkedListRawView, ViewOfStructList)
     list.emplace_back_and_return_index(StructThatContainsPadding{'d', 456});
     // list is Y, Z, b, c, d
 
-    auto view = FixedDoublyLinkedListRawView(
-        reinterpret_cast<void*>(&list), sizeof(StructThatContainsPadding), 5);
+    auto view = FixedDoublyLinkedListRawView(reinterpret_cast<void*>(&list),
+                                             sizeof(StructThatContainsPadding),
+                                             alignof(StructThatContainsPadding),
+                                             5);
 
     EXPECT_EQ(offsetof(decltype(list), IMPLEMENTATION_DETAIL_DO_NOT_USE_storage_), 0);
     EXPECT_EQ(offsetof(decltype(list), IMPLEMENTATION_DETAIL_DO_NOT_USE_chain_),
@@ -124,8 +127,8 @@ TEST(FixedDoubleLinkedListRawView, ViewOfDifferentSizeType)
     list.emplace_back_and_return_index(20);
     list.emplace_back_and_return_index(30);
 
-    auto view =
-        FixedDoublyLinkedListRawView<uint8_t>(reinterpret_cast<void*>(&list), sizeof(int), 10);
+    auto view = FixedDoublyLinkedListRawView<uint8_t>(
+        reinterpret_cast<void*>(&list), sizeof(int), alignof(int), 10);
 
     EXPECT_EQ(offsetof(decltype(list), IMPLEMENTATION_DETAIL_DO_NOT_USE_storage_), 0);
     EXPECT_EQ(offsetof(decltype(list), IMPLEMENTATION_DETAIL_DO_NOT_USE_chain_),
@@ -166,11 +169,62 @@ TEST(FixedDoubleLinkedListRawView, ViewOfDifferentSizeType)
     EXPECT_EQ(it, view.end());
 }
 
+TEST(FixedDoubleLinkedListRawView, ViewOfLargeAlignmentObject)
+{
+    FixedDoublyLinkedList<MockAligned64, 10, uint32_t> list;
+
+    uint32_t ten = list.emplace_back_and_return_index(MockAligned64{10});
+    list.emplace_back_and_return_index(MockAligned64{20});
+    list.emplace_back_and_return_index(MockAligned64{30});
+
+    auto view = FixedDoublyLinkedListRawView<uint32_t>(
+        reinterpret_cast<void*>(&list), sizeof(MockAligned64), alignof(MockAligned64), 10);
+
+    EXPECT_EQ(offsetof(decltype(list), IMPLEMENTATION_DETAIL_DO_NOT_USE_storage_), 0);
+    EXPECT_EQ(offsetof(decltype(list), IMPLEMENTATION_DETAIL_DO_NOT_USE_chain_),
+              view.value_storage_size());
+    EXPECT_EQ(offsetof(decltype(list), IMPLEMENTATION_DETAIL_DO_NOT_USE_size_),
+              view.value_storage_size() + view.chain_size());
+
+    EXPECT_EQ(view.size(), 3);
+
+    auto it = view.begin();
+    EXPECT_EQ(get_from_ptr<MockAligned64>(*it), MockAligned64{10});
+    it = std::next(it);
+    EXPECT_EQ(get_from_ptr<MockAligned64>(*it), MockAligned64{20});
+    it = std::next(it);
+    EXPECT_EQ(get_from_ptr<MockAligned64>(*it), MockAligned64{30});
+    it = std::next(it);
+    EXPECT_EQ(it, view.end());
+
+    list.emplace_front_and_return_index(MockAligned64{-10});
+    list.emplace_front_and_return_index(MockAligned64{-20});
+    list.emplace_back_and_return_index(MockAligned64{40});
+    list.delete_at_and_return_next_index(ten);
+
+    // list is now -20, -10, 20, 30, 40 but with physical storage mixed around a bit
+    EXPECT_EQ(view.size(), 5);
+
+    it = view.begin();
+    EXPECT_EQ(get_from_ptr<MockAligned64>(*it), MockAligned64{-20});
+    it = std::next(it);
+    EXPECT_EQ(get_from_ptr<MockAligned64>(*it), MockAligned64{-10});
+    it = std::next(it);
+    EXPECT_EQ(get_from_ptr<MockAligned64>(*it), MockAligned64{20});
+    it = std::next(it);
+    EXPECT_EQ(get_from_ptr<MockAligned64>(*it), MockAligned64{30});
+    it = std::next(it);
+    EXPECT_EQ(get_from_ptr<MockAligned64>(*it), MockAligned64{40});
+    it = std::next(it);
+    EXPECT_EQ(it, view.end());
+}
+
 TEST(FixedDoublyLinkedListRawView, ViewOfFixedList)
 {
     auto list = make_fixed_list({1.0, 2.9, 3.8, 4.7});
 
-    auto view = FixedDoublyLinkedListRawView(reinterpret_cast<void*>(&list), sizeof(double), 4);
+    auto view = FixedDoublyLinkedListRawView(
+        reinterpret_cast<void*>(&list), sizeof(double), alignof(double), 4);
 
     EXPECT_EQ(view.size(), 4);
 

@@ -1003,6 +1003,7 @@ cc_test(
         ":fixed_list",
         ":fixed_doubly_linked_list",
         ":fixed_doubly_linked_list_raw_view",
+        ":mock_testing_types",
         ":test_utilities_common",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",

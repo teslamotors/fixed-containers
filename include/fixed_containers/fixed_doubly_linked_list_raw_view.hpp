@@ -48,6 +48,7 @@ public:
 private:
     const std::byte* list_ptr_;
     std::size_t elem_size_bytes_;
+    std::size_t elem_align_bytes_;
     std::size_t max_elem_count_;
 
 public:
@@ -58,10 +59,12 @@ public:
 
     FixedDoublyLinkedListRawView(const void* list_ptr,
                                  std::size_t elem_size_bytes,
+                                 std::size_t elem_align_bytes,
                                  std::size_t max_elem_count)
       : list_ptr_{static_cast<const std::byte*>(list_ptr)}
       // the PoolStorage stores unions of `T`, `std::size_t`, so they are always at least that big
       , elem_size_bytes_{std::max(elem_size_bytes, sizeof(std::size_t))}
+      , elem_align_bytes_{std::max(elem_align_bytes, alignof(std::size_t))}
       , max_elem_count_{max_elem_count}
     {
     }
@@ -81,8 +84,14 @@ public:
 public:
     [[nodiscard]] constexpr std::ptrdiff_t value_storage_size() const noexcept
     {
-        return static_cast<std::ptrdiff_t>(max_elem_count_ * elem_size_bytes_ +
-                                           sizeof(std::size_t));
+        // the full PoolStorage will be aligned to the alignment of the element, which matters if it
+        // aligns bigger than alignof(size_t)
+        std::size_t raw_size = max_elem_count_ * elem_size_bytes_ + sizeof(std::size_t);
+        if (raw_size % elem_align_bytes_ != 0)
+        {
+            raw_size += elem_align_bytes_ - (raw_size % elem_align_bytes_);
+        }
+        return static_cast<std::ptrdiff_t>(raw_size);
     }
 
     [[nodiscard]] constexpr std::ptrdiff_t chain_size() const noexcept
