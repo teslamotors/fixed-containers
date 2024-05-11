@@ -1,6 +1,8 @@
 #include "fixed_containers/consteval_compare.hpp"
 #include "fixed_containers/fixed_map.hpp"
 
+#include <benchmark/benchmark.h>
+
 #include <array>
 #include <cstddef>
 
@@ -54,4 +56,27 @@ static_assert(consteval_compare::equal<50992, sizeof(CompactContiguousFixedMap<i
 static_assert(consteval_compare::equal<52032, sizeof(DedicatedColorBitPoolFixedMap<int, V, CAP>)>);
 static_assert(
     consteval_compare::equal<52032, sizeof(DedicatedColorBitContiguousFixedMap<int, V, CAP>)>);
+
+template <typename MAP_TYPE>
+static void benchmark_map_lookup(benchmark::State& state)
+{
+    using KeyType = typename MAP_TYPE::key_type;
+    MAP_TYPE instance{};
+    for (std::size_t i = 0; i < 100; i++)
+    {
+        instance.try_emplace(static_cast<KeyType>(i));
+    }
+
+    for (auto _ : state)
+    {
+        auto& entry = instance.at(7);
+        benchmark::DoNotOptimize(entry);
+    }
+}
+
+BENCHMARK(benchmark_map_lookup<std::map<int, int>>);
+BENCHMARK(benchmark_map_lookup<FixedMap<int, int, 200>>);
+
 }  // namespace fixed_containers
+
+BENCHMARK_MAIN();
