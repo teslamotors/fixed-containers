@@ -378,6 +378,29 @@ public:
     }
 };
 
+struct alignas(64) MockAligned64
+{
+public:
+    int value_;
+
+public:
+    constexpr MockAligned64()
+      : value_{}
+    {
+    }
+    constexpr MockAligned64(int value)
+      : value_{value}
+    {
+    }
+
+    [[nodiscard]] constexpr int get() const { return value_; }
+
+    constexpr bool operator==(const MockAligned64& other) const = default;
+};
+
+static_assert(alignof(MockAligned64) == 64);
+static_assert(sizeof(MockAligned64) == 64);
+
 }  // namespace fixed_containers
 
 template <>
@@ -385,6 +408,15 @@ struct std::hash<fixed_containers::MockFailingAddressOfOperator>
 {
     constexpr std::uint64_t operator()(
         const fixed_containers::MockFailingAddressOfOperator& val) const noexcept
+    {
+        return static_cast<std::uint64_t>(val.get());
+    }
+};
+
+template <>
+struct std::hash<fixed_containers::MockAligned64>
+{
+    std::size_t operator()(const fixed_containers::MockAligned64& val) const
     {
         return static_cast<std::uint64_t>(val.get());
     }

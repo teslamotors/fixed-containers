@@ -29,6 +29,7 @@ if(MSVC)
 
     target_compile_options(project_options INTERFACE /wd4804 /wd4018)  # due to magic-enum, mixed arithmetic
     target_compile_options(project_options INTERFACE /wd4530)  # due to ostream, exception handler
+    target_compile_options(project_options INTERFACE /wd4324)  # a test intentionally creates this type
 else()
     target_compile_options(project_options INTERFACE -Werror -fno-exceptions -ftemplate-backtrace-limit=0)
 endif()
