@@ -11,6 +11,13 @@ http_archive(
 )
 
 http_archive(
+    name = "com_google_benchmark",
+    urls = ["https://github.com/google/benchmark/archive/bc946b919cac6f25a199a526da571638cfde109f.tar.gz"],
+    strip_prefix = "benchmark-bc946b919cac6f25a199a526da571638cfde109f",
+    sha256 = "997090899b61ff5a3f7f6714bc9147694d4f85266dbb93277ba9e6d60009a776",
+)
+
+http_archive(
     name = "com_github_ericniebler_range-v3",
     urls = ["https://github.com/ericniebler/range-v3/archive/53c40dd628450c977ee1558285ff43e0613fa7a9.tar.gz"],
     strip_prefix = "range-v3-53c40dd628450c977ee1558285ff43e0613fa7a9",
