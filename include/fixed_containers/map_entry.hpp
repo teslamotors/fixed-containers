@@ -42,6 +42,11 @@ public:
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_value_.get();
     }
     constexpr V& value() { return IMPLEMENTATION_DETAIL_DO_NOT_USE_value_.get(); }
+
+    constexpr bool operator==(const MapEntry& other) const
+    {
+        return this->key() == other.key() && this->value() == other.value();
+    }
 };
 
 template <class K>
@@ -67,6 +72,11 @@ public:
 
     [[nodiscard]] constexpr const K& key() const { return IMPLEMENTATION_DETAIL_DO_NOT_USE_key_; }
     constexpr K& key() { return IMPLEMENTATION_DETAIL_DO_NOT_USE_key_; }
+
+    // cannot declare `= default` because it is only conditionally constexpr, depending on the type
+    // of `K` for some reason, in this case (and only this case), the compiler checks if the impl is
+    // actually constexpr instead of silently allowing it
+    constexpr bool operator==(const MapEntry& other) const { return this->key() == other.key(); }
 };
 
 }  // namespace fixed_containers
