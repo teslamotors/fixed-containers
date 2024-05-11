@@ -121,11 +121,12 @@ public:
     static constexpr std::size_t CAPACITY = MAXIMUM_VALUE_COUNT;
     static constexpr std::size_t INTERNAL_TABLE_SIZE = BUCKET_COUNT;
 
-    Hash IMPLEMENTATION_DETAIL_DO_NOT_USE_hash_{};
-    KeyEqual IMPLEMENTATION_DETAIL_DO_NOT_USE_key_equal_{};
     fixed_doubly_linked_list_detail::FixedDoublyLinkedList<PairType, CAPACITY, SizeType>
         IMPLEMENTATION_DETAIL_DO_NOT_USE_value_storage_{};
     std::array<Bucket, INTERNAL_TABLE_SIZE> IMPLEMENTATION_DETAIL_DO_NOT_USE_bucket_array_{};
+
+    Hash IMPLEMENTATION_DETAIL_DO_NOT_USE_hash_{};
+    KeyEqual IMPLEMENTATION_DETAIL_DO_NOT_USE_key_equal_{};
 
     struct OpaqueIndexType
     {
@@ -371,13 +372,13 @@ public:
     // copyable
     constexpr FixedRobinhoodHashtable(const FixedRobinhoodHashtable& other)
         requires IsReference<V>
-      : IMPLEMENTATION_DETAIL_DO_NOT_USE_hash_(other.IMPLEMENTATION_DETAIL_DO_NOT_USE_hash_)
-      , IMPLEMENTATION_DETAIL_DO_NOT_USE_key_equal_(
-            other.IMPLEMENTATION_DETAIL_DO_NOT_USE_key_equal_)
-      , IMPLEMENTATION_DETAIL_DO_NOT_USE_value_storage_(
+      : IMPLEMENTATION_DETAIL_DO_NOT_USE_value_storage_(
             other.IMPLEMENTATION_DETAIL_DO_NOT_USE_value_storage_)
       , IMPLEMENTATION_DETAIL_DO_NOT_USE_bucket_array_(
             other.IMPLEMENTATION_DETAIL_DO_NOT_USE_bucket_array_)
+      , IMPLEMENTATION_DETAIL_DO_NOT_USE_hash_(other.IMPLEMENTATION_DETAIL_DO_NOT_USE_hash_)
+      , IMPLEMENTATION_DETAIL_DO_NOT_USE_key_equal_(
+            other.IMPLEMENTATION_DETAIL_DO_NOT_USE_key_equal_)
     {
     }
     constexpr FixedRobinhoodHashtable(const FixedRobinhoodHashtable& other)
@@ -389,13 +390,13 @@ public:
     constexpr FixedRobinhoodHashtable& operator=(const FixedRobinhoodHashtable& other)
         requires IsReference<V>
     {
-        IMPLEMENTATION_DETAIL_DO_NOT_USE_hash_ = other.IMPLEMENTATION_DETAIL_DO_NOT_USE_hash_;
-        IMPLEMENTATION_DETAIL_DO_NOT_USE_key_equal_ =
-            other.IMPLEMENTATION_DETAIL_DO_NOT_USE_key_equal_;
         IMPLEMENTATION_DETAIL_DO_NOT_USE_value_storage_ =
             other.IMPLEMENTATION_DETAIL_DO_NOT_USE_value_storage_;
         IMPLEMENTATION_DETAIL_DO_NOT_USE_bucket_array_ =
             other.IMPLEMENTATION_DETAIL_DO_NOT_USE_bucket_array_;
+        IMPLEMENTATION_DETAIL_DO_NOT_USE_hash_ = other.IMPLEMENTATION_DETAIL_DO_NOT_USE_hash_;
+        IMPLEMENTATION_DETAIL_DO_NOT_USE_key_equal_ =
+            other.IMPLEMENTATION_DETAIL_DO_NOT_USE_key_equal_;
         return *this;
     }
     constexpr FixedRobinhoodHashtable& operator=(const FixedRobinhoodHashtable& other)
