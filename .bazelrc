@@ -21,6 +21,8 @@ build:clang  --copt -Wc++98-compat-extra-semi
 build --copt -Wall
 build --copt -Wextra
 build --copt -Wpedantic
+# https://gcc.gnu.org/bugzilla/show_bug.cgi?id=114225
+build:gcc --copt -Wno-dangling-reference
 # This is failing on the `consteval` keyword for some reason
 build --copt -Wno-c++20-compat
 # Need stdlib uprev, as even std::vector triggers this

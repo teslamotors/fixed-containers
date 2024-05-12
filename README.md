@@ -405,12 +405,12 @@ CC=clang++-13 bazel test --config=clang :all_tests
 #### gcc
 1) Build separately (optional)
 ```
-CC=g++-11 bazel build ...
+CC=g++-11 bazel build --config=gcc ...
 ```
 
 2) Run tests
 ```
-CC=g++-11 bazel test :all_tests
+CC=g++-11 bazel test --config=gcc :all_tests
 ```
 
 ## Tested Compilers
