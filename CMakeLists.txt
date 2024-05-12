@@ -84,6 +84,8 @@ else()
         -Wall
         -Wextra
         -Wpedantic
+        # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=114225
+        -Wno-dangling-reference
     )
 endif()
 add_library(project_warnings INTERFACE)
