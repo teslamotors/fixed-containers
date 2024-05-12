@@ -984,6 +984,8 @@ TEST(FixedString, Erase_Empty)
         // valid, but is not dereferenceable) cannot be used as a value for pos.
         // The behavior is undefined if iterator is not dereferenceable.
         // https://en.cppreference.com/w/cpp/string/basic_string/erase
+
+        // Whether the following dies or not is implementation-dependent
         // EXPECT_DEATH(v1.erase(v1.begin()), "");
     }
 }

@@ -1677,10 +1677,9 @@ TEST(FixedList, Erase_Empty)
         // The iterator pos must be valid and dereferenceable. Thus the end() iterator (which is
         // valid, but is not dereferenceable) cannot be used as a value for pos.
         // https://en.cppreference.com/w/cpp/container/list/erase
-        // In contrast to std::vector, this does not die for std::list with msvc
-#if defined(__clang__) || defined(__GNUC__)
-        EXPECT_DEATH(v1.erase(v1.begin()), "");
-#endif
+
+        // Whether the following dies or not is implementation-dependent
+        // EXPECT_DEATH(v1.erase(v1.begin()), "");
     }
 }
 
