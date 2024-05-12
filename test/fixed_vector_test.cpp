@@ -1691,7 +1691,9 @@ TEST(FixedVector, Erase_Empty)
         // The iterator pos must be valid and dereferenceable. Thus the end() iterator (which is
         // valid, but is not dereferenceable) cannot be used as a value for pos.
         // https://en.cppreference.com/w/cpp/container/vector/erase
-        EXPECT_DEATH(v1.erase(v1.begin()), "");
+
+        // Whether the following dies or not is implementation-dependent
+        // EXPECT_DEATH(v1.erase(v1.begin()), "");
     }
 }
 
