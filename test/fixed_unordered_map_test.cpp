@@ -8,6 +8,7 @@
 #include "fixed_containers/concepts.hpp"
 #include "fixed_containers/consteval_compare.hpp"
 
+#include <Eigen/Core>
 #include <gtest/gtest.h>
 #include <range/v3/iterator/concepts.hpp>
 #include <range/v3/view/filter.hpp>
@@ -234,6 +235,43 @@ TEST(FixedUnorderedMap, Insert)
     static_assert(s1.contains(2));
     static_assert(!s1.contains(3));
     static_assert(s1.contains(4));
+}
+
+TEST(FixedUnorderedMap, Eigen)
+{
+    FixedUnorderedMap<int, Eigen::Matrix2f, 100> a{};
+    for (int i = 0; i < 20; i++)
+    {
+        const float i_float = static_cast<float>(i);
+        a.try_emplace(i, Eigen::Matrix2f{{i_float, i_float, i_float, i_float}});
+    }
+
+    auto b{a};
+    b.clear();
+    for (int i = 0; i < 11; i++)
+    {
+        const float i_float = static_cast<float>(i);
+        a.try_emplace(i, Eigen::Matrix2f{i_float, i_float, i_float, i_float});
+    }
+    auto c{a};
+    c.clear();
+    for (int i = 0; i < 27; i++)
+    {
+        const float i_float = static_cast<float>(i);
+        a.try_emplace(i, Eigen::Matrix2f{i_float, i_float, i_float, i_float});
+    }
+    auto d{a};
+
+    a = b;
+    a.clear();
+    a = c;
+    a.clear();
+    a = d;
+    for (const auto& [key, value] : a)
+    {
+        std::cout << key << ", [[" << value << "]]" << std::endl;
+    }
+    a.clear();
 }
 
 TEST(FixedUnorderedMap, Insert_ExceedsCapacity)
