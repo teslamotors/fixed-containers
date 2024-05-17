@@ -149,6 +149,106 @@ TEST(FixedMap, MaxSizeDeduction)
     static_assert(!s1.contains(32));
 }
 
+TEST(FixedMap, ComplexNontrivialCopies)
+{
+    FixedMap<int, MockNonTrivialCopyAssignable, 100> a{};
+    for (int i = 0; i < 20; i++)
+    {
+        a.try_emplace(i);
+    }
+
+    auto b{a};
+    for(const auto& pair : a)
+    {
+        EXPECT_TRUE(b.contains(pair.first));
+    }
+    b.clear();
+    for (int i = 0; i < 11; i++)
+    {
+        b.try_emplace(i);
+    }
+    auto c{a};
+    for(const auto& pair : a)
+    {
+        EXPECT_TRUE(c.contains(pair.first));
+    }
+    c.clear();
+    for (int i = 0; i < 27; i++)
+    {
+        c.try_emplace(i);
+    }
+    auto d{a};
+    for(const auto& pair : a)
+    {
+        EXPECT_TRUE(d.contains(pair.first));
+    }
+
+    a = b;
+    for(const auto& pair : b)
+    {
+        EXPECT_TRUE(a.contains(pair.first));
+    }
+    a.clear();
+    a = c;
+    for(const auto& pair : c)
+    {
+        EXPECT_TRUE(a.contains(pair.first));
+    }
+    a.clear();
+    a = d;
+    for(const auto& pair : d)
+    {
+        EXPECT_TRUE(a.contains(pair.first));
+    }
+    a.clear();
+}
+
+TEST(FixedMap, ComplexNontrivialMoves)
+{
+    using FM = FixedMap<int, MockMoveableButNotCopyable, 100>;
+    FM a{};
+    FM a_orig{};
+    for (int i = 0; i < 20; i++)
+    {
+        a.try_emplace(i);
+        a_orig.try_emplace(i);
+    }
+
+    FM b{std::move(a)};
+    for(const auto& pair : a_orig)
+    {
+        EXPECT_TRUE(b.contains(pair.first));
+    }
+    FM b_orig{};
+    b.clear();
+    for (int i = 0; i < 11; i++)
+    {
+        b.try_emplace(i);
+        b_orig.try_emplace(i);
+    }
+    FM c{};
+    FM c_orig{};
+    c.clear();
+    for (int i = 0; i < 27; i++)
+    {
+        c.try_emplace(i);
+        c_orig.try_emplace(i);
+    }
+
+    a = std::move(b);
+    for(const auto& pair : b_orig)
+    {
+        EXPECT_TRUE(a.contains(pair.first));
+    }
+    a.clear();
+    a = std::move(c);
+    for(const auto& pair : c_orig)
+    {
+        EXPECT_TRUE(a.contains(pair.first));
+    }
+    a.clear();
+}
+
 TEST(FixedMap, OperatorBracket_NonConstexpr)
 {
     FixedMap<int, int, 10> s1{};
