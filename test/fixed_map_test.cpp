@@ -1511,6 +1511,130 @@ TEST(FixedMap, NonAssignable)
     }
 }
 
+TEST(FixedMap, ComplexNontrivialCopies)
+{
+    FixedMap<int, MockNonTrivialCopyAssignable, 30> map_1{};
+    for (int i = 0; i < 20; i++)
+    {
+        map_1.try_emplace(i + 100);
+    }
+
+    auto map_2{map_1};
+    for(const auto& pair : map_1)
+    {
+        EXPECT_TRUE(map_2.contains(pair.first));
+    }
+    EXPECT_EQ(map_2.size(), map_1.size());
+    map_2.clear();
+    for (int i = 0; i < 11; i++)
+    {
+        map_2.try_emplace(i + 100);
+    }
+    auto map_3{map_1};
+    for(const auto& pair : map_1)
+    {
+        EXPECT_TRUE(map_3.contains(pair.first));
+    }
+    EXPECT_EQ(map_3.size(), map_1.size());
+    map_3.clear();
+    for (int i = 0; i < 27; i++)
+    {
+        map_3.try_emplace(i + 100);
+    }
+    auto map_4{map_1};
+    for(const auto& pair : map_1)
+    {
+        EXPECT_TRUE(map_4.contains(pair.first));
+    }
+    EXPECT_EQ(map_4.size(), map_1.size());
+
+    map_1 = map_2;
+    for(const auto& pair : map_2)
+    {
+        EXPECT_TRUE(map_1.contains(pair.first));
+    }
+    map_1.clear();
+    map_1 = map_3;
+    for(const auto& pair : map_3)
+    {
+        EXPECT_TRUE(map_1.contains(pair.first));
+    }
+
+    // check that we can still add 3 elements (gets us to capacity)
+    map_1.try_emplace(127);
+    map_1.try_emplace(128);
+    map_1.try_emplace(129);
+    for (int i = 0; i < 30; i++)
+    {
+        EXPECT_TRUE(map_1.contains(i + 100));
+    }
+    EXPECT_EQ(map_1.size(), 30);
+
+    map_1.clear();
+    map_1 = map_4;
+    for(const auto& pair : map_4)
+    {
+        EXPECT_TRUE(map_1.contains(pair.first));
+    }
+    map_1.clear();
+}
+
+TEST(FixedUnorderedMap, ComplexNontrivialMoves)
+{
+    using FM = FixedMap<int, MockMoveableButNotCopyable, 30>;
+    FM map_1{};
+    FM map_1_orig{};
+    for (int i = 0; i < 20; i++)
+    {
+        map_1.try_emplace(i + 100);
+        map_1_orig.try_emplace(i + 100);
+    }
+
+    FM map_2{std::move(map_1)};
+    for(const auto& pair : map_1_orig)
+    {
+        EXPECT_TRUE(map_2.contains(pair.first));
+    }
+    FM map_2_orig{};
+    map_2.clear();
+    for (int i = 0; i < 11; i++)
+    {
+        map_2.try_emplace(i + 100);
+        map_2_orig.try_emplace(i + 100);
+    }
+    FM map_3{};
+    FM map_3_orig{};
+    map_3.clear();
+    for (int i = 0; i < 27; i++)
+    {
+        map_3.try_emplace(i + 100);
+        map_3_orig.try_emplace(i + 100);
+    }
+
+    map_1 = std::move(map_2);
+    for(const auto& pair : map_2_orig)
+    {
+        EXPECT_TRUE(map_1.contains(pair.first));
+    }
+    map_1.clear();
+    map_1 = std::move(map_3);
+    for(const auto& pair : map_3_orig)
+    {
+        EXPECT_TRUE(map_1.contains(pair.first));
+    }
+
+    // check that we can still add 3 elements (gets us to capacity)
+    map_1.try_emplace(127);
+    map_1.try_emplace(128);
+    map_1.try_emplace(129);
+    for (int i = 0; i < 30; i++)
+    {
+        EXPECT_TRUE(map_1.contains(i + 100));
+    }
+    EXPECT_EQ(map_1.size(), 30);
+    map_1.clear();
+}
+
 static constexpr int INT_VALUE_10 = 10;
 static constexpr int INT_VALUE_20 = 20;
 static constexpr int INT_VALUE_30 = 30;
