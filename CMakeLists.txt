@@ -137,6 +137,9 @@ if(BUILD_TESTS)
         add_test(NAME ${TEST_TARGET} COMMAND ${TEST_TARGET})
     endmacro()
 
+    add_executable(clang18crash test/clang18crash.cpp)
+    add_test_dependencies(clang18crash)
+
     add_executable(circular_indexing_test test/circular_indexing_test.cpp)
     add_test_dependencies(circular_indexing_test)
     add_executable(circular_integer_range_iterator_test test/circular_integer_range_iterator_test.cpp)
