@@ -242,23 +242,20 @@ TEST(FixedUnorderedMap, Eigen)
     FixedUnorderedMap<int, Eigen::Matrix2f, 100> a{};
     for (int i = 0; i < 20; i++)
     {
-        const float i_float = static_cast<float>(i);
-        a.try_emplace(i, Eigen::Matrix2f{{i_float, i_float, i_float, i_float}});
+        a.try_emplace(i);
     }
 
     auto b{a};
     b.clear();
     for (int i = 0; i < 11; i++)
     {
-        const float i_float = static_cast<float>(i);
-        a.try_emplace(i, Eigen::Matrix2f{i_float, i_float, i_float, i_float});
+        b.try_emplace(i);
     }
     auto c{a};
     c.clear();
     for (int i = 0; i < 27; i++)
     {
-        const float i_float = static_cast<float>(i);
-        a.try_emplace(i, Eigen::Matrix2f{i_float, i_float, i_float, i_float});
+        c.try_emplace(i);
     }
     auto d{a};
 
@@ -267,10 +264,6 @@ TEST(FixedUnorderedMap, Eigen)
     a = c;
     a.clear();
     a = d;
-    for (const auto& [key, value] : a)
-    {
-        std::cout << key << ", [[" << value << "]]" << std::endl;
-    }
     a.clear();
 }
 
