@@ -1,4 +1,5 @@
 #include "fixed_containers/optional_ref.hpp"
+#include "mock_testing_types.hpp"
 
 #include <gtest/gtest.h>
 
@@ -294,6 +295,22 @@ TEST(OptionalRef, OpenStdAssignmentTests)
     *orj = 4;
     ASSERT_EQ(j, 2);
     ASSERT_EQ(i, 4);
+}
+
+TEST(OptionalRef, ConstexprCtor)
+{
+    // a must be static so we can take its address at compile time
+    static constexpr int a = 5;
+    constexpr OptionalRef b(a);
+    static_assert(b);
+}
+
+TEST(OptionalRef, FailingAddressOfOperator)
+{
+    // a must be static so we can take its address at compile time
+    static constexpr MockFailingAddressOfOperator a{};
+    constexpr OptionalRef b(a);
+    static_assert(b);
 }
 
 }  // namespace fixed_containers

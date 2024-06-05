@@ -7,6 +7,7 @@
 #include <compare>
 #include <functional>
 #include <optional>
+#include <memory>
 
 namespace fixed_containers
 {
@@ -34,7 +35,7 @@ public:
     // ctors are explicit to highlight the fact we are creating long living reference
     constexpr OptionalRef() = default;
     constexpr OptionalRef(T& val) noexcept
-      : IMPLEMENTION_DETAIL_DO_NOT_USE_underlying_val_(&val)
+      : IMPLEMENTION_DETAIL_DO_NOT_USE_underlying_val_(std::addressof(val))
     {
     }
 
