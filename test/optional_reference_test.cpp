@@ -1,4 +1,5 @@
 #include "fixed_containers/optional_reference.hpp"
+
 #include "mock_testing_types.hpp"
 
 #include <gtest/gtest.h>
@@ -32,8 +33,7 @@ TEST(OptionalReference, Size)
 
 TEST(OptionalReference, NullOptAssignment)
 {
-    constexpr bool success = []()
-    {
+    constexpr bool success = []() {
         int a = 9;
         OptionalReference<int> v1(a);
         v1 = std::nullopt;
@@ -50,13 +50,11 @@ TEST(OptionalReference, HasValue)
         static_assert(!v1.has_value());
     }
     {
-        static_assert(
-            [&]()
-            {
-                constexpr int val = 5;
-                OptionalReference<const int> red(val);
-                return (red.has_value());
-            }());
+        static_assert([&]() {
+            constexpr int val = 5;
+            OptionalReference<const int> red(val);
+            return (red.has_value());
+        }());
     }
 }
 
@@ -68,13 +66,11 @@ TEST(OptionalReference, BoolOperator)
         static_assert(!v1);
     }
     {
-        static_assert(
-            [&]() -> bool
-            {
-                constexpr int val = 5;
-                OptionalReference<const int> red(val);
-                return static_cast<bool>(red);
-            }());
+        static_assert([&]() -> bool {
+            constexpr int val = 5;
+            OptionalReference<const int> red(val);
+            return static_cast<bool>(red);
+        }());
     }
 }
 
@@ -174,12 +170,14 @@ TEST(OptionalReference, Comparison)
     OptionalReference<int> optRef2(val2);
     ASSERT_EQ(optRef1 <=> optRef2, std::strong_ordering::equal);
 
-    // Case 2: Both OptionalReference objects have values, and the first value is less than the second
+    // Case 2: Both OptionalReference objects have values, and the first value is less than the
+    // second
     int val3 = 3;
     OptionalReference<int> optRef3(val3);
     ASSERT_EQ(optRef3 <=> optRef1, std::strong_ordering::less);
 
-    // Case 3: Both OptionalReference objects have values, and the first value is greater than the second
+    // Case 3: Both OptionalReference objects have values, and the first value is greater than the
+    // second
     ASSERT_EQ(optRef1 <=> optRef3, std::strong_ordering::greater);
 
     // Case 4: One OptionalReference object has a value, and the other does not
@@ -307,7 +305,7 @@ TEST(OptionalReference, ConstexprCtor)
 
 TEST(OptionalReference, FailingAddressOfOperator)
 {
-     // a must be static so we can take its address at compile time
+    // a must be static so we can take its address at compile time
     static constexpr MockFailingAddressOfOperator a{};
     constexpr OptionalReference b(a);
     static_assert(b);

@@ -6,8 +6,8 @@
 
 #include <compare>
 #include <functional>
-#include <optional>
 #include <memory>
+#include <optional>
 
 namespace fixed_containers
 {
@@ -16,7 +16,8 @@ namespace fixed_containers
  * but without the extra indirection when dereferencing.
  */
 template <IsNotReference T,
-          customize::OptionalReferenceChecking<T> CheckingType = customize::OptionalReferenceAbortChecking<T>>
+          customize::OptionalReferenceChecking<T> CheckingType =
+              customize::OptionalReferenceAbortChecking<T>>
 class OptionalReference
 {
 private:
@@ -136,7 +137,8 @@ template <typename T,
           customize::OptionalReferenceChecking<T> CheckT,
           std::three_way_comparable_with<T> U,
           customize::OptionalReferenceChecking<U> CheckU>
-constexpr auto operator<=>(const OptionalReference<T, CheckT>& lhs, const OptionalReference<U, CheckU>& rhs)
+constexpr auto operator<=>(const OptionalReference<T, CheckT>& lhs,
+                           const OptionalReference<U, CheckU>& rhs)
 {
     if (lhs.has_value() && rhs.has_value())
     {
@@ -159,14 +161,15 @@ template <typename T,
           customize::OptionalReferenceChecking<T> CheckT,
           typename U,
           customize::OptionalReferenceChecking<U> CheckU>
-constexpr bool operator==(const OptionalReference<T, CheckT>& lhs, const OptionalReference<U, CheckU>& rhs)
+constexpr bool operator==(const OptionalReference<T, CheckT>& lhs,
+                          const OptionalReference<U, CheckU>& rhs)
 {
     if (lhs.has_value() && rhs.has_value()) return *lhs == *rhs;
     return lhs.has_value() == rhs.has_value();
 }
 
-// Compares OptionalReference with a nullopt. Equivalent to above when comparing to an optional that does
-// not contain a value.
+// Compares OptionalReference with a nullopt. Equivalent to above when comparing to an optional that
+// does not contain a value.
 template <typename T, customize::OptionalReferenceChecking<T> CheckT>
 constexpr auto operator<=>(const OptionalReference<T, CheckT>& lhs, std::nullopt_t)
 {

@@ -9,7 +9,8 @@
 namespace fixed_containers::customize
 {
 template <class T, class K>
-concept OptionalReferenceChecking = requires(const std_transition::source_location& loc) {
+concept OptionalReferenceChecking = requires(const std_transition::source_location& loc)
+{
     noexcept(T::bad_optional_access_error(loc));
 };
 
