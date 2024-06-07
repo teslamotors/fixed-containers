@@ -1,7 +1,7 @@
 #pragma once
 
 #include "fixed_containers/concepts.hpp"
-#include "fixed_containers/optional_ref_checking.hpp"
+#include "fixed_containers/optional_reference_checking.hpp"
 #include "fixed_containers/source_location.hpp"
 
 #include <compare>
@@ -12,15 +12,15 @@
 namespace fixed_containers
 {
 /*
- * OptionalRef<T> is intended to mimic std::optional<std::reference_wrapper<T>>
+ * OptionalReference<T> is intended to mimic std::optional<std::reference_wrapper<T>>
  * but without the extra indirection when dereferencing.
  */
 template <IsNotReference T,
-          customize::OptionalRefChecking<T> CheckingType = customize::OptionalRefAbortChecking<T>>
-class OptionalRef
+          customize::OptionalReferenceChecking<T> CheckingType = customize::OptionalReferenceAbortChecking<T>>
+class OptionalReference
 {
 private:
-    using Self = OptionalRef<T, CheckingType>;
+    using Self = OptionalReference<T, CheckingType>;
     using reference = T&;
     using const_reference = const T&;
     using pointer = T*;
@@ -33,24 +33,24 @@ public:
 
 public:
     // ctors are explicit to highlight the fact we are creating long living reference
-    constexpr OptionalRef() = default;
-    explicit constexpr OptionalRef(T& val) noexcept
+    constexpr OptionalReference() = default;
+    explicit constexpr OptionalReference(T& val) noexcept
       : IMPLEMENTION_DETAIL_DO_NOT_USE_underlying_val_(std::addressof(val))
     {
     }
 
     // needed such that r-values arent accepted by the T& ctor in the case that T
     // is const
-    constexpr OptionalRef(T&& val) noexcept = delete;
+    constexpr OptionalReference(T&& val) noexcept = delete;
 
-    constexpr ~OptionalRef() = default;
+    constexpr ~OptionalReference() = default;
 
     // Decisions on what assignment operators to allow are inspired by
     // https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2012/n3406#rationale.refs
-    constexpr OptionalRef(const Self&) noexcept = default;
+    constexpr OptionalReference(const Self&) noexcept = default;
     constexpr Self& operator=(const Self&) noexcept = default;  // rebinds
 
-    constexpr OptionalRef(Self&&) noexcept = default;
+    constexpr OptionalReference(Self&&) noexcept = default;
     constexpr Self& operator=(Self&&) noexcept = default;  // rebinds
 
     // this operator is ambiguous. Seee the open-std link
@@ -133,10 +133,10 @@ private:
 // considered equal to rhs if, and only if, both lhs and rhs do not contain a value. lhs is
 // considered less than rhs if, and only if, rhs contains a value and lhs does not.
 template <typename T,
-          customize::OptionalRefChecking<T> CheckT,
+          customize::OptionalReferenceChecking<T> CheckT,
           std::three_way_comparable_with<T> U,
-          customize::OptionalRefChecking<U> CheckU>
-constexpr auto operator<=>(const OptionalRef<T, CheckT>& lhs, const OptionalRef<U, CheckU>& rhs)
+          customize::OptionalReferenceChecking<U> CheckU>
+constexpr auto operator<=>(const OptionalReference<T, CheckT>& lhs, const OptionalReference<U, CheckU>& rhs)
 {
     if (lhs.has_value() && rhs.has_value())
     {
@@ -156,26 +156,26 @@ constexpr auto operator<=>(const OptionalRef<T, CheckT>& lhs, const OptionalRef<
 
 // <=> only gives definition for secondary relational operators (ie. <)
 template <typename T,
-          customize::OptionalRefChecking<T> CheckT,
+          customize::OptionalReferenceChecking<T> CheckT,
           typename U,
-          customize::OptionalRefChecking<U> CheckU>
-constexpr bool operator==(const OptionalRef<T, CheckT>& lhs, const OptionalRef<U, CheckU>& rhs)
+          customize::OptionalReferenceChecking<U> CheckU>
+constexpr bool operator==(const OptionalReference<T, CheckT>& lhs, const OptionalReference<U, CheckU>& rhs)
 {
     if (lhs.has_value() && rhs.has_value()) return *lhs == *rhs;
     return lhs.has_value() == rhs.has_value();
 }
 
-// Compares OptionalRef with a nullopt. Equivalent to above when comparing to an optional that does
+// Compares OptionalReference with a nullopt. Equivalent to above when comparing to an optional that does
 // not contain a value.
-template <typename T, customize::OptionalRefChecking<T> CheckT>
-constexpr auto operator<=>(const OptionalRef<T, CheckT>& lhs, std::nullopt_t)
+template <typename T, customize::OptionalReferenceChecking<T> CheckT>
+constexpr auto operator<=>(const OptionalReference<T, CheckT>& lhs, std::nullopt_t)
 {
-    return lhs <=> OptionalRef<T, CheckT>{};
+    return lhs <=> OptionalReference<T, CheckT>{};
 }
 
 // <=> only gives definition for secondary relational operators (ie. <)
-template <typename T, customize::OptionalRefChecking<T> CheckT>
-constexpr bool operator==(const OptionalRef<T, CheckT>& lhs, std::nullopt_t)
+template <typename T, customize::OptionalReferenceChecking<T> CheckT>
+constexpr bool operator==(const OptionalReference<T, CheckT>& lhs, std::nullopt_t)
 {
     return !lhs.has_value();
 }
@@ -184,8 +184,8 @@ constexpr bool operator==(const OptionalRef<T, CheckT>& lhs, std::nullopt_t)
 // if opt contains a value. Otherwise, opt is considered less than value. If the corresponding
 // two-way comparison expression between *opt and value is not well-formed, or if its result is not
 // convertible to bool, the program is ill-formed.
-template <typename T, customize::OptionalRefChecking<T> CheckT, class U>
-constexpr std::compare_three_way_result_t<T, U> operator<=>(const OptionalRef<T, CheckT>& lhs,
+template <typename T, customize::OptionalReferenceChecking<T> CheckT, class U>
+constexpr std::compare_three_way_result_t<T, U> operator<=>(const OptionalReference<T, CheckT>& lhs,
                                                             const U& rhs)
 {
     // using a concept gives a recursive definition error
@@ -194,8 +194,8 @@ constexpr std::compare_three_way_result_t<T, U> operator<=>(const OptionalRef<T,
 }
 
 // <=> only gives definition for secondary relational operators (ie. <)
-template <typename T, customize::OptionalRefChecking<T> CheckT, typename U>
-constexpr bool operator==(const OptionalRef<T, CheckT>& lhs, const U& rhs)
+template <typename T, customize::OptionalReferenceChecking<T> CheckT, typename U>
+constexpr bool operator==(const OptionalReference<T, CheckT>& lhs, const U& rhs)
 {
     return lhs.has_value() ? *lhs == rhs : false;
 }
