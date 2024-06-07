@@ -283,7 +283,7 @@ TEST(OptionalRef, OpenStdAssignmentTests)
     int i = 0;
     int j = 1;
     OptionalRef<int> ori;
-    OptionalRef<int> orj = j;
+    OptionalRef<int> orj{j};
 
     *orj = 2;
     ASSERT_EQ(j, 2);
@@ -307,10 +307,15 @@ TEST(OptionalRef, ConstexprCtor)
 
 TEST(OptionalRef, FailingAddressOfOperator)
 {
-    // a must be static so we can take its address at compile time
+     // a must be static so we can take its address at compile time
     static constexpr MockFailingAddressOfOperator a{};
     constexpr OptionalRef b(a);
     static_assert(b);
+}
+
+TEST(OptionalRef, RValueCtor)
+{
+    // OptionalRef<const int>(10); // fails to compile, intentional
 }
 
 }  // namespace fixed_containers

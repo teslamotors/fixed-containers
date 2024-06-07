@@ -34,10 +34,14 @@ public:
 public:
     // ctors are explicit to highlight the fact we are creating long living reference
     constexpr OptionalRef() = default;
-    constexpr OptionalRef(T& val) noexcept
+    explicit constexpr OptionalRef(T& val) noexcept
       : IMPLEMENTION_DETAIL_DO_NOT_USE_underlying_val_(std::addressof(val))
     {
     }
+
+    // needed such that r-values arent accepted by the T& ctor in the case that T
+    // is const
+    constexpr OptionalRef(T&& val) noexcept = delete;
 
     constexpr ~OptionalRef() = default;
 
