@@ -12,7 +12,7 @@ set(CMAKE_CXX_STANDARD 20)
 # when compiling with PCH enabled
 set(CMAKE_CXX_EXTENSIONS ON)
 #set(CMAKE_VERBOSE_MAKEFILE ON)
-
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 project(fixed_containers LANGUAGES CXX)
 
