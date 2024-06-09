@@ -254,10 +254,10 @@ public:
         TableIndex idx = table().opaque_index_of(key);
         if (!table().exists(idx))
         {
-            return false;
+            return 0;
         }
         table().erase(idx);
-        return true;
+        return 1;
     }
 
     [[nodiscard]] constexpr iterator find(const K& key) noexcept
