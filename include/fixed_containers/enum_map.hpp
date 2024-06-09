@@ -1044,8 +1044,7 @@ public:
 };
 
 template <typename K, typename V, fixed_containers::customize::EnumMapChecking<K> CheckingType>
-[[nodiscard]] constexpr typename EnumMap<K, V, CheckingType>::size_type is_full(
-    const EnumMap<K, V, CheckingType>& c)
+[[nodiscard]] constexpr bool is_full(const EnumMap<K, V, CheckingType>& c)
 {
     return c.size() >= c.max_size();
 }

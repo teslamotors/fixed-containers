@@ -617,8 +617,7 @@ private:
 namespace fixed_containers
 {
 template <typename T, std::size_t MAXIMUM_SIZE, typename CheckingType>
-[[nodiscard]] constexpr typename FixedList<T, MAXIMUM_SIZE, CheckingType>::size_type is_full(
-    const FixedList<T, MAXIMUM_SIZE, CheckingType>& c)
+[[nodiscard]] constexpr bool is_full(const FixedList<T, MAXIMUM_SIZE, CheckingType>& c)
 {
     return c.size() >= c.max_size();
 }

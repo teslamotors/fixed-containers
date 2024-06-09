@@ -404,7 +404,7 @@ private:
 };
 
 template <typename K>
-[[nodiscard]] constexpr typename EnumSet<K>::size_type is_full(const EnumSet<K>& c)
+[[nodiscard]] constexpr bool is_full(const EnumSet<K>& c)
 {
     return c.size() >= c.max_size();
 }

@@ -701,12 +701,8 @@ here. clang accepts it */
                     std::size_t>
           typename StorageTemplate,
           customize::MapChecking<K> CheckingType>
-[[nodiscard]] constexpr
-    typename FixedMap<K, V, MAXIMUM_SIZE, Compare, COMPACTNESS, StorageTemplate, CheckingType>::
-        size_type
-        is_full(
-            const FixedMap<K, V, MAXIMUM_SIZE, Compare, COMPACTNESS, StorageTemplate, CheckingType>&
-                c)
+[[nodiscard]] constexpr bool is_full(
+    const FixedMap<K, V, MAXIMUM_SIZE, Compare, COMPACTNESS, StorageTemplate, CheckingType>& c)
 {
     return c.size() >= c.max_size();
 }

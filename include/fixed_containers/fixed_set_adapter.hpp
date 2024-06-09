@@ -335,8 +335,7 @@ private:
 };
 
 template <typename K, typename TableImpl, typename CheckingType>
-[[nodiscard]] constexpr typename FixedSetAdapter<K, TableImpl, CheckingType>::size_type is_full(
-    const FixedSetAdapter<K, TableImpl, CheckingType>& c)
+[[nodiscard]] constexpr bool is_full(const FixedSetAdapter<K, TableImpl, CheckingType>& c)
 {
     return c.size() >= c.max_size();
 }

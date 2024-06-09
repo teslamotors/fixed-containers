@@ -473,8 +473,7 @@ private:
 };
 
 template <typename K, typename V, typename TableImpl, typename CheckingType>
-[[nodiscard]] constexpr typename FixedMapAdapter<K, V, TableImpl, CheckingType>::size_type is_full(
-    const FixedMapAdapter<K, V, TableImpl, CheckingType>& c)
+[[nodiscard]] constexpr bool is_full(const FixedMapAdapter<K, V, TableImpl, CheckingType>& c)
 {
     return c.size() >= c.max_size();
 }

@@ -466,8 +466,7 @@ private:
 };
 
 template <typename T, std::size_t MAXIMUM_SIZE, typename CheckingType>
-[[nodiscard]] constexpr typename FixedCircularDeque<T, MAXIMUM_SIZE, CheckingType>::size_type
-is_full(const FixedCircularDeque<T, MAXIMUM_SIZE, CheckingType>& c)
+[[nodiscard]] constexpr bool is_full(const FixedCircularDeque<T, MAXIMUM_SIZE, CheckingType>& c)
 {
     return c.size() >= MAXIMUM_SIZE;
 }
