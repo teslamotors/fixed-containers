@@ -20,7 +20,7 @@ namespace test_namespace2
 namespace
 {
 using fixed_containers::type_name;
-using namespace test_namespace;
+using test_namespace::Fruit;
 
 TEST(type_name, with_enum)
 {

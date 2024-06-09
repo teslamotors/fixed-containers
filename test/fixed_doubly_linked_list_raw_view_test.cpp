@@ -6,7 +6,7 @@
 #include "fixed_containers/fixed_doubly_linked_list.hpp"
 #include "fixed_containers/fixed_list.hpp"
 
-namespace fixed_containers
+namespace fixed_containers::fixed_doubly_linked_list_detail
 {
 namespace
 {
@@ -16,8 +16,6 @@ T get_from_ptr(const std::byte* ptr)
     return *reinterpret_cast<const T*>(ptr);
 }
 }  // namespace
-
-using namespace fixed_doubly_linked_list_detail;
 
 static_assert(std::forward_iterator<FixedDoublyLinkedListRawView<std::size_t>::iterator>);
 static_assert(std::ranges::forward_range<FixedDoublyLinkedListRawView<std::size_t>>);
@@ -240,4 +238,4 @@ TEST(FixedDoublyLinkedListRawView, ViewOfFixedList)
     EXPECT_EQ(it, view.end());
 }
 
-}  // namespace fixed_containers
+}  // namespace fixed_containers::fixed_doubly_linked_list_detail

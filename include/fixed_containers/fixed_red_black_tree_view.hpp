@@ -184,7 +184,7 @@ public:
          */
         [[nodiscard]] NodeIndex parent_index(NodeIndex i) const
         {
-            using namespace fixed_red_black_tree_detail;
+            using fixed_red_black_tree_detail::NodeIndexWithColorEmbeddedInTheMostSignificantBit;
 
             const auto node = node_pointer(i);
             const auto parent_index_offset =
@@ -343,7 +343,8 @@ public:
          */
         [[nodiscard]] std::size_t tree_node_size_bytes() const
         {
-            using namespace fixed_red_black_tree_detail;
+            using fixed_red_black_tree_detail::CompactRedBlackTreeNode;
+            using fixed_red_black_tree_detail::DefaultRedBlackTreeNode;
 
             /*
              * Calculate the size of the tree node by calculating the compile-time size with a
