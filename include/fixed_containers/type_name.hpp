@@ -16,7 +16,9 @@ namespace fixed_containers
 template <typename T>
 constexpr auto type_name()
 {
-    std::string_view name, prefix, suffix;
+    std::string_view name{};
+    std::string_view prefix{};
+    std::string_view suffix{};
 #ifdef __clang__
     name = __PRETTY_FUNCTION__;
     prefix = "auto fixed_containers::type_name() [T = ";
