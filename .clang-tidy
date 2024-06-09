@@ -1,0 +1,141 @@
+
+---
+# Adapted from: https://github.com/googleapis/google-cloud-cpp/blob/main/.clang-tidy
+# Configure clang-tidy for this project.
+
+# Here is an explanation for why some of the checks are disabled:
+#
+#  -google-readability-namespace-comments: the *_CLIENT_NS is a macro, and
+#      clang-tidy fails to match it against the initial value.
+#
+#  -modernize-use-trailing-return-type: clang-tidy recommends using
+#      `auto Foo() -> std::string { return ...; }`, we think the code is less
+#      readable in this form.
+#
+#  -modernize-return-braced-init-list: We think removing typenames and using
+#      only braced-init can hurt readability.
+#
+#  -modernize-avoid-c-arrays: We only use C arrays when they seem to be the
+#      right tool for the job, such as `char foo[] = "hello"`. In these cases,
+#      avoiding C arrays often makes the code less readable, and std::array is
+#      not a drop-in replacement because it doesn't deduce the size.
+#
+#  -performance-move-const-arg: This warning requires the developer to
+#      know/care more about the implementation details of types/functions than
+#      should be necessary. For example, `A a; F(std::move(a));` will trigger a
+#      warning IFF `A` is a trivial type (and therefore the move is
+#      meaningless). It would also warn if `F` accepts by `const&`, which is
+#      another detail that the caller need not care about.
+#
+#  -performance-avoid-endl: we would like to turn this on, but there are too
+#      many legitimate uses in our samples.
+#
+#  -performance-enum-size: Smaller enums may or not may be faster, it depends on
+#      the architechture. If data size was a consideration, we might decide to
+#      enable the warnings.
+#
+#  -readability-redundant-declaration: A friend declaration inside a class
+#      counts as a declaration, so if we also declare that friend outside the
+#      class in order to document it as part of the public API, that will
+#      trigger a redundant declaration warning from this check.
+#
+#  -readability-avoid-return-with-void-value: We believe this is idiomatic
+#    and saves typing, and the intent is obvious.
+#
+#  -readability-function-cognitive-complexity: too many false positives with
+#      clang-tidy-12. We need to disable this check in macros, and that setting
+#      only appears in clang-tidy-13.
+#
+#  -bugprone-easily-swappable-parameters: too many false positives.
+#
+#  -bugprone-unchecked-optional-access: too many false positives in tests.
+#     Despite what the documentation says, this warning appears after
+#     `ASSERT_TRUE(variable)` or `ASSERT_TRUE(variable.has_value())`.
+Checks: >
+  -*,
+  abseil-*,
+  bugprone-*,
+  google-*,
+  misc-*,
+  modernize-*,
+  performance-*,
+  portability-*,
+  readability-*,
+  -google-readability-braces-around-statements,
+  -google-readability-namespace-comments,
+  -google-runtime-references,
+  -misc-non-private-member-variables-in-classes,
+  -misc-const-correctness,
+  -misc-include-cleaner,
+  -modernize-return-braced-init-list,
+  -modernize-use-trailing-return-type,
+  -modernize-avoid-c-arrays,
+  -performance-move-const-arg,
+  -performance-avoid-endl,
+  -performance-enum-size,
+  -readability-braces-around-statements,
+  -readability-identifier-length,
+  -readability-magic-numbers,
+  -readability-named-parameter,
+  -readability-redundant-declaration,
+  -readability-avoid-return-with-void-value,
+  -readability-function-cognitive-complexity,
+  -bugprone-easily-swappable-parameters,
+  -bugprone-inc-dec-in-conditions,
+  -bugprone-unchecked-optional-access,
+  -bugprone-unused-local-non-trivial-variable,
+  -bugprone-unused-return-value,
+
+  -bugprone-sizeof-expression,
+  -bugprone-switch-missing-default-case,
+  -bugprone-use-after-move,
+  -google-explicit-constructor,
+  -google-readability-avoid-underscore-in-googletest-name,
+  -google-readability-todo,
+  -google-runtime-operator,
+  -misc-no-recursion,
+  -misc-redundant-expression,
+  -misc-use-anonymous-namespace,
+  -modernize-loop-convert,
+  -modernize-use-nodiscard,
+  -modernize-pass-by-value,
+  -modernize-use-auto,
+  -modernize-use-default-member-init,
+  -modernize-use-emplace,
+  -modernize-use-equals-default,
+  -modernize-use-transparent-functors,
+  -performance-unnecessary-copy-initialization,
+  -readability-container-size-empty,
+  -readability-function-size,
+  -readability-identifier-naming,
+  -readability-qualified-auto,
+  -readability-redundant-access-specifiers,
+  -readability-redundant-inline-specifier,
+  -readability-redundant-member-init,
+  -readability-redundant-smartptr-get,
+  -readability-suspicious-call-argument,
+  -readability-uppercase-literal-suffix,
+  -readability-use-anyofallof
+
+# Turn all the warnings from the checks above into errors.
+WarningsAsErrors: "*"
+
+HeaderFilterRegex: "(include/).*\\.hpp$"
+
+CheckOptions:
+  - { key: readability-identifier-naming.NamespaceCase,               value: lower_case   }
+  - { key: readability-identifier-naming.ClassCase,                   value: CamelCase    }
+  - { key: readability-identifier-naming.StructCase,                  value: CamelCase    }
+  - { key: readability-identifier-naming.TypeTemplateParameterCase,   value: CamelCase    }
+  - { key: readability-identifier-naming.ValueTemplateParameterCase,  value: UPPER_CASE   }
+  - { key: readability-identifier-naming.FunctionCase,                value: lower_case   }
+  - { key: readability-identifier-naming.VariableCase,                value: lower_case   }
+  - { key: readability-identifier-naming.ClassMemberCase,             value: lower_case   }
+  - { key: readability-identifier-naming.ClassMemberSuffix,           value: _            }
+  - { key: readability-identifier-naming.PrivateMemberSuffix,         value: _            }
+  - { key: readability-identifier-naming.ProtectedMemberSuffix,       value: _            }
+  - { key: readability-identifier-naming.EnumConstantCase,            value: UPPER_CASE   }
+  - { key: readability-identifier-naming.ConstexprVariableCase,       value: UPPER_CASE   }
+  - { key: readability-identifier-naming.GlobalConstantCase,          value: UPPER_CASE   }
+  - { key: readability-identifier-naming.MemberConstantCase,          value: UPPER_CASE   }
+  - { key: readability-identifier-naming.StaticConstantCase,          value: UPPER_CASE   }
