@@ -17,7 +17,8 @@ template <class ConstIterator,
           IteratorConstness CONSTNESS>
 class RandomAccessIteratorTransformer
 {
-    static constexpr IteratorConstness NEGATED_CONSTNESS = IteratorConstness(!bool(CONSTNESS));
+    static constexpr IteratorConstness NEGATED_CONSTNESS =
+        IteratorConstness(!static_cast<bool>(CONSTNESS));
 
     using Self = RandomAccessIteratorTransformer<ConstIterator,
                                                  MutableIterator,

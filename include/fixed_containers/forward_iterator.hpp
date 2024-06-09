@@ -23,7 +23,8 @@ template <ForwardEntryProvider ConstEntryProvider,
           IteratorConstness CONSTNESS>
 class ForwardIterator
 {
-    static constexpr IteratorConstness NEGATED_CONSTNESS = IteratorConstness(!bool(CONSTNESS));
+    static constexpr IteratorConstness NEGATED_CONSTNESS =
+        IteratorConstness(!static_cast<bool>(CONSTNESS));
 
     using Self = ForwardIterator<ConstEntryProvider, MutableEntryProvider, CONSTNESS>;
 
