@@ -638,32 +638,27 @@ private:
 
     constexpr iterator create_iterator(const std::size_t offset_from_start) noexcept
     {
-        return iterator{ReferenceProvider<false>{std::addressof(array()),
-                                                 std::addressof(starting_index_and_size()),
-                                                 offset_from_start}};
+        return iterator{ReferenceProvider<false>{
+            std::addressof(array()), std::addressof(starting_index_and_size()), offset_from_start}};
     }
     constexpr const_iterator create_const_iterator(
         const std::size_t offset_from_start) const noexcept
     {
-        return const_iterator{ReferenceProvider<true>{std::addressof(array()),
-                                                      std::addressof(starting_index_and_size()),
-                                                      offset_from_start}};
+        return const_iterator{ReferenceProvider<true>{
+            std::addressof(array()), std::addressof(starting_index_and_size()), offset_from_start}};
     }
 
     constexpr reverse_iterator create_reverse_iterator(const std::size_t offset_from_start) noexcept
     {
-        return reverse_iterator{ReferenceProvider<false>{std::addressof(array()),
-                                                         std::addressof(starting_index_and_size()),
-                                                         offset_from_start}};
+        return reverse_iterator{ReferenceProvider<false>{
+            std::addressof(array()), std::addressof(starting_index_and_size()), offset_from_start}};
     }
 
     constexpr const_reverse_iterator create_const_reverse_iterator(
         const std::size_t offset_from_start) const noexcept
     {
-        return const_reverse_iterator{
-            ReferenceProvider<true>{std::addressof(array()),
-                                    std::addressof(starting_index_and_size()),
-                                    offset_from_start}};
+        return const_reverse_iterator{ReferenceProvider<true>{
+            std::addressof(array()), std::addressof(starting_index_and_size()), offset_from_start}};
     }
 
 private:
