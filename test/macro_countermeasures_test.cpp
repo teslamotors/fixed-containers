@@ -15,8 +15,8 @@ error: expected unqualified-id if (const auto __len = std::min(__d1, __d2))
 #define CONST const
 #define CONSTANT const
 #define MUTABLE mutable
-#define BLACK 0
-#define RED 1
+#define BLACK 0  // NOLINT(modernize-macro-to-enum)
+#define RED 1    // NOLINT(modernize-macro-to-enum)
 
 #include "fixed_containers/enum_array.hpp"
 #include "fixed_containers/enum_map.hpp"
