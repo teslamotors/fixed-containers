@@ -78,7 +78,7 @@ TEST(FixedUnorderedMapRawView, PairSizeComputations)
     test_size_computations<int, MockAligned64>();
 
     // this requires no padding
-    test_size_computations<char[6], short>();
+    test_size_computations<char[6], std::int16_t>();
 
     // this requires 2 bytes of padding to allow the int to be aligned properly
     test_size_computations<char[6], int>();
@@ -123,8 +123,8 @@ using MapEntryRawViewTypes = ::testing::Types<
     TestSetArgument<MapEntry<int, int>{31, 13}>,
     TestSetArgument<MapEntry<int, char>{91, '['}>,
     TestSetArgument<MapEntry<char, int>{'G', 71}>,
-    TestSetArgument<MapEntry<std::array<char, 6>, short>{{{'w', 'h', 'a', 't', 's', ' '}},
-                                                         static_cast<short>(42)}>,
+    TestSetArgument<MapEntry<std::array<char, 6>, std::int16_t>{{{'w', 'h', 'a', 't', 's', ' '}},
+                                                                static_cast<std::int16_t>(42)}>,
     TestSetArgument<MapEntry<std::array<char, 6>, int>{{{'w', 'h', 'o', 'w', 'a', 's'}}, 1}>,
     TestSetArgument<MapEntry<MockAligned64, char>{MockAligned64{555}, 'T'}>,
     TestSetArgument<MapEntry<char, MockAligned64>{'L', MockAligned64{444}}>,

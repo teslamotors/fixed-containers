@@ -74,7 +74,7 @@ struct StructOfPrimitives
     int a1;
     std::size_t a2;
     double a3;
-    long a4;
+    std::int64_t a4;
     char a5;
 };
 }  // namespace
@@ -84,7 +84,7 @@ TEST(Tuples, AsTupleView)
     constexpr auto result = []()
     {
         StructOfPrimitives instance{};
-        std::tuple<int&, std::size_t&, double&, long&, char&> tuple_view =
+        std::tuple<int&, std::size_t&, double&, std::int64_t&, char&> tuple_view =
             tuples::as_tuple_view<5>(instance);
         std::get<0>(tuple_view) = 11;
         std::get<1>(tuple_view) = 13;
