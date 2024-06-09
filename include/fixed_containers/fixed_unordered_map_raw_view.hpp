@@ -113,7 +113,7 @@ public:  // public for testing
 
         void advance() noexcept { current_ = std::next(current_); }
 
-        const MapEntryRawView get() const noexcept { return parent_->get_entry_view(*current_); }
+        MapEntryRawView get() const noexcept { return parent_->get_entry_view(*current_); }
 
         bool operator==(const ReferenceProvider& other) const noexcept = default;
     };
