@@ -1184,7 +1184,6 @@ TEST(FixedString, Equality)
     constexpr auto v4 = FixedString<12>{"01"};
     constexpr auto v5 = FixedString<12>{"012345"};
 
-    static_assert(v1 == v1);
     static_assert(v1 == v2);
     static_assert(v1 != v3);
     static_assert(v1 != v4);

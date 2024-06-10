@@ -278,8 +278,11 @@ TEST(RichEnum, ValueOfUnderlyingInt)
 
 TEST(RichEnum, UniqueValuesArrays)
 {
-    static_assert(&TestRichEnum1::values() == &TestRichEnum1::values());
-    static_assert(&TestRichEnum2::values() == &TestRichEnum2::values());
+    const auto& ENUM1_VALUES = TestRichEnum1::values();
+    const auto& ENUM2_VALUES = TestRichEnum2::values();
+
+    static_assert(&TestRichEnum1::values() == &ENUM1_VALUES);
+    static_assert(&TestRichEnum2::values() == &ENUM2_VALUES);
 }
 
 TEST(RichEnum, HasValue)

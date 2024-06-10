@@ -661,7 +661,6 @@ TEST(FixedDeque, Equality)
         constexpr auto v4 = Factory::template create<int, 12>({0, 1});
         constexpr auto v5 = Factory::template create<int, 12>({0, 1, 2, 3, 4, 5});
 
-        static_assert(v1 == v1);
         static_assert(v1 == v2);
         static_assert(v1 != v3);
         static_assert(v1 != v4);
