@@ -14,7 +14,7 @@
 namespace fixed_containers::wyhash_detail
 {
 
-constexpr inline void mum(std::uint64_t* a, std::uint64_t* b)
+constexpr void mum(std::uint64_t* a, std::uint64_t* b)
 {
 #if defined(__SIZEOF_INT128__)
     __uint128_t r = *a;
@@ -55,7 +55,7 @@ constexpr inline void mum(std::uint64_t* a, std::uint64_t* b)
 }
 
 // multiply and xor mix function, aka MUM
-[[nodiscard]] constexpr inline auto mix(std::uint64_t a, std::uint64_t b) -> std::uint64_t
+[[nodiscard]] constexpr auto mix(std::uint64_t a, std::uint64_t b) -> std::uint64_t
 {
     mum(&a, &b);
     return a ^ b;
@@ -143,7 +143,7 @@ constexpr inline void mum(std::uint64_t* a, std::uint64_t* b)
     return mix(secret[1] ^ static_cast<std::uint64_t>(len), mix(a ^ secret[1], b ^ seed));
 }
 
-[[nodiscard]] constexpr inline std::uint64_t hash(std::uint64_t x)
+[[nodiscard]] constexpr std::uint64_t hash(std::uint64_t x)
 {
     return mix(x, UINT64_C(0x9E3779B97F4A7C15));
 }

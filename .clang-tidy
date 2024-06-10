@@ -110,7 +110,6 @@ Checks: >
   -readability-identifier-naming,
   -readability-qualified-auto,
   -readability-redundant-access-specifiers,
-  -readability-redundant-inline-specifier,
   -readability-redundant-member-init,
   -readability-redundant-smartptr-get,
   -readability-suspicious-call-argument,
