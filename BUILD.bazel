@@ -837,6 +837,18 @@ cc_library(
     visibility = ["//visibility:private"],
 )
 
+cc_test(
+    name = "instance_counter_test",
+    srcs = ["test/instance_counter_test.cpp"],
+    deps = [
+		":concepts",
+        ":instance_counter",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
+    ],
+    copts = ["-std=c++20"],
+)
+
 cc_library(
     name = "mock_testing_types",
     hdrs = ["test/mock_testing_types.hpp"],
