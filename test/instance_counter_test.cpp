@@ -1,5 +1,7 @@
 #include "instance_counter.hpp"
 
+#include "fixed_containers/concepts.hpp"
+
 namespace fixed_containers::instance_counter
 {
 namespace

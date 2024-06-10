@@ -2,8 +2,6 @@
 
 #include <gtest/gtest.h>
 
-#include <unordered_map>
-
 namespace fixed_containers::fixed_doubly_linked_list_detail
 {
 namespace

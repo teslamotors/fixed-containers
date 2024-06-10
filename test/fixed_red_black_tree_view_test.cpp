@@ -1,13 +1,9 @@
 #include "fixed_containers/fixed_red_black_tree_view.hpp"
 
-#include "mock_testing_types.hpp"
-#include "test_utilities_common.hpp"
-
 #include "fixed_containers/fixed_set.hpp"
 
 #include <gtest/gtest.h>
 
-#include <algorithm>
 #include <cmath>
 #include <cstring>
 #include <ranges>

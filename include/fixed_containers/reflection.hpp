@@ -7,7 +7,6 @@
 #include "fixed_containers/in_out.hpp"
 #include "fixed_containers/tuples.hpp"
 
-#include <array>
 #include <concepts>
 #include <memory>
 #include <optional>

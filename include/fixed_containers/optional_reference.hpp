@@ -5,7 +5,6 @@
 #include "fixed_containers/source_location.hpp"
 
 #include <compare>
-#include <functional>
 #include <memory>
 #include <optional>
 

@@ -2,7 +2,7 @@
 
 #include "fixed_containers/memory.hpp"
 
-#include <memory>
+#include <utility>
 
 namespace fixed_containers::algorithm
 {

@@ -4,8 +4,6 @@
 
 #include <gtest/gtest.h>
 
-#include <unordered_map>
-
 namespace fixed_containers::fixed_robinhood_hashtable_detail
 {
 namespace

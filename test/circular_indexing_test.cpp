@@ -2,8 +2,6 @@
 
 #include <gtest/gtest.h>
 
-#include <array>
-
 namespace fixed_containers::circular_indexing
 {
 TEST(CyclesAndInteger, IncrementIndexWithWraparound)

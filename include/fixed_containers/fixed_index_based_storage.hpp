@@ -1,15 +1,12 @@
 #pragma once
 
 #include "fixed_containers/assert_or_abort.hpp"
-#include "fixed_containers/consteval_compare.hpp"
 #include "fixed_containers/fixed_vector.hpp"
 #include "fixed_containers/index_or_value_storage.hpp"
 #include "fixed_containers/memory.hpp"
 
 #include <array>
 #include <cstddef>
-#include <memory>
-#include <type_traits>
 
 namespace fixed_containers
 {

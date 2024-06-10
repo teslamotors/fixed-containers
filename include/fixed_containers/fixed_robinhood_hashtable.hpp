@@ -4,10 +4,8 @@
 #include "fixed_containers/map_entry.hpp"
 
 #include <array>
-#include <cstring>
-#include <functional>
-#include <iostream>
-#include <memory>
+#include <cstdint>
+#include <utility>
 
 // This is a modified version of the dense hashmap from https://github.com/martinus/unordered_dense,
 // reimplemented to exist nicely in the fixed-containers universe.

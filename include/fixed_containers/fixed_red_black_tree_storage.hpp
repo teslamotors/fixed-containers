@@ -4,7 +4,8 @@
 #include "fixed_containers/fixed_red_black_tree_nodes.hpp"
 #include "fixed_containers/fixed_red_black_tree_types.hpp"
 
-#include <cstdint>
+#include <type_traits>
+#include <utility>
 
 namespace fixed_containers::fixed_red_black_tree_detail
 {

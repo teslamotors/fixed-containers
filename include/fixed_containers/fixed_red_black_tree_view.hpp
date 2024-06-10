@@ -1,14 +1,13 @@
 #pragma once
 
 #include "fixed_containers/assert_or_abort.hpp"
-#include "fixed_containers/fixed_red_black_tree.hpp"
+#include "fixed_containers/fixed_red_black_tree_nodes.hpp"
+#include "fixed_containers/fixed_red_black_tree_types.hpp"
 
 #include <cstdint>
-#include <functional>
 #include <iterator>
-#include <numeric>
-#include <unordered_set>
-#include <utility>
+#include <memory>
+#include <type_traits>
 
 namespace fixed_containers
 {

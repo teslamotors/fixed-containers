@@ -1,10 +1,11 @@
 #include "fixed_containers/fixed_doubly_linked_list_raw_view.hpp"
 
 #include "mock_testing_types.hpp"
-#include "test_utilities_common.hpp"
 
 #include "fixed_containers/fixed_doubly_linked_list.hpp"
 #include "fixed_containers/fixed_list.hpp"
+
+#include <gtest/gtest.h>
 
 namespace fixed_containers::fixed_doubly_linked_list_detail
 {

@@ -1,10 +1,8 @@
 #pragma once
 
-#include "fixed_containers/concepts.hpp"
-#include "fixed_containers/wyhash.hpp"
-
 #include <compare>
-#include <cstddef>
+#include <cstdint>
+#include <functional>
 
 namespace fixed_containers::instance_counter
 {

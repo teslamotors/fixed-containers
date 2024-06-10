@@ -43,6 +43,7 @@ enum class Color
     COLOR_YELLOW,
     COLOR_BLUE
 };
+static_assert(rich_enums_detail::is_enum<Color>);
 
 struct ClassWithMutableMember
 {

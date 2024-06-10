@@ -1,10 +1,11 @@
 #include "fixed_containers/fixed_unordered_set_raw_view.hpp"
 
 #include "mock_testing_types.hpp"
-#include "test_utilities_common.hpp"
 
 #include "fixed_containers/fixed_unordered_set.hpp"
 #include "fixed_containers/map_entry.hpp"
+
+#include <gtest/gtest.h>
 
 namespace fixed_containers
 {

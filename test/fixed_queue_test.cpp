@@ -4,8 +4,6 @@
 
 #include <gtest/gtest.h>
 
-#include <queue>
-
 namespace fixed_containers
 {
 using QueueType = FixedQueue<int, 5>;

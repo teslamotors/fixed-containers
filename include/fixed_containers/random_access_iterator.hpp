@@ -3,8 +3,8 @@
 #include "fixed_containers/arrow_proxy.hpp"
 #include "fixed_containers/iterator_utils.hpp"
 
+#include <concepts>
 #include <cstddef>
-#include <cstdint>
 #include <iterator>
 #include <memory>
 

@@ -9,7 +9,7 @@
 #include "fixed_containers/source_location.hpp"
 
 #include <array>
-#include <cstdint>
+#include <cstddef>
 #include <cstdlib>
 #include <string_view>
 

@@ -3,7 +3,6 @@
 #include "mock_testing_types.hpp"
 #include "test_utilities_common.hpp"
 
-#include "fixed_containers/fixed_robinhood_hashtable.hpp"
 #include "fixed_containers/fixed_unordered_map.hpp"
 #include "fixed_containers/map_entry.hpp"
 

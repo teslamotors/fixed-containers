@@ -6,7 +6,6 @@
 #include <functional>
 #include <iterator>
 #include <memory>
-#include <span>
 #include <string>
 
 // This is a stripped-down implementation of wyhash: https://github.com/wangyi-fudan/wyhash

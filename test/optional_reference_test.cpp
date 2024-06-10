@@ -4,8 +4,6 @@
 
 #include <gtest/gtest.h>
 
-#include <memory>
-
 namespace fixed_containers
 {
 TEST(OptionalReference, FixedContainerProperties)
@@ -33,7 +31,8 @@ TEST(OptionalReference, Size)
 
 TEST(OptionalReference, NullOptAssignment)
 {
-    constexpr bool success = []() {
+    constexpr bool success = []()
+    {
         int a = 9;
         OptionalReference<int> v1(a);
         v1 = std::nullopt;
@@ -50,11 +49,13 @@ TEST(OptionalReference, HasValue)
         static_assert(!v1.has_value());
     }
     {
-        static_assert([&]() {
-            constexpr int val = 5;
-            OptionalReference<const int> red(val);
-            return (red.has_value());
-        }());
+        static_assert(
+            [&]()
+            {
+                constexpr int val = 5;
+                OptionalReference<const int> red(val);
+                return (red.has_value());
+            }());
     }
 }
 
@@ -66,11 +67,13 @@ TEST(OptionalReference, BoolOperator)
         static_assert(!v1);
     }
     {
-        static_assert([&]() -> bool {
-            constexpr int val = 5;
-            OptionalReference<const int> red(val);
-            return static_cast<bool>(red);
-        }());
+        static_assert(
+            [&]() -> bool
+            {
+                constexpr int val = 5;
+                OptionalReference<const int> red(val);
+                return static_cast<bool>(red);
+            }());
     }
 }
 

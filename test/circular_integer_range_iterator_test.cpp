@@ -4,7 +4,6 @@
 
 #include <gtest/gtest.h>
 
-#include <array>
 #include <iterator>
 
 namespace fixed_containers

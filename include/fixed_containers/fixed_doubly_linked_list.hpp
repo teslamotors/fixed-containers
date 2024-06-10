@@ -4,7 +4,6 @@
 
 #include <array>
 #include <limits>
-#include <type_traits>
 
 namespace fixed_containers::fixed_doubly_linked_list_detail
 {

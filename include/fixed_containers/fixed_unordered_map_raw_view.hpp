@@ -4,7 +4,6 @@
 #include "fixed_containers/forward_iterator.hpp"
 
 #include <cstddef>
-#include <ranges>
 
 namespace fixed_containers
 {

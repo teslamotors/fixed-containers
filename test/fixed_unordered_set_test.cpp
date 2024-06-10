@@ -1,7 +1,6 @@
 #include "fixed_containers/fixed_unordered_set.hpp"
 
 #include "mock_testing_types.hpp"
-#include "test_utilities_common.hpp"
 
 #include "fixed_containers/assert_or_abort.hpp"
 #include "fixed_containers/concepts.hpp"

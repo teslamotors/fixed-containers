@@ -5,9 +5,10 @@
 #include <cassert>
 #include <compare>
 #include <concepts>
+#include <cstddef>
+#include <functional>
 #include <memory>
 #include <optional>
-#include <type_traits>
 
 namespace fixed_containers
 {

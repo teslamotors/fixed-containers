@@ -1,7 +1,6 @@
 #pragma once
 
 #include "fixed_containers/assert_or_abort.hpp"
-#include "fixed_containers/emplace.hpp"
 #include "fixed_containers/erase_if.hpp"
 #include "fixed_containers/forward_iterator.hpp"
 #include "fixed_containers/preconditions.hpp"

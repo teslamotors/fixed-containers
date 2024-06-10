@@ -1,8 +1,5 @@
 #pragma once
 
-#include <iterator>
-#include <type_traits>
-
 namespace fixed_containers
 {
 

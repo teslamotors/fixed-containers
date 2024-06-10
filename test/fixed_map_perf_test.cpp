@@ -2,6 +2,7 @@
 #include "fixed_containers/fixed_map.hpp"
 
 #include <array>
+#include <cstddef>
 
 namespace fixed_containers
 {

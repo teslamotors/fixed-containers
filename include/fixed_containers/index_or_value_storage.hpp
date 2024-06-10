@@ -2,7 +2,7 @@
 
 #include "fixed_containers/concepts.hpp"
 
-#include <type_traits>
+#include <cstddef>
 #include <utility>
 
 namespace fixed_containers::index_or_value_storage_detail

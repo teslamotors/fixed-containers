@@ -3,9 +3,7 @@
 #include "fixed_containers/assert_or_abort.hpp"
 
 #include <cstddef>
-#include <functional>
 #include <limits>
-#include <type_traits>
 
 namespace fixed_containers::fixed_red_black_tree_detail
 {

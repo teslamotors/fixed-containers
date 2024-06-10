@@ -1,7 +1,6 @@
 #include "fixed_containers/enum_set.hpp"
 
 #include "enums_test_common.hpp"
-#include "test_utilities_common.hpp"
 
 #include "fixed_containers/assert_or_abort.hpp"
 #include "fixed_containers/consteval_compare.hpp"
