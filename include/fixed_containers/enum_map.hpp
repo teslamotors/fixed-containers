@@ -68,7 +68,7 @@ class EnumMapBuilder
     using value_type = std::pair<const K, V>;
 
 public:
-    constexpr EnumMapBuilder() {}
+    constexpr EnumMapBuilder() = default;
 
     constexpr EnumMapBuilder& insert(const value_type& key) & noexcept
     {

@@ -26,7 +26,7 @@ template <class T, class FixedVectorType>
 class FixedVectorBuilder
 {
 public:
-    constexpr FixedVectorBuilder() {}
+    constexpr FixedVectorBuilder() = default;
 
     constexpr FixedVectorBuilder& push_back(const T& key) & noexcept
     {
