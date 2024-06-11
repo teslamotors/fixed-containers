@@ -93,7 +93,6 @@ Checks: >
   -google-readability-avoid-underscore-in-googletest-name,
   -google-readability-todo,
   -google-runtime-operator,
-  -misc-no-recursion,
   -misc-use-anonymous-namespace,
   -modernize-loop-convert,
   -modernize-use-nodiscard,

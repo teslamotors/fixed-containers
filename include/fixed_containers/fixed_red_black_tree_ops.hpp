@@ -1,5 +1,6 @@
 #pragma once
 
+#include "fixed_containers/assert_or_abort.hpp"
 #include "fixed_containers/concepts.hpp"
 #include "fixed_containers/fixed_red_black_tree_nodes.hpp"
 #include "fixed_containers/fixed_red_black_tree_types.hpp"
@@ -110,9 +111,36 @@ public:
 
         if (node_j.parent_index() == i)
         {
-            // restart with arguments swapped
-            return swap_nodes_excluding_key_and_value(tree, j, i);
+            // run with arguments swapped
+            swap_nodes_excluding_key_and_value_impl(tree, j, i, node_j, node_i);
+            return;
         }
+
+        swap_nodes_excluding_key_and_value_impl(tree, i, j, node_i, node_j);
+    }
+
+    static constexpr void swap_nodes_including_key_and_value(RedBlackTreeStorage& tree,
+                                                             const NodeIndex& i,
+                                                             const NodeIndex& j)
+        requires TriviallyCopyable<K> && TriviallyCopyable<V>
+    {
+        swap_nodes_excluding_key_and_value(tree, i, j);
+
+        RedBlackTreeNodeView node_i = tree.node_at(i);
+        RedBlackTreeNodeView node_j = tree.node_at(j);
+        std::swap(node_i.key(), node_j.key());
+        std::swap(node_i.value(), node_j.value());
+    }
+
+private:
+    static void constexpr swap_nodes_excluding_key_and_value_impl(
+        RedBlackTreeStorage& tree,
+        const NodeIndex& i,
+        const NodeIndex& j,
+        RedBlackTreeNodeView<TreeStorage>& node_i,
+        RedBlackTreeNodeView<TreeStorage>& node_j)
+    {
+        assert_or_abort(node_j.parent_index() != i);
 
         // Below this, nodes are either non-neighbors or j is the parent
 
@@ -180,19 +208,6 @@ public:
         }
 
         swap_color(node_i, node_j);
-    }
-
-    static constexpr void swap_nodes_including_key_and_value(RedBlackTreeStorage& tree,
-                                                             const NodeIndex& i,
-                                                             const NodeIndex& j)
-        requires TriviallyCopyable<K> && TriviallyCopyable<V>
-    {
-        swap_nodes_excluding_key_and_value(tree, i, j);
-
-        RedBlackTreeNodeView node_i = tree.node_at(i);
-        RedBlackTreeNodeView node_j = tree.node_at(j);
-        std::swap(node_i.key(), node_j.key());
-        std::swap(node_i.value(), node_j.value());
     }
 };
 

@@ -144,18 +144,11 @@ public:
     {
         if (n < 0)
         {
-            operator-=(-n);
+            subtraction_assignment_op_impl(static_cast<std::size_t>(-n));
             return *this;
         }
 
-        if constexpr (DIRECTION == IteratorDirection::FORWARD)
-        {
-            reference_provider_.advance(static_cast<std::size_t>(n));
-        }
-        else
-        {
-            reference_provider_.recede(static_cast<std::size_t>(n));
-        }
+        addition_assignment_op_impl(static_cast<std::size_t>(n));
         return *this;
     }
 
@@ -175,18 +168,11 @@ public:
     {
         if (n < 0)
         {
-            operator+=(-n);
+            addition_assignment_op_impl(static_cast<std::size_t>(-n));
             return *this;
         }
 
-        if constexpr (DIRECTION == IteratorDirection::FORWARD)
-        {
-            reference_provider_.recede(static_cast<std::size_t>(n));
-        }
-        else
-        {
-            reference_provider_.advance(static_cast<std::size_t>(n));
-        }
+        subtraction_assignment_op_impl(static_cast<std::size_t>(n));
         return *this;
     }
 
@@ -260,6 +246,30 @@ public:
         ReverseBase out{reference_provider_};
         ++out;
         return out;
+    }
+
+private:
+    constexpr void addition_assignment_op_impl(const std::size_t n)
+    {
+        if constexpr (DIRECTION == IteratorDirection::FORWARD)
+        {
+            reference_provider_.advance(n);
+        }
+        else
+        {
+            reference_provider_.recede(n);
+        }
+    }
+    constexpr void subtraction_assignment_op_impl(const std::size_t n)
+    {
+        if constexpr (DIRECTION == IteratorDirection::FORWARD)
+        {
+            reference_provider_.recede(n);
+        }
+        else
+        {
+            reference_provider_.advance(n);
+        }
     }
 };
 
