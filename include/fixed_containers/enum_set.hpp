@@ -19,7 +19,7 @@ template <class K, class EnumSetType>
 class EnumSetBuilder
 {
 public:
-    constexpr EnumSetBuilder() {}
+    constexpr EnumSetBuilder() = default;
 
     constexpr EnumSetBuilder& insert(const K& key) & noexcept
     {
