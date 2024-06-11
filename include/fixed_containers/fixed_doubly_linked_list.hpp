@@ -177,21 +177,66 @@ public:
         requires TriviallyMoveAssignable<T>
     = default;
 
+    constexpr void nontrivial_copy_impl(const FixedDoublyLinkedList& other)
+    {
+        // Warning: assumes the destination (`this`) is already clear of any values!
+
+        // naively, we could just clear ourselves and then foreach `emplace_back`.
+        // however, this has a few downsides:
+        // 1) The physical indices of each stored item will not be stable between the original
+        //    and the copy. This matters for FixedUnorderedMap, which stores these indices.
+        // 2) doing a bunch of linked list operations is slower than doing memcopies
+
+        // instead, we want to use the source's chain array unchanged, and carefully set up the
+        // `FixedIndexBasedPoolStorage` to contain the same values in the same spots (and the same
+        // freelist)
+
+        // set the size
+        this->IMPLEMENTATION_DETAIL_DO_NOT_USE_size_ = other.size();
+
+        // copy the chain (trivial)
+        this->IMPLEMENTATION_DETAIL_DO_NOT_USE_chain_ =
+            other.IMPLEMENTATION_DETAIL_DO_NOT_USE_chain_;
+
+        // Now the fun part. We need to setup the FixedIndexBasedPoolStorage to match the original.
+        // This has two parts:
+        // first, the freelist needs to match
+        this->IMPLEMENTATION_DETAIL_DO_NOT_USE_storage_.set_freelist_state_from_other(
+            other.IMPLEMENTATION_DETAIL_DO_NOT_USE_storage_);
+
+        // then we need to do an explicit copy of each value. We know where these are by using the
+        // `chain_`
+        for (auto i = other.front_index(); i != Base::NULL_INDEX; i = other.next_of(i))
+        {
+            std::construct_at(&this->at(i), other.at(i));
+        }
+    }
+
+    constexpr void nontrivial_move_impl(FixedDoublyLinkedList& other)
+    {
+        // Warning: assumes the destination (`this`) is already clear of any values!
+
+        // identical impl to above but with move instead of copy, see those comments.
+        this->IMPLEMENTATION_DETAIL_DO_NOT_USE_size_ = other.size();
+        this->IMPLEMENTATION_DETAIL_DO_NOT_USE_chain_ =
+            other.IMPLEMENTATION_DETAIL_DO_NOT_USE_chain_;
+        this->IMPLEMENTATION_DETAIL_DO_NOT_USE_storage_.set_freelist_state_from_other(
+            other.IMPLEMENTATION_DETAIL_DO_NOT_USE_storage_);
+        for (auto i = other.front_index(); i != Base::NULL_INDEX; i = other.next_of(i))
+        {
+            std::construct_at(&this->at(i), std::move(other.at(i)));
+        }
+    }
+
     constexpr FixedDoublyLinkedList(const FixedDoublyLinkedList& other)
       : FixedDoublyLinkedList()
     {
-        for (auto i = other.front_index(); i != Base::NULL_INDEX; i = other.next_of(i))
-        {
-            this->emplace_back_and_return_index(other.at(i));
-        }
+        nontrivial_copy_impl(other);
     }
     constexpr FixedDoublyLinkedList(FixedDoublyLinkedList&& other) noexcept
       : FixedDoublyLinkedList()
     {
-        for (auto i = other.front_index(); i != Base::NULL_INDEX; i = other.next_of(i))
-        {
-            this->emplace_back_and_return_index(std::move(other.at(i)));
-        }
+        nontrivial_move_impl(other);
         // Clear the moved-out-of-list. This is consistent with both std::list
         // as well as the trivial move constructor of this class.
         other.clear();
@@ -202,12 +247,8 @@ public:
         {
             return *this;
         }
-
         this->clear();
-        for (auto i = other.front_index(); i != Base::NULL_INDEX; i = other.next_of(i))
-        {
-            this->emplace_back_and_return_index(other.at(i));
-        }
+        nontrivial_copy_impl(other);
         return *this;
     }
     constexpr FixedDoublyLinkedList& operator=(FixedDoublyLinkedList&& other) noexcept
@@ -216,12 +257,8 @@ public:
         {
             return *this;
         }
-
         this->clear();
-        for (auto i = other.front_index(); i != Base::NULL_INDEX; i = other.next_of(i))
-        {
-            this->emplace_back_and_return_index(std::move(other.at(i)));
-        }
+        nontrivial_move_impl(other);
         // The trivial assignment operator does not `other.clear()`, so don't do it here either for
         // consistency across FixedLists. std::list<T> does clear it, so behavior is different.
         // Both choices are fine, because the state of a moved object is intentionally unspecified
