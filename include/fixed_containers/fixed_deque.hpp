@@ -34,7 +34,6 @@ template <typename T, std::size_t MAXIMUM_SIZE, customize::SequenceContainerChec
 class FixedDequeBase
 {
     using OptionalT = optional_storage_detail::OptionalStorage<T>;
-    static_assert(sizeof(OptionalT) == sizeof(T));
     // std::deque has the following restrictions too
     static_assert(IsNotReference<T>, "References are not allowed");
     static_assert(std::same_as<std::remove_cv_t<T>, T>,
