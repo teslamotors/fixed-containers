@@ -70,7 +70,6 @@ Checks: >
   -modernize-use-trailing-return-type,
   -modernize-avoid-c-arrays,
   -performance-move-const-arg,
-  -performance-avoid-endl,
   -performance-enum-size,
   -readability-braces-around-statements,
   -readability-identifier-length,
