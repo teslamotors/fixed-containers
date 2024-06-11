@@ -5,7 +5,6 @@
 #include "fixed_containers/concepts.hpp"
 #include "fixed_containers/fixed_doubly_linked_list.hpp"
 #include "fixed_containers/iterator_utils.hpp"
-#include "fixed_containers/max_size.hpp"
 #include "fixed_containers/preconditions.hpp"
 #include "fixed_containers/sequence_container_checking.hpp"
 #include "fixed_containers/source_location.hpp"
