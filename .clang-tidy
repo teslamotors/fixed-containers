@@ -81,7 +81,6 @@ Checks: >
   -bugprone-easily-swappable-parameters,
   -bugprone-inc-dec-in-conditions,
   -bugprone-unchecked-optional-access,
-  -bugprone-unused-local-non-trivial-variable,
   -bugprone-unused-return-value,
 
   -bugprone-sizeof-expression,
