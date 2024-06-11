@@ -63,7 +63,6 @@ Checks: >
   readability-*,
   -google-readability-braces-around-statements,
   -google-readability-namespace-comments,
-  -google-runtime-references,
   -misc-non-private-member-variables-in-classes,
   -misc-const-correctness,
   -misc-include-cleaner,
