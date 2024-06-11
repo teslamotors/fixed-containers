@@ -79,7 +79,6 @@ Checks: >
   -readability-avoid-return-with-void-value,
   -readability-function-cognitive-complexity,
   -bugprone-easily-swappable-parameters,
-  -bugprone-inc-dec-in-conditions,
   -bugprone-unchecked-optional-access,
   -bugprone-unused-return-value,
 
