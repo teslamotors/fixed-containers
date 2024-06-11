@@ -80,7 +80,6 @@ Checks: >
   -readability-function-cognitive-complexity,
   -bugprone-easily-swappable-parameters,
   -bugprone-unchecked-optional-access,
-  -bugprone-unused-return-value,
 
   -bugprone-sizeof-expression,
   -bugprone-switch-missing-default-case,
