@@ -1363,6 +1363,17 @@ cc_test(
 )
 
 cc_test(
+    name = "optional_storage_test",
+    srcs = ["test/optional_storage_test.cpp"],
+    deps = [
+        ":optional_storage",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
+    ],
+    copts = ["-std=c++20"],
+)
+
+cc_test(
     name = "out_test",
     srcs = ["test/out_test.cpp"],
     deps = [
