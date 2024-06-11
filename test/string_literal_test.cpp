@@ -14,8 +14,8 @@ static_assert(std::is_standard_layout_v<StringLiteral>);
 TEST(StringLiteral, Compare)
 {
     static constexpr const char* POINTER = "blah";
-    static_assert(8 == sizeof(POINTER));
-    ASSERT_EQ(4, std::strlen(POINTER));  // not-constexpr
+    static_assert(8 == sizeof(POINTER));  // NOLINT(bugprone-sizeof-expression)
+    ASSERT_EQ(4, std::strlen(POINTER));   // not-constexpr
 
     static constexpr const char ARRAY[5] = "blah";
     static_assert(5 == sizeof(ARRAY));

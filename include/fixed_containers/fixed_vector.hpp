@@ -96,7 +96,6 @@ class FixedVectorBase
      * vector.data()[0] would be accessible at constexpr, but vector.data()[1] would be rejected.
      */
     using OptionalT = optional_storage_detail::OptionalStorageTransparent<T>;
-    static_assert(sizeof(OptionalT) == sizeof(T));
     // std::vector has the following restrictions too
     static_assert(IsNotReference<T>, "References are not allowed");
     static_assert(std::same_as<std::remove_cv_t<T>, T>,

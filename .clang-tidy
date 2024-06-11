@@ -79,7 +79,6 @@ Checks: >
   -bugprone-easily-swappable-parameters,
   -bugprone-unchecked-optional-access,
 
-  -bugprone-sizeof-expression,
   -bugprone-switch-missing-default-case,
   -bugprone-use-after-move,
   -google-explicit-constructor,
