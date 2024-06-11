@@ -75,7 +75,6 @@ Checks: >
   -readability-identifier-length,
   -readability-magic-numbers,
   -readability-named-parameter,
-  -readability-redundant-declaration,
   -readability-function-cognitive-complexity,
   -bugprone-easily-swappable-parameters,
   -bugprone-unchecked-optional-access,
