@@ -4,7 +4,6 @@
 #include "fixed_containers/concepts.hpp"
 #include "fixed_containers/consteval_compare.hpp"
 #include "fixed_containers/iterator_utils.hpp"
-#include "fixed_containers/max_size.hpp"
 #include "fixed_containers/memory.hpp"
 #include "fixed_containers/optional_storage.hpp"
 #include "fixed_containers/preconditions.hpp"

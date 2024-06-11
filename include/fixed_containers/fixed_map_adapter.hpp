@@ -4,7 +4,6 @@
 #include "fixed_containers/emplace.hpp"
 #include "fixed_containers/erase_if.hpp"
 #include "fixed_containers/forward_iterator.hpp"
-#include "fixed_containers/max_size.hpp"
 #include "fixed_containers/preconditions.hpp"
 #include "fixed_containers/source_location.hpp"
 

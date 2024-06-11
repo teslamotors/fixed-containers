@@ -4,6 +4,7 @@
 
 #include "fixed_containers/concepts.hpp"
 #include "fixed_containers/consteval_compare.hpp"
+#include "fixed_containers/max_size.hpp"
 
 #include <gtest/gtest.h>
 
