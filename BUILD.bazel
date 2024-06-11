@@ -216,7 +216,6 @@ cc_library(
         ":assert_or_abort",
         ":circular_indexing",
         ":concepts",
-        ":consteval_compare",
         ":integer_range",
         ":iterator_utils",
         ":memory",
@@ -481,7 +480,6 @@ cc_library(
     deps = [
         ":algorithm",
         ":concepts",
-        ":consteval_compare",
         ":iterator_utils",
         ":memory",
         ":optional_storage",
@@ -1430,6 +1428,7 @@ cc_test(
     name = "reflection_test",
     srcs = ["test/reflection_test.cpp"],
     deps = [
+        ":consteval_compare",
         ":fixed_vector",
         ":mock_testing_types",
         ":reflection",
