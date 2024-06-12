@@ -379,7 +379,9 @@ cc_library(
     hdrs = ["include/fixed_containers/fixed_unordered_set_raw_view.hpp"],
     includes = ["include"],
     deps = [
+        ":concepts",
         ":fixed_doubly_linked_list_raw_view",
+        ":map_entry",
     ],
     copts = ["-std=c++20"],
 )
@@ -864,6 +866,7 @@ cc_test(
     srcs = ["test/circular_indexing_test.cpp"],
     deps = [
         ":circular_indexing",
+        ":integer_range",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
@@ -876,6 +879,9 @@ cc_test(
     deps = [
         ":concepts",
         ":circular_integer_range_iterator",
+        ":integer_range",
+        ":iterator_utils",
+        ":random_access_iterator",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
@@ -914,6 +920,8 @@ cc_test(
         ":enum_array",
         ":enums_test_common",
         ":mock_testing_types",
+        ":ranges",
+        "@com_github_neargye_magic_enum//:magic_enum",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
@@ -924,7 +932,9 @@ cc_test(
     name = "enum_map_test",
     srcs = ["test/enum_map_test.cpp"],
     deps = [
+        ":arrow_proxy",
         ":assert_or_abort",
+        ":concepts",
         ":consteval_compare",
         ":enum_map",
         ":enums_test_common",
@@ -944,6 +954,7 @@ cc_test(
     srcs = ["test/enum_set_test.cpp"],
     deps = [
         ":assert_or_abort",
+        ":concepts",
         ":consteval_compare",
         ":enum_set",
         ":enums_test_common",
@@ -959,6 +970,7 @@ cc_test(
     name = "enum_utils_test",
     srcs = ["test/enum_utils_test.cpp"],
     deps = [
+        ":concepts",
         ":consteval_compare",
         ":enum_utils",
         ":enums_test_common",
@@ -972,7 +984,10 @@ cc_test(
     name = "filtered_integer_range_iterator_test",
     srcs = ["test/filtered_integer_range_iterator_test.cpp"],
     deps = [
+        ":bidirectional_iterator",
         ":concepts",
+        ":integer_range",
+        ":iterator_utils",
         ":filtered_integer_range_iterator",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
@@ -985,6 +1000,7 @@ cc_test(
     srcs = ["test/fixed_circular_deque_test.cpp"],
     deps = [
         ":assert_or_abort",
+        ":concepts",
         ":fixed_circular_deque",
         ":instance_counter",
         ":max_size",
@@ -1000,6 +1016,7 @@ cc_test(
     name = "fixed_circular_queue_test",
     srcs = ["test/fixed_circular_queue_test.cpp"],
     deps = [
+        ":concepts",
         ":fixed_circular_queue",
         ":fixed_vector",
         ":max_size",
@@ -1057,7 +1074,10 @@ cc_test(
     srcs = ["test/fixed_map_perf_test.cpp"],
     deps = [
         ":consteval_compare",
+        ":fixed_index_based_storage",
         ":fixed_map",
+        ":fixed_red_black_tree",
+        "@com_google_googletest//:gtest_main",
         "@com_google_benchmark//:benchmark_main",
     ],
     copts = ["-std=c++20"],
@@ -1085,6 +1105,7 @@ cc_test(
     name = "fixed_map_test",
     srcs = ["test/fixed_map_test.cpp"],
     deps = [
+        ":arrow_proxy",
         ":assert_or_abort",
         ":concepts",
         ":consteval_compare",
@@ -1104,8 +1125,10 @@ cc_test(
     name = "fixed_unordered_map_test",
     srcs = ["test/fixed_unordered_map_test.cpp"],
     deps = [
+        ":arrow_proxy",
         ":concepts",
         ":consteval_compare",
+        ":fixed_map_adapter",
         ":fixed_unordered_map",
         ":instance_counter",
         ":max_size",
@@ -1139,6 +1162,7 @@ cc_test(
     deps = [
         ":concepts",
         ":consteval_compare",
+        ":fixed_set_adapter",
         ":fixed_unordered_set",
         ":instance_counter",
         ":max_size",
@@ -1171,6 +1195,7 @@ cc_test(
     deps = [
         ":concepts",
         ":consteval_compare",
+        ":fixed_index_based_storage",
         ":fixed_red_black_tree",
         ":mock_testing_types",
         "@com_google_googletest//:gtest",
@@ -1184,7 +1209,9 @@ cc_test(
     srcs = ["test/fixed_red_black_tree_view_test.cpp"],
     deps = [
         ":fixed_red_black_tree_view",
+        ":fixed_red_black_tree",
         ":fixed_set",
+        ":fixed_vector",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
@@ -1417,6 +1444,7 @@ cc_test(
     name = "queue_adapter_test",
     srcs = ["test/queue_adapter_test.cpp"],
     deps = [
+        ":concepts",
         ":fixed_deque",
         ":queue_adapter",
         "@com_google_googletest//:gtest",
@@ -1429,6 +1457,7 @@ cc_test(
     name = "optional_reference_test",
     srcs = ["test/optional_reference_test.cpp"],
     deps = [
+        ":concepts",
         ":optional_reference",
         ":mock_testing_types",
         "@com_google_googletest//:gtest",
@@ -1456,6 +1485,7 @@ cc_test(
     name = "stack_adapter_test",
     srcs = ["test/stack_adapter_test.cpp"],
     deps = [
+        ":concepts",
         ":fixed_stack",
         ":stack_adapter",
         "@com_google_googletest//:gtest",

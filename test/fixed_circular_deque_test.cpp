@@ -5,12 +5,18 @@
 #include "test_utilities_common.hpp"
 
 #include "fixed_containers/assert_or_abort.hpp"
+#include "fixed_containers/concepts.hpp"
 #include "fixed_containers/max_size.hpp"
 
 #include <gtest/gtest.h>
 
 #include <algorithm>
+#include <array>
+#include <cstddef>
 #include <deque>
+#include <initializer_list>
+#include <limits>
+#include <type_traits>
 
 namespace fixed_containers
 {

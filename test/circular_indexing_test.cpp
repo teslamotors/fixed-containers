@@ -1,6 +1,10 @@
 #include "fixed_containers/circular_indexing.hpp"
 
+#include "fixed_containers/integer_range.hpp"
+
 #include <gtest/gtest.h>
+
+#include <cstddef>
 
 namespace fixed_containers::circular_indexing
 {

@@ -2,6 +2,8 @@
 
 #include <gtest/gtest.h>
 
+#include <cstddef>
+
 namespace fixed_containers::fixed_doubly_linked_list_detail
 {
 namespace

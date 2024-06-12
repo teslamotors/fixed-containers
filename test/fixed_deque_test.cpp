@@ -11,7 +11,13 @@
 #include <gtest/gtest.h>
 
 #include <algorithm>
+#include <array>
+#include <cstddef>
 #include <deque>
+#include <initializer_list>
+#include <limits>
+#include <type_traits>
+#include <utility>
 
 namespace fixed_containers
 {
@@ -1207,7 +1213,7 @@ TEST(FixedDeque, Resize_ExceedsCapacity)
         auto v1 = Factory::template create<int, 3>();
         EXPECT_DEATH(v1.resize(6), "");
         EXPECT_DEATH(v1.resize(6, 5), "");
-        const size_t to_size = 7;
+        const std::size_t to_size = 7;
         EXPECT_DEATH(v1.resize(to_size), "");
         EXPECT_DEATH(v1.resize(to_size, 5), "");
     };

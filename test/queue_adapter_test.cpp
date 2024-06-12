@@ -1,5 +1,6 @@
 #include "fixed_containers/queue_adapter.hpp"
 
+#include "fixed_containers/concepts.hpp"
 #include "fixed_containers/fixed_deque.hpp"
 
 #include <gtest/gtest.h>
@@ -21,5 +22,11 @@ static_assert(NotTrivial<QueueType>);
 static_assert(StandardLayout<QueueType>);
 static_assert(IsStructuralType<QueueType>);
 static_assert(ConstexprDefaultConstructible<QueueType>);
+
+TEST(StackAdapter, DefaultConstructor)
+{
+    constexpr QueueAdapter<FixedDeque<int, 5>> v1{};
+    static_assert(v1.empty());
+}
 
 }  // namespace fixed_containers

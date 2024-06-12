@@ -5,14 +5,20 @@
 #include "fixed_containers/assert_or_abort.hpp"
 #include "fixed_containers/concepts.hpp"
 #include "fixed_containers/consteval_compare.hpp"
+#include "fixed_containers/fixed_set_adapter.hpp"
 #include "fixed_containers/max_size.hpp"
 
 #include <gtest/gtest.h>
-#include <range/v3/iterator/concepts.hpp>
+#include <range/v3/iterator/operations.hpp>
 #include <range/v3/view/filter.hpp>
 
 #include <algorithm>
+#include <array>
 #include <cmath>
+#include <cstddef>
+#include <iterator>
+#include <string>
+#include <type_traits>
 
 namespace fixed_containers
 {

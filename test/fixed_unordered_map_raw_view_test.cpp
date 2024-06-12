@@ -6,7 +6,13 @@
 #include "fixed_containers/fixed_unordered_map.hpp"
 #include "fixed_containers/map_entry.hpp"
 
+#include <gtest/gtest.h>
+
 #include <array>
+#include <cstddef>
+#include <cstdint>
+#include <iterator>
+#include <ranges>
 
 namespace fixed_containers
 {

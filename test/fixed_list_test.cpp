@@ -9,14 +9,19 @@
 #include "fixed_containers/max_size.hpp"
 
 #include <gtest/gtest.h>
-#include <range/v3/iterator/concepts.hpp>
 #include <range/v3/range/conversion.hpp>
 #include <range/v3/view/filter.hpp>
+#include <range/v3/view/remove_if.hpp>
 #include <range/v3/view/transform.hpp>
 
 #include <algorithm>
 #include <array>
+#include <cstddef>
+#include <iterator>
 #include <list>
+#include <ranges>
+#include <type_traits>
+#include <utility>
 
 namespace fixed_containers
 {
@@ -1045,7 +1050,7 @@ TEST(FixedList, Resize_ExceedsCapacity)
     FixedList<int, 3> v1{};
     EXPECT_DEATH(v1.resize(6), "");
     EXPECT_DEATH(v1.resize(6, 5), "");
-    const size_t to_size = 7;
+    const std::size_t to_size = 7;
     EXPECT_DEATH(v1.resize(to_size), "");
     EXPECT_DEATH(v1.resize(to_size, 5), "");
 }
@@ -1545,11 +1550,11 @@ TEST(FixedList, EraseRange)
         EXPECT_TRUE(std::ranges::equal(v2, std::array<int, 4>{{2, 5, 0, 3}}));
     }
     {
-        FixedList<std::vector<int>, 8> v = {{1, 2, 3}, {4, 5}, {}, {6, 7, 8}};
+        FixedList<std::list<int>, 8> v = {{1, 2, 3}, {4, 5}, {}, {6, 7, 8}};
         auto it = v.erase(v.begin(), std::next(v.begin(), 2));
         EXPECT_EQ(it, v.begin());
         EXPECT_EQ(v.size(), 2u);
-        EXPECT_TRUE(std::ranges::equal(v, std::vector<std::vector<int>>{{}, {6, 7, 8}}));
+        EXPECT_TRUE(std::ranges::equal(v, std::list<std::list<int>>{{}, {6, 7, 8}}));
     }
 }
 
@@ -1615,19 +1620,19 @@ TEST(FixedList, EraseOne)
         EXPECT_TRUE(std::ranges::equal(v2, std::array<int, 3>{{1, 4, 0}}));
     }
     {
-        FixedList<std::vector<int>, 8> v = {{1, 2, 3}, {4, 5}, {}, {6, 7, 8}};
+        FixedList<std::list<int>, 8> v = {{1, 2, 3}, {4, 5}, {}, {6, 7, 8}};
         auto it = v.erase(v.begin());
         EXPECT_EQ(it, v.begin());
         EXPECT_EQ(v.size(), 3u);
-        EXPECT_TRUE(std::ranges::equal(v, std::vector<std::vector<int>>{{4, 5}, {}, {6, 7, 8}}));
+        EXPECT_TRUE(std::ranges::equal(v, std::list<std::list<int>>{{4, 5}, {}, {6, 7, 8}}));
         it = v.erase(std::next(v.begin(), 1));
         EXPECT_EQ(it, std::next(v.begin(), 1));
         EXPECT_EQ(v.size(), 2u);
-        EXPECT_TRUE(std::ranges::equal(v, std::vector<std::vector<int>>{{4, 5}, {6, 7, 8}}));
+        EXPECT_TRUE(std::ranges::equal(v, std::list<std::list<int>>{{4, 5}, {6, 7, 8}}));
         it = v.erase(std::next(v.begin(), 1));
         EXPECT_EQ(it, v.end());
         EXPECT_EQ(v.size(), 1u);
-        EXPECT_TRUE(std::ranges::equal(v, std::vector<std::vector<int>>{{4, 5}}));
+        EXPECT_TRUE(std::ranges::equal(v, std::list<std::list<int>>{{4, 5}}));
     }
 }
 

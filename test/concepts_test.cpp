@@ -2,6 +2,8 @@
 
 #include "fixed_containers/assert_or_abort.hpp"
 
+#include <functional>
+
 namespace fixed_containers
 {
 static_assert(!IsTransparent<std::less<int>>);

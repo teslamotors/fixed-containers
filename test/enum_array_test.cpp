@@ -5,10 +5,16 @@
 
 #include "fixed_containers/concepts.hpp"
 #include "fixed_containers/consteval_compare.hpp"
+#include "fixed_containers/ranges.hpp"
 
 #include <gtest/gtest.h>
+#include <magic_enum.hpp>
 
+#include <array>
+#include <cstddef>
+#include <iterator>
 #include <memory>
+#include <utility>
 
 namespace fixed_containers
 {

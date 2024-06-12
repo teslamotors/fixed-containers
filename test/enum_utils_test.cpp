@@ -2,11 +2,13 @@
 
 #include "enums_test_common.hpp"
 
+#include "fixed_containers/concepts.hpp"
 #include "fixed_containers/consteval_compare.hpp"
 
 #include <gtest/gtest.h>
 
 #include <cstddef>
+#include <optional>
 #include <type_traits>
 
 namespace fixed_containers::rich_enums_detail

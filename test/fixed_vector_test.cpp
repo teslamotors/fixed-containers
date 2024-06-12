@@ -9,14 +9,20 @@
 #include "fixed_containers/max_size.hpp"
 
 #include <gtest/gtest.h>
-#include <range/v3/iterator/concepts.hpp>
 #include <range/v3/range/conversion.hpp>
 #include <range/v3/view/filter.hpp>
+#include <range/v3/view/remove_if.hpp>
 #include <range/v3/view/transform.hpp>
 
 #include <algorithm>
 #include <array>
+#include <cstddef>
+#include <iterator>
+#include <memory>
+#include <ranges>
 #include <span>
+#include <type_traits>
+#include <utility>
 #include <vector>
 
 namespace fixed_containers
@@ -1171,7 +1177,7 @@ TEST(FixedVector, Resize_ExceedsCapacity)
     FixedVector<int, 3> v1{};
     EXPECT_DEATH(v1.resize(6), "");
     EXPECT_DEATH(v1.resize(6, 5), "");
-    const size_t to_size = 7;
+    const std::size_t to_size = 7;
     EXPECT_DEATH(v1.resize(to_size), "");
     EXPECT_DEATH(v1.resize(to_size, 5), "");
 }
