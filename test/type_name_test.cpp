@@ -1,5 +1,7 @@
 #include "fixed_containers/type_name.hpp"
 
+#include "fixed_containers/assert_or_abort.hpp"
+
 #include <gtest/gtest.h>
 
 #include <type_traits>
@@ -92,7 +94,7 @@ TEST(type_name, with_variant)
             else
             {
                 // never reach here
-                assert(false);
+                fixed_containers::assert_or_abort(false);
             }
         },
         my_variant);

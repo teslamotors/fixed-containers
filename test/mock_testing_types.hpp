@@ -1,5 +1,6 @@
 #pragma once
 
+#include "fixed_containers/assert_or_abort.hpp"
 #include "fixed_containers/concepts.hpp"
 
 #include <cassert>
@@ -261,9 +262,9 @@ class MockIntegralStream
 
         constexpr MockInputIterator& operator++() noexcept
         {
-            assert(remaining_.has_value());
+            assert_or_abort(remaining_.has_value());
             auto& r = *remaining_.value();
-            assert(r > 0);
+            assert_or_abort(r > 0);
             r--;
             if (r == 0)
             {

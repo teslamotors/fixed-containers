@@ -838,7 +838,10 @@ cc_test(
 cc_library(
     name = "mock_testing_types",
     hdrs = ["test/mock_testing_types.hpp"],
-    deps = [":concepts"],
+    deps = [
+        ":assert_or_abort",
+        ":concepts",
+    ],
     strip_include_prefix = "/test",
     copts = ["-std=c++20"],
     visibility = ["//visibility:private"],
@@ -1488,6 +1491,7 @@ cc_test(
     name = "type_name_test",
     srcs = ["test/type_name_test.cpp"],
     deps = [
+        ":assert_or_abort",
         ":type_name",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
