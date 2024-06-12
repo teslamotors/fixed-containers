@@ -90,8 +90,8 @@ public:
             // if we just memcpy the entire array, the freelist will match :)
             // even if the values in the full slots aren't trivially copyable, the API for this
             // function assumes they will never be accessed so it isn't UB
-            std::memcpy(&this->IMPLEMENTATION_DETAIL_DO_NOT_USE_array_,
-                        &other.IMPLEMENTATION_DETAIL_DO_NOT_USE_array_,
+            std::memcpy(reinterpret_cast<void*>(&this->IMPLEMENTATION_DETAIL_DO_NOT_USE_array_),
+                        reinterpret_cast<const void*>(&other.IMPLEMENTATION_DETAIL_DO_NOT_USE_array_),
                         sizeof(this->IMPLEMENTATION_DETAIL_DO_NOT_USE_array_));
         }
         else
