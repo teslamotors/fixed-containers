@@ -8,11 +8,17 @@
 #include "fixed_containers/max_size.hpp"
 
 #include <gtest/gtest.h>
-#include <range/v3/iterator/concepts.hpp>
+#include <range/v3/iterator/operations.hpp>
 #include <range/v3/view/filter.hpp>
 
 #include <algorithm>
+#include <array>
 #include <cmath>
+#include <cstddef>
+#include <functional>
+#include <iterator>
+#include <string>
+#include <type_traits>
 
 namespace fixed_containers
 {

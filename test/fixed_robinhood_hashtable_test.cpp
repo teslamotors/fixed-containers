@@ -4,6 +4,10 @@
 
 #include <gtest/gtest.h>
 
+#include <cstdint>
+#include <functional>
+#include <iostream>
+
 namespace fixed_containers::fixed_robinhood_hashtable_detail
 {
 namespace

@@ -2,10 +2,15 @@
 
 #include "mock_testing_types.hpp"
 
+#include "fixed_containers/concepts.hpp"
 #include "fixed_containers/fixed_unordered_set.hpp"
 #include "fixed_containers/map_entry.hpp"
 
 #include <gtest/gtest.h>
+
+#include <cstddef>
+#include <iterator>
+#include <ranges>
 
 namespace fixed_containers
 {

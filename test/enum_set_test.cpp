@@ -3,13 +3,17 @@
 #include "enums_test_common.hpp"
 
 #include "fixed_containers/assert_or_abort.hpp"
+#include "fixed_containers/concepts.hpp"
 #include "fixed_containers/consteval_compare.hpp"
 #include "fixed_containers/max_size.hpp"
 
 #include <gtest/gtest.h>
+#include <range/v3/iterator/operations.hpp>
 #include <range/v3/view/filter.hpp>
 
 #include <algorithm>
+#include <array>
+#include <cstddef>
 #include <iterator>
 #include <type_traits>
 

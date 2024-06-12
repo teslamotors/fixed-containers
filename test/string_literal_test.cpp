@@ -3,6 +3,8 @@
 #include <gtest/gtest.h>
 
 #include <cstring>
+#include <string>
+#include <type_traits>
 
 namespace fixed_containers
 {

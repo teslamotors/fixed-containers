@@ -6,6 +6,8 @@
 
 #include <gtest/gtest.h>
 
+#include <array>
+
 namespace fixed_containers
 {
 using StackType = FixedStack<int, 5>;

@@ -1,9 +1,12 @@
 #include "fixed_containers/fixed_circular_queue.hpp"
 
+#include "fixed_containers/concepts.hpp"
 #include "fixed_containers/fixed_vector.hpp"
 #include "fixed_containers/max_size.hpp"
 
 #include <gtest/gtest.h>
+
+#include <array>
 
 namespace fixed_containers
 {

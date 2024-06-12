@@ -1,6 +1,9 @@
 #include "fixed_containers/circular_integer_range_iterator.hpp"
 
 #include "fixed_containers/concepts.hpp"
+#include "fixed_containers/integer_range.hpp"
+#include "fixed_containers/iterator_utils.hpp"
+#include "fixed_containers/random_access_iterator.hpp"
 
 #include <gtest/gtest.h>
 

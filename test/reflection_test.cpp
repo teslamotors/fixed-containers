@@ -11,6 +11,7 @@
 
 #include <cstddef>
 #include <string_view>
+#include <utility>
 
 namespace fixed_containers
 {

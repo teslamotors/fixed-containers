@@ -2,7 +2,13 @@
 
 #include "mock_testing_types.hpp"
 
+#include "fixed_containers/concepts.hpp"
+
 #include <gtest/gtest.h>
+
+#include <compare>
+#include <optional>
+#include <utility>
 
 namespace fixed_containers
 {
