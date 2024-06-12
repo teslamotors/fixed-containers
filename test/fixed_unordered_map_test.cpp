@@ -8,6 +8,7 @@
 #include "fixed_containers/concepts.hpp"
 #include "fixed_containers/consteval_compare.hpp"
 
+#include <Eigen/Core>
 #include <gtest/gtest.h>
 #include <range/v3/iterator/concepts.hpp>
 #include <range/v3/view/filter.hpp>
@@ -234,6 +235,36 @@ TEST(FixedUnorderedMap, Insert)
     static_assert(s1.contains(2));
     static_assert(!s1.contains(3));
     static_assert(s1.contains(4));
+}
+
+TEST(FixedUnorderedMap, Eigen)
+{
+    FixedUnorderedMap<int, Eigen::Matrix2f, 100> a{};
+    for (int i = 0; i < 20; i++)
+    {
+        a.try_emplace(i);
+    }
+
+    auto b{a};
+    b.clear();
+    for (int i = 0; i < 11; i++)
+    {
+        b.try_emplace(i);
+    }
+    auto c{a};
+    c.clear();
+    for (int i = 0; i < 27; i++)
+    {
+        c.try_emplace(i);
+    }
+    auto d{a};
+
+    a = b;
+    a.clear();
+    a = c;
+    a.clear();
+    a = d;
+    a.clear();
 }
 
 TEST(FixedUnorderedMap, Insert_ExceedsCapacity)
