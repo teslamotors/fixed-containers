@@ -15,6 +15,9 @@ http_archive(
     urls = ["https://github.com/google/benchmark/archive/bc946b919cac6f25a199a526da571638cfde109f.tar.gz"],
     strip_prefix = "benchmark-bc946b919cac6f25a199a526da571638cfde109f",
     sha256 = "997090899b61ff5a3f7f6714bc9147694d4f85266dbb93277ba9e6d60009a776",
+    patches = [
+        "//:patches/benchmark_as_system_include.patch",
+    ]
 )
 
 http_archive(
