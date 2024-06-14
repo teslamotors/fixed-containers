@@ -6,6 +6,8 @@
 #include "fixed_containers/set_checking.hpp"
 #include "fixed_containers/wyhash.hpp"
 
+#include <array>
+
 namespace fixed_containers
 {
 
@@ -83,6 +85,20 @@ template <
 {
     return {std::begin(list), std::end(list), hash, key_equal, loc};
 }
+template <typename K,
+          class Hash = wyhash::hash<K>,
+          class KeyEqual = std::equal_to<K>,
+          customize::SetChecking<K> CheckingType,
+          typename FixedSetType = FixedUnorderedSet<K, 0, Hash, KeyEqual, 0, CheckingType>>
+[[nodiscard]] constexpr FixedSetType make_fixed_unordered_set(
+    const std::array<K, 0>& /*list*/,
+    const Hash& hash = Hash{},
+    const KeyEqual& key_equal = KeyEqual{},
+    const std_transition::source_location& /*loc*/ =
+        std_transition::source_location::current()) noexcept
+{
+    return {hash, key_equal};
+}
 
 template <
     typename K,
@@ -107,6 +123,19 @@ template <
                                     MAXIMUM_SIZE,
                                     BUCKET_COUNT,
                                     FixedSetType>(list, hash, key_equal, loc);
+}
+template <typename K, class Hash = wyhash::hash<K>, class KeyEqual = std::equal_to<K>>
+[[nodiscard]] constexpr auto make_fixed_unordered_set(
+    const std::array<K, 0>& list,
+    const Hash& hash = Hash{},
+    const KeyEqual& key_equal = KeyEqual{},
+    const std_transition::source_location& loc =
+        std_transition::source_location::current()) noexcept
+{
+    using CheckingType = customize::SetAbortChecking<K, 0>;
+    using FixedSetType = FixedUnorderedSet<K, 0, Hash, KeyEqual, 0, CheckingType>;
+    return make_fixed_unordered_set<K, Hash, KeyEqual, CheckingType, FixedSetType>(
+        list, hash, key_equal, loc);
 }
 
 }  // namespace fixed_containers

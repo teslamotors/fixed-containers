@@ -12,6 +12,7 @@
 #include "fixed_containers/source_location.hpp"
 
 #include <algorithm>
+#include <array>
 #include <cstddef>
 #include <functional>
 
@@ -753,6 +754,23 @@ template <typename K,
 {
     return {std::begin(list), std::end(list), comparator, loc};
 }
+template <
+    typename K,
+    typename V,
+    typename Compare = std::less<K>,
+    fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness COMPACTNESS =
+        fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR,
+    template <typename, std::size_t> typename StorageTemplate = FixedIndexBasedPoolStorage,
+    customize::MapChecking<K> CheckingType,
+    typename FixedMapType = FixedMap<K, V, 0, Compare, COMPACTNESS, StorageTemplate, CheckingType>>
+[[nodiscard]] constexpr FixedMapType make_fixed_map(
+    const std::array<std::pair<K, V>, 0>& /*list*/,
+    const Compare& comparator = Compare{},
+    const std_transition::source_location& /*loc*/ =
+        std_transition::source_location::current()) noexcept
+{
+    return FixedMapType{comparator};
+}
 
 template <typename K,
           typename V,
@@ -777,6 +795,22 @@ template <typename K,
                           CheckingType,
                           MAXIMUM_SIZE,
                           FixedMapType>(list, comparator, loc);
+}
+template <typename K,
+          typename V,
+          typename Compare = std::less<K>,
+          fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness COMPACTNESS =
+              fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR,
+          template <typename, std::size_t> typename StorageTemplate = FixedIndexBasedPoolStorage>
+[[nodiscard]] constexpr auto make_fixed_map(const std::array<std::pair<K, V>, 0>& list,
+                                            const Compare& comparator = Compare{},
+                                            const std_transition::source_location& loc =
+                                                std_transition::source_location::current()) noexcept
+{
+    using CheckingType = customize::MapAbortChecking<K, V, 0>;
+    using FixedMapType = FixedMap<K, V, 0, Compare, COMPACTNESS, StorageTemplate, CheckingType>;
+    return make_fixed_map<K, V, Compare, COMPACTNESS, StorageTemplate, CheckingType, FixedMapType>(
+        list, comparator, loc);
 }
 
 }  // namespace fixed_containers

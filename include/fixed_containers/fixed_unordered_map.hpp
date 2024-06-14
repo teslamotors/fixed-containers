@@ -5,6 +5,8 @@
 #include "fixed_containers/map_checking.hpp"
 #include "fixed_containers/wyhash.hpp"
 
+#include <array>
+
 namespace fixed_containers
 {
 
@@ -86,6 +88,21 @@ template <
 {
     return {std::begin(list), std::end(list), hash, key_equal, loc};
 }
+template <typename K,
+          typename V,
+          class Hash = wyhash::hash<K>,
+          class KeyEqual = std::equal_to<K>,
+          customize::MapChecking<K> CheckingType,
+          typename FixedMapType = FixedUnorderedMap<K, V, 0, Hash, KeyEqual, 0, CheckingType>>
+[[nodiscard]] constexpr FixedMapType make_fixed_unordered_map(
+    const std::array<std::pair<K, V>, 0>& /*list*/,
+    const Hash& hash = Hash{},
+    const KeyEqual& key_equal = KeyEqual{},
+    const std_transition::source_location& /*loc*/ =
+        std_transition::source_location::current()) noexcept
+{
+    return FixedMapType{hash, key_equal};
+}
 
 template <
     typename K,
@@ -112,6 +129,19 @@ template <
                                     MAXIMUM_SIZE,
                                     BUCKET_COUNT,
                                     FixedMapType>(list, hash, key_equal, loc);
+}
+template <typename K, typename V, class Hash = wyhash::hash<K>, class KeyEqual = std::equal_to<K>>
+[[nodiscard]] constexpr auto make_fixed_unordered_map(
+    const std::array<std::pair<K, V>, 0> list,
+    const Hash& hash = Hash{},
+    const KeyEqual& key_equal = KeyEqual{},
+    const std_transition::source_location& loc =
+        std_transition::source_location::current()) noexcept
+{
+    using CheckingType = customize::MapAbortChecking<K, V, 0>;
+    using FixedMapType = FixedUnorderedMap<K, V, 0, Hash, KeyEqual, 0, CheckingType>;
+    return make_fixed_unordered_map<K, V, Hash, KeyEqual, CheckingType, FixedMapType>(
+        list, hash, key_equal, loc);
 }
 
 }  // namespace fixed_containers

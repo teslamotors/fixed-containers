@@ -139,12 +139,19 @@ TEST(FixedUnorderedMap, OperatorBracket_Constexpr)
 
 TEST(FixedUnorderedMap, MaxSizeDeduction)
 {
-    constexpr auto s1 = make_fixed_unordered_map({std::pair{30, 30}, std::pair{31, 54}});
-    static_assert(s1.size() == 2);
-    static_assert(s1.max_size() == 2);
-    static_assert(s1.contains(30));
-    static_assert(s1.contains(31));
-    static_assert(!s1.contains(32));
+    {
+        constexpr auto s1 = make_fixed_unordered_map({std::pair{30, 30}, std::pair{31, 54}});
+        static_assert(s1.size() == 2);
+        static_assert(s1.max_size() == 2);
+        static_assert(s1.contains(30));
+        static_assert(s1.contains(31));
+        static_assert(!s1.contains(32));
+    }
+    {
+        constexpr auto s1 = make_fixed_unordered_map<int, int>({});
+        static_assert(s1.size() == 0);
+        static_assert(s1.max_size() == 0);
+    }
 }
 
 TEST(FixedUnorderedMap, OperatorBracket_NonConstexpr)

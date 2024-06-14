@@ -1026,6 +1026,16 @@ template <typename T,
 {
     return {std::begin(list), std::end(list), loc};
 }
+template <typename T,
+          customize::SequenceContainerChecking CheckingType,
+          typename FixedDequeType = FixedDeque<T, 0, CheckingType>>
+[[nodiscard]] constexpr FixedDequeType make_fixed_deque(
+    const std::array<T, 0> /*list*/,
+    const std_transition::source_location& /*loc*/
+    = std_transition::source_location::current()) noexcept
+{
+    return {};
+}
 
 template <typename T, std::size_t MAXIMUM_SIZE>
 [[nodiscard]] constexpr auto make_fixed_deque(
@@ -1036,6 +1046,16 @@ template <typename T, std::size_t MAXIMUM_SIZE>
     using CheckingType = customize::SequenceContainerAbortChecking<T, MAXIMUM_SIZE>;
     using FixedDequeType = FixedDeque<T, MAXIMUM_SIZE, CheckingType>;
     return make_fixed_deque<T, CheckingType, MAXIMUM_SIZE, FixedDequeType>(list, loc);
+}
+template <typename T>
+[[nodiscard]] constexpr auto make_fixed_deque(
+    const std::array<T, 0> list,
+    const std_transition::source_location& loc =
+        std_transition::source_location::current()) noexcept
+{
+    using CheckingType = customize::SequenceContainerAbortChecking<T, 0>;
+    using FixedDequeType = FixedDeque<T, 0, CheckingType>;
+    return make_fixed_deque<T, CheckingType, FixedDequeType>(list, loc);
 }
 
 }  // namespace fixed_containers

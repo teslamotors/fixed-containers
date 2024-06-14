@@ -11,6 +11,7 @@
 #include "fixed_containers/source_location.hpp"
 
 #include <algorithm>
+#include <array>
 #include <cstddef>
 #include <functional>
 #include <memory>
@@ -491,6 +492,22 @@ template <typename K,
 {
     return {std::begin(list), std::end(list), comparator, loc};
 }
+template <
+    typename K,
+    typename Compare = std::less<K>,
+    fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness COMPACTNESS =
+        fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR,
+    template <typename, std::size_t> typename StorageTemplate = FixedIndexBasedPoolStorage,
+    customize::SetChecking<K> CheckingType,
+    typename FixedSetType = FixedSet<K, 0, Compare, COMPACTNESS, StorageTemplate, CheckingType>>
+[[nodiscard]] constexpr FixedSetType make_fixed_set(
+    const std::array<K, 0>& /*list*/,
+    const Compare& comparator = Compare{},
+    const std_transition::source_location& /*loc*/ =
+        std_transition::source_location::current()) noexcept
+{
+    return FixedSetType{comparator};
+}
 
 template <typename K,
           typename Compare = std::less<K>,
@@ -513,6 +530,21 @@ template <typename K,
                           CheckingType,
                           MAXIMUM_SIZE,
                           FixedSetType>(list, comparator, loc);
+}
+template <typename K,
+          typename Compare = std::less<K>,
+          fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness COMPACTNESS =
+              fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR,
+          template <typename, std::size_t> typename StorageTemplate = FixedIndexBasedPoolStorage>
+[[nodiscard]] constexpr auto make_fixed_set(const std::array<K, 0>& list,
+                                            const Compare& comparator = Compare{},
+                                            const std_transition::source_location& loc =
+                                                std_transition::source_location::current()) noexcept
+{
+    using CheckingType = customize::SetAbortChecking<K, 0>;
+    using FixedSetType = FixedSet<K, 0, Compare, COMPACTNESS, StorageTemplate, CheckingType>;
+    return make_fixed_set<K, Compare, COMPACTNESS, StorageTemplate, CheckingType, FixedSetType>(
+        list, comparator, loc);
 }
 
 }  // namespace fixed_containers

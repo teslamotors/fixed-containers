@@ -11,6 +11,7 @@
 #include "fixed_containers/source_location.hpp"
 
 #include <algorithm>
+#include <array>
 #include <cstddef>
 #include <initializer_list>
 #include <iterator>
@@ -652,6 +653,16 @@ template <typename T,
 {
     return {std::begin(list), std::end(list), loc};
 }
+template <typename T,
+          customize::SequenceContainerChecking CheckingType,
+          typename FixedListType = FixedList<T, 0, CheckingType>>
+[[nodiscard]] constexpr FixedListType make_fixed_list(
+    const std::array<T, 0> /*list*/,
+    const std_transition::source_location& /*loc*/
+    = std_transition::source_location::current()) noexcept
+{
+    return {};
+}
 
 template <typename T, std::size_t MAXIMUM_SIZE>
 [[nodiscard]] constexpr auto make_fixed_list(
@@ -662,6 +673,16 @@ template <typename T, std::size_t MAXIMUM_SIZE>
     using CheckingType = customize::SequenceContainerAbortChecking<T, MAXIMUM_SIZE>;
     using FixedListType = FixedList<T, MAXIMUM_SIZE, CheckingType>;
     return make_fixed_list<T, CheckingType, MAXIMUM_SIZE, FixedListType>(list, loc);
+}
+template <typename T>
+[[nodiscard]] constexpr auto make_fixed_list(
+    const std::array<T, 0> list,
+    const std_transition::source_location& loc =
+        std_transition::source_location::current()) noexcept
+{
+    using CheckingType = customize::SequenceContainerAbortChecking<T, 0>;
+    using FixedListType = FixedList<T, 0, CheckingType>;
+    return make_fixed_list<T, CheckingType, FixedListType>(list, loc);
 }
 
 }  // namespace fixed_containers

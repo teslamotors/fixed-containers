@@ -7,6 +7,7 @@
 #include "fixed_containers/source_location.hpp"
 
 #include <algorithm>
+#include <array>
 #include <cstddef>
 #include <initializer_list>
 #include <iterator>
@@ -506,6 +507,16 @@ template <typename T,
 {
     return {std::begin(list), std::end(list), loc};
 }
+template <typename T,
+          customize::SequenceContainerChecking CheckingType,
+          typename FixedCircularDequeType = FixedCircularDeque<T, 0, CheckingType>>
+[[nodiscard]] constexpr FixedCircularDequeType make_fixed_circular_deque(
+    const std::array<T, 0> /*list*/,
+    const std_transition::source_location& /*loc*/
+    = std_transition::source_location::current()) noexcept
+{
+    return {};
+}
 
 template <typename T, std::size_t MAXIMUM_SIZE>
 [[nodiscard]] constexpr auto make_fixed_circular_deque(
@@ -515,7 +526,18 @@ template <typename T, std::size_t MAXIMUM_SIZE>
 {
     using CheckingType = customize::SequenceContainerAbortChecking<T, MAXIMUM_SIZE>;
     using FixedCircularDequeType = FixedCircularDeque<T, MAXIMUM_SIZE, CheckingType>;
-    return make_fixed_deque<T, CheckingType, MAXIMUM_SIZE, FixedCircularDequeType>(list, loc);
+    return make_fixed_circular_deque<T, CheckingType, MAXIMUM_SIZE, FixedCircularDequeType>(list,
+                                                                                            loc);
+}
+template <typename T>
+[[nodiscard]] constexpr auto make_fixed_circular_deque(
+    const std::array<T, 0> list,
+    const std_transition::source_location& loc =
+        std_transition::source_location::current()) noexcept
+{
+    using CheckingType = customize::SequenceContainerAbortChecking<T, 0>;
+    using FixedCircularDequeType = FixedCircularDeque<T, 0, CheckingType>;
+    return make_fixed_circular_deque<T, CheckingType, FixedCircularDequeType>(list, loc);
 }
 
 }  // namespace fixed_containers

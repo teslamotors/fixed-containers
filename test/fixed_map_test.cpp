@@ -141,12 +141,19 @@ TEST(FixedMap, OperatorBracket_Constexpr)
 
 TEST(FixedMap, MaxSizeDeduction)
 {
-    constexpr auto s1 = make_fixed_map({std::pair{30, 30}, std::pair{31, 54}});
-    static_assert(s1.size() == 2);
-    static_assert(s1.max_size() == 2);
-    static_assert(s1.contains(30));
-    static_assert(s1.contains(31));
-    static_assert(!s1.contains(32));
+    {
+        constexpr auto s1 = make_fixed_map({std::pair{30, 30}, std::pair{31, 54}});
+        static_assert(s1.size() == 2);
+        static_assert(s1.max_size() == 2);
+        static_assert(s1.contains(30));
+        static_assert(s1.contains(31));
+        static_assert(!s1.contains(32));
+    }
+    {
+        constexpr auto s1 = make_fixed_map<int, int>({});
+        static_assert(s1.size() == 0);
+        static_assert(s1.max_size() == 0);
+    }
 }
 
 TEST(FixedMap, OperatorBracket_NonConstexpr)
