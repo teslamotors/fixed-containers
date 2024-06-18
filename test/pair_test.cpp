@@ -1,23 +1,7 @@
-#include "fixed_containers/pair.hpp"
+#include "fixed_containers/fixed_vector.hpp"
 
-#include "fixed_containers/concepts.hpp"
-
-#include <utility>
-
-namespace fixed_containers
+int main()
 {
-#if defined(__clang__) || defined(__GNUC__)
-static_assert(NotTriviallyCopyable<std::pair<int, int>>);
-#else
-static_assert(TriviallyCopyable<std::pair<int, int>>);
-#endif
-
-#if defined(_GLIBCXX_RELEASE) and _GLIBCXX_RELEASE < 12
-static_assert(IsNotStructuralType<std::pair<int, int>>);
-#else
-static_assert(IsStructuralType<std::pair<int, int>>);
-#endif
-
-static_assert(TriviallyCopyable<Pair<int, int>>);
-static_assert(IsStructuralType<Pair<int, int>>);
-}  // namespace fixed_containers
+    fixed_containers::FixedVector<fixed_containers::FixedVector<int, 31>, 55> nested_vector;
+    nested_vector.emplace_back(1);
+}

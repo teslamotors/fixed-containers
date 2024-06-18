@@ -1379,6 +1379,7 @@ cc_test(
     deps = [
         ":concepts",
         ":pair",
+        ":fixed_vector",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
