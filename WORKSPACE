@@ -12,12 +12,9 @@ http_archive(
 
 http_archive(
     name = "com_google_benchmark",
-    urls = ["https://github.com/google/benchmark/archive/bc946b919cac6f25a199a526da571638cfde109f.tar.gz"],
-    strip_prefix = "benchmark-bc946b919cac6f25a199a526da571638cfde109f",
-    sha256 = "997090899b61ff5a3f7f6714bc9147694d4f85266dbb93277ba9e6d60009a776",
-    patches = [
-        "//:patches/benchmark_as_system_include.patch",
-    ]
+    urls = ["https://github.com/google/benchmark/archive/447752540c71f34d5d71046e08192db181e9b02b.tar.gz"],
+    strip_prefix = "benchmark-447752540c71f34d5d71046e08192db181e9b02b",
+    sha256 = "df1235e0e37297e990bb833c723cd3dec61fc95c4951f64bdd5c72d1cea7f4f9",
 )
 
 http_archive(
