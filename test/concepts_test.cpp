@@ -1,5 +1,9 @@
 #include "fixed_containers/concepts.hpp"
 
+#include "fixed_containers/assert_or_abort.hpp"
+
+#include <functional>
+
 namespace fixed_containers
 {
 static_assert(!IsTransparent<std::less<int>>);
@@ -7,12 +11,12 @@ static_assert(IsTransparent<std::less<>>);
 
 struct MockConstexprDefaultConstructible
 {
-    constexpr MockConstexprDefaultConstructible() {}
+    constexpr MockConstexprDefaultConstructible() { assert_or_abort(true); }
 };
 
 struct MockNonConstexprDefaultConstructible
 {
-    MockNonConstexprDefaultConstructible() {}
+    MockNonConstexprDefaultConstructible() { assert_or_abort(true); }
 };
 
 static_assert(ConstexprDefaultConstructible<MockConstexprDefaultConstructible>);

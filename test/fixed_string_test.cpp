@@ -4,13 +4,18 @@
 
 #include "fixed_containers/concepts.hpp"
 #include "fixed_containers/consteval_compare.hpp"
+#include "fixed_containers/max_size.hpp"
 
 #include <gtest/gtest.h>
 
 #include <algorithm>
+#include <array>
+#include <cstddef>
+#include <iterator>
 #include <span>
 #include <sstream>
 #include <string>
+#include <string_view>
 
 namespace fixed_containers
 {
@@ -1469,7 +1474,7 @@ TEST(FixedString, Resize_ExceedsCapacity)
     FixedString<3> v1{};
     EXPECT_DEATH(v1.resize(6), "");
     EXPECT_DEATH(v1.resize(6, 5), "");
-    const size_t to_size = 7;
+    const std::size_t to_size = 7;
     EXPECT_DEATH(v1.resize(to_size), "");
     EXPECT_DEATH(v1.resize(to_size, 5), "");
 }

@@ -5,6 +5,12 @@
 #include <gtest/gtest.h>
 
 #include <algorithm>
+#include <concepts>
+#include <cstddef>
+#include <cstdint>
+#include <iostream>
+#include <string>
+#include <tuple>
 
 namespace fixed_containers::tuples::as_tuple_codegen
 {

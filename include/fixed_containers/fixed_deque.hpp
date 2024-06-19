@@ -4,10 +4,8 @@
 #include "fixed_containers/assert_or_abort.hpp"
 #include "fixed_containers/circular_indexing.hpp"
 #include "fixed_containers/concepts.hpp"
-#include "fixed_containers/consteval_compare.hpp"
 #include "fixed_containers/integer_range.hpp"
 #include "fixed_containers/iterator_utils.hpp"
-#include "fixed_containers/max_size.hpp"
 #include "fixed_containers/memory.hpp"
 #include "fixed_containers/optional_storage.hpp"
 #include "fixed_containers/preconditions.hpp"
@@ -36,7 +34,6 @@ template <typename T, std::size_t MAXIMUM_SIZE, customize::SequenceContainerChec
 class FixedDequeBase
 {
     using OptionalT = optional_storage_detail::OptionalStorage<T>;
-    static_assert(consteval_compare::equal<sizeof(OptionalT), sizeof(T)>);
     // std::deque has the following restrictions too
     static_assert(IsNotReference<T>, "References are not allowed");
     static_assert(std::same_as<std::remove_cv_t<T>, T>,

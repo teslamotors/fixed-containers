@@ -4,12 +4,14 @@
 
 #include "mock_testing_types.hpp"
 
+#include "fixed_containers/consteval_compare.hpp"
 #include "fixed_containers/fixed_vector.hpp"
 
 #include <gtest/gtest.h>
 
 #include <cstddef>
 #include <string_view>
+#include <utility>
 
 namespace fixed_containers
 {

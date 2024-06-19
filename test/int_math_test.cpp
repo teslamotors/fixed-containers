@@ -2,6 +2,8 @@
 
 #include <gtest/gtest.h>
 
+#include <cstddef>
+
 namespace fixed_containers
 {
 TEST(IntMath, UnsignedIntegralAndSign)

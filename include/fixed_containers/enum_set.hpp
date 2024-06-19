@@ -6,7 +6,6 @@
 #include "fixed_containers/enum_utils.hpp"
 #include "fixed_containers/erase_if.hpp"
 #include "fixed_containers/filtered_integer_range_iterator.hpp"
-#include "fixed_containers/max_size.hpp"
 
 #include <array>
 #include <cstddef>
@@ -19,7 +18,7 @@ template <class K, class EnumSetType>
 class EnumSetBuilder
 {
 public:
-    constexpr EnumSetBuilder() {}
+    constexpr EnumSetBuilder() = default;
 
     constexpr EnumSetBuilder& insert(const K& key) & noexcept
     {

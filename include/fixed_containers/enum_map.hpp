@@ -8,7 +8,6 @@
 #include "fixed_containers/erase_if.hpp"
 #include "fixed_containers/filtered_integer_range_iterator.hpp"
 #include "fixed_containers/fixed_vector.hpp"
-#include "fixed_containers/max_size.hpp"
 #include "fixed_containers/memory.hpp"
 #include "fixed_containers/optional_storage.hpp"
 #include "fixed_containers/pair.hpp"
@@ -68,7 +67,7 @@ class EnumMapBuilder
     using value_type = std::pair<const K, V>;
 
 public:
-    constexpr EnumMapBuilder() {}
+    constexpr EnumMapBuilder() = default;
 
     constexpr EnumMapBuilder& insert(const value_type& key) & noexcept
     {

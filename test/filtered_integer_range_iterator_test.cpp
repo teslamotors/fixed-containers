@@ -1,11 +1,15 @@
 #include "fixed_containers/filtered_integer_range_iterator.hpp"
 
+#include "fixed_containers/bidirectional_iterator.hpp"
 #include "fixed_containers/concepts.hpp"
+#include "fixed_containers/integer_range.hpp"
+#include "fixed_containers/iterator_utils.hpp"
 
 #include <gtest/gtest.h>
 
 #include <array>
 #include <cstddef>
+#include <iterator>
 #include <ranges>
 #include <vector>
 

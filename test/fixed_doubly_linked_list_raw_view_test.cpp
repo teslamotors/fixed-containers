@@ -7,6 +7,11 @@
 
 #include <gtest/gtest.h>
 
+#include <cstddef>
+#include <cstdint>
+#include <iterator>
+#include <ranges>
+
 namespace fixed_containers::fixed_doubly_linked_list_detail
 {
 namespace

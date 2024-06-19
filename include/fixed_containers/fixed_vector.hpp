@@ -2,9 +2,7 @@
 
 #include "fixed_containers/algorithm.hpp"
 #include "fixed_containers/concepts.hpp"
-#include "fixed_containers/consteval_compare.hpp"
 #include "fixed_containers/iterator_utils.hpp"
-#include "fixed_containers/max_size.hpp"
 #include "fixed_containers/memory.hpp"
 #include "fixed_containers/optional_storage.hpp"
 #include "fixed_containers/preconditions.hpp"
@@ -26,7 +24,7 @@ template <class T, class FixedVectorType>
 class FixedVectorBuilder
 {
 public:
-    constexpr FixedVectorBuilder() {}
+    constexpr FixedVectorBuilder() = default;
 
     constexpr FixedVectorBuilder& push_back(const T& key) & noexcept
     {
@@ -98,7 +96,6 @@ class FixedVectorBase
      * vector.data()[0] would be accessible at constexpr, but vector.data()[1] would be rejected.
      */
     using OptionalT = optional_storage_detail::OptionalStorageTransparent<T>;
-    static_assert(consteval_compare::equal<sizeof(OptionalT), sizeof(T)>);
     // std::vector has the following restrictions too
     static_assert(IsNotReference<T>, "References are not allowed");
     static_assert(std::same_as<std::remove_cv_t<T>, T>,

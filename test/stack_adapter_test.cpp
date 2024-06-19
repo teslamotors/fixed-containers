@@ -1,5 +1,6 @@
 #include "fixed_containers/stack_adapter.hpp"
 
+#include "fixed_containers/concepts.hpp"
 #include "fixed_containers/fixed_vector.hpp"
 
 #include <gtest/gtest.h>
@@ -21,5 +22,11 @@ static_assert(NotTrivial<StackType>);
 static_assert(StandardLayout<StackType>);
 static_assert(IsStructuralType<StackType>);
 static_assert(ConstexprDefaultConstructible<StackType>);
+
+TEST(StackAdapter, DefaultConstructor)
+{
+    constexpr StackAdapter<FixedVector<int, 5>> v1{};
+    static_assert(v1.empty());
+}
 
 }  // namespace fixed_containers

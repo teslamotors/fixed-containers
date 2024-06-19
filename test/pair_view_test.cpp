@@ -6,6 +6,11 @@
 
 #include <gtest/gtest.h>
 
+#include <memory>
+#include <string>
+#include <type_traits>
+#include <utility>
+
 namespace fixed_containers
 {
 

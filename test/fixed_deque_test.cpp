@@ -6,11 +6,18 @@
 
 #include "fixed_containers/assert_or_abort.hpp"
 #include "fixed_containers/concepts.hpp"
+#include "fixed_containers/max_size.hpp"
 
 #include <gtest/gtest.h>
 
 #include <algorithm>
+#include <array>
+#include <cstddef>
 #include <deque>
+#include <initializer_list>
+#include <limits>
+#include <type_traits>
+#include <utility>
 
 namespace fixed_containers
 {
@@ -1206,7 +1213,7 @@ TEST(FixedDeque, Resize_ExceedsCapacity)
         auto v1 = Factory::template create<int, 3>();
         EXPECT_DEATH(v1.resize(6), "");
         EXPECT_DEATH(v1.resize(6, 5), "");
-        const size_t to_size = 7;
+        const std::size_t to_size = 7;
         EXPECT_DEATH(v1.resize(to_size), "");
         EXPECT_DEATH(v1.resize(to_size, 5), "");
     };
@@ -1740,11 +1747,11 @@ TEST(FixedDeque, EraseRange)
         }
         {
             auto v =
-                Factory::template create<std::vector<int>, 8>({{1, 2, 3}, {4, 5}, {}, {6, 7, 8}});
+                Factory::template create<std::deque<int>, 8>({{1, 2, 3}, {4, 5}, {}, {6, 7, 8}});
             auto it = v.erase(v.begin(), std::next(v.begin(), 2));
             EXPECT_EQ(it, v.begin());
             EXPECT_EQ(v.size(), 2u);
-            EXPECT_TRUE(std::ranges::equal(v, std::vector<std::vector<int>>{{}, {6, 7, 8}}));
+            EXPECT_TRUE(std::ranges::equal(v, std::deque<std::deque<int>>{{}, {6, 7, 8}}));
         }
     };
 
@@ -1788,20 +1795,19 @@ TEST(FixedDeque, EraseOne)
         }
         {
             auto v =
-                Factory::template create<std::vector<int>, 8>({{1, 2, 3}, {4, 5}, {}, {6, 7, 8}});
+                Factory::template create<std::deque<int>, 8>({{1, 2, 3}, {4, 5}, {}, {6, 7, 8}});
             auto it = v.erase(v.begin());
             EXPECT_EQ(it, v.begin());
             EXPECT_EQ(v.size(), 3u);
-            EXPECT_TRUE(
-                std::ranges::equal(v, std::vector<std::vector<int>>{{4, 5}, {}, {6, 7, 8}}));
+            EXPECT_TRUE(std::ranges::equal(v, std::deque<std::deque<int>>{{4, 5}, {}, {6, 7, 8}}));
             it = v.erase(std::next(v.begin(), 1));
             EXPECT_EQ(it, std::next(v.begin(), 1));
             EXPECT_EQ(v.size(), 2u);
-            EXPECT_TRUE(std::ranges::equal(v, std::vector<std::vector<int>>{{4, 5}, {6, 7, 8}}));
+            EXPECT_TRUE(std::ranges::equal(v, std::deque<std::deque<int>>{{4, 5}, {6, 7, 8}}));
             it = v.erase(std::next(v.begin(), 1));
             EXPECT_EQ(it, v.end());
             EXPECT_EQ(v.size(), 1u);
-            EXPECT_TRUE(std::ranges::equal(v, std::vector<std::vector<int>>{{4, 5}}));
+            EXPECT_TRUE(std::ranges::equal(v, std::deque<std::deque<int>>{{4, 5}}));
         }
     };
 
