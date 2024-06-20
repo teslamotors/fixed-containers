@@ -138,7 +138,7 @@ public:
 
     friend constexpr Self operator+(difference_type off, const Self& other)
     {
-        return Self(std::next(other.iterator_, off), other.unary_function_);
+        return Self{std::next(other.iterator_, off), other.unary_function_};
     }
 
     constexpr Self& operator-=(difference_type off)

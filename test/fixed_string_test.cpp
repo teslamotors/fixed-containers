@@ -28,6 +28,9 @@ static_assert(NotTrivial<FixedStringType>);
 static_assert(StandardLayout<FixedStringType>);
 static_assert(IsStructuralType<FixedStringType>);
 
+static_assert(std::contiguous_iterator<FixedStringType::iterator>);
+static_assert(std::contiguous_iterator<FixedStringType::const_iterator>);
+
 void const_span_ref(const std::span<char>&) {}
 void const_span_of_const_ref(const std::span<const char>&) {}
 
@@ -483,6 +486,9 @@ TEST(FixedString, TrivialIterators)
         static_assert(*std::prev(v1.end(), 1) == '9');
         static_assert(*std::prev(v1.end(), 2) == '8');
         static_assert(*std::prev(v1.end(), 3) == '7');
+
+        static_assert(*(1 + v1.begin()) == '8');
+        static_assert(*(2 + v1.begin()) == '9');
     }
 
     {
@@ -551,6 +557,9 @@ TEST(FixedString, ReverseIterators)
         static_assert(*std::prev(v1.rend(), 1) == '7');
         static_assert(*std::prev(v1.rend(), 2) == '8');
         static_assert(*std::prev(v1.rend(), 3) == '9');
+
+        static_assert(*(1 + v1.begin()) == '8');
+        static_assert(*(2 + v1.begin()) == '9');
     }
 
     {

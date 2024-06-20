@@ -15,6 +15,7 @@
 #include <cstddef>
 #include <deque>
 #include <initializer_list>
+#include <iterator>
 #include <limits>
 #include <type_traits>
 #include <utility>
@@ -31,6 +32,10 @@ static_assert(TriviallyCopyable<DequeType>);
 static_assert(NotTrivial<DequeType>);
 static_assert(StandardLayout<DequeType>);
 static_assert(IsStructuralType<DequeType>);
+
+static_assert(std::random_access_iterator<DequeType::iterator>);
+static_assert(std::random_access_iterator<DequeType::const_iterator>);
+
 }  // namespace trivially_copyable_deque
 
 struct ComplexStruct
@@ -864,6 +869,9 @@ TEST(FixedDeque, TrivialIterators)
             static_assert(*std::prev(v1.end(), 1) == 99);
             static_assert(*std::prev(v1.end(), 2) == 88);
             static_assert(*std::prev(v1.end(), 3) == 77);
+
+            static_assert(*(1 + v1.begin()) == 88);
+            static_assert(*(2 + v1.begin()) == 99);
         }
 
         {
@@ -984,6 +992,9 @@ TEST(FixedDeque, ReverseIterators)
             static_assert(*std::prev(v1.rend(), 1) == 77);
             static_assert(*std::prev(v1.rend(), 2) == 88);
             static_assert(*std::prev(v1.rend(), 3) == 99);
+
+            static_assert(*(1 + v1.rbegin()) == 88);
+            static_assert(*(2 + v1.rbegin()) == 77);
         }
 
         {

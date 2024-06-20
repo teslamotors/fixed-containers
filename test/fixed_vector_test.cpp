@@ -898,6 +898,9 @@ TEST(FixedVector, TrivialIterators)
         static_assert(*std::prev(v1.end(), 1) == 99);
         static_assert(*std::prev(v1.end(), 2) == 88);
         static_assert(*std::prev(v1.end(), 3) == 77);
+
+        static_assert(*(1 + v1.begin()) == 88);
+        static_assert(*(2 + v1.begin()) == 99);
     }
 
     {
@@ -1007,6 +1010,9 @@ TEST(FixedVector, ReverseIterators)
         static_assert(*std::prev(v1.rend(), 1) == 77);
         static_assert(*std::prev(v1.rend(), 2) == 88);
         static_assert(*std::prev(v1.rend(), 3) == 99);
+
+        static_assert(*(1 + v1.begin()) == 88);
+        static_assert(*(2 + v1.begin()) == 99);
     }
 
     {

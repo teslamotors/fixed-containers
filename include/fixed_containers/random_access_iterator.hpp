@@ -161,7 +161,7 @@ public:
 
     friend constexpr Self operator+(difference_type n, const Self& other)
     {
-        return Self(std::next(other.iterator_, n));
+        return Self{std::next(other, n)};
     }
 
     constexpr Self& operator-=(difference_type n)

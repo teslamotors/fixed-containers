@@ -15,6 +15,7 @@
 #include <cstddef>
 #include <deque>
 #include <initializer_list>
+#include <iterator>
 #include <limits>
 #include <type_traits>
 
@@ -30,6 +31,9 @@ static_assert(TriviallyCopyable<CircularDequeType>);
 static_assert(NotTrivial<CircularDequeType>);
 static_assert(StandardLayout<CircularDequeType>);
 static_assert(IsStructuralType<CircularDequeType>);
+
+static_assert(std::random_access_iterator<CircularDequeType::iterator>);
+static_assert(std::random_access_iterator<CircularDequeType::const_iterator>);
 }  // namespace trivially_copyable_vector
 
 struct ComplexStruct
@@ -912,6 +916,9 @@ TEST(FixedCircularDeque, TrivialIterators)
             static_assert(*std::prev(v1.end(), 1) == 99);
             static_assert(*std::prev(v1.end(), 2) == 88);
             static_assert(*std::prev(v1.end(), 3) == 77);
+
+            static_assert(*(1 + v1.begin()) == 88);
+            static_assert(*(2 + v1.begin()) == 99);
         }
 
         {
@@ -1032,6 +1039,9 @@ TEST(FixedCircularDeque, ReverseIterators)
             static_assert(*std::prev(v1.rend(), 1) == 77);
             static_assert(*std::prev(v1.rend(), 2) == 88);
             static_assert(*std::prev(v1.rend(), 3) == 99);
+
+            static_assert(*(1 + v1.begin()) == 88);
+            static_assert(*(2 + v1.begin()) == 99);
         }
 
         {
