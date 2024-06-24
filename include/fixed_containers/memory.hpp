@@ -12,10 +12,10 @@ namespace fixed_containers::memory
 // There appears to be more, to be investigated.
 // Returning an explicit `T*` also fails in certain cases (msvc).
 // As a workaround, don't return anything, which is a minor divergence with `std::construct_at()`.
-template <typename T, typename ... Args>
-constexpr void construct_at_address_of(T& p, Args&&... args)
+template <typename T, typename... Args>
+constexpr auto construct_at_address_of(T& p, Args&&... args)
 {
-    std::construct_at(std::addressof(p), std::forward<Args>(args)...);
+    return std::construct_at(std::addressof(p), std::forward<Args>(args)...);
 }
 
 // Similar to https://en.cppreference.com/w/cpp/memory/destroy_at
