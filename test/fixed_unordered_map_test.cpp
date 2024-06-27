@@ -254,6 +254,138 @@ TEST(FixedUnorderedMap, Insert)
     static_assert(s1.contains(4));
 }
 
+TEST(FixedUnorderedMap, ComplexNontrivialCopies)
+{
+    FixedUnorderedMap<int, MockNonTrivialCopyAssignable, 30> a{};
+    for (int i = 0; i < 20; i++)
+    {
+        a.try_emplace(i + 100);
+    }
+
+    auto b{a};
+    for(const auto& pair : a)
+    {
+        EXPECT_TRUE(b.contains(pair.first));
+    }
+    EXPECT_EQ(b.size(), a.size());
+    b.clear();
+    for (int i = 0; i < 11; i++)
+    {
+        b.try_emplace(i + 100);
+    }
+    auto c{a};
+    for(const auto& pair : a)
+    {
+        EXPECT_TRUE(c.contains(pair.first));
+    }
+    EXPECT_EQ(c.size(), a.size());
+    c.clear();
+    for (int i = 0; i < 27; i++)
+    {
+        c.try_emplace(i + 100);
+    }
+    auto d{a};
+    for(const auto& pair : a)
+    {
+        EXPECT_TRUE(d.contains(pair.first));
+    }
+    EXPECT_EQ(d.size(), a.size());
+
+    a = b;
+    for(const auto& pair : b)
+    {
+        EXPECT_TRUE(a.contains(pair.first));
+    }
+    a.clear();
+    a = c;
+    for(const auto& pair : c)
+    {
+        EXPECT_TRUE(a.contains(pair.first));
+    }
+
+    // check that we can still add 3 elements (gets us to capacity)
+    a.try_emplace(127);
+    a.try_emplace(128);
+    a.try_emplace(129);
+    for (int i = 0; i < 30; i++)
+    {
+        EXPECT_TRUE(a.contains(i + 100));
+    }
+    EXPECT_EQ(a.size(), 30);
+
+    // make sure the underlying storage agrees that we're full
+    EXPECT_TRUE(a.IMPLEMENTATION_DETAIL_DO_NOT_USE_table_.IMPLEMENTATION_DETAIL_DO_NOT_USE_value_storage_.IMPLEMENTATION_DETAIL_DO_NOT_USE_storage_.full());
+
+    a.clear();
+    a = d;
+    for(const auto& pair : d)
+    {
+        EXPECT_TRUE(a.contains(pair.first));
+    }
+    a.clear();
+}
+
+TEST(FixedUnorderedMap, ComplexNontrivialMoves)
+{
+    using FUM = FixedUnorderedMap<int, MockMoveableButNotCopyable, 30>;
+    FUM a{};
+    FUM a_orig{};
+    for (int i = 0; i < 20; i++)
+    {
+        a.try_emplace(i + 100);
+        a_orig.try_emplace(i + 100);
+    }
+
+    FUM b{std::move(a)};
+    for(const auto& pair : a_orig)
+    {
+        EXPECT_TRUE(b.contains(pair.first));
+    }
+    FUM b_orig{};
+    b.clear();
+    for (int i = 0; i < 11; i++)
+    {
+        b.try_emplace(i + 100);
+        b_orig.try_emplace(i + 100);
+    }
+    FUM c{};
+    FUM c_orig{};
+    c.clear();
+    for (int i = 0; i < 27; i++)
+    {
+        c.try_emplace(i + 100);
+        c_orig.try_emplace(i + 100);
+    }
+
+    a = std::move(b);
+    for(const auto& pair : b_orig)
+    {
+        EXPECT_TRUE(a.contains(pair.first));
+    }
+    a.clear();
+    a = std::move(c);
+    for(const auto& pair : c_orig)
+    {
+        EXPECT_TRUE(a.contains(pair.first));
+    }
+
+    // check that we can still add 3 elements (gets us to capacity)
+    a.try_emplace(127);
+    a.try_emplace(128);
+    a.try_emplace(129);
+    for (int i = 0; i < 30; i++)
+    {
+        EXPECT_TRUE(a.contains(i + 100));
+    }
+    EXPECT_EQ(a.size(), 30);
+
+    // make sure the underlying storage agrees that we're full
+    EXPECT_TRUE(a.IMPLEMENTATION_DETAIL_DO_NOT_USE_table_.IMPLEMENTATION_DETAIL_DO_NOT_USE_value_storage_.IMPLEMENTATION_DETAIL_DO_NOT_USE_storage_.full());
+
+
+    a.clear();
+}
+
 TEST(FixedUnorderedMap, Insert_ExceedsCapacity)
 {
     {
