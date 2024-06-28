@@ -775,6 +775,33 @@ cc_library(
 )
 
 cc_library(
+    name = "recursive_reflection_fwd",
+    hdrs = ["include/fixed_containers/recursive_reflection_fwd.hpp"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
+    deps = [
+        ":in_out",
+        ":reflection",
+    ],
+    copts = ["-std=c++20"],
+)
+
+cc_library(
+    name = "recursive_reflection",
+    hdrs = ["include/fixed_containers/recursive_reflection.hpp"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
+    deps = [
+        ":in_out",
+        ":out",
+        ":reflection",
+        ":recursive_reflection_fwd",
+        ":type_name",
+    ],
+    copts = ["-std=c++20"],
+)
+
+cc_library(
     name = "reference_storage",
     hdrs = ["include/fixed_containers/reference_storage.hpp"],
     includes = includes_config(),
@@ -862,12 +889,22 @@ cc_library(
     strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":assert_or_abort",
+        ":fixed_vector",
         ":fixed_map",
+        ":fixed_set",
         ":iterator_utils",
         ":memory",
+        ":in_out",
         ":out",
         ":random_access_iterator",
         ":reflection",
+        ":recursive_reflection_fwd",
+        ":recursive_reflection",
+        ":type_name",
+        ":preconditions", 
+        ":sequence_container_checking",
+        ":concepts",
+        "@com_github_neargye_magic_enum//:magic_enum",
     ],
     copts = ["-std=c++20"],
 )
@@ -1566,6 +1603,25 @@ cc_test(
     copts = ["-std=c++20"],
 )
 
+cc_test(
+    name = "recursive_reflection_test",
+    srcs = ["test/recursive_reflection_test.cpp"],
+    deps = [
+        ":concepts",
+        ":struct_view",
+        ":reflection",
+        ":recursive_reflection",
+        ":recursive_reflection_fwd",
+        ":fixed_vector",
+        ":fixed_set",
+        ":in_out",
+        ":out",
+        "@com_github_neargye_magic_enum//:magic_enum",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
+    ],
+    copts = ["-std=c++20"],
+)
 
 cc_test(
     name = "reflection_test",
@@ -1609,9 +1665,15 @@ cc_test(
     name = "struct_view_test",
     srcs = ["test/struct_view_test.cpp"],
     deps = [
+        ":concepts",
         ":struct_view",
+        ":reflection",
+        ":recursive_reflection",
+        ":recursive_reflection_fwd",
         ":fixed_vector",
+        ":in_out",
         ":out",
+        "@com_github_neargye_magic_enum//:magic_enum",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
