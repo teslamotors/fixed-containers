@@ -30,19 +30,19 @@ struct SuperL1
 
 struct SubL2i1
 {
-    const int* retain1;
+    int const& retain1 = 1;
 };
 
 struct SubL2i2
 {
-    const double* retain2;
+    double& retain2 = 1;
 };
 
 struct SubL1
 {
-    const double* retain1;
+    double& retain1 = 1;
     SubL2i1 nested1;
-    const float* retain2;
+    float& retain2 = 1;
     SubL2i2 nested2;
 };
 }  // namespace
@@ -81,8 +81,8 @@ TEST(SubStructView, Nested)
                                     std::byte* byte_ptr = reinterpret_cast<std::byte*>(&sub_1);
                                     std::ptrdiff_t offset = it->second;
                                     std::advance(byte_ptr, offset);
-                                    T** field_in_sub = reinterpret_cast<T**>(byte_ptr);
-                                    *field_in_sub = &field;
+                                    T& field_in_sub = *(reinterpret_cast<T*>(byte_ptr));
+                                    field_in_sub = field;
                                 });
 
     ASSERT_TRUE(sub_1.retain1 == &super_1.retain1);
