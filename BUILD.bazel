@@ -862,12 +862,16 @@ cc_library(
     strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":assert_or_abort",
+        ":fixed_vector",
         ":fixed_map",
+        ":fixed_set",
         ":iterator_utils",
         ":memory",
+        ":in_out",
         ":out",
         ":random_access_iterator",
         ":reflection",
+        ":type_name"
     ],
     copts = ["-std=c++20"],
 )
@@ -1612,6 +1616,7 @@ cc_test(
         ":fixed_vector",
         ":out",
         ":sub_struct_view",
+        ":source_location",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
