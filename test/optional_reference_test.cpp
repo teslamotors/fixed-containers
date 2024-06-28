@@ -325,4 +325,10 @@ TEST(OptionalReference, RValueCtor)
     // OptionalReference<const int>(10); // fails to compile, intentional
 }
 
+TEST(OptionalReference, NulloptCtor)
+{
+    constexpr OptionalReference<int> rome(std::nullopt);
+    static_assert(!rome.has_value());
+}
+
 }  // namespace fixed_containers

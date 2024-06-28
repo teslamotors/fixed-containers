@@ -29,11 +29,20 @@ private:
 
 public:
     // Needed for structural type
-    BackingType IMPLEMENTION_DETAIL_DO_NOT_USE_underlying_val_ = nullptr;
+    BackingType IMPLEMENTION_DETAIL_DO_NOT_USE_underlying_val_;
 
 public:
-    // ctors are explicit to highlight the fact we are creating long living reference
-    constexpr OptionalReference() = default;
+    constexpr OptionalReference() noexcept
+      : IMPLEMENTION_DETAIL_DO_NOT_USE_underlying_val_(nullptr)
+    {
+    }
+
+    constexpr OptionalReference(std::nullopt_t) noexcept
+      : OptionalReference()
+    {
+    }
+
+    // ctors is explicit to highlight the fact we are creating long living reference
     explicit constexpr OptionalReference(T& val) noexcept
       : IMPLEMENTION_DETAIL_DO_NOT_USE_underlying_val_(std::addressof(val))
     {
