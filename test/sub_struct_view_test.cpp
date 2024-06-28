@@ -3,62 +3,91 @@
 #include <gtest/gtest.h>
 
 #include <iterator> 
+#include <cstddef>
 
 namespace fixed_containers::sub_struct_view
 {
 namespace
 {
-struct FlatSuperStruct1
+
+struct SuperL2
+{
+    int retain1{};
+    double retain2{};
+};
+
+struct SuperL1
 {
     int ignore1{};
     double retain1{};
+    SuperL2 nested1{1, 2.0};
     float ignore2{};
     float retain2{};
     int ignore3{};
+    SuperL2 nested2{3, 4.0};
 };
 
-struct FlatSubStruct1
+
+struct SubL2i1
+{
+    const int* retain1;
+};
+
+struct SubL2i2
+{
+    const double* retain2;
+};
+
+struct SubL1
 {
     const double* retain1;
+    SubL2i1 nested1;
     const float* retain2;
+    SubL2i2 nested2;
 };
 }  // namespace
 
-TEST(SubStructView, Flat)
+TEST(SubStructView, Nested)
 {
-    FlatSuperStruct1 flat_super_struct_1{};
-    flat_super_struct_1.retain1 = 11.0;
-    flat_super_struct_1.retain2 = 22.0f;
+    SuperL1 super_1{};
+    super_1.retain1 = 11.0;
+    super_1.nested1.retain1 = 111;
+    super_1.retain2 = 22.0f;
+    super_1.nested2.retain2 = 112.0;
 
-    FlatSubStruct1 flat_sub_struct_1{};
+    SubL1 sub_1{};
 
-    FixedMap<std::string_view, std::size_t, 10> field_to_offset{};
-    std::size_t current_offset{};
+    FixedMap<FieldNameChain, std::ptrdiff_t, 10> field_to_offset{};
 
-    reflection::for_each_field(flat_sub_struct_1,
-                               [&]<class T>(const std::string_view& name, T& /*field*/)
-                               {
-                                   field_to_offset.try_emplace(name, current_offset);
-                                   current_offset += sizeof(T);
-                               });
+    for_each_field_recursive_depth_first_order(sub_1,
+                                [&]<class T>(const FieldNameChain& chain, T& field)
+                                {
+                                    std::byte* byte_ptr = reinterpret_cast<std::byte*>(&sub_1);
+                                    std::byte* field_ptr = reinterpret_cast<std::byte*>(&field);
+                                    // calculate the offset of field
+                                    std::ptrdiff_t current_offset = std::distance(byte_ptr, field_ptr);
+                                    field_to_offset.try_emplace(chain, current_offset);
+                                });
 
-    reflection::for_each_field(flat_super_struct_1,
-                               [&]<class T>(const std::string_view& name, T& field)
-                               {
-                                   auto it = field_to_offset.find(name);
-                                   if (it == field_to_offset.cend())
-                                   {
-                                       return;
-                                   }
+    for_each_field_recursive_depth_first_order(super_1,
+                                [&]<class T>(const FieldNameChain&chain, T& field)
+                                {
+                                    auto it = field_to_offset.find(chain);
+                                    if (it == field_to_offset.cend())
+                                    {
+                                        return;
+                                    }
 
-                                   std::byte* byte_ptr =
-                                       reinterpret_cast<std::byte*>(&flat_sub_struct_1);
-                                   const std::size_t offset = it->second;
-                                   std::advance(byte_ptr, offset);
-                                   T** field_in_struct = reinterpret_cast<T**>(byte_ptr);
-                                   *field_in_struct = &field;
-                               });
-    ASSERT_TRUE(flat_sub_struct_1.retain1 == &flat_super_struct_1.retain1);
-    ASSERT_TRUE(flat_sub_struct_1.retain2 == &flat_super_struct_1.retain2);
+                                    std::byte* byte_ptr = reinterpret_cast<std::byte*>(&sub_1);
+                                    std::ptrdiff_t offset = it->second;
+                                    std::advance(byte_ptr, offset);
+                                    T** field_in_sub = reinterpret_cast<T**>(byte_ptr);
+                                    *field_in_sub = &field;
+                                });
+
+    ASSERT_TRUE(sub_1.retain1 == &super_1.retain1);
+    ASSERT_TRUE(sub_1.retain2 == &super_1.retain2);
+    ASSERT_TRUE(sub_1.nested1.retain1 == &super_1.nested1.retain1);
+    ASSERT_TRUE(sub_1.nested2.retain2 == &super_1.nested2.retain2);
 }
 }  // namespace fixed_containers::sub_struct_view
