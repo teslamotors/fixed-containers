@@ -778,7 +778,6 @@ cc_library(
     hdrs = ["include/fixed_containers/sub_struct_view.hpp"],
     includes = ["include"],
     deps = [
-        ":fixed_map",
         ":fixed_vector",
         ":reflection",
         ":in_out",
@@ -1524,6 +1523,8 @@ cc_test(
     srcs = ["test/sub_struct_view_test.cpp"],
     deps = [
         ":sub_struct_view",
+        ":fixed_map",
+        ":fixed_set",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
