@@ -84,7 +84,7 @@ TEST(InOut, ArrowOperator)
     *a = 5;
     in_out<std::unique_ptr<int>> b{a};
 
-    int result = *(b->get());
+    int result = *(b->get());  // NOLINT(readability-redundant-smartptr-get)
     ASSERT_EQ(5, result);
 }
 
