@@ -59,6 +59,15 @@ FixedUnorderedMapRawView get_view_of_map(const Map& map)
                                     map.max_size());
 }
 
+template <typename Key, typename Value>
+void test_and_increment(auto& map_it, auto& view_it)
+{
+    EXPECT_EQ(map_it->first, get_from_ptr<Key>(view_it->key()));
+    EXPECT_EQ(map_it->second, get_from_ptr<Value>(view_it->value()));
+    ++map_it;
+    ++view_it;
+}
+
 template <auto value>
 struct TestSetArgument
 {
@@ -141,15 +150,6 @@ INSTANTIATE_TYPED_TEST_SUITE_P(FixedUnorderedMapRawView,
                                FixedUnorderedMapRawViewEntryViewFixture,
                                MapEntryRawViewTypes,
                                NameProviderForTypeParameterizedTest);
-
-template <typename Key, typename Value>
-static inline void test_and_increment(auto& map_it, auto& view_it)
-{
-    EXPECT_EQ(map_it->first, get_from_ptr<Key>(view_it->key()));
-    EXPECT_EQ(map_it->second, get_from_ptr<Value>(view_it->value()));
-    ++map_it;
-    ++view_it;
-}
 
 TEST(FixedUnorderedMapRawView, IntIntMap)
 {

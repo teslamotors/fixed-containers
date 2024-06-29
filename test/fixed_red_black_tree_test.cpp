@@ -895,7 +895,9 @@ TEST(FixedRedBlackTree, Insertion_FocusOnTheLeft)
     }
 }
 
-static FixedRedBlackTree<int, int, 7> get_new_swap_test_base_tree()
+namespace
+{
+FixedRedBlackTree<int, int, 7> get_new_swap_test_base_tree()
 {
     FixedRedBlackTree<int, int, 7> bst{};
     bst[17] = 170;  // Position 0
@@ -903,6 +905,7 @@ static FixedRedBlackTree<int, int, 7> get_new_swap_test_base_tree()
     bst[15] = 150;  // Position 2
     return bst;
 }
+}  // namespace
 
 TEST(FixedRedBlackTree, SwapNodes)
 {
@@ -1008,7 +1011,9 @@ TEST(FixedRedBlackTree, SwapNodes)
     }
 }
 
-static FixedRedBlackTree<int, int, 20> get_new_deletion_test_base_tree()
+namespace
+{
+FixedRedBlackTree<int, int, 20> get_new_deletion_test_base_tree()
 {
     FixedRedBlackTree<int, int, 20> bst{};
     bst[3] = 30;    // Position 0
@@ -1021,6 +1026,7 @@ static FixedRedBlackTree<int, int, 20> get_new_deletion_test_base_tree()
     bst[10] = 100;  // Position 7
     return bst;
 }
+}  // namespace
 
 TEST(FixedRedBlackTree, Deletion)
 {
@@ -1697,10 +1703,12 @@ TEST(FixedRedBlackTree, IndexOfEntryCeiling)
     ASSERT_EQ(NULL_INDEX, bst.index_of_node_ceiling(14));
 }
 
+namespace
+{
 template <std::size_t MAXIMUM_SIZE>
-static void consistency_test_helper(const std::array<int, MAXIMUM_SIZE>& insertion_order,
-                                    const std::array<int, MAXIMUM_SIZE>& deletion_order,
-                                    FixedRedBlackTree<int, int, MAXIMUM_SIZE>& bst)
+void consistency_test_helper(const std::array<int, MAXIMUM_SIZE>& insertion_order,
+                             const std::array<int, MAXIMUM_SIZE>& deletion_order,
+                             FixedRedBlackTree<int, int, MAXIMUM_SIZE>& bst)
 {
     static constexpr std::size_t HALF_MAXIMUM_SIZE = MAXIMUM_SIZE / 2;
     static constexpr std::size_t QUARTER_MAXIMUM_SIZE = MAXIMUM_SIZE / 4;
@@ -1765,6 +1773,7 @@ static void consistency_test_helper(const std::array<int, MAXIMUM_SIZE>& inserti
         bst.delete_node(insertion_order[i]);
     }
 }
+}  // namespace
 
 TEST(FixedRedBlackTree, ConsistencyRegressionTest1)
 {
