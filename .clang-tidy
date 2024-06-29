@@ -92,7 +92,6 @@ Checks: >
   -modernize-use-default-member-init,
   -modernize-use-emplace,
   -modernize-use-transparent-functors,
-  -performance-unnecessary-copy-initialization,
   -readability-container-size-empty,
   -readability-identifier-naming,
   -readability-qualified-auto,

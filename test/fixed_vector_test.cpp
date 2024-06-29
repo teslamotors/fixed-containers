@@ -2165,6 +2165,7 @@ TYPED_TEST_P(FixedVectorInstanceCheckFixture, FixedVector_InstanceCheck)
 
     {  // IMPORTANT SCOPE, don't remove.
         VectorOfInstanceCounterType v2{v1};
+        (void)v2;
         ASSERT_EQ(4, InstanceCounterType::counter);
     }
     ASSERT_EQ(2, InstanceCounterType::counter);

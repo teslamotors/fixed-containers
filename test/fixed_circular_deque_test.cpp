@@ -2541,6 +2541,7 @@ TYPED_TEST_P(FixedCircularDequeInstanceCheckFixture, FixedCircularDeque_Instance
 
     {  // IMPORTANT SCOPE, don't remove.
         CircularDequeOfInstanceCounterType v2{v1};
+        (void)v2;
         ASSERT_EQ(4, InstanceCounterType::counter);
     }
     ASSERT_EQ(2, InstanceCounterType::counter);

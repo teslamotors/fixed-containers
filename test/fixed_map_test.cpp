@@ -1821,6 +1821,7 @@ TYPED_TEST_P(FixedMapInstanceCheckFixture, FixedMap_InstanceCheck)
 
     {  // IMPORTANT SCOPE, don't remove.
         MapOfInstanceCounterType v2{v1};
+        (void)v2;
         ASSERT_EQ(8, InstanceCounterType::counter);
     }
     ASSERT_EQ(4, InstanceCounterType::counter);
