@@ -15,10 +15,8 @@ enum class RedBlackTreeNodeColorCompactness : bool
 };
 
 template <class T>
-concept IsRedBlackTreeNode = requires(const T& const_s,
-                                      std::remove_const_t<T>& mutable_s,
-                                      const NodeIndex& i,
-                                      const NodeColor& c) {
+concept IsRedBlackTreeNode = requires(
+    const T& const_s, std::remove_const_t<T>& mutable_s, const NodeIndex& i, const NodeColor& c) {
     typename T::KeyType;
     typename T::ValueType;
     T::HAS_ASSOCIATED_VALUE;
@@ -113,10 +111,7 @@ public:
     {
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_color_;
     }
-    constexpr void set_color(const NodeColor& c)
-    {
-        IMPLEMENTATION_DETAIL_DO_NOT_USE_color_ = c;
-    }
+    constexpr void set_color(const NodeColor& c) { IMPLEMENTATION_DETAIL_DO_NOT_USE_color_ = c; }
 };
 
 template <class K>
@@ -175,10 +170,7 @@ public:
     {
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_color_;
     }
-    constexpr void set_color(const NodeColor& c)
-    {
-        IMPLEMENTATION_DETAIL_DO_NOT_USE_color_ = c;
-    }
+    constexpr void set_color(const NodeColor& c) { IMPLEMENTATION_DETAIL_DO_NOT_USE_color_ = c; }
 };
 
 // boost::container::map has the option to embed the color in one of the pointers
