@@ -26,4 +26,12 @@ constexpr void destroy_at_address_of(T& p)
     std::destroy_at(std::addressof(p));
 }
 
+// Preferred over `existing_value = {arg1, arg2};`
+template <typename T, typename... Args>
+constexpr void destroy_and_construct_at_address_of(T& p, Args&&... args)
+{
+    destroy_at_address_of(p);
+    construct_at_address_of(p, std::forward<Args>(args)...);
+}
+
 }  // namespace fixed_containers::memory
