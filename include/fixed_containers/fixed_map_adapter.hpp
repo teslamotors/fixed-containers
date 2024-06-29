@@ -7,6 +7,7 @@
 #include "fixed_containers/preconditions.hpp"
 #include "fixed_containers/source_location.hpp"
 
+#include <algorithm>
 #include <memory>
 
 namespace fixed_containers
@@ -427,15 +428,13 @@ public:
         {
             return false;
         }
-        for (const auto& pair : *this)
-        {
-            typename Other::const_iterator other_it = other.find(pair.first);
-            if (other_it == other.end() || other_it->second != pair.second)
+        return std::ranges::all_of(
+            *this,
+            [&other](const auto& pair)
             {
-                return false;
-            }
-        }
-        return true;
+                typename Other::const_iterator other_it = other.find(pair.first);
+                return other_it != other.end() && other_it->second == pair.second;
+            });
     }
 
 private:

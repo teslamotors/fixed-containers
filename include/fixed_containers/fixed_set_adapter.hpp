@@ -6,6 +6,7 @@
 #include "fixed_containers/preconditions.hpp"
 #include "fixed_containers/source_location.hpp"
 
+#include <algorithm>
 #include <memory>
 
 namespace fixed_containers
@@ -296,14 +297,8 @@ public:
         {
             return false;
         }
-        for (const auto& key : *this)
-        {
-            if (!other.contains(key))
-            {
-                return false;
-            }
-        }
-        return true;
+        return std::ranges::all_of(*this,
+                                   [&other](const auto& key) { return other.contains(key); });
     }
 
 private:

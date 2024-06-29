@@ -102,7 +102,6 @@ Checks: >
   -readability-redundant-smartptr-get,
   -readability-suspicious-call-argument,
   -readability-uppercase-literal-suffix,
-  -readability-use-anyofallof
 
 # Turn all the warnings from the checks above into errors.
 WarningsAsErrors: "*"
