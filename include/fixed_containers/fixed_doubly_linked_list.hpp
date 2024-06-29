@@ -66,7 +66,7 @@ public:
     constexpr IndexType emplace_after_index_and_return_index(IndexType idx, Args&&... args)
     {
         increment_size();
-        IndexType new_idx =
+        auto new_idx =
             static_cast<IndexType>(storage().emplace_and_return_index(std::forward<Args>(args)...));
         next_of(new_idx) = next_of(idx);
         prev_of(next_of(new_idx)) = new_idx;

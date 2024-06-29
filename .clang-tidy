@@ -85,7 +85,6 @@ Checks: >
   -google-runtime-operator,
   -modernize-use-nodiscard,
   -modernize-pass-by-value,
-  -modernize-use-auto,
   -modernize-use-default-member-init,
   -readability-container-size-empty,
   -readability-identifier-naming,
