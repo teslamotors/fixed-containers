@@ -1553,7 +1553,7 @@ TEST(FixedList, EraseRange)
         FixedList<std::list<int>, 8> v = {{1, 2, 3}, {4, 5}, {}, {6, 7, 8}};
         auto it = v.erase(v.begin(), std::next(v.begin(), 2));
         EXPECT_EQ(it, v.begin());
-        EXPECT_EQ(v.size(), 2u);
+        EXPECT_EQ(v.size(), 2U);
         EXPECT_TRUE(std::ranges::equal(v, std::list<std::list<int>>{{}, {6, 7, 8}}));
     }
 }
@@ -1623,15 +1623,15 @@ TEST(FixedList, EraseOne)
         FixedList<std::list<int>, 8> v = {{1, 2, 3}, {4, 5}, {}, {6, 7, 8}};
         auto it = v.erase(v.begin());
         EXPECT_EQ(it, v.begin());
-        EXPECT_EQ(v.size(), 3u);
+        EXPECT_EQ(v.size(), 3U);
         EXPECT_TRUE(std::ranges::equal(v, std::list<std::list<int>>{{4, 5}, {}, {6, 7, 8}}));
         it = v.erase(std::next(v.begin(), 1));
         EXPECT_EQ(it, std::next(v.begin(), 1));
-        EXPECT_EQ(v.size(), 2u);
+        EXPECT_EQ(v.size(), 2U);
         EXPECT_TRUE(std::ranges::equal(v, std::list<std::list<int>>{{4, 5}, {6, 7, 8}}));
         it = v.erase(std::next(v.begin(), 1));
         EXPECT_EQ(it, v.end());
-        EXPECT_EQ(v.size(), 1u);
+        EXPECT_EQ(v.size(), 1U);
         EXPECT_TRUE(std::ranges::equal(v, std::list<std::list<int>>{{4, 5}}));
     }
 }

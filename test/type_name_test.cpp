@@ -82,7 +82,7 @@ TEST(type_name, with_variant)
     static_assert(type_name<MyVariant>() == "class std::variant<enum test_namespace::Fruit,float>");
 #endif
 
-    MyVariant my_variant = 1.0f;
+    MyVariant my_variant = 1.0F;
     std::visit(
         [&](auto v)
         {

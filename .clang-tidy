@@ -100,7 +100,6 @@ Checks: >
   -readability-redundant-access-specifiers,
   -readability-redundant-member-init,
   -readability-suspicious-call-argument,
-  -readability-uppercase-literal-suffix,
 
 # Turn all the warnings from the checks above into errors.
 WarningsAsErrors: "*"

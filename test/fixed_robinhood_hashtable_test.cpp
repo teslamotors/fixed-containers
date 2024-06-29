@@ -21,7 +21,7 @@ struct ConvenientIntHash
 {
     constexpr uint64_t operator()(const int& t) const
     {
-        uint64_t fingerprint = static_cast<uint64_t>(t) & 0xFFul;
+        uint64_t fingerprint = static_cast<uint64_t>(t) & 0xFFUL;
         uint64_t upper = static_cast<uint64_t>(t) << 8;
         return fingerprint | upper;
     }
