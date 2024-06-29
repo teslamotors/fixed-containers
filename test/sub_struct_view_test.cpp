@@ -27,6 +27,7 @@ struct SuperL1
     float ignore2{};
     float retain2{};
     int ignore3{};
+    std::array<int, 10> array1{};
     SuperL2 nested2{3, 4.0};
 };
 
@@ -47,6 +48,7 @@ struct SubL1
     SubL2i1 nested1;
     const float* retain2;
     SubL2i2 nested2;
+    std::array<const int*, 10> array1{};
 };
 
 }  // namespace
@@ -112,9 +114,16 @@ TEST(SubStructView, Nested)
                                     }
                                 });
 
+    for (auto&& field: sub_fields) {
+        for (auto &&id: field) std::cout << id << " ";
+        std::cout << std::endl;
+    }
+
     ASSERT_TRUE(sub_1.retain1 == &sup_2.retain1);
     ASSERT_TRUE(sub_1.retain2 == &sup_2.retain2);
     ASSERT_TRUE(sub_1.nested1.retain1 == &sup_2.nested1.retain1);
     ASSERT_TRUE(sub_1.nested2.retain2 == &sup_2.nested2.retain2);
+    ASSERT_TRUE(sub_1.nested2.retain2 == &sup_2.nested2.retain2);
+    ASSERT_TRUE(sub_1.array1[1] == &sup_2.array1[1]);
 }
 }  // namespace fixed_containers::sub_struct_view
