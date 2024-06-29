@@ -88,7 +88,6 @@ Checks: >
   -modernize-pass-by-value,
   -modernize-use-auto,
   -modernize-use-default-member-init,
-  -modernize-use-emplace,
   -readability-container-size-empty,
   -readability-identifier-naming,
   -readability-qualified-auto,

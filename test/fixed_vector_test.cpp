@@ -172,34 +172,44 @@ TEST(FixedVector, DefaultConstructorNonDefaultConstructible)
 TEST(FixedVector, MockNonTrivialDestructible)
 {
     {
-        std::vector<MockNonTrivialDestructible> stdv{};
-        stdv.push_back({});
-        // stdv.at(0) = {};
-        stdv.clear();
+        std::vector<MockNonTrivialDestructible> v1{};
+        MockNonTrivialDestructible entry{};
+        v1.push_back(entry);
+        v1.push_back(std::move(entry));
+        // v1.at(0) = {};
+        v1.clear();
     }
 
     {
-        FixedVector<MockNonTrivialDestructible, 5> v{};
-        v.push_back({});
-        v.clear();
+        FixedVector<MockNonTrivialDestructible, 5> v1{};
+        MockNonTrivialDestructible entry{};
+        v1.push_back(entry);
+        v1.push_back(std::move(entry));
+        v1.clear();
     }
 
     {
-        std::vector<MockNonCopyAssignable> stdv{};
-        stdv.push_back({});
-        // stdv.at(0) = {};
-        stdv.clear();
+        std::vector<MockNonCopyAssignable> v1{};
+        MockNonCopyAssignable entry{};
+        v1.push_back(entry);
+        v1.push_back(std::move(entry));
+        // v1.at(0) = {};
+        v1.clear();
     }
 
     {
         FixedVector<MockNonCopyAssignable, 5> v1{};
-        v1.push_back({});
+        MockNonCopyAssignable entry{};
+        v1.push_back(entry);
+        v1.push_back(std::move(entry));
         v1.clear();
     }
 
     {
         std::vector<MockNonTrivialCopyAssignable> v1{};
-        v1.push_back({});
+        MockNonTrivialCopyAssignable entry{};
+        v1.push_back(entry);
+        v1.push_back(std::move(entry));
         v1.clear();
 
         auto v2 = v1;
@@ -207,7 +217,9 @@ TEST(FixedVector, MockNonTrivialDestructible)
 
     {
         FixedVector<MockNonTrivialCopyAssignable, 5> v1{};
-        v1.push_back({});
+        MockNonTrivialCopyAssignable entry{};
+        v1.push_back(entry);
+        v1.push_back(std::move(entry));
         v1.clear();
 
         auto v2 = v1;
@@ -215,7 +227,9 @@ TEST(FixedVector, MockNonTrivialDestructible)
 
     {
         std::vector<MockNonTrivialCopyConstructible> v1{};
-        v1.push_back({});
+        MockNonTrivialCopyConstructible entry{};
+        v1.push_back(entry);
+        v1.push_back(std::move(entry));
         v1.clear();
 
         auto v2 = v1;
@@ -223,7 +237,9 @@ TEST(FixedVector, MockNonTrivialDestructible)
 
     {
         FixedVector<MockNonTrivialCopyConstructible, 5> v1{};
-        v1.push_back({});
+        MockNonTrivialCopyConstructible entry{};
+        v1.push_back(entry);
+        v1.push_back(std::move(entry));
         v1.clear();
 
         auto v2 = v1;
@@ -231,7 +247,8 @@ TEST(FixedVector, MockNonTrivialDestructible)
 
     {
         FixedVector<MockMoveableButNotCopyable, 5> v1{};
-        v1.push_back({});
+        MockMoveableButNotCopyable entry{};
+        v1.push_back(std::move(entry));
         v1.clear();
     }
 }
@@ -259,14 +276,16 @@ TEST(FixedVector, MockNonTriviallyCopyAssignable)
 
     {
         FixedVector<MockNonTriviallyCopyAssignable, 5> v1{};
-        v1.push_back({});
+        MockNonTriviallyCopyAssignable tt_move = {};
+        v1.push_back(std::move(tt_move));
         v1.push_back(tt);
         v1.erase(v1.begin());
     }
 
     {
         std::vector<MockNonTriviallyCopyAssignable> v1{};
-        v1.push_back({});
+        MockNonTriviallyCopyAssignable tt_move = {};
+        v1.push_back(std::move(tt_move));
         v1.push_back(tt);
         v1.erase(v1.begin());
     }
