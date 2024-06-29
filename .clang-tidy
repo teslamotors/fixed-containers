@@ -3,7 +3,9 @@
 # Adapted from: https://github.com/googleapis/google-cloud-cpp/blob/main/.clang-tidy
 # Configure clang-tidy for this project.
 
-# Here is an explanation for why some of the checks are disabled:
+# Here is an explanation for why some of the checks are disabled (but can be reconsidered):
+#  -google-explicit-constructor: Does not recognize `explicit(false)`
+#      https://github.com/llvm/llvm-project/issues/53115
 #
 #  -google-readability-namespace-comments: the *_CLIENT_NS is a macro, and
 #      clang-tidy fails to match it against the initial value.
@@ -27,30 +29,30 @@
 #      meaningless). It would also warn if `F` accepts by `const&`, which is
 #      another detail that the caller need not care about.
 #
-#  -performance-avoid-endl: we would like to turn this on, but there are too
-#      many legitimate uses in our samples.
-#
 #  -performance-enum-size: Smaller enums may or not may be faster, it depends on
 #      the architechture. If data size was a consideration, we might decide to
 #      enable the warnings.
+#
+#  -readability-named-parameter: std::in_place_t and other similar use-cases
+#      where a name is not needed would be flagged.
 #
 #  -readability-redundant-declaration: A friend declaration inside a class
 #      counts as a declaration, so if we also declare that friend outside the
 #      class in order to document it as part of the public API, that will
 #      trigger a redundant declaration warning from this check.
 #
-#  -readability-avoid-return-with-void-value: We believe this is idiomatic
-#    and saves typing, and the intent is obvious.
-#
 #  -readability-function-cognitive-complexity: too many false positives with
 #      clang-tidy-12. We need to disable this check in macros, and that setting
 #      only appears in clang-tidy-13.
+#
+#  -readability-suspicious-call-argument: too many false positives.
 #
 #  -bugprone-easily-swappable-parameters: too many false positives.
 #
 #  -bugprone-unchecked-optional-access: too many false positives in tests.
 #     Despite what the documentation says, this warning appears after
 #     `ASSERT_TRUE(variable)` or `ASSERT_TRUE(variable.has_value())`.
+#  -bugprone-switch-missing-default-case: conflicts with `-Wcovered-switch-default`
 Checks: >
   -*,
   abseil-*,
@@ -61,37 +63,38 @@ Checks: >
   performance-*,
   portability-*,
   readability-*,
-  -google-readability-braces-around-statements,
+  -google-explicit-constructor,
   -google-readability-namespace-comments,
+  -google-readability-todo,
   -misc-non-private-member-variables-in-classes,
-  -misc-const-correctness,
   -modernize-return-braced-init-list,
+  -modernize-use-default-member-init,braces-around,
   -modernize-use-trailing-return-type,
   -modernize-avoid-c-arrays,
   -performance-move-const-arg,
   -performance-enum-size,
-  -readability-braces-around-statements,
+  -readability-function-cognitive-complexity,
   -readability-identifier-length,
   -readability-magic-numbers,
   -readability-named-parameter,
-  -readability-function-cognitive-complexity,
+  -readability-redundant-declaration,
+  -readability-redundant-member-init,
+  -readability-suspicious-call-argument,
   -bugprone-easily-swappable-parameters,
+  -bugprone-switch-missing-default-case,
   -bugprone-unchecked-optional-access,
 
-  -bugprone-switch-missing-default-case,
-  -google-explicit-constructor,
+  -google-readability-braces-around-statements,
   -google-readability-avoid-underscore-in-googletest-name,
-  -google-readability-todo,
   -google-runtime-operator,
   -modernize-use-nodiscard,
   -modernize-pass-by-value,
-  -modernize-use-default-member-init,
+  -misc-const-correctness,
+  -readability-braces-around-statements,
   -readability-container-size-empty,
   -readability-identifier-naming,
   -readability-qualified-auto,
   -readability-redundant-access-specifiers,
-  -readability-redundant-member-init,
-  -readability-suspicious-call-argument,
 
 # Turn all the warnings from the checks above into errors.
 WarningsAsErrors: "*"
