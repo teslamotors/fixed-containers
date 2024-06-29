@@ -15,7 +15,9 @@ namespace fixed_containers::tuples::as_tuple_view_detail
 // compile. Using the codegen way instead. Use the disabled-by-default unit test to generate more
 // branches if needed.
 template <std::size_t FIELD_COUNT, typename T>
-constexpr auto as_tuple_view(T& data)  // NOLINT(google-readability-function-size)
+constexpr auto
+as_tuple_view(  // NOLINT(google-readability-function-size, readability-function-size)
+    T& data)
 {
     if constexpr (FIELD_COUNT == 0)
     {

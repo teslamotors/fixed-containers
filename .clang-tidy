@@ -94,7 +94,6 @@ Checks: >
   -modernize-use-transparent-functors,
   -performance-unnecessary-copy-initialization,
   -readability-container-size-empty,
-  -readability-function-size,
   -readability-identifier-naming,
   -readability-qualified-auto,
   -readability-redundant-access-specifiers,
