@@ -89,7 +89,6 @@ Checks: >
   -modernize-use-auto,
   -modernize-use-default-member-init,
   -modernize-use-emplace,
-  -modernize-use-transparent-functors,
   -readability-container-size-empty,
   -readability-identifier-naming,
   -readability-qualified-auto,

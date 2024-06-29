@@ -26,7 +26,7 @@ TEST(FixedRedBlackTreeView, ViewOfPoolStorage)
 {
     constexpr auto COMPACTNESS =
         fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness::DEDICATED_COLOR;
-    using FixedSetType = FixedSet<int, 10, std::less<int>, COMPACTNESS, FixedIndexBasedPoolStorage>;
+    using FixedSetType = FixedSet<int, 10, std::less<>, COMPACTNESS, FixedIndexBasedPoolStorage>;
 
     FixedSetType s1{1, 2, 3, 4};
 
@@ -71,7 +71,7 @@ TEST(FixedRedBlackTreeView, ViewWithStructValue)
 
     constexpr auto COMPACTNESS =
         fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness::DEDICATED_COLOR;
-    using FixedSetType = FixedSet<A, 10, std::less<A>, COMPACTNESS, FixedIndexBasedPoolStorage>;
+    using FixedSetType = FixedSet<A, 10, std::less<>, COMPACTNESS, FixedIndexBasedPoolStorage>;
 
     FixedSetType s1{A(1), A(2), A(3)};
 
@@ -100,7 +100,7 @@ TEST(FixedRedBlackTreeView, ViewOfContiguousStorage)
     constexpr auto COMPACTNESS =
         fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR;
     using FixedSetType =
-        FixedSet<int, 10, std::less<int>, COMPACTNESS, FixedIndexBasedContiguousStorage>;
+        FixedSet<int, 10, std::less<>, COMPACTNESS, FixedIndexBasedContiguousStorage>;
 
     FixedSetType s1{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 
@@ -128,7 +128,7 @@ TEST(FixedRedBlackTreeView, PreservedOrdering)
 {
     constexpr auto COMPACTNESS =
         fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR;
-    using FixedSetType = FixedSet<int, 10, std::less<int>, COMPACTNESS, FixedIndexBasedPoolStorage>;
+    using FixedSetType = FixedSet<int, 10, std::less<>, COMPACTNESS, FixedIndexBasedPoolStorage>;
 
     FixedSetType s1{4, 1, 2, 6, 3, 5};
     FixedVector<int, 10> v1{1, 2, 3, 4, 5, 6};
@@ -159,7 +159,7 @@ TEST(FixedRedBlackTreeView, SizeCalculation)
     constexpr auto COMPACTNESS =
         fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR;
     using FixedSetType =
-        FixedSet<int, MAXIMUM_ENTRIES, std::less<int>, COMPACTNESS, FixedIndexBasedPoolStorage>;
+        FixedSet<int, MAXIMUM_ENTRIES, std::less<>, COMPACTNESS, FixedIndexBasedPoolStorage>;
 
     // Test empty set.
     FixedSetType s1{};

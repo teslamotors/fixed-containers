@@ -28,8 +28,7 @@ struct ConvenientIntHash
 };
 
 // map ints to ints, with our convenient hash, with exactly 10 slots available for different hashes
-using IntIntMap10 =
-    FixedRobinhoodHashtable<int, int, 10, 10, ConvenientIntHash, std::equal_to<int>>;
+using IntIntMap10 = FixedRobinhoodHashtable<int, int, 10, 10, ConvenientIntHash, std::equal_to<>>;
 using OIT = typename IntIntMap10::OpaqueIndexType;
 using IT = typename IntIntMap10::OpaqueIteratedType;
 
