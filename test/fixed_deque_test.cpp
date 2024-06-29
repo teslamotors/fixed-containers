@@ -7,6 +7,7 @@
 #include "fixed_containers/assert_or_abort.hpp"
 #include "fixed_containers/concepts.hpp"
 #include "fixed_containers/max_size.hpp"
+#include "fixed_containers/memory.hpp"
 
 #include <gtest/gtest.h>
 
@@ -2321,6 +2322,7 @@ TYPED_TEST_P(FixedDequeInstanceCheckFixture, FixedDeque_InstanceCheck)
         ASSERT_EQ(2, InstanceCounterType::counter);
     }
     ASSERT_EQ(0, InstanceCounterType::counter);
+    memory::destroy_and_construct_at_address_of(v1);
 
     v1.emplace_back();
     v1.emplace_back();
@@ -2331,8 +2333,8 @@ TYPED_TEST_P(FixedDequeInstanceCheckFixture, FixedDeque_InstanceCheck)
         ASSERT_EQ(2, InstanceCounterType::counter);
     }
     ASSERT_EQ(0, InstanceCounterType::counter);
+    memory::destroy_and_construct_at_address_of(v1);
 
-    v1.clear();
     v1.emplace_back();
     v1.emplace_back();
     ASSERT_EQ(2, InstanceCounterType::counter);

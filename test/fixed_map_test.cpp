@@ -9,6 +9,7 @@
 #include "fixed_containers/concepts.hpp"
 #include "fixed_containers/consteval_compare.hpp"
 #include "fixed_containers/max_size.hpp"
+#include "fixed_containers/memory.hpp"
 
 #include <gtest/gtest.h>
 #include <range/v3/iterator/concepts.hpp>
@@ -1839,6 +1840,8 @@ TYPED_TEST_P(FixedMapInstanceCheckFixture, FixedMap_InstanceCheck)
         ASSERT_EQ(4, InstanceCounterType::counter);
     }
     ASSERT_EQ(0, InstanceCounterType::counter);
+    memory::destroy_and_construct_at_address_of(v1);
+
     v1[InstanceCounterType{1}] = InstanceCounterType{1};
     v1[InstanceCounterType{2}] = InstanceCounterType{2};
     ASSERT_EQ(4, InstanceCounterType::counter);
@@ -1848,6 +1851,7 @@ TYPED_TEST_P(FixedMapInstanceCheckFixture, FixedMap_InstanceCheck)
         ASSERT_EQ(4, InstanceCounterType::counter);
     }
     ASSERT_EQ(0, InstanceCounterType::counter);
+    memory::destroy_and_construct_at_address_of(v1);
 
     // Lookup
     {

@@ -79,7 +79,6 @@ Checks: >
   -bugprone-unchecked-optional-access,
 
   -bugprone-switch-missing-default-case,
-  -bugprone-use-after-move,
   -google-explicit-constructor,
   -google-readability-avoid-underscore-in-googletest-name,
   -google-readability-todo,
