@@ -783,6 +783,7 @@ TEST(FixedList, TrivialIterators)
             int ctr = 0;
             for (auto it = v.begin(); it != v.end(); it++)
             {
+                (void)it;  // Use `it` to suppress conversion to for-each
                 EXPECT_LT(ctr, 4);
                 EXPECT_EQ(ctr, *it);
                 ++ctr;
@@ -793,6 +794,7 @@ TEST(FixedList, TrivialIterators)
             int ctr = 0;
             for (auto it = v.cbegin(); it != v.cend(); it++)
             {
+                (void)it;  // Use `it` to suppress conversion to for-each
                 EXPECT_LT(ctr, 4);
                 EXPECT_EQ(ctr, *it);
                 ++ctr;
@@ -806,6 +808,7 @@ TEST(FixedList, TrivialIterators)
             int ctr = 0;
             for (auto it = v.begin(); it != v.end(); it++)
             {
+                (void)it;  // Use `it` to suppress conversion to for-each
                 EXPECT_LT(ctr, 4);
                 EXPECT_EQ(ctr, *it);
                 ++ctr;
@@ -816,6 +819,7 @@ TEST(FixedList, TrivialIterators)
             int ctr = 0;
             for (auto it = v.cbegin(); it != v.cend(); it++)
             {
+                (void)it;  // Use `it` to suppress conversion to for-each
                 EXPECT_LT(ctr, 4);
                 EXPECT_EQ(ctr, *it);
                 ++ctr;
@@ -892,6 +896,7 @@ TEST(FixedList, ReverseIterators)
             int ctr = 3;
             for (auto it = v.rbegin(); it != v.rend(); it++)
             {
+                (void)it;  // Use `it` to suppress conversion to for-each
                 EXPECT_GT(ctr, -1);
                 EXPECT_EQ(ctr, *it);
                 --ctr;
@@ -902,6 +907,7 @@ TEST(FixedList, ReverseIterators)
             int ctr = 3;
             for (auto it = v.crbegin(); it != v.crend(); it++)
             {
+                (void)it;  // Use `it` to suppress conversion to for-each
                 EXPECT_GT(ctr, -1);
                 EXPECT_EQ(ctr, *it);
                 --ctr;
@@ -915,6 +921,7 @@ TEST(FixedList, ReverseIterators)
             int ctr = 3;
             for (auto it = v.rbegin(); it != v.rend(); it++)
             {
+                (void)it;  // Use `it` to suppress conversion to for-each
                 EXPECT_GT(ctr, -1);
                 EXPECT_EQ(ctr, *it);
                 --ctr;
@@ -925,6 +932,7 @@ TEST(FixedList, ReverseIterators)
             int ctr = 3;
             for (auto it = v.crbegin(); it != v.crend(); it++)
             {
+                (void)it;  // Use `it` to suppress conversion to for-each
                 EXPECT_GT(ctr, -1);
                 EXPECT_EQ(ctr, *it);
                 --ctr;

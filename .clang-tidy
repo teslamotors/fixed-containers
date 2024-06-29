@@ -84,7 +84,6 @@ Checks: >
   -google-readability-avoid-underscore-in-googletest-name,
   -google-readability-todo,
   -google-runtime-operator,
-  -modernize-loop-convert,
   -modernize-use-nodiscard,
   -modernize-pass-by-value,
   -modernize-use-auto,
