@@ -84,13 +84,11 @@ Checks: >
   -bugprone-switch-missing-default-case,
   -bugprone-unchecked-optional-access,
 
-  -google-readability-braces-around-statements,
   -google-readability-avoid-underscore-in-googletest-name,
   -google-runtime-operator,
   -modernize-use-nodiscard,
   -modernize-pass-by-value,
   -misc-const-correctness,
-  -readability-braces-around-statements,
   -readability-container-size-empty,
   -readability-identifier-naming,
   -readability-qualified-auto,

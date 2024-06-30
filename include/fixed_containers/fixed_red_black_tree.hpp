@@ -449,8 +449,14 @@ private:
     template <class K1, class K2>
     constexpr int compare(const K1& left, const K2& right) const
     {
-        if (IMPLEMENTATION_DETAIL_DO_NOT_USE_comparator_(left, right)) return -1;
-        if (IMPLEMENTATION_DETAIL_DO_NOT_USE_comparator_(right, left)) return 1;
+        if (IMPLEMENTATION_DETAIL_DO_NOT_USE_comparator_(left, right))
+        {
+            return -1;
+        }
+        if (IMPLEMENTATION_DETAIL_DO_NOT_USE_comparator_(right, left))
+        {
+            return 1;
+        }
         return 0;
     }
 
@@ -476,12 +482,18 @@ private:
     [[nodiscard]] constexpr NodeColor color_of(const NodeIndex& i) const
     {
         // null nodes are treated as COLOR_BLACK
-        if (i == NULL_INDEX) return COLOR_BLACK;
+        if (i == NULL_INDEX)
+        {
+            return COLOR_BLACK;
+        }
         return tree_storage().color(i);
     }
     constexpr void set_color(const NodeIndex& i, const NodeColor& color)
     {
-        if (i == NULL_INDEX) return;
+        if (i == NULL_INDEX)
+        {
+            return;
+        }
         tree_storage().set_color(i, color);
     }
 

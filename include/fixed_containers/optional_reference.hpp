@@ -172,7 +172,10 @@ template <typename T,
 constexpr bool operator==(const OptionalReference<T, CheckT>& lhs,
                           const OptionalReference<U, CheckU>& rhs)
 {
-    if (lhs.has_value() && rhs.has_value()) return *lhs == *rhs;
+    if (lhs.has_value() && rhs.has_value())
+    {
+        return *lhs == *rhs;
+    }
     return lhs.has_value() == rhs.has_value();
 }
 

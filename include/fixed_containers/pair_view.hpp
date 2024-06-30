@@ -108,17 +108,25 @@ public:
     [[nodiscard]] constexpr const auto& get() const
     {
         if constexpr (N == 0)
+        {
             return first();
+        }
         else if constexpr (N == 1)
+        {
             return second();
+        }
     }
     template <std::size_t N>
     [[nodiscard]] constexpr auto& get()
     {
         if constexpr (N == 0)
+        {
             return first();
+        }
         else if constexpr (N == 1)
+        {
             return second();
+        }
     }
 };
 }  // namespace fixed_containers
