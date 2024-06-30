@@ -367,7 +367,10 @@ public:
     };
 
 public:
-    [[noreturn]] InaccessibleType* operator&() const noexcept { std::abort(); }
+    [[noreturn]] InaccessibleType* operator&() const noexcept  // NOLINT(google-runtime-operator)
+    {
+        std::abort();
+    }
 
     void do_nothing() const {}
 

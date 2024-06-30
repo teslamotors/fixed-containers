@@ -85,7 +85,6 @@ Checks: >
   -bugprone-unchecked-optional-access,
 
   -google-readability-avoid-underscore-in-googletest-name,
-  -google-runtime-operator,
   -modernize-use-nodiscard,
   -modernize-pass-by-value,
   -misc-const-correctness,

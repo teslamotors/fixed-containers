@@ -54,8 +54,11 @@ public:
 
     // non-cost overloads only, to prevent passing by `const`/`const&`
     constexpr T* operator->() noexcept { return std::addressof(t_); }
-    constexpr T* operator&() noexcept { return std::addressof(t_); }
     constexpr T& operator*() noexcept { return t_; }
+    constexpr T* operator&() noexcept  // NOLINT(google-runtime-operator)
+    {
+        return std::addressof(t_);
+    }
 
 private:
     T& t_;
