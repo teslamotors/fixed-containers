@@ -19,18 +19,31 @@ struct SuperL2
     double retain2{};
 };
 
+struct PointXYZ
+{
+    int x{1};
+    int y{2};
+    int z{3};
+};
+
 struct SuperL1
 {
+    bool alignment_check_1{};
     int ignore1{};
     double retain1{};
     SuperL2 nested1{1, 2.0};
     float ignore2{};
     float retain2{};
     int ignore3{};
-    std::array<int, 10> array1{};
+    std::array<PointXYZ, 10> array1{};
     SuperL2 nested2{3, 4.0};
 };
 
+struct PointZX
+{
+    const int *z;
+    const int *x;
+};
 
 struct SubL2i1
 {
@@ -48,7 +61,7 @@ struct SubL1
     SubL2i1 nested1;
     const float* retain2;
     SubL2i2 nested2;
-    std::array<const int*, 10> array1{};
+    std::array<PointZX, 10> array1{};
 };
 
 }  // namespace
@@ -64,35 +77,47 @@ TEST(SubStructView, Nested)
     SubL1 sub_1{};
 
     // FixedMap<FieldNameChain, std::ptrdiff_t, 10> sub_field_to_offset{};
-    FixedSet<FieldNameChain, 10> sub_fields{};
-    FixedMap<FieldNameChain, std::ptrdiff_t, 10> sup_field_to_offset{};
+    FixedMap<std::string, std::ptrdiff_t, 100> sub_field_to_offset{};
+    FixedMap<std::string, std::ptrdiff_t, 100> sup_field_to_offset{};
 
     // register what is required to be recorded
     for_each_field_recursive_depth_first_order(sub_1,
-                                [&]<class T>(const FieldNameChain& chain, [[maybe_unused]]T& field)
+                                [&]<typename T>(const FieldNameChain& chain, [[maybe_unused]]T& field) // T is pointer
                                 {
-                                    sub_fields.insert(chain);
+                                    std::cout << to_string(chain) << std::endl;
+                                    std::cout << type_name<T>() << std::endl;
+                                    std::byte* sub_ptr = reinterpret_cast<std::byte*>(&sub_1);
+                                    std::byte* field_ptr = reinterpret_cast<std::byte*>(&field);
+                                    sub_field_to_offset.try_emplace(to_string(chain), std::distance(sub_ptr, field_ptr));
                                 });
+
+    std::cout << "registered fields" << std::endl;
+    for(const auto& [chain, value]: sub_field_to_offset)
+    {
+        std::cout << chain << std::endl;
+    }
+    std::cout << "==========================" << std::endl;
 
     // update the index offset 
     for_each_field_recursive_depth_first_order(sup_1,
-                                [&]<class T>(const FieldNameChain&chain, T& field)
+                                [&]<typename T>(const FieldNameChain&chain, T& field) // T is instance
                                 {
-                                    auto it = sub_fields.find(chain);
-                                    if (it == sub_fields.cend())
+                                    auto it = sub_field_to_offset.find(to_string(chain));
+                                    if (it == sub_field_to_offset.cend())
                                     {
+                                        std::cout << "no match in sup " << to_string(chain) << std::endl;
                                         return;
                                     }
                                     std::byte* sup_ptr = reinterpret_cast<std::byte*>(&sup_1);
                                     std::byte* field_ptr = reinterpret_cast<std::byte*>(&field);
-                                    sup_field_to_offset.try_emplace(chain, std::distance(sup_ptr, field_ptr));
+                                    sup_field_to_offset.try_emplace(to_string(chain), std::distance(sup_ptr, field_ptr));
                                 });
     
     // update sub class with the index offset + the base pointer
     // in this way, walking over the super struct is not required when updating
     SuperL1 sup_2{};
     for_each_field_recursive_depth_first_order(sub_1,
-                                [&]<class T>(const FieldNameChain&chain, [[maybe_unused]]T& field) // T is pointer
+                                [&]<typename T>(const FieldNameChain&chain, [[maybe_unused]]T& field) // T is pointer
                                 {
                                     if constexpr (!std::is_pointer_v<T>)
                                     {
@@ -101,29 +126,24 @@ TEST(SubStructView, Nested)
                                     else 
                                     {
                                         
-                                        auto it = sup_field_to_offset.find(chain);
+                                        auto it = sup_field_to_offset.find(to_string(chain));
                                         if (it == sup_field_to_offset.cend())
                                         {
+                                            std::cout << "no match in sub " << to_string(chain) << std::endl;
                                             return;
                                         }
                                         std::byte* byte_ptr = reinterpret_cast<std::byte*>(&sup_2);
                                         std::ptrdiff_t offset = it->second;
                                         std::advance(byte_ptr, offset);
-                                        // static_assert(std::is_pointer_v<T>);
                                         field = reinterpret_cast<T>(byte_ptr);
                                     }
                                 });
-
-    for (auto&& field: sub_fields) {
-        for (auto &&id: field) std::cout << id << " ";
-        std::cout << std::endl;
-    }
 
     ASSERT_TRUE(sub_1.retain1 == &sup_2.retain1);
     ASSERT_TRUE(sub_1.retain2 == &sup_2.retain2);
     ASSERT_TRUE(sub_1.nested1.retain1 == &sup_2.nested1.retain1);
     ASSERT_TRUE(sub_1.nested2.retain2 == &sup_2.nested2.retain2);
     ASSERT_TRUE(sub_1.nested2.retain2 == &sup_2.nested2.retain2);
-    ASSERT_TRUE(sub_1.array1[1] == &sup_2.array1[1]);
+    ASSERT_TRUE(sub_1.array1[1].z == &sup_2.array1[1].z);
 }
 }  // namespace fixed_containers::sub_struct_view

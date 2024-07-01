@@ -782,6 +782,7 @@ cc_library(
         ":reflection",
         ":in_out",
         ":assert_or_abort",
+        ":type_name"
     ],
     copts = ["-std=c++20"],
 )
