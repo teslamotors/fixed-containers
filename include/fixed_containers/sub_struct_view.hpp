@@ -80,4 +80,55 @@ void sub_struct_view_of(Super& super_struct,
                               sub_struct_field_properties);
 }
 
+template <typename SubStruct>
+class StridedArrayView
+{
+    FieldPropertiesMap<SubStruct> sub_struct_field_properties_;
+    FieldPropertiesMap<SubStruct> super_struct_field_properties_;
+    std::byte* base_array_super_struct_ptr_;
+    std::size_t stride_;
+    std::size_t size_;
+
+public:
+    StridedArrayView()
+      : sub_struct_field_properties_(extract_field_properties_of<SubStruct>())
+      , super_struct_field_properties_()
+      , base_array_super_struct_ptr_{nullptr}
+      , stride_{0}
+      , size_{0}
+    {
+    }
+
+public:
+    template <typename SuperStructContainer>
+    void update(SuperStructContainer& super_struct_container)
+    {
+        super_struct_field_properties_.clear();
+
+        using SuperStruct = typename SuperStructContainer::value_type;
+        auto super_struct_field_properties_all = extract_field_properties_of<SuperStruct>();
+        for (const auto& [name, _] : sub_struct_field_properties_)
+        {
+            super_struct_field_properties_[name] = super_struct_field_properties_all.at(name);
+        }
+
+        base_array_super_struct_ptr_ =
+            memory::addressof_as_mutable_byte_ptr(super_struct_container);
+        size_ = super_struct_container.size();
+        stride_ = sizeof(SuperStruct);
+    }
+
+    SubStruct at(const std::size_t i) const
+    {
+        SubStruct instance{};
+        std::byte* base_of_ith_entry =
+            std::next(base_array_super_struct_ptr_, static_cast<std::ptrdiff_t>(i * stride_));
+        sub_struct_view::sub_struct_view_of(base_of_ith_entry,
+                                            super_struct_field_properties_,
+                                            memory::addressof_as_mutable_byte_ptr(instance),
+                                            sub_struct_field_properties_);
+        return instance;
+    }
+};
+
 }  // namespace fixed_containers::sub_struct_view

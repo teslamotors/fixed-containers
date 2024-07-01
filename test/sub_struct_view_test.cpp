@@ -6,6 +6,8 @@
 
 #include <gtest/gtest.h>
 
+#include <array>
+
 namespace fixed_containers::sub_struct_view
 {
 namespace
@@ -75,6 +77,53 @@ TEST(SubStructView, SubStructViewOf)
     ASSERT_EQ(flat_sub_struct_1.retain1, &flat_super_struct_1.retain1);
     ASSERT_EQ(flat_sub_struct_1.retain2, &flat_super_struct_1.retain2);
 }
+
+namespace
+{
+struct PointXYZ
+{
+    double x{};
+    double y{};
+    double z{};
+};
+
+struct FlatSuperStruct2
+{
+    int ignore1{};
+    std::array<PointXYZ, 3> retain1{};
+    float ignore2{};
+};
+
+struct PointXZ
+{
+    const double* z{};
+    const double* x{};
+};
+
+struct FlatSubStruct2
+{
+    StridedArrayView<PointXZ> retain1{};
+};
+
+}  // namespace
+
+TEST(SubStructView, ArraysOfStructs)
+{
+    FlatSuperStruct2 flat_super_struct_2{};
+    FlatSubStruct2 flat_sub_struct_2{};
+
+    flat_sub_struct_2.retain1.update(flat_super_struct_2.retain1);
+
+    ASSERT_EQ(flat_sub_struct_2.retain1.at(0).x, &flat_super_struct_2.retain1.at(0).x);
+    ASSERT_EQ(flat_sub_struct_2.retain1.at(0).z, &flat_super_struct_2.retain1.at(0).z);
+
+    ASSERT_EQ(flat_sub_struct_2.retain1.at(1).x, &flat_super_struct_2.retain1.at(1).x);
+    ASSERT_EQ(flat_sub_struct_2.retain1.at(1).z, &flat_super_struct_2.retain1.at(1).z);
+
+    ASSERT_EQ(flat_sub_struct_2.retain1.at(2).x, &flat_super_struct_2.retain1.at(2).x);
+    ASSERT_EQ(flat_sub_struct_2.retain1.at(2).z, &flat_super_struct_2.retain1.at(2).z);
+}
+
 }  // namespace fixed_containers::sub_struct_view
 
 #endif
