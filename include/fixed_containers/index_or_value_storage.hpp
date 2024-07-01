@@ -17,7 +17,7 @@ union IndexOrValueStorage
     explicit constexpr IndexOrValueStorage(const T& var) : value{var} { }
     explicit constexpr IndexOrValueStorage(T&& var) : value{std::move(var)} { }
     template <class... Args>
-    explicit constexpr IndexOrValueStorage(std::in_place_t /*unused*/, Args&&... args) : value(std::forward<Args>(args)...) { }
+    explicit constexpr IndexOrValueStorage(std::in_place_t /*unused*/, Args&&... args) : value{std::forward<Args>(args)...} { }
 
     constexpr IndexOrValueStorage(const IndexOrValueStorage&) requires TriviallyCopyConstructible<T> = default;
     constexpr IndexOrValueStorage(IndexOrValueStorage&&) noexcept requires TriviallyMoveConstructible<T> = default;
@@ -61,7 +61,7 @@ union IndexOrValueStorage<T>
     explicit constexpr IndexOrValueStorage(const T& var) : value{var} { }
     explicit constexpr IndexOrValueStorage(T&& var) : value{std::move(var)} { }
     template <class... Args>
-    explicit constexpr IndexOrValueStorage(std::in_place_t /*unused*/, Args&&... args) : value(std::forward<Args>(args)...) { }
+    explicit constexpr IndexOrValueStorage(std::in_place_t /*unused*/, Args&&... args) : value{std::forward<Args>(args)...} { }
     // clang-format on
     constexpr IndexOrValueStorage(const IndexOrValueStorage&) = default;
     constexpr IndexOrValueStorage(IndexOrValueStorage&&) noexcept = default;
