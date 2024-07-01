@@ -2,9 +2,13 @@
 
 #include "fixed_containers/sub_struct_view.hpp"
 
+#include "fixed_containers/fixed_vector.hpp"
 #include "fixed_containers/out.hpp"
 
 #include <gtest/gtest.h>
+
+#include <array>
+#include <cstddef>
 
 namespace fixed_containers::sub_struct_view
 {
@@ -75,6 +79,125 @@ TEST(SubStructView, SubStructViewOf)
     ASSERT_EQ(flat_sub_struct_1.retain1, &flat_super_struct_1.retain1);
     ASSERT_EQ(flat_sub_struct_1.retain2, &flat_super_struct_1.retain2);
 }
+
+namespace
+{
+struct PointXYZ
+{
+    double x{};
+    double y{};
+    double z{};
+};
+
+struct FlatSuperStruct2
+{
+    int ignore1{};
+    std::array<PointXYZ, 3> retain_array_1{};
+    FixedVector<PointXYZ, 3> retain_vec_2{};
+    float ignore2{};
+};
+
+struct PointXZ
+{
+    const double* z{};
+    const double* x{};
+};
+
+struct FlatSubStruct2
+{
+    ContiguousRangeSubStructView<PointXZ> retain_array_1{};
+    ContiguousRangeSubStructView<PointXZ> retain_vec_2{};
+};
+
+}  // namespace
+
+TEST(ContiguousRangeSubStructView, OperatorAt)
+{
+    FlatSuperStruct2 flat_super_struct_2{};
+    FlatSubStruct2 flat_sub_struct_2{};
+    flat_super_struct_2.retain_vec_2.resize(3);
+
+    flat_sub_struct_2.retain_array_1 = flat_super_struct_2.retain_array_1;
+    flat_sub_struct_2.retain_vec_2 = flat_super_struct_2.retain_vec_2;
+
+    {
+        ASSERT_EQ(3, flat_sub_struct_2.retain_array_1.size());
+
+        ASSERT_EQ(flat_sub_struct_2.retain_array_1.at(0).x,
+                  &flat_super_struct_2.retain_array_1.at(0).x);
+        ASSERT_EQ(flat_sub_struct_2.retain_array_1.at(0).z,
+                  &flat_super_struct_2.retain_array_1.at(0).z);
+
+        ASSERT_EQ(flat_sub_struct_2.retain_array_1.at(1).x,
+                  &flat_super_struct_2.retain_array_1.at(1).x);
+        ASSERT_EQ(flat_sub_struct_2.retain_array_1.at(1).z,
+                  &flat_super_struct_2.retain_array_1.at(1).z);
+
+        ASSERT_EQ(flat_sub_struct_2.retain_array_1.at(2).x,
+                  &flat_super_struct_2.retain_array_1.at(2).x);
+        ASSERT_EQ(flat_sub_struct_2.retain_array_1.at(2).z,
+                  &flat_super_struct_2.retain_array_1.at(2).z);
+
+        ASSERT_DEATH((void)flat_sub_struct_2.retain_array_1.at(3), "");
+    }
+
+    {
+        ASSERT_EQ(3, flat_sub_struct_2.retain_vec_2.size());
+
+        ASSERT_EQ(flat_sub_struct_2.retain_vec_2.at(0).x,
+                  &flat_super_struct_2.retain_vec_2.at(0).x);
+        ASSERT_EQ(flat_sub_struct_2.retain_vec_2.at(0).z,
+                  &flat_super_struct_2.retain_vec_2.at(0).z);
+
+        ASSERT_EQ(flat_sub_struct_2.retain_vec_2.at(1).x,
+                  &flat_super_struct_2.retain_vec_2.at(1).x);
+        ASSERT_EQ(flat_sub_struct_2.retain_vec_2.at(1).z,
+                  &flat_super_struct_2.retain_vec_2.at(1).z);
+
+        ASSERT_EQ(flat_sub_struct_2.retain_vec_2.at(2).x,
+                  &flat_super_struct_2.retain_vec_2.at(2).x);
+        ASSERT_EQ(flat_sub_struct_2.retain_vec_2.at(2).z,
+                  &flat_super_struct_2.retain_vec_2.at(2).z);
+
+        ASSERT_DEATH((void)flat_sub_struct_2.retain_vec_2.at(3), "");
+    }
+}
+
+TEST(ContiguousRangeSubStructView, Iteration)
+{
+    FlatSuperStruct2 flat_super_struct_2{};
+    FlatSubStruct2 flat_sub_struct_2{};
+    flat_super_struct_2.retain_vec_2.resize(3);
+
+    flat_sub_struct_2.retain_array_1 = flat_super_struct_2.retain_array_1;
+    flat_sub_struct_2.retain_vec_2 = flat_super_struct_2.retain_vec_2;
+
+    {
+        ASSERT_EQ(3, flat_sub_struct_2.retain_array_1.size());
+
+        std::size_t counter = 0;
+        for (auto&& sub_struct : flat_sub_struct_2.retain_array_1)
+        {
+            ASSERT_EQ(sub_struct.x, &flat_super_struct_2.retain_array_1.at(counter).x);
+            ASSERT_EQ(sub_struct.z, &flat_super_struct_2.retain_array_1.at(counter).z);
+            counter++;
+        }
+        ASSERT_EQ(3, counter);
+    }
+    {
+        ASSERT_EQ(3, flat_sub_struct_2.retain_vec_2.size());
+
+        std::size_t counter = 0;
+        for (auto&& sub_struct : flat_sub_struct_2.retain_vec_2)
+        {
+            ASSERT_EQ(sub_struct.x, &flat_super_struct_2.retain_vec_2.at(counter).x);
+            ASSERT_EQ(sub_struct.z, &flat_super_struct_2.retain_vec_2.at(counter).z);
+            counter++;
+        }
+        ASSERT_EQ(3, counter);
+    }
+}
+
 }  // namespace fixed_containers::sub_struct_view
 
 #endif

@@ -858,11 +858,15 @@ cc_library(
 cc_library(
     name = "sub_struct_view",
     hdrs = ["include/fixed_containers/sub_struct_view.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     deps = [
+        ":assert_or_abort",
         ":fixed_map",
+        ":iterator_utils",
         ":memory",
         ":out",
+        ":random_access_iterator",
         ":reflection",
     ],
     copts = ["-std=c++20"],
@@ -1605,6 +1609,7 @@ cc_test(
     name = "sub_struct_view_test",
     srcs = ["test/sub_struct_view_test.cpp"],
     deps = [
+        ":fixed_vector",
         ":out",
         ":sub_struct_view",
         "@com_google_googletest//:gtest",
