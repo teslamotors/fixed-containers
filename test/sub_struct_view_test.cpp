@@ -19,11 +19,12 @@ struct SuperL2
     double retain2{};
 };
 
-struct PointXYZ
+struct SupHasArray
 {
     int x{1};
     int y{2};
     int z{3};
+    std::array<int, 10> array1{};
 };
 
 struct SuperL1
@@ -35,14 +36,15 @@ struct SuperL1
     float ignore2{};
     float retain2{};
     int ignore3{};
-    std::array<PointXYZ, 10> array1{};
+    std::array<SupHasArray, 10> array1{};
     SuperL2 nested2{3, 4.0};
 };
 
-struct PointZX
+struct SubHasArray
 {
     const int *z;
     const int *x;
+    std::array<const int*, 10> array1{};
 };
 
 struct SubL2i1
@@ -61,7 +63,7 @@ struct SubL1
     SubL2i1 nested1;
     const float* retain2;
     SubL2i2 nested2;
-    std::array<PointZX, 10> array1{};
+    std::array<SubHasArray, 10> array1{};
 };
 
 }  // namespace
@@ -77,8 +79,8 @@ TEST(SubStructView, Nested)
     SubL1 sub_1{};
 
     // FixedMap<FieldNameChain, std::ptrdiff_t, 10> sub_field_to_offset{};
-    FixedMap<std::string, std::ptrdiff_t, 100> sub_field_to_offset{};
-    FixedMap<std::string, std::ptrdiff_t, 100> sup_field_to_offset{};
+    FixedMap<std::string, std::ptrdiff_t, 200> sub_field_to_offset{};
+    FixedMap<std::string, std::ptrdiff_t, 200> sup_field_to_offset{};
 
     // register what is required to be recorded
     for_each_field_recursive_depth_first_order(sub_1,
@@ -144,6 +146,6 @@ TEST(SubStructView, Nested)
     ASSERT_TRUE(sub_1.nested1.retain1 == &sup_2.nested1.retain1);
     ASSERT_TRUE(sub_1.nested2.retain2 == &sup_2.nested2.retain2);
     ASSERT_TRUE(sub_1.nested2.retain2 == &sup_2.nested2.retain2);
-    ASSERT_TRUE(sub_1.array1[1].z == &sup_2.array1[1].z);
+    ASSERT_TRUE(sub_1.array1[1].array1[0] == &sup_2.array1[1].array1[0]);
 }
 }  // namespace fixed_containers::sub_struct_view
