@@ -51,7 +51,7 @@ public:
     [[nodiscard]] constexpr bool full() const noexcept { return next_index() == MAXIMUM_SIZE; }
 
     constexpr T& at(const std::size_t i) noexcept { return array_unchecked_at(i).value; }
-    constexpr const T& at(const std::size_t i) const noexcept
+    [[nodiscard]] constexpr const T& at(const std::size_t i) const noexcept
     {
         return array_unchecked_at(i).value;
     }
@@ -75,7 +75,7 @@ public:
     }
 
 private:
-    constexpr const IndexOrValueT& array_unchecked_at(const std::size_t i) const
+    [[nodiscard]] constexpr const IndexOrValueT& array_unchecked_at(const std::size_t i) const
     {
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_[i];
     }
@@ -129,7 +129,10 @@ public:
     [[nodiscard]] constexpr bool full() const noexcept { return nodes().full(); }
 
     constexpr T& at(const std::size_t i) noexcept { return nodes().at(i); }
-    constexpr const T& at(const std::size_t i) const noexcept { return nodes().at(i); }
+    [[nodiscard]] constexpr const T& at(const std::size_t i) const noexcept
+    {
+        return nodes().at(i);
+    }
 
     template <class... Args>
     constexpr std::size_t emplace_and_return_index(Args&&... args)
@@ -147,7 +150,7 @@ public:
     }
 
 private:
-    constexpr const FixedVector<T, MAXIMUM_SIZE>& nodes() const
+    [[nodiscard]] constexpr const FixedVector<T, MAXIMUM_SIZE>& nodes() const
     {
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_nodes_;
     }

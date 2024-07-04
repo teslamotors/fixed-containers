@@ -71,8 +71,9 @@ public:
         return *this;
     }
 
-    constexpr const_reference value(const std_transition::source_location& loc =
-                                        std_transition::source_location::current()) const noexcept
+    [[nodiscard]] constexpr const_reference value(
+        const std_transition::source_location& loc =
+            std_transition::source_location::current()) const noexcept
     {
         check_bad_optional_access(loc);
         return *val();
@@ -121,7 +122,7 @@ public:
     }
 
 private:
-    constexpr const BackingType& val() const
+    [[nodiscard]] constexpr const BackingType& val() const
     {
         return IMPLEMENTION_DETAIL_DO_NOT_USE_underlying_val_;
     }

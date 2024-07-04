@@ -69,7 +69,8 @@ private:
 
         constexpr void advance() noexcept { current_index_ = table_->next_of(current_index_); }
 
-        constexpr std::conditional_t<IS_CONST, const_reference, reference> get() const noexcept
+        [[nodiscard]] constexpr std::conditional_t<IS_CONST, const_reference, reference> get()
+            const noexcept
         {
             // auto for auto const/mut
             return {table_->key_at(current_index_), table_->value_at(current_index_)};
@@ -101,7 +102,10 @@ public:
 private:
     constexpr TableImpl& table() { return IMPLEMENTATION_DETAIL_DO_NOT_USE_table_; }
 
-    constexpr const TableImpl& table() const { return IMPLEMENTATION_DETAIL_DO_NOT_USE_table_; }
+    [[nodiscard]] constexpr const TableImpl& table() const
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_table_;
+    }
 
 public:
     template <typename... Args>
@@ -160,21 +164,21 @@ public:
         return table().value(idx);
     }
 
-    constexpr const_iterator cbegin() const noexcept
+    [[nodiscard]] constexpr const_iterator cbegin() const noexcept
     {
         return const_iterator{PairProvider<true>{std::addressof(table()), table().begin_index()}};
     }
 
-    constexpr const_iterator cend() const noexcept
+    [[nodiscard]] constexpr const_iterator cend() const noexcept
     {
         return const_iterator{PairProvider<true>{std::addressof(table()), table().end_index()}};
     }
-    constexpr const_iterator begin() const noexcept { return cbegin(); }
+    [[nodiscard]] constexpr const_iterator begin() const noexcept { return cbegin(); }
     constexpr iterator begin() noexcept
     {
         return iterator{PairProvider<false>{std::addressof(table()), table().begin_index()}};
     }
-    constexpr const_iterator end() const noexcept { return cend(); }
+    [[nodiscard]] constexpr const_iterator end() const noexcept { return cend(); }
     constexpr iterator end() noexcept
     {
         return iterator{PairProvider<false>{std::addressof(table()), table().end_index()}};
@@ -455,7 +459,8 @@ private:
             PairProvider<false>{std::addressof(table()), table().iterated_index_from(start_index)}};
     }
 
-    constexpr const_iterator create_const_iterator(const TableIndex& start_index) const noexcept
+    [[nodiscard]] constexpr const_iterator create_const_iterator(
+        const TableIndex& start_index) const noexcept
     {
         return const_iterator{
             PairProvider<true>{std::addressof(table()), table().iterated_index_from(start_index)}};

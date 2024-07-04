@@ -39,7 +39,7 @@ struct MockNonStructuralType
     {
     }
 
-    int getter_so_field_a_is_used() const { return a; }
+    [[nodiscard]] int getter_so_field_a_is_used() const { return a; }
 
 private:
     int a;

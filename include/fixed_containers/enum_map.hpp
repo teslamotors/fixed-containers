@@ -114,7 +114,7 @@ public:
         return std::move(*this);
     }
 
-    constexpr EnumMapType build() const& { return enum_map_; }
+    [[nodiscard]] constexpr EnumMapType build() const& { return enum_map_; }
     constexpr EnumMapType build() && { return std::move(enum_map_); }
 
 private:
@@ -195,7 +195,8 @@ private:
         constexpr void advance() noexcept { present_indices_.advance(); }
         constexpr void recede() noexcept { present_indices_.recede(); }
 
-        constexpr std::conditional_t<IS_CONST, const_reference, reference> get() const noexcept
+        [[nodiscard]] constexpr std::conditional_t<IS_CONST, const_reference, reference> get()
+            const noexcept
         {
             const std::size_t i = present_indices_.get();
             return {ENUM_VALUES[i], (*values_)[i].get()};
@@ -376,22 +377,28 @@ public:
         return unchecked_at(ordinal);
     }
 
-    constexpr const_iterator cbegin() const noexcept { return create_const_iterator(0); }
-    constexpr const_iterator cend() const noexcept { return create_const_iterator(ENUM_COUNT); }
-    constexpr const_iterator begin() const noexcept { return cbegin(); }
+    [[nodiscard]] constexpr const_iterator cbegin() const noexcept
+    {
+        return create_const_iterator(0);
+    }
+    [[nodiscard]] constexpr const_iterator cend() const noexcept
+    {
+        return create_const_iterator(ENUM_COUNT);
+    }
+    [[nodiscard]] constexpr const_iterator begin() const noexcept { return cbegin(); }
     constexpr iterator begin() noexcept { return create_iterator(0); }
-    constexpr const_iterator end() const noexcept { return cend(); }
+    [[nodiscard]] constexpr const_iterator end() const noexcept { return cend(); }
     constexpr iterator end() noexcept { return create_iterator(ENUM_COUNT); }
 
     constexpr reverse_iterator rbegin() noexcept { return create_reverse_iterator(ENUM_COUNT); }
-    constexpr const_reverse_iterator rbegin() const noexcept { return crbegin(); }
-    constexpr const_reverse_iterator crbegin() const noexcept
+    [[nodiscard]] constexpr const_reverse_iterator rbegin() const noexcept { return crbegin(); }
+    [[nodiscard]] constexpr const_reverse_iterator crbegin() const noexcept
     {
         return create_const_reverse_iterator(ENUM_COUNT);
     }
     constexpr reverse_iterator rend() noexcept { return create_reverse_iterator(0); }
-    constexpr const_reverse_iterator rend() const noexcept { return crend(); }
-    constexpr const_reverse_iterator crend() const noexcept
+    [[nodiscard]] constexpr const_reverse_iterator rend() const noexcept { return crend(); }
+    [[nodiscard]] constexpr const_reverse_iterator crend() const noexcept
     {
         return create_const_reverse_iterator(0);
     }
@@ -634,7 +641,8 @@ private:
             std::addressof(array_set()), std::addressof(values()), start_index}};
     }
 
-    constexpr const_iterator create_const_iterator(const std::size_t start_index) const noexcept
+    [[nodiscard]] constexpr const_iterator create_const_iterator(
+        const std::size_t start_index) const noexcept
     {
         return const_iterator{
             PairProvider<true>{std::addressof(array_set()), std::addressof(values()), start_index}};
@@ -646,7 +654,7 @@ private:
             std::addressof(array_set()), std::addressof(values()), start_index}};
     }
 
-    constexpr const_reverse_iterator create_const_reverse_iterator(
+    [[nodiscard]] constexpr const_reverse_iterator create_const_reverse_iterator(
         const std::size_t start_index) const noexcept
     {
         return const_reverse_iterator{
@@ -665,7 +673,7 @@ private:
     }
 
 protected:  // [WORKAROUND-1]
-    constexpr const std::array<bool, ENUM_COUNT>& array_set() const
+    [[nodiscard]] constexpr const std::array<bool, ENUM_COUNT>& array_set() const
     {
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_set_;
     }
@@ -673,7 +681,7 @@ protected:  // [WORKAROUND-1]
     {
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_set_;
     }
-    constexpr const bool& array_set_unchecked_at(const std::size_t i) const
+    [[nodiscard]] constexpr const bool& array_set_unchecked_at(const std::size_t i) const
     {
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_set_[i];
     }
@@ -682,12 +690,12 @@ protected:  // [WORKAROUND-1]
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_set_[i];
     }
 
-    constexpr const ValueArrayType& values() const
+    [[nodiscard]] constexpr const ValueArrayType& values() const
     {
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_values_;
     }
     constexpr ValueArrayType& values() { return IMPLEMENTATION_DETAIL_DO_NOT_USE_values_; }
-    constexpr const OptionalV& values_unchecked_at(const std::size_t i) const
+    [[nodiscard]] constexpr const OptionalV& values_unchecked_at(const std::size_t i) const
     {
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_values_[i];
     }
@@ -695,7 +703,7 @@ protected:  // [WORKAROUND-1]
     {
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_values_[i];
     }
-    constexpr const V& unchecked_at(const std::size_t i) const
+    [[nodiscard]] constexpr const V& unchecked_at(const std::size_t i) const
     {
         return optional_storage_detail::get(IMPLEMENTATION_DETAIL_DO_NOT_USE_values_[i]);
     }

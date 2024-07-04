@@ -103,7 +103,8 @@ private:
         constexpr void advance(const std::size_t n) noexcept { current_index_ += n; }
         constexpr void recede(const std::size_t n) noexcept { current_index_ -= n; }
 
-        constexpr std::conditional_t<IS_CONST, const_reference, reference> get() const noexcept
+        [[nodiscard]] constexpr std::conditional_t<IS_CONST, const_reference, reference> get()
+            const noexcept
         {
             assert_or_abort(starting_index_and_distance_->to_range().contains(current_index_));
             const std::size_t i = decrement_index_with_wraparound(current_index_, STARTING_OFFSET);
@@ -444,8 +445,8 @@ public:
     }
 
     constexpr iterator begin() noexcept { return create_iterator(starting_index_and_size().start); }
-    constexpr const_iterator begin() const noexcept { return cbegin(); }
-    constexpr const_iterator cbegin() const noexcept
+    [[nodiscard]] constexpr const_iterator begin() const noexcept { return cbegin(); }
+    [[nodiscard]] constexpr const_iterator cbegin() const noexcept
     {
         return create_const_iterator(starting_index_and_size().start);
     }
@@ -453,8 +454,8 @@ public:
     {
         return create_iterator(starting_index_and_size().to_range().end_exclusive());
     }
-    constexpr const_iterator end() const noexcept { return cend(); }
-    constexpr const_iterator cend() const noexcept
+    [[nodiscard]] constexpr const_iterator end() const noexcept { return cend(); }
+    [[nodiscard]] constexpr const_iterator cend() const noexcept
     {
         return create_const_iterator(starting_index_and_size().to_range().end_exclusive());
     }
@@ -463,8 +464,8 @@ public:
     {
         return create_reverse_iterator(starting_index_and_size().to_range().end_exclusive());
     }
-    constexpr const_reverse_iterator rbegin() const noexcept { return crbegin(); }
-    constexpr const_reverse_iterator crbegin() const noexcept
+    [[nodiscard]] constexpr const_reverse_iterator rbegin() const noexcept { return crbegin(); }
+    [[nodiscard]] constexpr const_reverse_iterator crbegin() const noexcept
     {
         return create_const_reverse_iterator(starting_index_and_size().to_range().end_exclusive());
     }
@@ -472,8 +473,8 @@ public:
     {
         return create_reverse_iterator(starting_index_and_size().start);
     }
-    constexpr const_reverse_iterator rend() const noexcept { return crend(); }
-    constexpr const_reverse_iterator crend() const noexcept
+    [[nodiscard]] constexpr const_reverse_iterator rend() const noexcept { return crend(); }
+    [[nodiscard]] constexpr const_reverse_iterator crend() const noexcept
     {
         return create_const_reverse_iterator(starting_index_and_size().start);
     }
@@ -530,9 +531,10 @@ public:
         const std::size_t adjusted_i = increment_index_with_wraparound(front_index(), i);
         return unchecked_at(adjusted_i);
     }
-    constexpr const_reference at(size_type i,
-                                 const std_transition::source_location& loc =
-                                     std_transition::source_location::current()) const noexcept
+    [[nodiscard]] constexpr const_reference at(
+        size_type i,
+        const std_transition::source_location& loc =
+            std_transition::source_location::current()) const noexcept
     {
         if (preconditions::test(i < size()))
         {
@@ -548,8 +550,9 @@ public:
         check_not_empty(loc);
         return unchecked_at(front_index());
     }
-    constexpr const_reference front(const std_transition::source_location& loc =
-                                        std_transition::source_location::current()) const
+    [[nodiscard]] constexpr const_reference front(
+        const std_transition::source_location& loc =
+            std_transition::source_location::current()) const
     {
         check_not_empty(loc);
         return unchecked_at(front_index());
@@ -560,8 +563,9 @@ public:
         check_not_empty(loc);
         return unchecked_at(back_index());
     }
-    constexpr const_reference back(const std_transition::source_location& loc =
-                                       std_transition::source_location::current()) const
+    [[nodiscard]] constexpr const_reference back(
+        const std_transition::source_location& loc =
+            std_transition::source_location::current()) const
     {
         check_not_empty(loc);
         return unchecked_at(back_index());
@@ -638,7 +642,7 @@ private:
         return iterator{ReferenceProvider<false>{
             std::addressof(array()), std::addressof(starting_index_and_size()), offset_from_start}};
     }
-    constexpr const_iterator create_const_iterator(
+    [[nodiscard]] constexpr const_iterator create_const_iterator(
         const std::size_t offset_from_start) const noexcept
     {
         return const_iterator{ReferenceProvider<true>{
@@ -651,7 +655,7 @@ private:
             std::addressof(array()), std::addressof(starting_index_and_size()), offset_from_start}};
     }
 
-    constexpr const_reverse_iterator create_const_reverse_iterator(
+    [[nodiscard]] constexpr const_reverse_iterator create_const_reverse_iterator(
         const std::size_t offset_from_start) const noexcept
     {
         return const_reverse_iterator{ReferenceProvider<true>{
@@ -692,9 +696,12 @@ private:
         return increment_index_with_wraparound(front_index(), size());
     }
 
-    constexpr const Array& array() const { return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_; }
+    [[nodiscard]] constexpr const Array& array() const
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_;
+    }
     constexpr Array& array() { return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_; }
-    constexpr const StartingIntegerAndDistance& starting_index_and_size() const
+    [[nodiscard]] constexpr const StartingIntegerAndDistance& starting_index_and_size() const
     {
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_starting_index_and_size_;
     }
@@ -722,7 +729,7 @@ private:
     }
     constexpr void set_size(const std::size_t size) { starting_index_and_size().distance = size; }
 
-    constexpr const T& unchecked_at(const std::size_t i) const
+    [[nodiscard]] constexpr const T& unchecked_at(const std::size_t i) const
     {
         return optional_storage_detail::get(array()[i]);
     }

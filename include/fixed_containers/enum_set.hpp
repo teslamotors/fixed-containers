@@ -79,7 +79,7 @@ public:
         return std::move(*this);
     }
 
-    constexpr EnumSetType build() const& { return enum_set_; }
+    [[nodiscard]] constexpr EnumSetType build() const& { return enum_set_; }
     constexpr EnumSetType build() && { return std::move(enum_set_); }
 
 private:
@@ -145,7 +145,7 @@ private:
 
         constexpr void advance() noexcept { present_indices_.advance(); }
         constexpr void recede() noexcept { present_indices_.recede(); }
-        constexpr const_reference get() const noexcept
+        [[nodiscard]] constexpr const_reference get() const noexcept
         {
             return ENUM_VALUES[present_indices_.get()];
         }
@@ -231,21 +231,27 @@ public:
     }
 
 public:
-    constexpr const_iterator cbegin() const noexcept { return create_const_iterator(0); }
-    constexpr const_iterator cend() const noexcept { return create_const_iterator(ENUM_COUNT); }
-    constexpr const_iterator begin() const noexcept { return cbegin(); }
-    constexpr const_iterator end() const noexcept { return cend(); }
+    [[nodiscard]] constexpr const_iterator cbegin() const noexcept
+    {
+        return create_const_iterator(0);
+    }
+    [[nodiscard]] constexpr const_iterator cend() const noexcept
+    {
+        return create_const_iterator(ENUM_COUNT);
+    }
+    [[nodiscard]] constexpr const_iterator begin() const noexcept { return cbegin(); }
+    [[nodiscard]] constexpr const_iterator end() const noexcept { return cend(); }
 
-    constexpr const_reverse_iterator crbegin() const noexcept
+    [[nodiscard]] constexpr const_reverse_iterator crbegin() const noexcept
     {
         return create_const_reverse_iterator(ENUM_COUNT);
     }
-    constexpr const_reverse_iterator crend() const noexcept
+    [[nodiscard]] constexpr const_reverse_iterator crend() const noexcept
     {
         return create_const_reverse_iterator(0);
     }
-    constexpr const_reverse_iterator rbegin() const noexcept { return crbegin(); }
-    constexpr const_reverse_iterator rend() const noexcept { return crend(); }
+    [[nodiscard]] constexpr const_reverse_iterator rbegin() const noexcept { return crbegin(); }
+    [[nodiscard]] constexpr const_reverse_iterator rend() const noexcept { return crend(); }
 
     [[nodiscard]] constexpr std::size_t max_size() const noexcept { return static_max_size(); }
     [[nodiscard]] constexpr std::size_t size() const noexcept
@@ -354,7 +360,7 @@ public:
     }
 
 private:
-    constexpr const std::array<bool, ENUM_COUNT>& array_set() const
+    [[nodiscard]] constexpr const std::array<bool, ENUM_COUNT>& array_set() const
     {
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_set_;
     }
@@ -362,7 +368,7 @@ private:
     {
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_set_;
     }
-    constexpr const bool& array_set_unchecked_at(const std::size_t i) const
+    [[nodiscard]] constexpr const bool& array_set_unchecked_at(const std::size_t i) const
     {
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_set_[i];
     }
@@ -379,11 +385,12 @@ private:
         IMPLEMENTATION_DETAIL_DO_NOT_USE_size_ -= n;
     }
 
-    constexpr const_iterator create_const_iterator(const std::size_t start_index) const noexcept
+    [[nodiscard]] constexpr const_iterator create_const_iterator(
+        const std::size_t start_index) const noexcept
     {
         return const_iterator{ReferenceProvider{std::addressof(array_set()), start_index}};
     }
-    constexpr const_reverse_iterator create_const_reverse_iterator(
+    [[nodiscard]] constexpr const_reverse_iterator create_const_reverse_iterator(
         const std::size_t start_index) const noexcept
     {
         return const_reverse_iterator{ReferenceProvider{std::addressof(array_set()), start_index}};

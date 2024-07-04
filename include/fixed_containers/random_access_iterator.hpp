@@ -240,7 +240,7 @@ public:
         return reference_provider_ == other.reference_provider_;
     }
 
-    constexpr ReverseBase base() const noexcept
+    [[nodiscard]] constexpr ReverseBase base() const noexcept
         requires(DIRECTION == IteratorDirection::REVERSE)
     {
         ReverseBase out{reference_provider_};

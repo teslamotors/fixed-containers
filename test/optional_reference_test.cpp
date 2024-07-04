@@ -88,7 +88,7 @@ TEST(OptionalReference, Value)
     {
         using T = OptionalReference<int>;
         constexpr T v1{};
-        EXPECT_DEATH(v1.value(), "");
+        EXPECT_DEATH((void)v1.value(), "");
     }
     {
         constexpr int val = 5;

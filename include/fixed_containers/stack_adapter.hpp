@@ -53,8 +53,9 @@ public:
     {
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_data_.back(loc);
     }
-    constexpr const_reference top(const std_transition::source_location& loc =
-                                      std_transition::source_location::current()) const
+    [[nodiscard]] constexpr const_reference top(
+        const std_transition::source_location& loc =
+            std_transition::source_location::current()) const
     {
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_data_.back(loc);
     }

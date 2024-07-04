@@ -40,7 +40,10 @@ public:
 
         constexpr void advance() noexcept { current_idx_ = parent_->indices_of(current_idx_).next; }
 
-        constexpr const std::byte* get() const noexcept { return parent_->value_at(current_idx_); }
+        [[nodiscard]] constexpr const std::byte* get() const noexcept
+        {
+            return parent_->value_at(current_idx_);
+        }
 
         constexpr bool operator==(const ReferenceProvider& other) const noexcept = default;
     };
@@ -69,11 +72,11 @@ public:
     {
     }
 
-    Iterator begin() const { return std::next(Iterator{ReferenceProvider{this}}); }
+    [[nodiscard]] Iterator begin() const { return std::next(Iterator{ReferenceProvider{this}}); }
 
-    Iterator end() const { return Iterator{ReferenceProvider{this}}; }
+    [[nodiscard]] Iterator end() const { return Iterator{ReferenceProvider{this}}; }
 
-    IndexType size() const
+    [[nodiscard]] IndexType size() const
     {
         // this is _very_ _very_ brittle and reliant on the size of every field in the
         // `FixedDoublyLinkedList`!

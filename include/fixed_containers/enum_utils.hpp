@@ -527,7 +527,10 @@ public:
     constexpr SkeletalRichEnumLite& operator=(const SkeletalRichEnumLite&) noexcept = default;
     constexpr SkeletalRichEnumLite& operator=(SkeletalRichEnumLite&&) noexcept = default;
 
-    constexpr const BackingEnum& backing_enum() const { return this->detail_backing_enum.value(); }
+    [[nodiscard]] constexpr const BackingEnum& backing_enum() const
+    {
+        return this->detail_backing_enum.value();
+    }
     explicit(false) constexpr operator BackingEnum() const
     {
         return this->detail_backing_enum.value();
@@ -555,7 +558,7 @@ protected:
     // Intentionally non-virtual. Polymorphism breaks standard layout.
     constexpr ~SkeletalRichEnumLite() noexcept = default;
 
-    constexpr const InfusedData& enum_data() const
+    [[nodiscard]] constexpr const InfusedData& enum_data() const
         requires(!std::is_empty_v<InfusedData>)
     {
         return this->detail_enum_data;

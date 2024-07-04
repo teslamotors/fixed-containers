@@ -70,7 +70,7 @@ public:
         return std::move(push_back_all(container.cbegin(), container.cend()));
     }
 
-    constexpr FixedVectorType build() const& { return vector_; }
+    [[nodiscard]] constexpr FixedVectorType build() const& { return vector_; }
     constexpr FixedVectorType&& build() && { return std::move(vector_); }
 
 private:
@@ -467,9 +467,10 @@ public:
         }
         return unchecked_at(i);
     }
-    constexpr const_reference at(size_type i,
-                                 const std_transition::source_location& loc =
-                                     std_transition::source_location::current()) const noexcept
+    [[nodiscard]] constexpr const_reference at(
+        size_type i,
+        const std_transition::source_location& loc =
+            std_transition::source_location::current()) const noexcept
     {
         if (preconditions::test(i < size()))
         {
@@ -484,8 +485,9 @@ public:
         check_not_empty(loc);
         return unchecked_at(front_index());
     }
-    constexpr const_reference front(const std_transition::source_location& loc =
-                                        std_transition::source_location::current()) const
+    [[nodiscard]] constexpr const_reference front(
+        const std_transition::source_location& loc =
+            std_transition::source_location::current()) const
     {
         check_not_empty(loc);
         return unchecked_at(front_index());
@@ -496,8 +498,9 @@ public:
         check_not_empty(loc);
         return unchecked_at(back_index());
     }
-    constexpr const_reference back(const std_transition::source_location& loc =
-                                       std_transition::source_location::current()) const
+    [[nodiscard]] constexpr const_reference back(
+        const std_transition::source_location& loc =
+            std_transition::source_location::current()) const
     {
         check_not_empty(loc);
         return unchecked_at(back_index());
@@ -507,7 +510,7 @@ public:
     {
         return std::addressof(optional_storage_detail::get(*array().data()));
     }
-    constexpr const value_type* data() const noexcept
+    [[nodiscard]] constexpr const value_type* data() const noexcept
     {
         return std::addressof(optional_storage_detail::get(*array().data()));
     }
@@ -516,24 +519,27 @@ public:
      * Iterators
      */
     constexpr iterator begin() noexcept { return create_iterator(front_index()); }
-    constexpr const_iterator begin() const noexcept { return cbegin(); }
-    constexpr const_iterator cbegin() const noexcept
+    [[nodiscard]] constexpr const_iterator begin() const noexcept { return cbegin(); }
+    [[nodiscard]] constexpr const_iterator cbegin() const noexcept
     {
         return create_const_iterator(front_index());
     }
     constexpr iterator end() noexcept { return create_iterator(end_index()); }
-    constexpr const_iterator end() const noexcept { return cend(); }
-    constexpr const_iterator cend() const noexcept { return create_const_iterator(end_index()); }
+    [[nodiscard]] constexpr const_iterator end() const noexcept { return cend(); }
+    [[nodiscard]] constexpr const_iterator cend() const noexcept
+    {
+        return create_const_iterator(end_index());
+    }
 
     constexpr reverse_iterator rbegin() noexcept { return reverse_iterator(end()); }
-    constexpr const_reverse_iterator rbegin() const noexcept { return crbegin(); }
-    constexpr const_reverse_iterator crbegin() const noexcept
+    [[nodiscard]] constexpr const_reverse_iterator rbegin() const noexcept { return crbegin(); }
+    [[nodiscard]] constexpr const_reverse_iterator crbegin() const noexcept
     {
         return const_reverse_iterator(cend());
     }
     constexpr reverse_iterator rend() noexcept { return reverse_iterator(begin()); }
-    constexpr const_reverse_iterator rend() const noexcept { return crend(); }
-    constexpr const_reverse_iterator crend() const noexcept
+    [[nodiscard]] constexpr const_reverse_iterator rend() const noexcept { return crend(); }
+    [[nodiscard]] constexpr const_reverse_iterator crend() const noexcept
     {
         return const_reverse_iterator(cbegin());
     }
@@ -656,7 +662,7 @@ private:
         return iterator{array_it, Mapper{}};
     }
 
-    constexpr const_iterator create_const_iterator(
+    [[nodiscard]] constexpr const_iterator create_const_iterator(
         const std::size_t offset_from_start) const noexcept
     {
         auto array_it =
@@ -689,7 +695,10 @@ private:
     [[nodiscard]] constexpr std::size_t back_index() const { return end_index() - 1; }
     [[nodiscard]] constexpr std::size_t end_index() const { return size(); }
 
-    constexpr const Array& array() const { return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_; }
+    [[nodiscard]] constexpr const Array& array() const
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_;
+    }
     constexpr Array& array() { return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_; }
 
     constexpr void increment_size(const std::size_t n = 1)
@@ -705,7 +714,7 @@ private:
         IMPLEMENTATION_DETAIL_DO_NOT_USE_size_ = size;
     }
 
-    constexpr const T& unchecked_at(const std::size_t i) const
+    [[nodiscard]] constexpr const T& unchecked_at(const std::size_t i) const
     {
         return optional_storage_detail::get(array()[i]);
     }

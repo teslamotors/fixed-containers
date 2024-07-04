@@ -104,7 +104,7 @@ public:
         /**
          * Calculate the pointer to the tree's size member and read it from memory.
          */
-        std::size_t size() const
+        [[nodiscard]] std::size_t size() const
         {
             const auto bptr = reinterpret_cast<const std::byte*>(base_);
             const auto root_index_offset = tree_storage_size_bytes();
@@ -387,18 +387,18 @@ public:
     {
     }
 
-    Iterator begin() const
+    [[nodiscard]] Iterator begin() const
     {
         return Iterator(tree_ptr_, elem_size_bytes_, max_size_bytes_, compactness_, storage_type_);
     }
 
-    Iterator end() const
+    [[nodiscard]] Iterator end() const
     {
         return Iterator(
             tree_ptr_, elem_size_bytes_, max_size_bytes_, compactness_, storage_type_, true);
     }
 
-    std::size_t size() const { return end().size(); }
+    [[nodiscard]] std::size_t size() const { return end().size(); }
 };
 
 }  // namespace fixed_containers

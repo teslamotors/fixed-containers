@@ -95,7 +95,7 @@ private:
             }
         }
 
-        constexpr const_reference get() const noexcept
+        [[nodiscard]] constexpr const_reference get() const noexcept
         {
             return tree_->node_at(current_index_).key();
         }
@@ -166,24 +166,27 @@ public:
     }
 
 public:
-    constexpr const_iterator cbegin() const noexcept
+    [[nodiscard]] constexpr const_iterator cbegin() const noexcept
     {
         return create_const_iterator(tree().index_of_min_at());
     }
-    constexpr const_iterator cend() const noexcept { return create_const_iterator(MAXIMUM_SIZE); }
-    constexpr const_iterator begin() const noexcept { return cbegin(); }
-    constexpr const_iterator end() const noexcept { return cend(); }
+    [[nodiscard]] constexpr const_iterator cend() const noexcept
+    {
+        return create_const_iterator(MAXIMUM_SIZE);
+    }
+    [[nodiscard]] constexpr const_iterator begin() const noexcept { return cbegin(); }
+    [[nodiscard]] constexpr const_iterator end() const noexcept { return cend(); }
 
-    constexpr const_reverse_iterator crbegin() const noexcept
+    [[nodiscard]] constexpr const_reverse_iterator crbegin() const noexcept
     {
         return create_const_reverse_iterator(MAXIMUM_SIZE);
     }
-    constexpr const_reverse_iterator crend() const noexcept
+    [[nodiscard]] constexpr const_reverse_iterator crend() const noexcept
     {
         return create_const_reverse_iterator(0);
     }
-    constexpr const_reverse_iterator rbegin() const noexcept { return crbegin(); }
-    constexpr const_reverse_iterator rend() const noexcept { return crend(); }
+    [[nodiscard]] constexpr const_reverse_iterator rbegin() const noexcept { return crbegin(); }
+    [[nodiscard]] constexpr const_reverse_iterator rend() const noexcept { return crend(); }
 
     [[nodiscard]] constexpr std::size_t max_size() const noexcept { return static_max_size(); }
     [[nodiscard]] constexpr std::size_t size() const noexcept { return tree().size(); }
@@ -399,14 +402,18 @@ public:
 
 private:
     constexpr Tree& tree() { return IMPLEMENTATION_DETAIL_DO_NOT_USE_tree_; }
-    constexpr const Tree& tree() const { return IMPLEMENTATION_DETAIL_DO_NOT_USE_tree_; }
+    [[nodiscard]] constexpr const Tree& tree() const
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_tree_;
+    }
 
-    constexpr const_iterator create_const_iterator(const NodeIndex& start_index) const noexcept
+    [[nodiscard]] constexpr const_iterator create_const_iterator(
+        const NodeIndex& start_index) const noexcept
     {
         const NodeIndex i = replace_null_index_with_max_size_for_end_iterator(start_index);
         return const_iterator{ReferenceProvider{std::addressof(tree()), i}};
     }
-    constexpr const_reverse_iterator create_const_reverse_iterator(
+    [[nodiscard]] constexpr const_reverse_iterator create_const_reverse_iterator(
         const NodeIndex& start_index) const noexcept
     {
         return const_reverse_iterator{ReferenceProvider{std::addressof(tree()), start_index}};

@@ -84,7 +84,8 @@ private:
         constexpr void advance() noexcept { current_index_ = list_->next_of(current_index_); }
         constexpr void recede() noexcept { current_index_ = list_->prev_of(current_index_); }
 
-        constexpr std::conditional_t<IS_CONST, const_reference, reference> get() const noexcept
+        [[nodiscard]] constexpr std::conditional_t<IS_CONST, const_reference, reference> get()
+            const noexcept
         {
             assert_or_abort(current_index_ != NULL_INDEX);
             return list_->at(current_index_);
@@ -403,24 +404,27 @@ public:
     constexpr void clear() noexcept { destroy_range(begin(), end()); }
 
     constexpr iterator begin() noexcept { return create_iterator(front_index()); }
-    constexpr const_iterator begin() const noexcept { return cbegin(); }
-    constexpr const_iterator cbegin() const noexcept
+    [[nodiscard]] constexpr const_iterator begin() const noexcept { return cbegin(); }
+    [[nodiscard]] constexpr const_iterator cbegin() const noexcept
     {
         return create_const_iterator(front_index());
     }
     constexpr iterator end() noexcept { return create_iterator(end_index()); }
-    constexpr const_iterator end() const noexcept { return cend(); }
-    constexpr const_iterator cend() const noexcept { return create_const_iterator(end_index()); }
+    [[nodiscard]] constexpr const_iterator end() const noexcept { return cend(); }
+    [[nodiscard]] constexpr const_iterator cend() const noexcept
+    {
+        return create_const_iterator(end_index());
+    }
 
     constexpr reverse_iterator rbegin() noexcept { return create_reverse_iterator(end_index()); }
-    constexpr const_reverse_iterator rbegin() const noexcept { return crbegin(); }
-    constexpr const_reverse_iterator crbegin() const noexcept
+    [[nodiscard]] constexpr const_reverse_iterator rbegin() const noexcept { return crbegin(); }
+    [[nodiscard]] constexpr const_reverse_iterator crbegin() const noexcept
     {
         return create_const_reverse_iterator(end_index());
     }
     constexpr reverse_iterator rend() noexcept { return create_reverse_iterator(front_index()); }
-    constexpr const_reverse_iterator rend() const noexcept { return crend(); }
-    constexpr const_reverse_iterator crend() const noexcept
+    [[nodiscard]] constexpr const_reverse_iterator rend() const noexcept { return crend(); }
+    [[nodiscard]] constexpr const_reverse_iterator crend() const noexcept
     {
         return create_const_reverse_iterator(front_index());
     }
@@ -456,8 +460,9 @@ public:
         check_not_empty(loc);
         return list().at(front_index());
     }
-    constexpr const_reference front(const std_transition::source_location& loc =
-                                        std_transition::source_location::current()) const
+    [[nodiscard]] constexpr const_reference front(
+        const std_transition::source_location& loc =
+            std_transition::source_location::current()) const
     {
         check_not_empty(loc);
         return list().at(front_index());
@@ -468,8 +473,9 @@ public:
         check_not_empty(loc);
         return list().at(back_index());
     }
-    constexpr const_reference back(const std_transition::source_location& loc =
-                                       std_transition::source_location::current()) const
+    [[nodiscard]] constexpr const_reference back(
+        const std_transition::source_location& loc =
+            std_transition::source_location::current()) const
     {
         check_not_empty(loc);
         return list().at(back_index());
@@ -538,7 +544,7 @@ private:
     {
         return iterator{ReferenceProvider<false>{std::addressof(list()), offset_from_start}};
     }
-    constexpr const_iterator create_const_iterator(
+    [[nodiscard]] constexpr const_iterator create_const_iterator(
         const std::size_t offset_from_start) const noexcept
     {
         return const_iterator{ReferenceProvider<true>{std::addressof(list()), offset_from_start}};
@@ -550,7 +556,7 @@ private:
             ReferenceProvider<false>{std::addressof(list()), offset_from_start}};
     }
 
-    constexpr const_reverse_iterator create_const_reverse_iterator(
+    [[nodiscard]] constexpr const_reverse_iterator create_const_reverse_iterator(
         const std::size_t offset_from_start) const noexcept
     {
         return const_reverse_iterator{
@@ -583,7 +589,10 @@ private:
     [[nodiscard]] constexpr std::size_t back_index() const { return list().back_index(); }
     [[nodiscard]] constexpr std::size_t end_index() const { return NULL_INDEX; }
 
-    constexpr const List& list() const { return IMPLEMENTATION_DETAIL_DO_NOT_USE_list_; }
+    [[nodiscard]] constexpr const List& list() const
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_list_;
+    }
     constexpr List& list() { return IMPLEMENTATION_DETAIL_DO_NOT_USE_list_; }
 
     constexpr void destroy_at(std::size_t i) { list().delete_at_and_return_next_index(i); }

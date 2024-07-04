@@ -336,13 +336,13 @@ public:
     {
     }
 
-    constexpr const K& key() const { return storage->key(i); }
+    [[nodiscard]] constexpr const K& key() const { return storage->key(i); }
     constexpr K& key()
         requires IS_MUTABLE
     {
         return storage->key(i);
     }
-    constexpr const V& value() const
+    [[nodiscard]] constexpr const V& value() const
         requires HAS_ASSOCIATED_VALUE
     {
         return storage->value(i);

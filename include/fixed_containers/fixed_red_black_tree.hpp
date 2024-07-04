@@ -205,7 +205,8 @@ public:
     {
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_root_index_;
     }
-    constexpr RedBlackTreeNodeView<const TreeStorage> node_at(const NodeIndex& i) const
+    [[nodiscard]] constexpr RedBlackTreeNodeView<const TreeStorage> node_at(
+        const NodeIndex& i) const
     {
         return tree_storage_at(i);
     }
@@ -215,7 +216,7 @@ public:
     }
 
     template <class K0>
-    constexpr NodeIndexAndParentIndex index_of_node_with_parent(const K0& key) const
+    [[nodiscard]] constexpr NodeIndexAndParentIndex index_of_node_with_parent(const K0& key) const
     {
         NodeIndexAndParentIndex np{.i = root_index(), .parent = NULL_INDEX, .is_left_child = true};
         while (np.i != NULL_INDEX)
@@ -245,7 +246,7 @@ public:
     }
 
     template <class K0>
-    constexpr NodeIndex index_of_node_or_null(const K0& key) const
+    [[nodiscard]] constexpr NodeIndex index_of_node_or_null(const K0& key) const
     {
         return index_of_node_with_parent(key).i;
     }
@@ -447,7 +448,7 @@ private:
     }
 
     template <class K1, class K2>
-    constexpr int compare(const K1& left, const K2& right) const
+    [[nodiscard]] constexpr int compare(const K1& left, const K2& right) const
     {
         if (IMPLEMENTATION_DETAIL_DO_NOT_USE_comparator_(left, right))
         {
@@ -831,12 +832,15 @@ private:
     }
 
 protected:  // [WORKAROUND-1]
-    constexpr const TreeStorage& tree_storage() const
+    [[nodiscard]] constexpr const TreeStorage& tree_storage() const
     {
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_tree_storage_;
     }
     constexpr TreeStorage& tree_storage() { return IMPLEMENTATION_DETAIL_DO_NOT_USE_tree_storage_; }
-    constexpr auto tree_storage_at(const NodeIndex& i) const { return tree_storage().at(i); }
+    [[nodiscard]] constexpr auto tree_storage_at(const NodeIndex& i) const
+    {
+        return tree_storage().at(i);
+    }
     constexpr auto tree_storage_at(const NodeIndex& i) { return tree_storage().at(i); }
     constexpr void set_root_index(const std::size_t r)
     {

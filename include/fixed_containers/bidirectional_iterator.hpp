@@ -155,7 +155,7 @@ public:
         return reference_provider_ == other.reference_provider_;
     }
 
-    constexpr ReverseBase base() const noexcept
+    [[nodiscard]] constexpr ReverseBase base() const noexcept
         requires(DIRECTION == IteratorDirection::REVERSE)
     {
         ReverseBase out{reference_provider_};
@@ -167,7 +167,7 @@ public:
     // The ReferenceProvider type is typically private to the iterator-owning class or in some
     // detail namespace.
     template <typename ReturnType>
-    constexpr const ReturnType& private_reference_provider() const
+    [[nodiscard]] constexpr const ReturnType& private_reference_provider() const
     {
         return reference_provider_;
     }

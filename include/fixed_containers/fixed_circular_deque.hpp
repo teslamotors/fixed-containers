@@ -248,18 +248,24 @@ public:
     constexpr void clear() noexcept { deque().clear(); }
 
     constexpr iterator begin() noexcept { return deque().begin(); }
-    constexpr const_iterator begin() const noexcept { return cbegin(); }
-    constexpr const_iterator cbegin() const noexcept { return deque().cbegin(); }
+    [[nodiscard]] constexpr const_iterator begin() const noexcept { return cbegin(); }
+    [[nodiscard]] constexpr const_iterator cbegin() const noexcept { return deque().cbegin(); }
     constexpr iterator end() noexcept { return deque().end(); }
-    constexpr const_iterator end() const noexcept { return cend(); }
-    constexpr const_iterator cend() const noexcept { return deque().cend(); }
+    [[nodiscard]] constexpr const_iterator end() const noexcept { return cend(); }
+    [[nodiscard]] constexpr const_iterator cend() const noexcept { return deque().cend(); }
 
     constexpr reverse_iterator rbegin() noexcept { return deque().rbegin(); }
-    constexpr const_reverse_iterator rbegin() const noexcept { return crbegin(); }
-    constexpr const_reverse_iterator crbegin() const noexcept { return deque().crbegin(); }
+    [[nodiscard]] constexpr const_reverse_iterator rbegin() const noexcept { return crbegin(); }
+    [[nodiscard]] constexpr const_reverse_iterator crbegin() const noexcept
+    {
+        return deque().crbegin();
+    }
     constexpr reverse_iterator rend() noexcept { return deque().rend(); }
-    constexpr const_reverse_iterator rend() const noexcept { return crend(); }
-    constexpr const_reverse_iterator crend() const noexcept { return deque().crend(); }
+    [[nodiscard]] constexpr const_reverse_iterator rend() const noexcept { return crend(); }
+    [[nodiscard]] constexpr const_reverse_iterator crend() const noexcept
+    {
+        return deque().crend();
+    }
 
     [[nodiscard]] constexpr std::size_t max_size() const noexcept { return static_max_size(); }
     [[nodiscard]] constexpr std::size_t size() const noexcept { return deque().size(); }
@@ -298,9 +304,10 @@ public:
     {
         return deque().at(i, loc);
     }
-    constexpr const_reference at(size_type i,
-                                 const std_transition::source_location& loc =
-                                     std_transition::source_location::current()) const noexcept
+    [[nodiscard]] constexpr const_reference at(
+        size_type i,
+        const std_transition::source_location& loc =
+            std_transition::source_location::current()) const noexcept
     {
         return deque().at(i, loc);
     }
@@ -310,8 +317,9 @@ public:
     {
         return deque().front(loc);
     }
-    constexpr const_reference front(const std_transition::source_location& loc =
-                                        std_transition::source_location::current()) const
+    [[nodiscard]] constexpr const_reference front(
+        const std_transition::source_location& loc =
+            std_transition::source_location::current()) const
     {
         return deque().front(loc);
     }
@@ -320,8 +328,9 @@ public:
     {
         return deque().back(loc);
     }
-    constexpr const_reference back(const std_transition::source_location& loc =
-                                       std_transition::source_location::current()) const
+    [[nodiscard]] constexpr const_reference back(
+        const std_transition::source_location& loc =
+            std_transition::source_location::current()) const
     {
         return deque().back(loc);
     }
@@ -436,7 +445,7 @@ private:
     }
 
 private:
-    constexpr const FixedDequeStorage& deque() const
+    [[nodiscard]] constexpr const FixedDequeStorage& deque() const
     {
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_data_;
     }
@@ -462,7 +471,7 @@ private:
         }
     }
 
-    constexpr std::size_t available_entries() const { return max_size() - size(); }
+    [[nodiscard]] constexpr std::size_t available_entries() const { return max_size() - size(); }
 };
 
 template <typename T, std::size_t MAXIMUM_SIZE, typename CheckingType>

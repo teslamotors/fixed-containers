@@ -80,10 +80,10 @@ public:
     }
 
 public:
-    constexpr const K& first() const { return *first_; }
+    [[nodiscard]] constexpr const K& first() const { return *first_; }
     constexpr K& first() { return *first_; }
 
-    constexpr const V& second() const { return *second_; }
+    [[nodiscard]] constexpr const V& second() const { return *second_; }
     constexpr V& second() { return *second_; }
 
     constexpr operator std::pair<K, V>() const { return {first(), second()}; }

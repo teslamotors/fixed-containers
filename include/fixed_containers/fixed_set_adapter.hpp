@@ -51,7 +51,10 @@ private:
 
         constexpr void advance() noexcept { current_index_ = table_->next_of(current_index_); }
 
-        constexpr const_reference get() const noexcept { return table_->key_at(current_index_); }
+        [[nodiscard]] constexpr const_reference get() const noexcept
+        {
+            return table_->key_at(current_index_);
+        }
 
         constexpr bool operator==(const ReferenceProvider& other) const noexcept = default;
     };
@@ -73,9 +76,12 @@ public:
     TableImpl IMPLEMENTATION_DETAIL_DO_NOT_USE_table_;
 
 private:
-    constexpr TableImpl& table() { return IMPLEMENTATION_DETAIL_DO_NOT_USE_table_; }
+    [[nodiscard]] constexpr TableImpl& table() { return IMPLEMENTATION_DETAIL_DO_NOT_USE_table_; }
 
-    constexpr const TableImpl& table() const { return IMPLEMENTATION_DETAIL_DO_NOT_USE_table_; }
+    [[nodiscard]] constexpr const TableImpl& table() const
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_table_;
+    }
 
 public:
     template <typename... Args>
@@ -87,17 +93,17 @@ public:
     constexpr FixedSetAdapter() = default;
 
 public:
-    constexpr const_iterator cbegin() const noexcept
+    [[nodiscard]] constexpr const_iterator cbegin() const noexcept
     {
         return const_iterator{ReferenceProvider{std::addressof(table()), table().begin_index()}};
     }
 
-    constexpr const_iterator cend() const noexcept
+    [[nodiscard]] constexpr const_iterator cend() const noexcept
     {
         return const_iterator{ReferenceProvider{std::addressof(table()), table().end_index()}};
     }
-    constexpr const_iterator begin() const noexcept { return cbegin(); }
-    constexpr const_iterator end() const noexcept { return cend(); }
+    [[nodiscard]] constexpr const_iterator begin() const noexcept { return cbegin(); }
+    [[nodiscard]] constexpr const_iterator end() const noexcept { return cend(); }
 
     [[nodiscard]] constexpr size_type max_size() const noexcept { return static_max_size(); }
     [[nodiscard]] constexpr std::size_t size() const noexcept { return table().size(); }

@@ -245,12 +245,12 @@ public:
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_value_storage_.prev_of(value_index);
     }
 
-    constexpr const K& key_at(const OpaqueIteratedType& value_index) const
+    [[nodiscard]] constexpr const K& key_at(const OpaqueIteratedType& value_index) const
     {
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_value_storage_.at(value_index).key();
     }
 
-    constexpr const V& value_at(const OpaqueIteratedType& value_index) const
+    [[nodiscard]] constexpr const V& value_at(const OpaqueIteratedType& value_index) const
         requires PairType::HAS_ASSOCIATED_VALUE
     {
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_value_storage_.at(value_index).value();
@@ -262,12 +262,12 @@ public:
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_value_storage_.at(value_index).value();
     }
 
-    constexpr OpaqueIteratedType iterated_index_from(const OpaqueIndexType& i) const
+    [[nodiscard]] constexpr OpaqueIteratedType iterated_index_from(const OpaqueIndexType& i) const
     {
         return bucket_at(i.bucket_index).value_index_;
     }
 
-    constexpr OpaqueIndexType opaque_index_of(const K& k) const
+    [[nodiscard]] constexpr OpaqueIndexType opaque_index_of(const K& k) const
     {
         std::uint64_t h = hash(k);
         Bucket::DistAndFingerprintType dist_and_fingerprint =
@@ -296,13 +296,13 @@ public:
         }
     }
 
-    constexpr bool exists(const OpaqueIndexType& i) const
+    [[nodiscard]] constexpr bool exists(const OpaqueIndexType& i) const
     {
         // TODO: should we check if the index makes sense/points to a real place?
         return i.dist_and_fingerprint == 0;
     }
 
-    constexpr const V& value(const OpaqueIndexType& i) const
+    [[nodiscard]] constexpr const V& value(const OpaqueIndexType& i) const
         requires PairType::HAS_ASSOCIATED_VALUE
     {
         // no safety checks

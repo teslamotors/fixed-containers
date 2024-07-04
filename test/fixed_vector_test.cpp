@@ -736,8 +736,8 @@ TEST(FixedVector, AtOutOfBounds)
     EXPECT_DEATH(v2.at(v2.size()) = 901, "");
 
     const auto& v3 = v2;
-    EXPECT_DEATH(v3.at(5), "");
-    EXPECT_DEATH(v3.at(v2.size()), "");
+    EXPECT_DEATH((void)v3.at(5), "");
+    EXPECT_DEATH((void)v3.at(v2.size()), "");
 }
 
 TEST(FixedVector, Equality)
@@ -1803,7 +1803,7 @@ TEST(FixedVector, FrontEmptyContainer)
 {
     {
         const FixedVector<int, 3> v{};
-        EXPECT_DEATH(v.front(), "");
+        EXPECT_DEATH((void)v.front(), "");
     }
     {
         FixedVector<int, 3> v{};
@@ -1835,7 +1835,7 @@ TEST(FixedVector, BackEmptyContainer)
 {
     {
         const FixedVector<int, 3> v{};
-        EXPECT_DEATH(v.back(), "");
+        EXPECT_DEATH((void)v.back(), "");
     }
     {
         FixedVector<int, 3> v{};

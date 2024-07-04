@@ -47,7 +47,7 @@ union OptionalStorage
     // track of which member is active.
     constexpr ~OptionalStorage() noexcept {}
 
-    constexpr const T& get() const { return value; }
+    [[nodiscard]] constexpr const T& get() const { return value; }
     constexpr T& get() { return value; }
 };
 
@@ -79,7 +79,7 @@ union OptionalStorage<T>
     constexpr OptionalStorage& operator=(OptionalStorage&&) noexcept = default;
     constexpr ~OptionalStorage() noexcept = default;
 
-    constexpr const T& get() const { return value; }
+    [[nodiscard]] constexpr const T& get() const { return value; }
     constexpr T& get() { return value; }
 };
 
@@ -100,7 +100,7 @@ union OptionalStorage<T>
     constexpr OptionalStorage& operator=(OptionalStorage&&) noexcept = default;
     constexpr ~OptionalStorage() noexcept = default;
 
-    constexpr const T& get() const { return value.get(); }
+    [[nodiscard]] constexpr const T& get() const { return value.get(); }
     constexpr T& get() { return value.get(); }
 };
 

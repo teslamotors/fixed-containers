@@ -109,7 +109,7 @@ public:
         const std::size_t ordinal = EnumAdapterType::ordinal(label);
         return values().at(ordinal);
     }
-    constexpr const_reference at(const L& label) const
+    [[nodiscard]] constexpr const_reference at(const L& label) const
     {
         const std::size_t ordinal = EnumAdapterType::ordinal(label);
         return values().at(ordinal);
@@ -125,32 +125,41 @@ public:
         return values().at(ordinal);
     }
     constexpr reference front() { return values().front(); }
-    constexpr const_reference front() const { return values().front(); }
+    [[nodiscard]] constexpr const_reference front() const { return values().front(); }
     constexpr reference back() { return values().back(); }
-    constexpr const_reference back() const { return values().back(); }
+    [[nodiscard]] constexpr const_reference back() const { return values().back(); }
 
     constexpr T* data() noexcept { return values().data(); }
-    constexpr const T* data() const noexcept { return values().data(); }
+    [[nodiscard]] constexpr const T* data() const noexcept { return values().data(); }
 
     constexpr iterator begin() noexcept { return values().begin(); }
-    constexpr const_iterator begin() const noexcept { return values().begin(); }
-    constexpr const_iterator cbegin() const noexcept { return values().cbegin(); }
+    [[nodiscard]] constexpr const_iterator begin() const noexcept { return values().begin(); }
+    [[nodiscard]] constexpr const_iterator cbegin() const noexcept { return values().cbegin(); }
     constexpr iterator end() noexcept { return values().end(); }
-    constexpr const_iterator end() const noexcept { return values().end(); }
-    constexpr const_iterator cend() const noexcept { return values().cend(); }
+    [[nodiscard]] constexpr const_iterator end() const noexcept { return values().end(); }
+    [[nodiscard]] constexpr const_iterator cend() const noexcept { return values().cend(); }
 
     constexpr reverse_iterator rbegin() noexcept { return values().rbegin(); }
-    constexpr const_reverse_iterator rbegin() const noexcept { return values().rbegin(); }
-    constexpr const_reverse_iterator crbegin() const noexcept { return values().crbegin(); }
+    [[nodiscard]] constexpr const_reverse_iterator rbegin() const noexcept
+    {
+        return values().rbegin();
+    }
+    [[nodiscard]] constexpr const_reverse_iterator crbegin() const noexcept
+    {
+        return values().crbegin();
+    }
     constexpr reverse_iterator rend() noexcept { return values().rend(); }
-    constexpr const_reverse_iterator rend() const noexcept { return values().rend(); }
-    constexpr const_reverse_iterator crend() const noexcept { return values().crend(); }
+    [[nodiscard]] constexpr const_reverse_iterator rend() const noexcept { return values().rend(); }
+    [[nodiscard]] constexpr const_reverse_iterator crend() const noexcept
+    {
+        return values().crend();
+    }
 
     [[nodiscard]] constexpr bool empty() const noexcept { return values().empty(); }
-    constexpr size_type size() const noexcept { return values().size(); }
-    constexpr size_type max_size() const noexcept { return values().max_size(); }
+    [[nodiscard]] constexpr size_type size() const noexcept { return values().size(); }
+    [[nodiscard]] constexpr size_type max_size() const noexcept { return values().max_size(); }
 
-    constexpr const LabelArrayType& labels() const noexcept { return ENUM_VALUES; }
+    [[nodiscard]] constexpr const LabelArrayType& labels() const noexcept { return ENUM_VALUES; }
 
     constexpr void fill(const T& value) { values().fill(value); }
 
@@ -166,7 +175,7 @@ public:
     }
 
 private:
-    constexpr const ValueArrayType& values() const
+    [[nodiscard]] constexpr const ValueArrayType& values() const
     {
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_values_;
     }

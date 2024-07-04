@@ -1843,7 +1843,7 @@ TEST(FixedList, FrontEmptyContainer)
 {
     {
         const FixedList<int, 3> v{};
-        EXPECT_DEATH(v.front(), "");
+        EXPECT_DEATH((void)v.front(), "");
     }
     {
         FixedList<int, 3> v{};
@@ -1875,7 +1875,7 @@ TEST(FixedList, BackEmptyContainer)
 {
     {
         const FixedList<int, 3> v{};
-        EXPECT_DEATH(v.back(), "");
+        EXPECT_DEATH((void)v.back(), "");
     }
     {
         FixedList<int, 3> v{};

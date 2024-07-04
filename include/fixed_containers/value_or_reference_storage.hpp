@@ -18,7 +18,7 @@ struct ValueOrReferenceStorage
     {
     }
 
-    constexpr const T& get() const { return value; }
+    [[nodiscard]] constexpr const T& get() const { return value; }
     constexpr T& get() { return value; }
 };
 

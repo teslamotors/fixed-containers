@@ -56,7 +56,7 @@ public:
         delete_range_and_return_next_index(front_index(), MAXIMUM_SIZE);
     }
 
-    constexpr const T& at(const IndexType i) const { return storage().at(i); }
+    [[nodiscard]] constexpr const T& at(const IndexType i) const { return storage().at(i); }
     constexpr T& at(const IndexType i) { return storage().at(i); }
 
     [[nodiscard]] constexpr IndexType front_index() const { return next_of(MAXIMUM_SIZE); }
@@ -127,13 +127,16 @@ public:
     [[nodiscard]] constexpr IndexType& prev_of(IndexType i) { return chain().at(i).prev; }
 
 private:
-    constexpr const StorageType& storage() const
+    [[nodiscard]] constexpr const StorageType& storage() const
     {
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_storage_;
     }
     constexpr StorageType& storage() { return IMPLEMENTATION_DETAIL_DO_NOT_USE_storage_; }
 
-    constexpr const ChainType& chain() const { return IMPLEMENTATION_DETAIL_DO_NOT_USE_chain_; }
+    [[nodiscard]] constexpr const ChainType& chain() const
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_chain_;
+    }
     constexpr ChainType& chain() { return IMPLEMENTATION_DETAIL_DO_NOT_USE_chain_; }
 
     constexpr void increment_size(const IndexType n = 1)

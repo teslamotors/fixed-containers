@@ -75,7 +75,8 @@ public:
 
     [[nodiscard]] constexpr bool full() const noexcept { return storage().full(); }
 
-    constexpr RedBlackTreeNodeView<const FixedRedBlackTreeStorage> at(const NodeIndex& i) const
+    [[nodiscard]] constexpr RedBlackTreeNodeView<const FixedRedBlackTreeStorage> at(
+        const NodeIndex& i) const
     {
         return {this, i};
     }
@@ -84,9 +85,9 @@ public:
         return {this, i};
     }
 
-    constexpr const K& key(const NodeIndex& i) const { return storage().at(i).key(); }
+    [[nodiscard]] constexpr const K& key(const NodeIndex& i) const { return storage().at(i).key(); }
     constexpr K& key(const NodeIndex& i) { return storage().at(i).key(); }
-    constexpr const V& value(const NodeIndex& i) const
+    [[nodiscard]] constexpr const V& value(const NodeIndex& i) const
         requires HAS_ASSOCIATED_VALUE
     {
         return storage().at(i).value();
@@ -145,7 +146,7 @@ public:
     }
 
 private:
-    constexpr const StorageTemplate<NodeType, MAXIMUM_SIZE>& storage() const
+    [[nodiscard]] constexpr const StorageTemplate<NodeType, MAXIMUM_SIZE>& storage() const
     {
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_storage_;
     }

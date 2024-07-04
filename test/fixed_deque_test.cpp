@@ -661,8 +661,8 @@ TEST(FixedDeque, AtOutOfBounds)
         EXPECT_DEATH(v2.at(v2.size()) = 901, "");
 
         const auto& v3 = v2;
-        EXPECT_DEATH(v3.at(5), "");
-        EXPECT_DEATH(v3.at(v2.size()), "");
+        EXPECT_DEATH((void)v3.at(5), "");
+        EXPECT_DEATH((void)v3.at(v2.size()), "");
     };
 
     run_test(FixedDequeInitialStateFirstIndex{});
@@ -1941,7 +1941,7 @@ TEST(FixedDeque, FrontEmptyContainer)
     {
         {
             const auto v = Factory::template create<int, 3>();
-            EXPECT_DEATH(v.front(), "");
+            EXPECT_DEATH((void)v.front(), "");
         }
         {
             auto v = Factory::template create<int, 3>();
@@ -1985,7 +1985,7 @@ TEST(FixedDeque, BackEmptyContainer)
     {
         {
             const auto v = Factory::template create<int, 3>();
-            EXPECT_DEATH(v.back(), "");
+            EXPECT_DEATH((void)v.back(), "");
         }
         {
             auto v = Factory::template create<int, 3>();

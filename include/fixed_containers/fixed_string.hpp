@@ -170,8 +170,9 @@ public:
     {
         return vec().front(loc);
     }
-    constexpr const_reference front(const std_transition::source_location& loc =
-                                        std_transition::source_location::current()) const
+    [[nodiscard]] constexpr const_reference front(
+        const std_transition::source_location& loc =
+            std_transition::source_location::current()) const
     {
         return vec().front(loc);
     }
@@ -180,8 +181,9 @@ public:
     {
         return vec().back(loc);
     }
-    constexpr const_reference back(const std_transition::source_location& loc =
-                                       std_transition::source_location::current()) const
+    [[nodiscard]] constexpr const_reference back(
+        const std_transition::source_location& loc =
+            std_transition::source_location::current()) const
     {
         return vec().back(loc);
     }
@@ -196,18 +198,21 @@ public:
     }
 
     constexpr iterator begin() noexcept { return vec().begin(); }
-    constexpr const_iterator begin() const noexcept { return cbegin(); }
-    constexpr const_iterator cbegin() const noexcept { return vec().cbegin(); }
+    [[nodiscard]] constexpr const_iterator begin() const noexcept { return cbegin(); }
+    [[nodiscard]] constexpr const_iterator cbegin() const noexcept { return vec().cbegin(); }
     constexpr iterator end() noexcept { return vec().end(); }
-    constexpr const_iterator end() const noexcept { return cend(); }
-    constexpr const_iterator cend() const noexcept { return vec().cend(); }
+    [[nodiscard]] constexpr const_iterator end() const noexcept { return cend(); }
+    [[nodiscard]] constexpr const_iterator cend() const noexcept { return vec().cend(); }
 
     constexpr reverse_iterator rbegin() noexcept { return vec().rbegin(); }
-    constexpr const_reverse_iterator rbegin() const noexcept { return crbegin(); }
-    constexpr const_reverse_iterator crbegin() const noexcept { return vec().crbegin(); }
+    [[nodiscard]] constexpr const_reverse_iterator rbegin() const noexcept { return crbegin(); }
+    [[nodiscard]] constexpr const_reverse_iterator crbegin() const noexcept
+    {
+        return vec().crbegin();
+    }
     constexpr reverse_iterator rend() noexcept { return vec().rend(); }
-    constexpr const_reverse_iterator rend() const noexcept { return crend(); }
-    constexpr const_reverse_iterator crend() const noexcept { return vec().crend(); }
+    [[nodiscard]] constexpr const_reverse_iterator rend() const noexcept { return crend(); }
+    [[nodiscard]] constexpr const_reverse_iterator crend() const noexcept { return vec().crend(); }
 
     [[nodiscard]] constexpr bool empty() const noexcept { return length() == 0; }
     [[nodiscard]] constexpr std::size_t length() const noexcept { return vec().size(); }
@@ -447,7 +452,10 @@ private:
 
     [[nodiscard]] constexpr std::string_view as_view() const { return *this; }
 
-    constexpr const FixedVecStorage& vec() const { return IMPLEMENTATION_DETAIL_DO_NOT_USE_data_; }
+    [[nodiscard]] constexpr const FixedVecStorage& vec() const
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_data_;
+    }
     constexpr FixedVecStorage& vec() { return IMPLEMENTATION_DETAIL_DO_NOT_USE_data_; }
 };
 

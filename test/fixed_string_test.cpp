@@ -350,7 +350,7 @@ TEST(FixedString, FrontEmptyContainer)
 {
     {
         const FixedString<3> v{};
-        EXPECT_DEATH(v.front(), "");
+        EXPECT_DEATH((void)v.front(), "");
     }
     {
         FixedString<3> v{};
@@ -382,7 +382,7 @@ TEST(FixedString, BackEmptyContainer)
 {
     {
         const FixedString<3> v{};
-        EXPECT_DEATH(v.back(), "");
+        EXPECT_DEATH((void)v.back(), "");
     }
     {
         FixedString<3> v{};
