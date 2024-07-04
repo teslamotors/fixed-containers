@@ -448,8 +448,8 @@ TEST(EnumMap, OperatorBracketEnsureNoUnnecessaryTemporaries)
 {
     EnumMap<TestEnum1, ConstructionCounter> s1{};
     ASSERT_EQ(0, ConstructionCounter::counter);
-    ConstructionCounter instance1{25};
-    ConstructionCounter instance2{35};
+    const ConstructionCounter instance1{25};
+    const ConstructionCounter instance2{35};
     ASSERT_EQ(2, ConstructionCounter::counter);
     s1[TestEnum1::TWO] = instance1;
     ASSERT_EQ(3, ConstructionCounter::counter);
@@ -881,7 +881,7 @@ TEST(EnumMap, EraseIf)
     {
         EnumMap<TestEnum1, int> s{
             {TestEnum1::TWO, 20}, {TestEnum1::THREE, 30}, {TestEnum1::FOUR, 40}};
-        std::size_t removed_count =
+        const std::size_t removed_count =
             fixed_containers::erase_if(s,
                                        [](const auto& entry)
                                        {
@@ -1247,7 +1247,7 @@ TEST(EnumMap, IteratorDereferenceLiveness)
     {
         // this test needs ubsan/asan
         EnumMap<TestEnum1, int> m = {{TestEnum1::ONE, 2}};
-        decltype(m)::reference ref = *m.begin();  // Fine
+        const decltype(m)::reference ref = *m.begin();  // Fine
         EXPECT_EQ(TestEnum1::ONE, ref.first);
         EXPECT_EQ(2, ref.second);
     }
@@ -1434,8 +1434,8 @@ TEST(EnumMap, Ranges)
     auto f = s1 | ranges::views::filter([](const auto& v) -> bool { return v.second == 10; });
 
     EXPECT_EQ(1, ranges::distance(f));
-    int first_entry = (*f.begin()).second;  // Can't use arrow with range-v3 because it requires
-                                            // l-value. Note that std::ranges works
+    const int first_entry = (*f.begin()).second;  // Can't use arrow with range-v3 because it
+                                                  // requires l-value. Note that std::ranges works
     EXPECT_EQ(10, first_entry);
 }
 
@@ -1497,7 +1497,7 @@ TEST(EnumMap, OverloadedAddressOfOperator)
 TEST(EnumMap, ClassTemplateArgumentDeduction)
 {
     // Compile-only test
-    EnumMap a = EnumMap<TestEnum1, int>{};
+    const EnumMap a = EnumMap<TestEnum1, int>{};
     (void)a;
 }
 
@@ -1620,7 +1620,7 @@ TEST(EnumMap, UsageAsTemplateParameter)
 {
     static constexpr EnumMap<TestEnum1, int> INSTANCE1{};
     enum_map_instance_can_be_used_as_a_template_parameter<INSTANCE1>();
-    EnumMapInstanceCanBeUsedAsATemplateParameter<INSTANCE1> my_struct{};
+    const EnumMapInstanceCanBeUsedAsATemplateParameter<INSTANCE1> my_struct{};
     static_cast<void>(my_struct);
 }
 
@@ -1666,7 +1666,7 @@ TYPED_TEST_P(EnumMapInstanceCheckFixture, EnumMapInstanceCheck)
     ASSERT_EQ(0, InstanceCounterType::counter);
     {  // IMPORTANT SCOPE, don't remove.
         // This will be destroyed when we go out of scope
-        InstanceCounterType aa{1};
+        const InstanceCounterType aa{1};
         ASSERT_EQ(1, InstanceCounterType::counter);
         v1[TestEnum1::ONE] = aa;
         ASSERT_EQ(2, InstanceCounterType::counter);
@@ -1685,7 +1685,7 @@ TYPED_TEST_P(EnumMapInstanceCheckFixture, EnumMapInstanceCheck)
     ASSERT_EQ(0, InstanceCounterType::counter);
     {  // IMPORTANT SCOPE, don't remove.
         // This will be destroyed when we go out of scope
-        InstanceCounterType aa{1};
+        const InstanceCounterType aa{1};
         ASSERT_EQ(1, InstanceCounterType::counter);
         v1.insert({TestEnum1::ONE, aa});
         ASSERT_EQ(1, v1.size());
@@ -1755,7 +1755,7 @@ TYPED_TEST_P(EnumMapInstanceCheckFixture, EnumMapInstanceCheck)
     ASSERT_EQ(0, InstanceCounterType::counter);
     {  // IMPORTANT SCOPE, don't remove.
         // This will be destroyed when we go out of scope
-        InstanceCounterType aa{1};
+        const InstanceCounterType aa{1};
         ASSERT_EQ(1, InstanceCounterType::counter);
         v1.emplace(TestEnum1::ONE, aa);
         ASSERT_EQ(1, v1.size());
@@ -1775,7 +1775,7 @@ TYPED_TEST_P(EnumMapInstanceCheckFixture, EnumMapInstanceCheck)
     ASSERT_EQ(0, InstanceCounterType::counter);
     {  // IMPORTANT SCOPE, don't remove.
         // This will be destroyed when we go out of scope
-        InstanceCounterType aa{1};
+        const InstanceCounterType aa{1};
         ASSERT_EQ(1, InstanceCounterType::counter);
         v1.try_emplace(TestEnum1::ONE, aa);
         ASSERT_EQ(1, v1.size());
@@ -1845,14 +1845,14 @@ TYPED_TEST_P(EnumMapInstanceCheckFixture, EnumMapInstanceCheck)
     ASSERT_EQ(2, InstanceCounterType::counter);
 
     {  // IMPORTANT SCOPE, don't remove.
-        MapOfInstanceCounterType v2{v1};
+        const MapOfInstanceCounterType v2{v1};
         (void)v2;
         ASSERT_EQ(4, InstanceCounterType::counter);
     }
     ASSERT_EQ(2, InstanceCounterType::counter);
 
     {  // IMPORTANT SCOPE, don't remove.
-        MapOfInstanceCounterType v2 = v1;
+        const MapOfInstanceCounterType v2 = v1;
         ASSERT_EQ(4, InstanceCounterType::counter);
         v1 = v2;
         ASSERT_EQ(4, InstanceCounterType::counter);
@@ -1860,7 +1860,7 @@ TYPED_TEST_P(EnumMapInstanceCheckFixture, EnumMapInstanceCheck)
     ASSERT_EQ(2, InstanceCounterType::counter);
 
     {  // IMPORTANT SCOPE, don't remove.
-        MapOfInstanceCounterType v2{std::move(v1)};
+        const MapOfInstanceCounterType v2{std::move(v1)};
         ASSERT_EQ(2, InstanceCounterType::counter);
     }
     ASSERT_EQ(0, InstanceCounterType::counter);
@@ -1871,7 +1871,7 @@ TYPED_TEST_P(EnumMapInstanceCheckFixture, EnumMapInstanceCheck)
     ASSERT_EQ(2, InstanceCounterType::counter);
 
     {  // IMPORTANT SCOPE, don't remove.
-        MapOfInstanceCounterType v2 = std::move(v1);
+        const MapOfInstanceCounterType v2 = std::move(v1);
         ASSERT_EQ(2, InstanceCounterType::counter);
     }
     ASSERT_EQ(0, InstanceCounterType::counter);

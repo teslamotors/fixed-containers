@@ -330,7 +330,7 @@ constexpr void rich_enum_constants_can_be_used_as_a_template_parameter()
 TEST(RichEnum, UsageAsTemplateParameter)
 {
     rich_enum_constants_can_be_used_as_a_template_parameter<TestRichEnum1::C_TWO()>();
-    RichEnumConstantsCanBeUsedAsATemplateParameter<TestRichEnum1::C_TWO()> my_struct{};
+    const RichEnumConstantsCanBeUsedAsATemplateParameter<TestRichEnum1::C_TWO()> my_struct{};
     static_cast<void>(my_struct);
 }
 

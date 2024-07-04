@@ -49,7 +49,7 @@ public:
 
     [[nodiscard]] constexpr NodeIndex get_index() const
     {
-        NodeIndex ret = index_and_color() & (~MASK);
+        const NodeIndex ret = index_and_color() & (~MASK);
 
         if (ret == LOCAL_NULL_INDEX)
         {

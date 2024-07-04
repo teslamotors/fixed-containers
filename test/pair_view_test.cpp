@@ -94,7 +94,7 @@ TEST(PairView, stdget)
 TEST(PairView, constness)
 {
     {
-        PairView<int, double> s;
+        PairView<int, double> s;  // NOLINT(misc-const-correctness)
         static_assert(std::is_same_v<decltype(s.first()), int&>);
         static_assert(std::is_same_v<decltype(s.second()), double&>);
     }
@@ -107,7 +107,7 @@ TEST(PairView, constness)
     }
 
     {
-        PairView<const int, const double> s;
+        const PairView<const int, const double> s;
         static_assert(std::is_same_v<decltype(s.first()), const int&>);
         static_assert(std::is_same_v<decltype(s.second()), const double&>);
     }
@@ -123,7 +123,7 @@ TEST(PairView, constness)
     double b = 0.0;
 
     {
-        std::pair<int&, double&> s{a, b};
+        const std::pair<int&, double&> s{a, b};
         static_assert(std::is_same_v<decltype(s.first), int&>);
         static_assert(std::is_same_v<decltype(s.second), double&>);
     }
@@ -136,7 +136,7 @@ TEST(PairView, constness)
     }
 
     {
-        std::pair<const int&, const double&> s{a, b};
+        const std::pair<const int&, const double&> s{a, b};
         static_assert(std::is_same_v<decltype(s.first), const int&>);
         static_assert(std::is_same_v<decltype(s.second), const double&>);
     }
@@ -184,7 +184,7 @@ TEST(PairView, MockFailingAddressOfOperator)
     MockFailingAddressOfOperator a{1};
     MockFailingAddressOfOperator b{2};
 
-    PairView<MockFailingAddressOfOperator, MockFailingAddressOfOperator> pair_view{
+    const PairView<MockFailingAddressOfOperator, MockFailingAddressOfOperator> pair_view{
         std::addressof(a), std::addressof(b)};
 
     auto pair_view_copy = pair_view;

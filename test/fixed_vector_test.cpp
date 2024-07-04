@@ -295,13 +295,13 @@ TEST(FixedVector, MockNonTriviallyCopyAssignable)
 TEST(FixedVector, MockTriviallyCopyableButNotCopyableOrMoveable)
 {
     {
-        FixedVector<MockTriviallyCopyableButNotCopyableOrMoveable, 5> v1{};
+        const FixedVector<MockTriviallyCopyableButNotCopyableOrMoveable, 5> v1{};
         (void)v1;
         // can't populate the vector
     }
 
     {
-        std::vector<MockTriviallyCopyableButNotCopyableOrMoveable> v1{};
+        const std::vector<MockTriviallyCopyableButNotCopyableOrMoveable> v1{};
         (void)v1;
         // can't populate the vector
     }
@@ -455,7 +455,7 @@ TEST(FixedVector, CountConstructor)
 
     // NonAssignable<T>
     {
-        FixedVector<MockNonAssignable, 8> v{5};
+        const FixedVector<MockNonAssignable, 8> v{5};
         ASSERT_EQ(5, v.size());
     }
 }
@@ -599,7 +599,7 @@ TEST(FixedVector, CapacityAndMaxSize)
     }
 
     {
-        FixedVector<int, 3> v1{};
+        const FixedVector<int, 3> v1{};
         EXPECT_EQ(3, v1.capacity());
         EXPECT_EQ(3, v1.max_size());
     }
@@ -767,8 +767,8 @@ TEST(FixedVector, Comparison)
 
     // Equal size, left < right
     {
-        std::vector<int> left{1, 2, 3};
-        std::vector<int> right{1, 2, 4};
+        const std::vector<int> left{1, 2, 3};
+        const std::vector<int> right{1, 2, 4};
 
         ASSERT_TRUE(left < right);
         ASSERT_TRUE(left <= right);
@@ -793,8 +793,8 @@ TEST(FixedVector, Comparison)
 
     // Left has fewer elements, left > right
     {
-        std::vector<int> left{1, 5};
-        std::vector<int> right{1, 2, 4};
+        const std::vector<int> left{1, 5};
+        const std::vector<int> right{1, 2, 4};
 
         ASSERT_TRUE(!(left < right));
         ASSERT_TRUE(!(left <= right));
@@ -819,8 +819,8 @@ TEST(FixedVector, Comparison)
 
     // Right has fewer elements, left < right
     {
-        std::vector<int> left{1, 2, 3};
-        std::vector<int> right{1, 5};
+        const std::vector<int> left{1, 2, 3};
+        const std::vector<int> right{1, 5};
 
         ASSERT_TRUE(left < right);
         ASSERT_TRUE(left <= right);
@@ -845,8 +845,8 @@ TEST(FixedVector, Comparison)
 
     // Left has one additional element
     {
-        std::vector<int> left{1, 2, 3};
-        std::vector<int> right{1, 2};
+        const std::vector<int> left{1, 2, 3};
+        const std::vector<int> right{1, 2};
 
         ASSERT_TRUE(!(left < right));
         ASSERT_TRUE(!(left <= right));
@@ -871,8 +871,8 @@ TEST(FixedVector, Comparison)
 
     // Right has one additional element
     {
-        std::vector<int> left{1, 2};
-        std::vector<int> right{1, 2, 3};
+        const std::vector<int> left{1, 2};
+        const std::vector<int> right{1, 2, 3};
 
         ASSERT_TRUE(left < right);
         ASSERT_TRUE(left <= right);
@@ -898,7 +898,7 @@ TEST(FixedVector, Comparison)
 
 TEST(FixedVector, IteratorAssignment)
 {
-    FixedVector<int, 8>::iterator it;              // Default construction
+    const FixedVector<int, 8>::iterator it;        // Default construction
     FixedVector<int, 8>::const_iterator const_it;  // Default construction
 
     const_it = it;  // Non-const needs to be assignable to const
@@ -1265,7 +1265,7 @@ TEST(FixedVector, Span)
             return v;
         }();
 
-        std::span<const int> as_span{v1};
+        const std::span<const int> as_span{v1};
         ASSERT_EQ(3, as_span.size());
         ASSERT_EQ(0, as_span[0]);
         ASSERT_EQ(1, as_span[1]);
@@ -1278,7 +1278,7 @@ TEST(FixedVector, Span)
             return v;
         }();
 
-        std::span<const int> as_span{v1};
+        const std::span<const int> as_span{v1};
         ASSERT_EQ(3, as_span.size());
         ASSERT_EQ(0, as_span[0]);
         ASSERT_EQ(1, as_span[1]);
@@ -1287,8 +1287,8 @@ TEST(FixedVector, Span)
 
     {
         std::vector<int> v1{};
-        std::span<const int> as_span_const{v1};
-        std::span<int> as_span_non_cost{v1};
+        const std::span<const int> as_span_const{v1};
+        const std::span<int> as_span_non_cost{v1};
     }
 
     {
@@ -1749,7 +1749,7 @@ TEST(FixedVector, EraseFreeFunction)
         constexpr auto v1 = []()
         {
             FixedVector<int, 8> v{3, 0, 1, 2, 3, 4, 5, 3};
-            std::size_t removed_count = fixed_containers::erase(v, 3);
+            const std::size_t removed_count = fixed_containers::erase(v, 3);
             assert_or_abort(3 == removed_count);
             return v;
         }();
@@ -1770,7 +1770,7 @@ TEST(FixedVector, EraseIf)
     constexpr auto v1 = []()
     {
         FixedVector<int, 8> v{0, 1, 2, 3, 4, 5, 6};
-        std::size_t removed_count =
+        const std::size_t removed_count =
             fixed_containers::erase_if(v, [](const int& a) { return (a % 2) == 0; });
         assert_or_abort(4 == removed_count);
         return v;
@@ -1885,7 +1885,7 @@ TEST(FixedVector, Ranges)
              ranges::to<FixedVector<int, 10>>;
 
     EXPECT_EQ(1, f.size());
-    int first_entry = *f.begin();
+    const int first_entry = *f.begin();
     EXPECT_EQ(20, first_entry);
 }
 
@@ -2024,7 +2024,7 @@ TEST(FixedVector, OverloadedAddressOfOperator)
 TEST(FixedVector, ClassTemplateArgumentDeduction)
 {
     // Compile-only test
-    FixedVector a = FixedVector<int, 5>{};
+    const FixedVector a = FixedVector<int, 5>{};
     (void)a;
 }
 
@@ -2045,7 +2045,7 @@ TEST(FixedVector, UsageAsTemplateParameter)
 {
     static constexpr FixedVector<int, 5> VEC1{};
     fixed_vector_instance_can_be_used_as_a_template_parameter<VEC1>();
-    FixedVectorInstanceCanBeUsedAsATemplateParameter<VEC1> my_struct{};
+    const FixedVectorInstanceCanBeUsedAsATemplateParameter<VEC1> my_struct{};
     static_cast<void>(my_struct);
 }
 
@@ -2087,8 +2087,8 @@ TYPED_TEST_P(FixedVectorInstanceCheckFixture, FixedVectorInstanceCheck)
     // Copy push_back()
     ASSERT_EQ(0, InstanceCounterType::counter);
     {  // IMPORTANT SCOPE, don't remove.
-        // This will be destroyed when we go out of scope
-        InstanceCounterType aa{};
+       // This will be destroyed when we go out of scope
+        const InstanceCounterType aa{};
         ASSERT_EQ(1, InstanceCounterType::counter);
         v1.push_back(aa);
         ASSERT_EQ(2, InstanceCounterType::counter);
@@ -2122,7 +2122,7 @@ TYPED_TEST_P(FixedVectorInstanceCheckFixture, FixedVectorInstanceCheck)
 
     {  // IMPORTANT SCOPE, don't remove.
         // This will be destroyed when we go out of scope
-        InstanceCounterType item{};
+        const InstanceCounterType item{};
         ASSERT_EQ(1, InstanceCounterType::counter);
         v1.push_back(item);
         ASSERT_EQ(2, InstanceCounterType::counter);
@@ -2159,7 +2159,7 @@ TYPED_TEST_P(FixedVectorInstanceCheckFixture, FixedVectorInstanceCheck)
         ASSERT_EQ(5, InstanceCounterType::counter);
         v1.insert(std::next(v1.begin(), 3), InstanceCounterType{});
         ASSERT_EQ(6, InstanceCounterType::counter);
-        InstanceCounterType aa{};
+        const InstanceCounterType aa{};
         ASSERT_EQ(7, InstanceCounterType::counter);
         v1.insert(v1.begin(), aa);
         ASSERT_EQ(8, InstanceCounterType::counter);
@@ -2192,14 +2192,14 @@ TYPED_TEST_P(FixedVectorInstanceCheckFixture, FixedVectorInstanceCheck)
     ASSERT_EQ(2, InstanceCounterType::counter);
 
     {  // IMPORTANT SCOPE, don't remove.
-        VectorOfInstanceCounterType v2{v1};
+        const VectorOfInstanceCounterType v2{v1};
         (void)v2;
         ASSERT_EQ(4, InstanceCounterType::counter);
     }
     ASSERT_EQ(2, InstanceCounterType::counter);
 
     {  // IMPORTANT SCOPE, don't remove.
-        VectorOfInstanceCounterType v2 = v1;
+        const VectorOfInstanceCounterType v2 = v1;
         ASSERT_EQ(4, InstanceCounterType::counter);
         v1 = v2;
         ASSERT_EQ(4, InstanceCounterType::counter);
@@ -2207,7 +2207,7 @@ TYPED_TEST_P(FixedVectorInstanceCheckFixture, FixedVectorInstanceCheck)
     ASSERT_EQ(2, InstanceCounterType::counter);
 
     {  // IMPORTANT SCOPE, don't remove.
-        VectorOfInstanceCounterType v2{std::move(v1)};
+        const VectorOfInstanceCounterType v2{std::move(v1)};
         ASSERT_EQ(2, InstanceCounterType::counter);
     }
     ASSERT_EQ(0, InstanceCounterType::counter);
@@ -2218,7 +2218,7 @@ TYPED_TEST_P(FixedVectorInstanceCheckFixture, FixedVectorInstanceCheck)
     ASSERT_EQ(2, InstanceCounterType::counter);
 
     {  // IMPORTANT SCOPE, don't remove.
-        VectorOfInstanceCounterType v2 = std::move(v1);
+        const VectorOfInstanceCounterType v2 = std::move(v1);
         ASSERT_EQ(2, InstanceCounterType::counter);
     }
     ASSERT_EQ(0, InstanceCounterType::counter);

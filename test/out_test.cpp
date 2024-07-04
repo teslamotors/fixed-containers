@@ -30,7 +30,7 @@ TEST(Out, Usage1)
     {
         constexpr int result = []()
         {
-            int input = 1;
+            const int input = 1;
             int output = 0;
             set_int(input, out{output});
             return output;
@@ -40,7 +40,7 @@ TEST(Out, Usage1)
     }
 
     {
-        int input = 1;
+        const int input = 1;
         int output = 0;
         set_int(input, out{output});
         EXPECT_EQ(1, output);
@@ -74,7 +74,7 @@ TEST(Out, MockFailingAddressOfOperator)
     MockFailingAddressOfOperator a = 5;
     out b{a};
 
-    int result = b->get();
+    const int result = b->get();
     ASSERT_EQ(5, result);
 }
 
@@ -84,7 +84,7 @@ TEST(Out, ArrowOperator)
     *a = 5;
     out<std::unique_ptr<int>> b{a};
 
-    int result = *(b->get());  // NOLINT(readability-redundant-smartptr-get)
+    const int result = *(b->get());  // NOLINT(readability-redundant-smartptr-get)
     ASSERT_EQ(5, result);
 }
 

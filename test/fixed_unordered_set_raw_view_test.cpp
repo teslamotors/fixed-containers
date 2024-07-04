@@ -42,7 +42,7 @@ TEST(FixedUnorderedSetRawView, IntSet)
 {
     auto set = make_fixed_unordered_set<int>({1, 2, 3, 5, 8, 13});
 
-    FixedUnorderedSetRawView view{&set, sizeof(int), alignof(int), set.max_size()};
+    const FixedUnorderedSetRawView view{&set, sizeof(int), alignof(int), set.max_size()};
 
     EXPECT_EQ(set.size(), view.size());
     auto set_it = set.begin();
@@ -62,7 +62,7 @@ TEST(FixedUnorderedsetRawView, StructSet)
     set.insert({34});
     set.insert({55});
 
-    FixedUnorderedSetRawView view{&set, sizeof(MockAligned64), alignof(MockAligned64), 10};
+    const FixedUnorderedSetRawView view{&set, sizeof(MockAligned64), alignof(MockAligned64), 10};
 
     EXPECT_EQ(set.size(), view.size());
     auto set_it = set.begin();

@@ -186,7 +186,7 @@ public:
 
         while (i != to)
         {
-            SuccessorIndexAndRepositionedIndex d =
+            const SuccessorIndexAndRepositionedIndex d =
                 delete_at_and_return_successor_and_repositioned(i);
             if (empty())
             {
@@ -222,7 +222,7 @@ public:
         while (np.i != NULL_INDEX)
         {
             const RedBlackTreeNodeView current_node = tree_storage_at(np.i);
-            int cmp = compare(key, current_node.key());
+            const int cmp = compare(key, current_node.key());
             if (cmp < 0)
             {
                 np.parent = np.i;

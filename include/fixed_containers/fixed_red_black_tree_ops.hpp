@@ -24,7 +24,7 @@ class FixedRedBlackTreeOps
                                                      const Getter& getter,
                                                      const Setter& setter)
     {
-        NodeIndex tmp = getter(node_i);
+        const NodeIndex tmp = getter(node_i);
         setter(node_i, getter(node_j));
         setter(node_j, tmp);
     }

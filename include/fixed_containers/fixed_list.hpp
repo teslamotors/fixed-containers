@@ -492,11 +492,11 @@ private:
         const auto entry_count_to_add = static_cast<std::size_t>(std::distance(first, last));
         check_target_size(size() + entry_count_to_add, loc);
 
-        std::size_t insertion_point = index_of(it);
+        const std::size_t insertion_point = index_of(it);
         std::size_t inserted_point = NULL_INDEX;  // First index returned during insertion
         for (; first != last; std::advance(first, 1))
         {
-            std::size_t new_inserted_point =
+            const std::size_t new_inserted_point =
                 list().emplace_before_index_and_return_index(insertion_point, *first);
             if (inserted_point == NULL_INDEX)
             {
@@ -514,11 +514,11 @@ private:
                                        InputIt last,
                                        const std_transition::source_location& loc)
     {
-        std::size_t insertion_point = index_of(it);
+        const std::size_t insertion_point = index_of(it);
         std::size_t inserted_point = NULL_INDEX;  // First index returned during insertion
         for (; first != last && size() < max_size(); std::advance(first, 1))
         {
-            std::size_t new_inserted_point =
+            const std::size_t new_inserted_point =
                 list().emplace_before_index_and_return_index(insertion_point, *first);
             if (inserted_point == NULL_INDEX)
             {

@@ -43,7 +43,7 @@ TEST(FixedStack, MaxSize)
     }
 
     {
-        FixedStack<int, 3> v1{};
+        const FixedStack<int, 3> v1{};
         EXPECT_EQ(3, v1.max_size());
     }
 
@@ -93,7 +93,7 @@ TEST(FixedStack, Push)
     constexpr FixedStack<int, 3> s1 = []()
     {
         FixedStack<int, 3> v1{};
-        int my_int = 77;
+        const int my_int = 77;
         v1.push(my_int);
         v1.push(99);
         return v1;
@@ -108,7 +108,7 @@ TEST(FixedStack, Emplace)
     constexpr FixedStack<int, 3> s1 = []()
     {
         FixedStack<int, 3> v1{};
-        int my_int = 77;
+        const int my_int = 77;
         v1.emplace(my_int);
         v1.emplace(99);
         return v1;
@@ -181,7 +181,7 @@ TEST(FixedStack, Full)
 TEST(FixedStack, ClassTemplateArgumentDeduction)
 {
     // Compile-only test
-    FixedStack a = FixedStack<int, 5>{};
+    const FixedStack a = FixedStack<int, 5>{};
     (void)a;
 }
 
@@ -202,7 +202,7 @@ TEST(FixedStack, UsageAsTemplateParameter)
 {
     static constexpr FixedStack<int, 5> STACK1{};
     fixed_stack_instance_can_be_used_as_a_template_parameter<STACK1>();
-    FixedStackInstanceCanBeUsedAsATemplateParameter<STACK1> my_struct{};
+    const FixedStackInstanceCanBeUsedAsATemplateParameter<STACK1> my_struct{};
     static_cast<void>(my_struct);
 }
 
@@ -213,7 +213,7 @@ namespace another_namespace_unrelated_to_the_fixed_containers_namespace
 TEST(FixedStack, ArgumentDependentLookup)
 {
     // Compile-only test
-    fixed_containers::FixedStack<int, 5> a{};
+    const fixed_containers::FixedStack<int, 5> a{};
     (void)is_full(a);
 }
 }  // namespace another_namespace_unrelated_to_the_fixed_containers_namespace

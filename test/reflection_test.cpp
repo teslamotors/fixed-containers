@@ -238,7 +238,7 @@ TEST(Reflection, DebuggingHelper)
     // std::cout << foo.size() << std::endl;
     (void)foo;
 
-    StructWithNonAggregates instance{};
+    const StructWithNonAggregates instance{};
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wformat-pedantic"
     // __builtin_dump_struct(&instance, printf);

@@ -196,7 +196,7 @@ TEST(FixedUnorderedSet, InsertExceedsCapacity)
         s1.insert(4);
         s1.insert(4);
         s1.insert(4);
-        int key = 6;
+        const int key = 6;
         EXPECT_DEATH(s1.insert(key), "");
     }
 }
@@ -270,7 +270,7 @@ TEST(FixedUnorderedSet, InsertIterators)
 
     static_assert(std::is_same_v<decltype(*s1.begin()), const int&>);
 
-    FixedUnorderedSet<int, 10> s_non_const{};
+    const FixedUnorderedSet<int, 10> s_non_const{};
     static_assert(std::is_same_v<decltype(*s_non_const.begin()), const int&>);
 }
 
@@ -336,7 +336,7 @@ TEST(FixedUnorderedSet, EmplaceExceedsCapacity)
         s1.emplace(4);
         s1.emplace(4);
         s1.emplace(4);
-        int key = 6;
+        const int key = 6;
         EXPECT_DEATH(s1.emplace(key), "");
     }
 }
@@ -478,7 +478,7 @@ TEST(FixedUnorderedSet, EraseIf)
     constexpr auto s1 = []()
     {
         FixedUnorderedSet<int, 10> s{2, 3, 4};
-        std::size_t removed_count =
+        const std::size_t removed_count =
             fixed_containers::erase_if(s, [](const auto& key) { return key == 2 or key == 4; });
         assert_or_abort(2 == removed_count);
         return s;
@@ -619,7 +619,7 @@ TEST(FixedUnorderedSet, OverloadedAddressOfOperator)
     }
 
     {
-        FixedUnorderedSet<MockFailingAddressOfOperator, 15> v{{2, 3, 4}};
+        const FixedUnorderedSet<MockFailingAddressOfOperator, 15> v{{2, 3, 4}};
         ASSERT_FALSE(v.empty());
         auto it = v.begin();
         it->do_nothing();
@@ -642,7 +642,7 @@ TEST(FixedUnorderedSet, OverloadedAddressOfOperator)
 TEST(FixedUnorderedSet, ClassTemplateArgumentDeduction)
 {
     // Compile-only test
-    FixedUnorderedSet a = FixedUnorderedSet<int, 5>{};
+    const FixedUnorderedSet a = FixedUnorderedSet<int, 5>{};
     (void)a;
 }
 
@@ -650,8 +650,8 @@ TEST(FixedUnorderedSet, SetIntersection)
 {
     constexpr FixedUnorderedSet<int, 10> s1 = []()
     {
-        FixedUnorderedSet<int, 10> v1{1, 4};
-        FixedUnorderedSet<int, 10> v2{1};
+        const FixedUnorderedSet<int, 10> v1{1, 4};
+        const FixedUnorderedSet<int, 10> v2{1};
 
         FixedUnorderedSet<int, 10> v_intersection;
         std::set_intersection(v1.begin(),
@@ -684,7 +684,7 @@ TEST(FixedUnorderedSet, UsageAsTemplateParameter)
 {
     static constexpr FixedUnorderedSet<int, 5> INSTANCE1{};
     fixed_unordered_set_instance_can_be_used_as_a_template_parameter<INSTANCE1>();
-    FixedUnorderedSetInstanceCanBeUsedAsATemplateParameter<INSTANCE1> my_struct{};
+    const FixedUnorderedSetInstanceCanBeUsedAsATemplateParameter<INSTANCE1> my_struct{};
     static_cast<void>(my_struct);
 }
 

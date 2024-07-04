@@ -159,7 +159,7 @@ struct hash
     constexpr std::uint64_t operator()(T const& obj) const
         noexcept(noexcept(std::declval<std::hash<T>>().operator()(std::declval<T const&>())))
     {
-        std::uint64_t base_hash = std::hash<T>{}(obj);
+        const std::uint64_t base_hash = std::hash<T>{}(obj);
         // run unknown quality hashes through wyhash to get better avalanching
         return wyhash_detail::hash(base_hash);
     }

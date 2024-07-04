@@ -164,7 +164,7 @@ constexpr void for_each_parsed_field_entry(const T& instance, Func func)
             auto as_tuple = std::forward_as_tuple(std::forward<Args>(args)...);
             const std::string_view field_type_name = std::get<1>(as_tuple);
             const std::string_view field_name = std::get<2>(as_tuple);
-            FieldAsString field_as_string{.type_name = field_type_name, .name = field_name};
+            const FieldAsString field_as_string{.type_name = field_type_name, .name = field_name};
             func(FieldEntry{field_as_string,
                             layer_tracker->current_enclosing_field(),
                             layer_tracker->current_providing_base_class()});

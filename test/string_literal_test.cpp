@@ -34,7 +34,7 @@ TEST(StringLiteral, DefaultConstructor)
         static_assert(ZERO.size() == 0);
     }
     {
-        StringLiteral zero{};
+        const StringLiteral zero{};
         EXPECT_EQ(0, zero.size());
     }
 }

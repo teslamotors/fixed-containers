@@ -44,7 +44,7 @@ TEST(FixedCircularQueue, MaxSize)
     }
 
     {
-        FixedCircularQueue<int, 3> v1{};
+        const FixedCircularQueue<int, 3> v1{};
         EXPECT_EQ(3, v1.max_size());
     }
 
@@ -119,7 +119,7 @@ TEST(FixedCircularQueue, Push)
     constexpr FixedCircularQueue<int, 3> s1 = []()
     {
         FixedCircularQueue<int, 3> v1{};
-        int my_int = 77;
+        const int my_int = 77;
         v1.push(my_int);
         v1.push(99);
         return v1;
@@ -155,7 +155,7 @@ TEST(FixedCircularQueue, Emplace)
     constexpr FixedCircularQueue<int, 3> s1 = []()
     {
         FixedCircularQueue<int, 3> v1{};
-        int my_int = 77;
+        const int my_int = 77;
         v1.emplace(my_int);
         v1.emplace(99);
         return v1;
@@ -174,7 +174,7 @@ TEST(FixedCircularQueue, EmplaceExceedsCapacity)
         v.push(102);
         v.push(103);
         v.push(104);
-        int my_int = 77;
+        const int my_int = 77;
         v.emplace(my_int);
         v.emplace(99);
         return v;
@@ -250,7 +250,7 @@ TEST(FixedCircularQueue, Full)
 TEST(FixedCircularQueue, ClassTemplateArgumentDeduction)
 {
     // Compile-only test
-    FixedCircularQueue a = FixedCircularQueue<int, 5>{};
+    const FixedCircularQueue a = FixedCircularQueue<int, 5>{};
     (void)a;
 }
 
@@ -271,7 +271,7 @@ TEST(FixedCircularQueue, UsageAsTemplateParameter)
 {
     static constexpr FixedCircularQueue<int, 5> QUEUE1{};
     fixed_circular_buffer_instance_can_be_used_as_a_template_parameter<QUEUE1>();
-    FixedCircularQueueInstanceCanBeUsedAsATemplateParameter<QUEUE1> my_struct{};
+    const FixedCircularQueueInstanceCanBeUsedAsATemplateParameter<QUEUE1> my_struct{};
     static_cast<void>(my_struct);
 }
 
@@ -282,7 +282,7 @@ namespace another_namespace_unrelated_to_the_fixed_containers_namespace
 TEST(FixedCircularQueue, ArgumentDependentLookup)
 {
     // Compile-only test
-    fixed_containers::FixedCircularQueue<int, 5> a{};
+    const fixed_containers::FixedCircularQueue<int, 5> a{};
     (void)is_full(a);
 }
 }  // namespace another_namespace_unrelated_to_the_fixed_containers_namespace

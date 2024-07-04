@@ -121,7 +121,7 @@ public:
                                   const std_transition::source_location& loc =
                                       std_transition::source_location::current()) noexcept
     {
-        TableIndex idx = table().opaque_index_of(key);
+        const TableIndex idx = table().opaque_index_of(key);
         if (!table().exists(idx))
         {
             CheckingType::out_of_range(key, size(), loc);
@@ -134,7 +134,7 @@ public:
         const std_transition::source_location& loc =
             std_transition::source_location::current()) const noexcept
     {
-        TableIndex idx = table().opaque_index_of(key);
+        const TableIndex idx = table().opaque_index_of(key);
         if (!table().exists(idx))
         {
             CheckingType::out_of_range(key, size(), loc);
@@ -365,9 +365,9 @@ public:
     {
         // TODO: shouldn't these be CheckingType:: checks?
         assert_or_abort(pos != cend());
-        TableIndex idx = table().opaque_index_of(pos->first);
+        const TableIndex idx = table().opaque_index_of(pos->first);
         assert_or_abort(table().exists(idx));
-        TableIteratedIndex next_idx = table().erase(idx);
+        const TableIteratedIndex next_idx = table().erase(idx);
         return iterator{PairProvider<false>{std::addressof(table()), next_idx}};
     }
 
@@ -377,13 +377,14 @@ public:
             first.template private_reference_provider<const PairProvider<true>&>();
         const PairProvider<true>& end =
             last.template private_reference_provider<const PairProvider<true>&>();
-        TableIteratedIndex next_idx = table().erase_range(start.current_index_, end.current_index_);
+        const TableIteratedIndex next_idx =
+            table().erase_range(start.current_index_, end.current_index_);
         return iterator{PairProvider<false>{std::addressof(table()), next_idx}};
     }
 
     constexpr size_type erase(const key_type& key) noexcept
     {
-        TableIndex idx = table().opaque_index_of(key);
+        const TableIndex idx = table().opaque_index_of(key);
         if (!table().exists(idx))
         {
             return 0;
@@ -394,13 +395,13 @@ public:
 
     [[nodiscard]] constexpr iterator find(const K& key) noexcept
     {
-        TableIndex idx = table().opaque_index_of(key);
+        const TableIndex idx = table().opaque_index_of(key);
         return create_checked_iterator(idx);
     }
 
     [[nodiscard]] constexpr const_iterator find(const K& key) const noexcept
     {
-        TableIndex idx = table().opaque_index_of(key);
+        const TableIndex idx = table().opaque_index_of(key);
         if (!table().exists(idx))
         {
             return cend();
@@ -412,7 +413,7 @@ public:
 
     [[nodiscard]] constexpr bool contains(const K& key) const noexcept
     {
-        TableIndex idx = table().opaque_index_of(key);
+        const TableIndex idx = table().opaque_index_of(key);
         return table().exists(idx);
     }
 
@@ -436,7 +437,7 @@ public:
             *this,
             [&other](const auto& pair)
             {
-                typename Other::const_iterator other_it = other.find(pair.first);
+                const typename Other::const_iterator other_it = other.find(pair.first);
                 return other_it != other.end() && other_it->second == pair.second;
             });
     }

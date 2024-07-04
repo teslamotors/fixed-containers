@@ -30,7 +30,7 @@ TEST(FixedDoublyLinkedListRawView, ViewOfIntegerList)
 {
     FixedDoublyLinkedList<int, 10> list;
 
-    std::size_t ten = list.emplace_back_and_return_index(10);
+    const std::size_t ten = list.emplace_back_and_return_index(10);
     list.emplace_back_and_return_index(20);
     list.emplace_back_and_return_index(30);
 
@@ -87,7 +87,8 @@ TEST(FixedDoublyLinkedListRawView, ViewOfStructList)
 {
     FixedDoublyLinkedList<StructThatContainsPadding, 5> list;
 
-    std::size_t first = list.emplace_back_and_return_index(StructThatContainsPadding{'a', 123});
+    const std::size_t first =
+        list.emplace_back_and_return_index(StructThatContainsPadding{'a', 123});
     list.emplace_back_and_return_index(StructThatContainsPadding{'b', 234});
     list.emplace_back_and_return_index(StructThatContainsPadding{'c', 345});
     list.emplace_front_and_return_index(StructThatContainsPadding{'Z', 321});
@@ -127,7 +128,7 @@ TEST(FixedDoubleLinkedListRawView, ViewOfDifferentSizeType)
 {
     FixedDoublyLinkedList<int, 10, uint8_t> list;
 
-    uint8_t ten = list.emplace_back_and_return_index(10);
+    const uint8_t ten = list.emplace_back_and_return_index(10);
     list.emplace_back_and_return_index(20);
     list.emplace_back_and_return_index(30);
 
@@ -177,7 +178,7 @@ TEST(FixedDoubleLinkedListRawView, ViewOfLargeAlignmentObject)
 {
     FixedDoublyLinkedList<MockAligned64, 10, uint32_t> list;
 
-    uint32_t ten = list.emplace_back_and_return_index(MockAligned64{10});
+    const uint32_t ten = list.emplace_back_and_return_index(MockAligned64{10});
     list.emplace_back_and_return_index(MockAligned64{20});
     list.emplace_back_and_return_index(MockAligned64{30});
 

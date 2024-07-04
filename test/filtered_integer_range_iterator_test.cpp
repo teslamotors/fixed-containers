@@ -79,12 +79,12 @@ static_assert(sizeof(FilteredIntegerRangeIterator<SpecificValuePredicate,
 TEST(FilteredIntegerRangeIterator, DefaultConstructor)
 {
     using ItType = FilteredIntegerRangeIterator<AlwaysTruePredicate, IteratorDirection::FORWARD>;
-    ItType it{};
+    const ItType it{};
     (void)it;
 
     using ReverseItType =
         FilteredIntegerRangeIterator<AlwaysTruePredicate, IteratorDirection::REVERSE>;
-    ReverseItType revert_it{};
+    const ReverseItType revert_it{};
     (void)revert_it;
 }
 

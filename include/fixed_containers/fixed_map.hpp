@@ -119,7 +119,8 @@ private:
         [[nodiscard]] constexpr std::conditional_t<IS_CONST, const_reference, reference> get()
             const noexcept
         {
-            fixed_red_black_tree_detail::RedBlackTreeNodeView node = tree_->node_at(current_index_);
+            fixed_red_black_tree_detail::RedBlackTreeNodeView  // NOLINT(misc-const-correctness)
+                node = tree_->node_at(current_index_);
             return {node.key(), node.value()};
         }
 

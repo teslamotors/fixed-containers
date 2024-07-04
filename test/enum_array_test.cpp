@@ -410,7 +410,7 @@ TEST(EnumArray, NonAssignable)
 TEST(EnumArray, ClassTemplateArgumentDeduction)
 {
     // Compile-only test
-    EnumArray a = EnumArray<TestEnum1, int>{};
+    const EnumArray a = EnumArray<TestEnum1, int>{};
     (void)a;
 }
 
@@ -431,7 +431,7 @@ TEST(EnumArray, UsageAsTemplateParameter)
 {
     static constexpr EnumArray<TestEnum1, int> ARRAY1{};
     enum_array_instance_can_be_used_as_a_template_parameter<ARRAY1>();
-    EnumArrayInstanceCanBeUsedAsATemplateParameter<ARRAY1> my_struct{};
+    const EnumArrayInstanceCanBeUsedAsATemplateParameter<ARRAY1> my_struct{};
     static_cast<void>(my_struct);
 }
 

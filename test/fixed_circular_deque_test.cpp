@@ -131,7 +131,7 @@ TEST(FixedCircularDeque, CountConstructor)
 
     // NonAssignable<T>
     {
-        FixedCircularDeque<MockNonAssignable, 8> v{5};
+        const FixedCircularDeque<MockNonAssignable, 8> v{5};
         ASSERT_EQ(5, v.size());
     }
 }
@@ -760,8 +760,8 @@ TEST(FixedCircularDeque, Comparison)
 
         // Equal size, left < right
         {
-            std::deque<int> left{1, 2, 3};
-            std::deque<int> right{1, 2, 4};
+            const std::deque<int> left{1, 2, 3};
+            const std::deque<int> right{1, 2, 4};
 
             ASSERT_TRUE(left < right);
             ASSERT_TRUE(left <= right);
@@ -786,8 +786,8 @@ TEST(FixedCircularDeque, Comparison)
 
         // Left has fewer elements, left > right
         {
-            std::deque<int> left{1, 5};
-            std::deque<int> right{1, 2, 4};
+            const std::deque<int> left{1, 5};
+            const std::deque<int> right{1, 2, 4};
 
             ASSERT_TRUE(!(left < right));
             ASSERT_TRUE(!(left <= right));
@@ -812,8 +812,8 @@ TEST(FixedCircularDeque, Comparison)
 
         // Right has fewer elements, left < right
         {
-            std::deque<int> left{1, 2, 3};
-            std::deque<int> right{1, 5};
+            const std::deque<int> left{1, 2, 3};
+            const std::deque<int> right{1, 5};
 
             ASSERT_TRUE(left < right);
             ASSERT_TRUE(left <= right);
@@ -838,8 +838,8 @@ TEST(FixedCircularDeque, Comparison)
 
         // Left has one additional element
         {
-            std::deque<int> left{1, 2, 3};
-            std::deque<int> right{1, 2};
+            const std::deque<int> left{1, 2, 3};
+            const std::deque<int> right{1, 2};
 
             ASSERT_TRUE(!(left < right));
             ASSERT_TRUE(!(left <= right));
@@ -864,8 +864,8 @@ TEST(FixedCircularDeque, Comparison)
 
         // Right has one additional element
         {
-            std::deque<int> left{1, 2};
-            std::deque<int> right{1, 2, 3};
+            const std::deque<int> left{1, 2};
+            const std::deque<int> right{1, 2, 3};
 
             ASSERT_TRUE(left < right);
             ASSERT_TRUE(left <= right);
@@ -895,7 +895,7 @@ TEST(FixedCircularDeque, Comparison)
 
 TEST(FixedCircularDeque, IteratorAssignment)
 {
-    FixedCircularDeque<int, 8>::iterator it;              // Default construction
+    const FixedCircularDeque<int, 8>::iterator it;        // Default construction
     FixedCircularDeque<int, 8>::const_iterator const_it;  // Default construction
 
     const_it = it;  // Non-const needs to be assignable to const
@@ -2183,7 +2183,7 @@ TEST(FixedCircularDeque, EraseFreeFunction)
             constexpr auto v1 = []()
             {
                 auto v = Factory::template create<int, 8>({3, 0, 1, 2, 3, 4, 5, 3});
-                std::size_t removed_count = fixed_containers::erase(v, 3);
+                const std::size_t removed_count = fixed_containers::erase(v, 3);
                 assert_or_abort(3 == removed_count);
                 return v;
             }();
@@ -2210,7 +2210,7 @@ TEST(FixedCircularDeque, EraseIf)
         constexpr auto v1 = []()
         {
             auto v = Factory::template create<int, 8>({0, 1, 2, 3, 4, 5, 6});
-            std::size_t removed_count =
+            const std::size_t removed_count =
                 fixed_containers::erase_if(v, [](const int& a) { return (a % 2) == 0; });
             assert_or_abort(4 == removed_count);
             return v;
@@ -2372,7 +2372,7 @@ TEST(FixedCircularDeque, OverloadedAddressOfOperator)
 TEST(FixedCircularDeque, ClassTemplateArgumentDeduction)
 {
     // Compile-only test
-    FixedCircularDeque a = FixedCircularDeque<int, 5>{};
+    const FixedCircularDeque a = FixedCircularDeque<int, 5>{};
     (void)a;
 }
 
@@ -2393,7 +2393,7 @@ TEST(FixedCircularDeque, UsageAsTemplateParameter)
 {
     static constexpr FixedCircularDeque<int, 5> CD1{};
     fixed_circular_deque_instance_can_be_used_as_a_template_parameter<CD1>();
-    FixedCircularDequeInstanceCanBeUsedAsATemplateParameter<CD1> my_struct{};
+    const FixedCircularDequeInstanceCanBeUsedAsATemplateParameter<CD1> my_struct{};
     static_cast<void>(my_struct);
 }
 
@@ -2437,7 +2437,7 @@ TYPED_TEST_P(FixedCircularDequeInstanceCheckFixture, FixedCircularDequeInstanceC
     ASSERT_EQ(0, InstanceCounterType::counter);
     {  // IMPORTANT SCOPE, don't remove.
         // This will be destroyed when we go out of scope
-        InstanceCounterType aa{};
+        const InstanceCounterType aa{};
         ASSERT_EQ(1, InstanceCounterType::counter);
         v1.push_back(aa);
         ASSERT_EQ(2, InstanceCounterType::counter);
@@ -2471,7 +2471,7 @@ TYPED_TEST_P(FixedCircularDequeInstanceCheckFixture, FixedCircularDequeInstanceC
 
     {  // IMPORTANT SCOPE, don't remove.
         // This will be destroyed when we go out of scope
-        InstanceCounterType item{};
+        const InstanceCounterType item{};
         ASSERT_EQ(1, InstanceCounterType::counter);
         v1.push_back(item);
         ASSERT_EQ(2, InstanceCounterType::counter);
@@ -2508,7 +2508,7 @@ TYPED_TEST_P(FixedCircularDequeInstanceCheckFixture, FixedCircularDequeInstanceC
         ASSERT_EQ(5, InstanceCounterType::counter);
         v1.insert(std::next(v1.begin(), 3), InstanceCounterType{});
         ASSERT_EQ(6, InstanceCounterType::counter);
-        InstanceCounterType aa{};
+        const InstanceCounterType aa{};
         ASSERT_EQ(7, InstanceCounterType::counter);
         v1.insert(v1.begin(), aa);
         ASSERT_EQ(8, InstanceCounterType::counter);
@@ -2541,14 +2541,14 @@ TYPED_TEST_P(FixedCircularDequeInstanceCheckFixture, FixedCircularDequeInstanceC
     ASSERT_EQ(2, InstanceCounterType::counter);
 
     {  // IMPORTANT SCOPE, don't remove.
-        CircularDequeOfInstanceCounterType v2{v1};
+        const CircularDequeOfInstanceCounterType v2{v1};
         (void)v2;
         ASSERT_EQ(4, InstanceCounterType::counter);
     }
     ASSERT_EQ(2, InstanceCounterType::counter);
 
     {  // IMPORTANT SCOPE, don't remove.
-        CircularDequeOfInstanceCounterType v2 = v1;
+        const CircularDequeOfInstanceCounterType v2 = v1;
         ASSERT_EQ(4, InstanceCounterType::counter);
         v1 = v2;
         ASSERT_EQ(4, InstanceCounterType::counter);
@@ -2556,7 +2556,7 @@ TYPED_TEST_P(FixedCircularDequeInstanceCheckFixture, FixedCircularDequeInstanceC
     ASSERT_EQ(2, InstanceCounterType::counter);
 
     {  // IMPORTANT SCOPE, don't remove.
-        CircularDequeOfInstanceCounterType v2{std::move(v1)};
+        const CircularDequeOfInstanceCounterType v2{std::move(v1)};
         ASSERT_EQ(2, InstanceCounterType::counter);
     }
     ASSERT_EQ(0, InstanceCounterType::counter);
@@ -2567,7 +2567,7 @@ TYPED_TEST_P(FixedCircularDequeInstanceCheckFixture, FixedCircularDequeInstanceC
     ASSERT_EQ(2, InstanceCounterType::counter);
 
     {  // IMPORTANT SCOPE, don't remove.
-        CircularDequeOfInstanceCounterType v2 = std::move(v1);
+        const CircularDequeOfInstanceCounterType v2 = std::move(v1);
         ASSERT_EQ(2, InstanceCounterType::counter);
     }
     ASSERT_EQ(0, InstanceCounterType::counter);

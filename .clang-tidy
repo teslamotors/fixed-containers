@@ -85,7 +85,6 @@ Checks: >
   -bugprone-unchecked-optional-access,
 
   -modernize-pass-by-value,
-  -misc-const-correctness,
   -readability-identifier-naming,
   -readability-qualified-auto,
   -readability-redundant-access-specifiers,

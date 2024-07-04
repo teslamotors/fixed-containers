@@ -153,9 +153,9 @@ INSTANTIATE_TYPED_TEST_SUITE_P(FixedUnorderedMapRawView,
 
 TEST(FixedUnorderedMapRawView, IntIntMap)
 {
-    auto map = make_fixed_unordered_map<int, int>({{1, 2}, {3, 4}, {5, 6}, {7, 8}, {9, 0}});
+    const auto map = make_fixed_unordered_map<int, int>({{1, 2}, {3, 4}, {5, 6}, {7, 8}, {9, 0}});
 
-    FixedUnorderedMapRawView view = get_view_of_map(map);
+    const FixedUnorderedMapRawView view = get_view_of_map(map);
 
     EXPECT_EQ(map.size(), view.size());
     auto map_it = map.begin();
@@ -176,7 +176,7 @@ TEST(FixedUnorderedMapRawView, CharCharMap)
     map['c'] = 'C';
     map['z'] = 'Z';
 
-    FixedUnorderedMapRawView view = get_view_of_map(map);
+    const FixedUnorderedMapRawView view = get_view_of_map(map);
 
     EXPECT_EQ(map.size(), view.size());
     auto map_it = map.begin();

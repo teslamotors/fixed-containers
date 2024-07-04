@@ -230,7 +230,7 @@ TEST(FixedString, AssignStringView)
         constexpr auto v1 = []()
         {
             FixedString<7> v{"012"};
-            std::string_view s{"99"};
+            const std::string_view s{"99"};
             v.assign(s);
             return v;
         }();
@@ -243,7 +243,7 @@ TEST(FixedString, AssignStringView)
         auto v2 = []()
         {
             FixedString<7> v{"012"};
-            std::string_view s{"99"};
+            const std::string_view s{"99"};
             v.assign(s);
             return v;
         }();
@@ -466,7 +466,7 @@ TEST(FixedString, StringViewConversion)
 
 TEST(FixedString, IteratorAssignment)
 {
-    FixedString<8>::iterator it;              // Default construction
+    const FixedString<8>::iterator it;        // Default construction
     FixedString<8>::const_iterator const_it;  // Default construction
 
     const_it = it;  // Non-const needs to be assignable to const
@@ -726,7 +726,7 @@ TEST(FixedString, CapacityAndMaxSize)
     }
 
     {
-        FixedString<3> v1{};
+        const FixedString<3> v1{};
         EXPECT_EQ(3, v1.capacity());
         EXPECT_EQ(3, v1.max_size());
     }
@@ -913,7 +913,7 @@ TEST(FixedString, InsertStringView)
         constexpr auto v1 = []()
         {
             FixedString<5> v{"012"};
-            std::string_view s = "ae";
+            const std::string_view s = "ae";
             v.insert(std::next(v.begin(), 2), s);
             return v;
         }();
@@ -925,7 +925,7 @@ TEST(FixedString, InsertStringView)
 
     {
         FixedString<7> v{"0123"};
-        std::string_view s = "ae";
+        const std::string_view s = "ae";
         auto it = v.insert(std::next(v.begin(), 2), s);
         EXPECT_EQ(v, "01ae23");
         EXPECT_EQ(it, std::next(v.begin(), 2));
@@ -1161,7 +1161,7 @@ TEST(FixedString, AppendStringView)
         constexpr auto v1 = []()
         {
             FixedString<5> v{"012"};
-            std::string_view s = "ae";
+            const std::string_view s = "ae";
             v.append(s);
             return v;
         }();
@@ -1173,7 +1173,7 @@ TEST(FixedString, AppendStringView)
 
     {
         FixedString<7> v{"0123"};
-        std::string_view s = "ae";
+        const std::string_view s = "ae";
         auto& self = v.append(s);
         EXPECT_EQ(v, "0123ae");
         EXPECT_EQ(self, v);
@@ -1187,7 +1187,7 @@ TEST(FixedString, OperatorPlusEqual)
         FixedString<17> v{"012"};
         v.append("abc");
         v.append({'d', 'e'});
-        std::string_view s = "fg";
+        const std::string_view s = "fg";
         v.append(s);
         return v;
     }();
@@ -1253,8 +1253,8 @@ TEST(FixedString, Comparison)
 
     // Equal size, left < right
     {
-        std::string left{"123"};
-        std::string right{"124"};
+        const std::string left{"123"};
+        const std::string right{"124"};
 
         ASSERT_TRUE(left < right);
         ASSERT_TRUE(left <= right);
@@ -1283,8 +1283,8 @@ TEST(FixedString, Comparison)
 
     // Left has fewer elements, left > right
     {
-        std::string left{"15"};
-        std::string right{"124"};
+        const std::string left{"15"};
+        const std::string right{"124"};
 
         ASSERT_TRUE(!(left < right));
         ASSERT_TRUE(!(left <= right));
@@ -1313,8 +1313,8 @@ TEST(FixedString, Comparison)
 
     // Right has fewer elements, left < right
     {
-        std::string left{"123"};
-        std::string right{"15"};
+        const std::string left{"123"};
+        const std::string right{"15"};
 
         ASSERT_TRUE(left < right);
         ASSERT_TRUE(left <= right);
@@ -1343,8 +1343,8 @@ TEST(FixedString, Comparison)
 
     // Left has one additional element
     {
-        std::string left{"123"};
-        std::string right{"12"};
+        const std::string left{"123"};
+        const std::string right{"12"};
 
         ASSERT_TRUE(!(left < right));
         ASSERT_TRUE(!(left <= right));
@@ -1373,8 +1373,8 @@ TEST(FixedString, Comparison)
 
     // Right has one additional element
     {
-        std::string left{"12"};
-        std::string right{"123"};
+        const std::string left{"12"};
+        const std::string right{"123"};
 
         ASSERT_TRUE(left < right);
         ASSERT_TRUE(left <= right);
@@ -1525,7 +1525,7 @@ TEST(FixedString, Span)
             return v;
         }();
 
-        std::span<const char> as_span{v1};
+        const std::span<const char> as_span{v1};
         ASSERT_EQ(3, as_span.size());
         ASSERT_EQ('0', as_span[0]);
         ASSERT_EQ('1', as_span[1]);
@@ -1538,7 +1538,7 @@ TEST(FixedString, Span)
             return v;
         }();
 
-        std::span<const char> as_span{v1};
+        const std::span<const char> as_span{v1};
         ASSERT_EQ(3, as_span.size());
         ASSERT_EQ('0', as_span[0]);
         ASSERT_EQ('1', as_span[1]);
@@ -1547,8 +1547,8 @@ TEST(FixedString, Span)
 
     {
         std::string v1{};
-        std::span<const char> as_span_const{v1};
-        std::span<char> as_span_non_cost{v1};
+        const std::span<const char> as_span_const{v1};
+        const std::span<char> as_span_non_cost{v1};
     }
 
     {
@@ -1568,13 +1568,13 @@ TEST(FixedString, MaxSizeDeduction)
 TEST(FixedString, ClassTemplateArgumentDeduction)
 {
     // Compile-only test
-    FixedString a = FixedString<5>{};
+    const FixedString a = FixedString<5>{};
     (void)a;
 }
 
 TEST(FixedStringTest, OStreamOperator)
 {
-    FixedString<5> str{"hello"};
+    const FixedString<5> str{"hello"};
 
     std::stringstream ss;
     ss << str;
@@ -1599,7 +1599,7 @@ TEST(FixedString, UsageAsTemplateParameter)
 {
     static constexpr FixedString<5> MY_STR1{};
     fixed_string_instance_can_be_used_as_a_template_parameter<MY_STR1>();
-    FixedStringInstanceCanBeUsedAsATemplateParameter<MY_STR1> my_struct{};
+    const FixedStringInstanceCanBeUsedAsATemplateParameter<MY_STR1> my_struct{};
     static_cast<void>(my_struct);
 }
 
@@ -1610,7 +1610,7 @@ namespace another_namespace_unrelated_to_the_fixed_containers_namespace
 TEST(FixedString, ArgumentDependentLookup)
 {
     // Compile-only test
-    fixed_containers::FixedString<5> a{};
+    const fixed_containers::FixedString<5> a{};
     (void)is_full(a);
 }
 }  // namespace another_namespace_unrelated_to_the_fixed_containers_namespace

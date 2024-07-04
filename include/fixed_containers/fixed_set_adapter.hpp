@@ -239,9 +239,9 @@ public:
     {
         // TODO: shouldn't these be CheckingType:: checks?
         assert_or_abort(pos != cend());
-        TableIndex idx = table().opaque_index_of(*pos);
+        const TableIndex idx = table().opaque_index_of(*pos);
         assert_or_abort(table().exists(idx));
-        TableIteratedIndex next_idx = table().erase(idx);
+        const TableIteratedIndex next_idx = table().erase(idx);
         return iterator{ReferenceProvider{std::addressof(table()), next_idx}};
     }
 
@@ -251,13 +251,14 @@ public:
             first.template private_reference_provider<const ReferenceProvider&>();
         const ReferenceProvider& end =
             last.template private_reference_provider<const ReferenceProvider&>();
-        TableIteratedIndex next_idx = table().erase_range(start.current_index_, end.current_index_);
+        const TableIteratedIndex next_idx =
+            table().erase_range(start.current_index_, end.current_index_);
         return iterator{ReferenceProvider{std::addressof(table()), next_idx}};
     }
 
     constexpr size_type erase(const key_type& key) noexcept
     {
-        TableIndex idx = table().opaque_index_of(key);
+        const TableIndex idx = table().opaque_index_of(key);
         if (!table().exists(idx))
         {
             return 0;
@@ -286,7 +287,7 @@ public:
 
     [[nodiscard]] constexpr bool contains(const K& key) const noexcept
     {
-        TableIndex idx = table().opaque_index_of(key);
+        const TableIndex idx = table().opaque_index_of(key);
         return table().exists(idx);
     }
 

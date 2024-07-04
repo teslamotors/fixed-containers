@@ -43,7 +43,7 @@ TEST(FixedQueue, MaxSize)
     }
 
     {
-        FixedQueue<int, 3> v1{};
+        const FixedQueue<int, 3> v1{};
         EXPECT_EQ(3, v1.max_size());
     }
 
@@ -118,7 +118,7 @@ TEST(FixedQueue, Push)
     constexpr FixedQueue<int, 3> s1 = []()
     {
         FixedQueue<int, 3> v1{};
-        int my_int = 77;
+        const int my_int = 77;
         v1.push(my_int);
         v1.push(99);
         return v1;
@@ -133,7 +133,7 @@ TEST(FixedQueue, Emplace)
     constexpr FixedQueue<int, 3> s1 = []()
     {
         FixedQueue<int, 3> v1{};
-        int my_int = 77;
+        const int my_int = 77;
         v1.emplace(my_int);
         v1.emplace(99);
         return v1;
@@ -206,7 +206,7 @@ TEST(FixedQueue, Full)
 TEST(FixedQueue, ClassTemplateArgumentDeduction)
 {
     // Compile-only test
-    FixedQueue a = FixedQueue<int, 5>{};
+    const FixedQueue a = FixedQueue<int, 5>{};
     (void)a;
 }
 
@@ -227,7 +227,7 @@ TEST(FixedQueue, UsageAsTemplateParameter)
 {
     static constexpr FixedQueue<int, 5> QUEUE1{};
     fixed_queue_instance_can_be_used_as_a_template_parameter<QUEUE1>();
-    FixedQueueInstanceCanBeUsedAsATemplateParameter<QUEUE1> my_struct{};
+    const FixedQueueInstanceCanBeUsedAsATemplateParameter<QUEUE1> my_struct{};
     static_cast<void>(my_struct);
 }
 
@@ -238,7 +238,7 @@ namespace another_namespace_unrelated_to_the_fixed_containers_namespace
 TEST(FixedQueue, ArgumentDependentLookup)
 {
     // Compile-only test
-    fixed_containers::FixedQueue<int, 5> a{};
+    const fixed_containers::FixedQueue<int, 5> a{};
     (void)is_full(a);
 }
 }  // namespace another_namespace_unrelated_to_the_fixed_containers_namespace

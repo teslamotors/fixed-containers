@@ -194,7 +194,7 @@ TEST(FixedUnorderedMap, OperatorBracketExceedsCapacity)
         s1[4];
         s1[4];
         s1[4];
-        int key = 6;
+        const int key = 6;
         EXPECT_DEATH(s1[key], "");
     }
 }
@@ -227,8 +227,8 @@ TEST(FixedUnorderedMap, OperatorBracketEnsureNoUnnecessaryTemporaries)
 {
     FixedUnorderedMap<int, ConstructionCounter, 10> s1{};
     ASSERT_EQ(0, ConstructionCounter::counter);
-    ConstructionCounter instance1{25};
-    ConstructionCounter instance2{35};
+    const ConstructionCounter instance1{25};
+    const ConstructionCounter instance2{35};
     ASSERT_EQ(2, ConstructionCounter::counter);
     s1[2] = instance1;
     ASSERT_EQ(3, ConstructionCounter::counter);
@@ -271,7 +271,7 @@ TEST(FixedUnorderedMap, InsertExceedsCapacity)
         s1.insert({4, 40});
         s1.insert({4, 41});
         s1.insert({4, 42});
-        std::pair<int, int> key_value{6, 60};
+        const std::pair<int, int> key_value{6, 60};
         EXPECT_DEATH(s1.insert(key_value), "");
     }
 }
@@ -406,7 +406,7 @@ TEST(FixedUnorderedMap, InsertOrAssignExceedsCapacity)
         s1.insert_or_assign(4, 40);
         s1.insert_or_assign(4, 41);
         s1.insert_or_assign(4, 42);
-        int key = 6;
+        const int key = 6;
         EXPECT_DEATH(s1.insert_or_assign(key, 60), "");
     }
 }
@@ -484,7 +484,7 @@ TEST(FixedUnorderedMap, TryEmplaceExceedsCapacity)
         s1.try_emplace(4, 40);
         s1.try_emplace(4, 41);
         s1.try_emplace(4, 42);
-        int key = 6;
+        const int key = 6;
         EXPECT_DEATH(s1.try_emplace(key, 60), "");
     }
 }
@@ -595,7 +595,7 @@ TEST(FixedUnorderedMap, EmplaceExceedsCapacity)
         s1.emplace(4, 40);
         s1.emplace(4, 41);
         s1.emplace(4, 42);
-        int key = 6;
+        const int key = 6;
         EXPECT_DEATH(s1.emplace(key, 60), "");
     }
 }
@@ -741,12 +741,13 @@ TEST(FixedUnorderedMap, EraseIf)
     constexpr auto s1 = []()
     {
         FixedUnorderedMap<int, int, 10> s{{2, 20}, {3, 30}, {4, 40}};
-        std::size_t removed_count = fixed_containers::erase_if(s,
-                                                               [](const auto& entry)
-                                                               {
-                                                                   const auto& [key, _] = entry;
-                                                                   return key == 2 or key == 4;
-                                                               });
+        const std::size_t removed_count =
+            fixed_containers::erase_if(s,
+                                       [](const auto& entry)
+                                       {
+                                           const auto& [key, _] = entry;
+                                           return key == 2 or key == 4;
+                                       });
         assert_or_abort(2 == removed_count);
         return s;
     }();
@@ -1075,7 +1076,7 @@ TEST(FixedUnorderedMap, IteratorDereferenceLiveness)
     {
         // this test needs ubsan/asan
         FixedUnorderedMap<int, int, 7> m = {{1, 100}};
-        decltype(m)::reference ref = *m.begin();  // Fine
+        const decltype(m)::reference ref = *m.begin();  // Fine
         EXPECT_EQ(1, ref.first);
         EXPECT_EQ(100, ref.second);
     }
@@ -1114,9 +1115,9 @@ TEST(FixedUnorderedMap, IteratorInvalidation)
     EXPECT_EQ(40, it4->first);
     EXPECT_EQ(400, it4->second);
 
-    std::pair<const int*, const int*> addresses_1{&it1->first, &it1->second};
-    std::pair<const int*, const int*> addresses_2{&it2->first, &it2->second};
-    std::pair<const int*, const int*> addresses_4{&it4->first, &it4->second};
+    const std::pair<const int*, const int*> addresses_1{&it1->first, &it1->second};
+    const std::pair<const int*, const int*> addresses_2{&it2->first, &it2->second};
+    const std::pair<const int*, const int*> addresses_4{&it4->first, &it4->second};
 
     // Deletion
     {
@@ -1268,8 +1269,8 @@ TEST(FixedUnorderedMap, Ranges)
     auto f = s1 | ranges::views::filter([](const auto& v) -> bool { return v.second == 10; });
 
     EXPECT_EQ(1, ranges::distance(f));
-    int first_entry = (*f.begin()).second;  // Can't use arrow with range-v3 because it requires
-                                            // l-value. Note that std::ranges works
+    const int first_entry = (*f.begin()).second;  // Can't use arrow with range-v3 because it
+                                                  // requires l-value. Note that std::ranges works
     EXPECT_EQ(10, first_entry);
 }
 
@@ -1329,7 +1330,7 @@ TEST(FixedUnorderedMap, OverloadedAddressOfOperator)
 TEST(FixedUnorderedMap, ClassTemplateArgumentDeduction)
 {
     // Compile-only test
-    FixedUnorderedMap a = FixedUnorderedMap<int, int, 5>{};
+    const FixedUnorderedMap a = FixedUnorderedMap<int, int, 5>{};
     (void)a;
 }
 
@@ -1453,7 +1454,7 @@ TEST(FixedUnorderedMap, UsageAsTemplateParameter)
 {
     static constexpr FixedUnorderedMap<int, int, 5> INSTANCE1{};
     fixed_map_instance_can_be_used_as_a_template_parameter<INSTANCE1>();
-    FixedUnorderedMapInstanceCanBeUsedAsATemplateParameter<INSTANCE1> my_struct{};
+    const FixedUnorderedMapInstanceCanBeUsedAsATemplateParameter<INSTANCE1> my_struct{};
     static_cast<void>(my_struct);
 }
 
@@ -1502,8 +1503,8 @@ TYPED_TEST_P(FixedUnorderedMapInstanceCheckFixture, FixedUnorderedMapInstanceChe
     // [] l-value
     ASSERT_EQ(0, InstanceCounterType::counter);
     {  // IMPORTANT SCOPE, don't remove.
-        // This will be destroyed when we go out of scope
-        InstanceCounterType aa{1};
+       // This will be destroyed when we go out of scope
+        const InstanceCounterType aa{1};
         ASSERT_EQ(1, InstanceCounterType::counter);
         v1[aa] = aa;
         ASSERT_EQ(3, InstanceCounterType::counter);
@@ -1521,8 +1522,8 @@ TYPED_TEST_P(FixedUnorderedMapInstanceCheckFixture, FixedUnorderedMapInstanceChe
     // Insert l-value
     ASSERT_EQ(0, InstanceCounterType::counter);
     {  // IMPORTANT SCOPE, don't remove.
-        // This will be destroyed when we go out of scope
-        InstanceCounterType aa{1};
+       // This will be destroyed when we go out of scope
+        const InstanceCounterType aa{1};
         ASSERT_EQ(1, InstanceCounterType::counter);
         v1.insert({aa, aa});
         ASSERT_EQ(1, v1.size());
@@ -1594,7 +1595,7 @@ TYPED_TEST_P(FixedUnorderedMapInstanceCheckFixture, FixedUnorderedMapInstanceChe
     ASSERT_EQ(0, InstanceCounterType::counter);
     {  // IMPORTANT SCOPE, don't remove.
         // This will be destroyed when we go out of scope
-        InstanceCounterType aa{1};
+        const InstanceCounterType aa{1};
         ASSERT_EQ(1, InstanceCounterType::counter);
         v1.emplace(aa, aa);
         ASSERT_EQ(1, v1.size());
@@ -1680,14 +1681,14 @@ TYPED_TEST_P(FixedUnorderedMapInstanceCheckFixture, FixedUnorderedMapInstanceChe
     ASSERT_EQ(4, InstanceCounterType::counter);
 
     {  // IMPORTANT SCOPE, don't remove.
-        MapOfInstanceCounterType v2{v1};
+        const MapOfInstanceCounterType v2{v1};
         (void)v2;
         ASSERT_EQ(8, InstanceCounterType::counter);
     }
     ASSERT_EQ(4, InstanceCounterType::counter);
 
     {  // IMPORTANT SCOPE, don't remove.
-        MapOfInstanceCounterType v2 = v1;
+        const MapOfInstanceCounterType v2 = v1;
         ASSERT_EQ(8, InstanceCounterType::counter);
         v1 = v2;
         ASSERT_EQ(8, InstanceCounterType::counter);
@@ -1695,7 +1696,7 @@ TYPED_TEST_P(FixedUnorderedMapInstanceCheckFixture, FixedUnorderedMapInstanceChe
     ASSERT_EQ(4, InstanceCounterType::counter);
 
     {  // IMPORTANT SCOPE, don't remove.
-        MapOfInstanceCounterType v2{std::move(v1)};
+        const MapOfInstanceCounterType v2{std::move(v1)};
         ASSERT_EQ(4, InstanceCounterType::counter);
     }
     ASSERT_EQ(0, InstanceCounterType::counter);
@@ -1706,7 +1707,7 @@ TYPED_TEST_P(FixedUnorderedMapInstanceCheckFixture, FixedUnorderedMapInstanceChe
     ASSERT_EQ(4, InstanceCounterType::counter);
 
     {  // IMPORTANT SCOPE, don't remove.
-        MapOfInstanceCounterType v2 = std::move(v1);
+        const MapOfInstanceCounterType v2 = std::move(v1);
         ASSERT_EQ(4, InstanceCounterType::counter);
     }
     ASSERT_EQ(0, InstanceCounterType::counter);

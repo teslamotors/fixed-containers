@@ -21,8 +21,8 @@ struct ConvenientIntHash
 {
     constexpr uint64_t operator()(const int& t) const
     {
-        uint64_t fingerprint = static_cast<uint64_t>(t) & 0xFFUL;
-        uint64_t upper = static_cast<uint64_t>(t) << 8;
+        const uint64_t fingerprint = static_cast<uint64_t>(t) & 0xFFUL;
+        const uint64_t upper = static_cast<uint64_t>(t) << 8;
         return fingerprint | upper;
     }
 };
@@ -111,7 +111,7 @@ TEST(MapOperations, Emplace)
 
     auto test_emplace = [&](int k, int v)
     {
-        OIT idx = map.opaque_index_of(k);
+        const OIT idx = map.opaque_index_of(k);
         EXPECT_FALSE(map.exists(idx));
         return map.emplace(idx, k, v);
     };
@@ -310,7 +310,7 @@ TEST(MapOperations, Search)
 
     auto test_emplace = [&](int k, int v)
     {
-        OIT idx = map.opaque_index_of(k);
+        const OIT idx = map.opaque_index_of(k);
         EXPECT_FALSE(map.exists(idx));
         return map.emplace(idx, k, v);
     };
@@ -411,7 +411,7 @@ TEST(MapOperations, Erase)
 
     auto test_emplace = [&](int k, int v)
     {
-        OIT idx = map.opaque_index_of(k);
+        const OIT idx = map.opaque_index_of(k);
         EXPECT_FALSE(map.exists(idx));
         return map.emplace(idx, k, v);
     };
@@ -572,7 +572,7 @@ TEST(MapOperations, LinkedListIteration)
 
     auto test_emplace = [&](int k, int v)
     {
-        OIT idx = map.opaque_index_of(k);
+        const OIT idx = map.opaque_index_of(k);
         EXPECT_FALSE(map.exists(idx));
         return map.emplace(idx, k, v);
     };
@@ -685,7 +685,7 @@ TEST(MapOperations, EraseRange)
 
     auto test_emplace = [&](int k, int v)
     {
-        OIT idx = map.opaque_index_of(k);
+        const OIT idx = map.opaque_index_of(k);
         EXPECT_FALSE(map.exists(idx));
         return map.emplace(idx, k, v);
     };

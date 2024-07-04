@@ -43,7 +43,7 @@ TEST(FixedRedBlackTreeView, ViewOfPoolStorage)
     FixedSetType s2;
     for (const std::byte* elm_ptr : view)
     {
-        int elm_value = *reinterpret_cast<const int*>(elm_ptr);
+        const int elm_value = *reinterpret_cast<const int*>(elm_ptr);
         s2.insert(elm_value);
     }
 
@@ -117,7 +117,7 @@ TEST(FixedRedBlackTreeView, ViewOfContiguousStorage)
     FixedSetType s2;
     for (const std::byte* elm_ptr : view)
     {
-        int elm_value = *reinterpret_cast<const int*>(elm_ptr);
+        const int elm_value = *reinterpret_cast<const int*>(elm_ptr);
         s2.insert(elm_value);
     }
 
@@ -131,7 +131,7 @@ TEST(FixedRedBlackTreeView, PreservedOrdering)
     using FixedSetType = FixedSet<int, 10, std::less<>, COMPACTNESS, FixedIndexBasedPoolStorage>;
 
     FixedSetType s1{4, 1, 2, 6, 3, 5};
-    FixedVector<int, 10> v1{1, 2, 3, 4, 5, 6};
+    const FixedVector<int, 10> v1{1, 2, 3, 4, 5, 6};
 
     const auto ptr = reinterpret_cast<const void*>(&s1);
     auto view = FixedRedBlackTreeRawView(
@@ -147,8 +147,8 @@ TEST(FixedRedBlackTreeView, PreservedOrdering)
     auto ord_itr = v1.cbegin();
     for (; view_itr != view.end() && ord_itr != v1.cend(); ++view_itr, ++ord_itr)
     {
-        int view_val = *reinterpret_cast<const int*>(*view_itr);
-        int ord_val = *ord_itr;
+        const int view_val = *reinterpret_cast<const int*>(*view_itr);
+        const int ord_val = *ord_itr;
         EXPECT_EQ(view_val, ord_val);
     }
 }

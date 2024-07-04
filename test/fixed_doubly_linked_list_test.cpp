@@ -19,7 +19,7 @@ TEST(FixedDoublyLinkedList, Emplace)
     {
         // Values :
         // Indexes:
-        std::size_t i = ll.emplace_back_and_return_index(100);
+        const std::size_t i = ll.emplace_back_and_return_index(100);
         // Values : 100
         // Indexes: [0]
         EXPECT_EQ(i, 0);
@@ -38,7 +38,7 @@ TEST(FixedDoublyLinkedList, Emplace)
     {
         // Values : 100
         // Indexes: [0]
-        std::size_t i = ll.emplace_back_and_return_index(200);
+        const std::size_t i = ll.emplace_back_and_return_index(200);
         // Values : 100 <-> 200
         // Indexes: [0] <-> [1]
         EXPECT_EQ(1, i);
@@ -60,7 +60,7 @@ TEST(FixedDoublyLinkedList, Emplace)
     {
         // Values : 100 <-> 200
         // Indexes: [0] <-> [1]
-        std::size_t i = ll.emplace_back_and_return_index(300);
+        const std::size_t i = ll.emplace_back_and_return_index(300);
         // Values : 100 <-> 200 <-> 300
         // Indexes: [0] <-> [1] <-> [2]
         EXPECT_EQ(2, i);
@@ -86,7 +86,7 @@ TEST(FixedDoublyLinkedList, Emplace)
     {
         // Values : 100 <-> 200 <-> 300
         // Indexes: [0] <-> [1] <-> [2]
-        std::size_t i = ll.emplace_front_and_return_index(400);
+        const std::size_t i = ll.emplace_front_and_return_index(400);
         // Values : 400 <-> 100 <-> 200 <-> 300
         // Indexes: [3] <-> [0] <-> [1] <-> [2]
         EXPECT_EQ(3, i);
@@ -115,7 +115,7 @@ TEST(FixedDoublyLinkedList, Emplace)
     {
         // Values : 400 <-> 100 <-> 200 <-> 300
         // Indexes: [3] <-> [0] <-> [1] <-> [2]
-        std::size_t i = ll.emplace_before_index_and_return_index(1, 500);
+        const std::size_t i = ll.emplace_before_index_and_return_index(1, 500);
         // Values : 400 <-> 100 <-> 500 <-> 200 <-> 300
         // Indexes: [3] <-> [0] <-> [4] <-> [1] <-> [2]
         EXPECT_EQ(4, i);
@@ -147,7 +147,7 @@ TEST(FixedDoublyLinkedList, Emplace)
     {
         // Values : 400 <-> 100 <-> 500 <-> 200 <-> 300
         // Indexes: [3] <-> [0] <-> [4] <-> [1] <-> [2]
-        std::size_t i = ll.emplace_after_index_and_return_index(1, 600);
+        const std::size_t i = ll.emplace_after_index_and_return_index(1, 600);
         // Values : 400 <-> 100 <-> 500 <-> 200 <-> 600 <-> 300
         // Indexes: [3] <-> [0] <-> [4] <-> [1] <-> [5] <-> [2]
         EXPECT_EQ(5, i);
@@ -208,7 +208,7 @@ TEST(FixedDoublyLinkedList, Erase)
     {
         // Values : 100 <-> 200 <-> 300 <-> 400 <-> 500 <-> 600
         // Indexes: [0] <-> [1] <-> [2] <-> [3] <-> [4] <-> [5]
-        std::size_t i = ll.delete_at_and_return_next_index(2);
+        const std::size_t i = ll.delete_at_and_return_next_index(2);
         // Values : 100 <-> 200 <-> 400 <-> 500 <-> 600
         // Indexes: [0] <-> [1] <-> [3] <-> [4] <-> [5]
         EXPECT_EQ(3, i);
@@ -240,7 +240,7 @@ TEST(FixedDoublyLinkedList, Erase)
     {
         // Values : 100 <-> 200 <-> 400 <-> 500 <-> 600
         // Indexes: [0] <-> [1] <-> [3] <-> [4] <-> [5]
-        std::size_t i = ll.delete_at_and_return_next_index(5);
+        const std::size_t i = ll.delete_at_and_return_next_index(5);
         // Values : 100 <-> 200 <-> 400 <-> 500
         // Indexes: [0] <-> [1] <-> [3] <-> [4]
         EXPECT_EQ(4, ll.size());
@@ -269,7 +269,7 @@ TEST(FixedDoublyLinkedList, Erase)
     {
         // Values : 100 <-> 200 <-> 400 <-> 500
         // Indexes: [0] <-> [1] <-> [3] <-> [4]
-        std::size_t i = ll.delete_at_and_return_next_index(0);
+        const std::size_t i = ll.delete_at_and_return_next_index(0);
         // Values : 200 <-> 400 <-> 500
         // Indexes: [1] <-> [3] <-> [4]
         EXPECT_EQ(1, i);
@@ -327,7 +327,7 @@ TEST(FixedDoublyLinkedList, InterleavedInsertionsAndDeletions)
     {
         // Values : 100 <-> 200 <-> 400 <-> 600
         // Indexes: [0] <-> [1] <-> [3] <-> [5]
-        std::size_t i = ll.emplace_back_and_return_index(700);
+        const std::size_t i = ll.emplace_back_and_return_index(700);
         // Values : 100 <-> 200 <-> 400 <-> 600 <-> 700
         // Indexes: [0] <-> [1] <-> [3] <-> [5] <-> [4]
         EXPECT_EQ(4, i);
@@ -357,7 +357,7 @@ TEST(FixedDoublyLinkedList, InterleavedInsertionsAndDeletions)
     {
         // Values : 100 <-> 200 <-> 400 <-> 600 <-> 700
         // Indexes: [0] <-> [1] <-> [3] <-> [5] <-> [4]
-        std::size_t i = ll.emplace_front_and_return_index(800);
+        const std::size_t i = ll.emplace_front_and_return_index(800);
         // Values : 800 <-> 100 <-> 200 <-> 400 <-> 600 <-> 700
         // Indexes: [2] <-> [0] <-> [1] <-> [3] <-> [5] <-> [4]
         EXPECT_EQ(2, i);
@@ -400,7 +400,7 @@ TEST(FixedDoublyLinkedList, InterleavedInsertionsAndDeletions)
     {
         // Values : 100 <-> 200 <-> 400 <-> 600
         // Indexes: [0] <-> [1] <-> [3] <-> [5]
-        std::size_t i = ll.emplace_before_index_and_return_index(5, 900);
+        const std::size_t i = ll.emplace_before_index_and_return_index(5, 900);
         // Values : 100 <-> 200 <-> 400 <-> 900 <-> 600
         // Indexes: [0] <-> [1] <-> [3] <-> [2] <-> [5]
         EXPECT_EQ(2, i);
@@ -430,7 +430,7 @@ TEST(FixedDoublyLinkedList, InterleavedInsertionsAndDeletions)
     {
         // Values : 100 <-> 200 <-> 400 <-> 900 <-> 600
         // Indexes: [0] <-> [1] <-> [3] <-> [2] <-> [5]
-        std::size_t i = ll.emplace_after_index_and_return_index(0, 999);
+        const std::size_t i = ll.emplace_after_index_and_return_index(0, 999);
         // Values : 100 <-> 999 <-> 200 <-> 400 <-> 900 <-> 600
         // Indexes: [0] <-> [4] <-> [1] <-> [3] <-> [2] <-> [5]
         EXPECT_EQ(4, i);
@@ -478,7 +478,7 @@ TEST(FixedDoublyLinkedList, DeleteRange)
         // Middle
         // Values : 100 <-> 200 <-> 300 <-> 400 <-> 500 <-> 600
         // Indexes: [0] <-> [1] <-> [2] <-> [3] <-> [4] <-> [5]
-        std::size_t i = ll.delete_range_and_return_next_index(2, 4);
+        const std::size_t i = ll.delete_range_and_return_next_index(2, 4);
         // Values : 100 <-> 200 <-> 500 <-> 600
         // Indexes: [0] <-> [1] <-> [4] <-> [5]
 
@@ -508,7 +508,7 @@ TEST(FixedDoublyLinkedList, DeleteRange)
         // Back
         // Values : 100 <-> 200 <-> 500 <-> 600
         // Indexes: [0] <-> [1] <-> [4] <-> [5]
-        std::size_t i = ll.delete_range_and_return_next_index(4, NULL_INDEX);
+        const std::size_t i = ll.delete_range_and_return_next_index(4, NULL_INDEX);
         // Values : 100 <-> 200
         // Indexes: [0] <-> [1]
 
@@ -532,7 +532,7 @@ TEST(FixedDoublyLinkedList, DeleteRange)
         // Front
         // Values : 100 <-> 200
         // Indexes: [0] <-> [1]
-        std::size_t i = ll.delete_range_and_return_next_index(0, 1);
+        const std::size_t i = ll.delete_range_and_return_next_index(0, 1);
         // Values : 200
         // Indexes: [1]
 

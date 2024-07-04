@@ -167,7 +167,7 @@ public:
         // would tend to be totally useless as it encodes information that the resident index of the
         // bucket also encodes. This does not restrict the size of the table because we store the
         // value_index in 32 bits, so the 56 left in this hash are plenty for our needs.
-        std::uint64_t shifted_hash = hash >> Bucket::FINGERPRINT_BITS;
+        const std::uint64_t shifted_hash = hash >> Bucket::FINGERPRINT_BITS;
         return static_cast<SizeType>(shifted_hash % INTERNAL_TABLE_SIZE);
     }
 
@@ -209,7 +209,7 @@ public:
 
     constexpr SizeType erase_value(SizeType value_index)
     {
-        SizeType next =
+        const SizeType next =
             IMPLEMENTATION_DETAIL_DO_NOT_USE_value_storage_.delete_at_and_return_next_index(
                 value_index);
 
@@ -269,7 +269,7 @@ public:
 
     [[nodiscard]] constexpr OpaqueIndexType opaque_index_of(const K& k) const
     {
-        std::uint64_t h = hash(k);
+        const std::uint64_t h = hash(k);
         Bucket::DistAndFingerprintType dist_and_fingerprint =
             Bucket::dist_and_fingerprint_from_hash(h);
         SizeType table_loc = bucket_index_from_hash(h);
@@ -319,7 +319,7 @@ public:
     template <typename... Args>
     constexpr OpaqueIndexType emplace(const OpaqueIndexType& i, Args&&... args)
     {
-        SizeType value_loc =
+        const SizeType value_loc =
             IMPLEMENTATION_DETAIL_DO_NOT_USE_value_storage_.emplace_back_and_return_index(
                 std::forward<Args>(args)...);
 
@@ -331,10 +331,10 @@ public:
 
     constexpr OpaqueIteratedType erase(const OpaqueIndexType& i)
     {
-        SizeType value_index = bucket_at(i.bucket_index).value_index_;
+        const SizeType value_index = bucket_at(i.bucket_index).value_index_;
 
         erase_bucket(i);
-        SizeType next_index = erase_value(value_index);
+        const SizeType next_index = erase_value(value_index);
 
         return next_index;
     }

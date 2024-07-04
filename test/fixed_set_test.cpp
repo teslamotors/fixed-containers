@@ -266,7 +266,7 @@ TEST(FixedSet, InsertExceedsCapacity)
         s1.insert(4);
         s1.insert(4);
         s1.insert(4);
-        int key = 6;
+        const int key = 6;
         EXPECT_DEATH(s1.insert(key), "");
     }
 }
@@ -340,7 +340,7 @@ TEST(FixedSet, InsertIterators)
 
     static_assert(std::is_same_v<decltype(*s1.begin()), const int&>);
 
-    FixedSet<int, 10> s_non_const{};
+    const FixedSet<int, 10> s_non_const{};
     static_assert(std::is_same_v<decltype(*s_non_const.begin()), const int&>);
 }
 
@@ -406,7 +406,7 @@ TEST(FixedSet, EmplaceExceedsCapacity)
         s1.emplace(4);
         s1.emplace(4);
         s1.emplace(4);
-        int key = 6;
+        const int key = 6;
         EXPECT_DEATH(s1.emplace(key), "");
     }
 }
@@ -548,7 +548,7 @@ TEST(FixedSet, EraseIf)
     constexpr auto s1 = []()
     {
         FixedSet<int, 10> s{2, 3, 4};
-        std::size_t removed_count =
+        const std::size_t removed_count =
             fixed_containers::erase_if(s, [](const auto& key) { return key == 2 or key == 4; });
         assert_or_abort(2 == removed_count);
         return s;
@@ -735,7 +735,7 @@ TEST(FixedSet, OverloadedAddressOfOperator)
     }
 
     {
-        FixedSet<MockFailingAddressOfOperator, 15> v{{2, 3, 4}};
+        const FixedSet<MockFailingAddressOfOperator, 15> v{{2, 3, 4}};
         ASSERT_FALSE(v.empty());
         auto it = v.begin();
         it->do_nothing();
@@ -762,7 +762,7 @@ TEST(FixedSet, OverloadedAddressOfOperator)
 TEST(FixedSet, ClassTemplateArgumentDeduction)
 {
     // Compile-only test
-    FixedSet a = FixedSet<int, 5>{};
+    const FixedSet a = FixedSet<int, 5>{};
     (void)a;
 }
 
@@ -770,8 +770,8 @@ TEST(FixedSet, SetIntersection)
 {
     constexpr FixedSet<int, 10> s1 = []()
     {
-        FixedSet<int, 10> v1{1, 4};
-        FixedSet<int, 10> v2{1};
+        const FixedSet<int, 10> v1{1, 4};
+        const FixedSet<int, 10> v2{1};
 
         FixedSet<int, 10> v_intersection;
         std::set_intersection(v1.begin(),
@@ -804,7 +804,7 @@ TEST(FixedSet, UsageAsTemplateParameter)
 {
     static constexpr FixedSet<int, 5> INSTANCE1{};
     fixed_set_instance_can_be_used_as_a_template_parameter<INSTANCE1>();
-    FixedSetInstanceCanBeUsedAsATemplateParameter<INSTANCE1> my_struct{};
+    const FixedSetInstanceCanBeUsedAsATemplateParameter<INSTANCE1> my_struct{};
     static_cast<void>(my_struct);
 }
 

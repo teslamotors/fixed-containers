@@ -71,55 +71,55 @@ TEST(MacroCountermeasures, DummyUsagesOfContainers)
     // Dummy usages are not necessary, this is mostly a compile-only test.
     // Counters tools that remove unused headers.
     {
-        EnumArray<Color, int> s{};
+        const EnumArray<Color, int> s{};
         (void)s;
     }
     {
-        EnumMap<Color, int> s{};
+        const EnumMap<Color, int> s{};
         (void)s;
     }
     {
-        EnumSet<Color> s{};
+        const EnumSet<Color> s{};
         (void)s;
     }
     {
-        FixedCircularDeque<int, 5> s{};
+        const FixedCircularDeque<int, 5> s{};
         (void)s;
     }
     {
-        FixedCircularQueue<int, 5> s{};
+        const FixedCircularQueue<int, 5> s{};
         (void)s;
     }
     {
-        FixedDeque<int, 5> s{};
+        const FixedDeque<int, 5> s{};
         (void)s;
     }
     {
-        FixedMap<int, int, 5> s{};
+        const FixedMap<int, int, 5> s{};
         (void)s;
     }
     {
-        FixedSet<int, 5> s{};
+        const FixedSet<int, 5> s{};
         (void)s;
     }
     {
-        FixedStack<int, 5> s{};
+        const FixedStack<int, 5> s{};
         (void)s;
     }
     {
-        FixedString<5> s{};
+        const FixedString<5> s{};
         (void)s;
     }
     {
-        FixedUnorderedMap<int, int, 5> s{};
+        const FixedUnorderedMap<int, int, 5> s{};
         (void)s;
     }
     {
-        FixedUnorderedSet<int, 5> s{};
+        const FixedUnorderedSet<int, 5> s{};
         (void)s;
     }
     {
-        FixedVector<int, 5> s{};
+        const FixedVector<int, 5> s{};
         (void)s;
     }
 }

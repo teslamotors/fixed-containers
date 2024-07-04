@@ -1782,8 +1782,8 @@ TEST(FixedRedBlackTree, ConsistencyRegressionTest1)
     // Intentionally use the same bst for this entire test. Don't clear()
     FixedRedBlackTree<int, int, MAXIMUM_SIZE> bst{};
 
-    std::array<int, MAXIMUM_SIZE> insertion_order{2, 4, 3, 6, 1, 5, 0, 7};
-    std::array<int, MAXIMUM_SIZE> deletion_order{3, 4, 1, 2, 6, 0, 5, 7};
+    const std::array<int, MAXIMUM_SIZE> insertion_order{2, 4, 3, 6, 1, 5, 0, 7};
+    const std::array<int, MAXIMUM_SIZE> deletion_order{3, 4, 1, 2, 6, 0, 5, 7};
 
     consistency_test_helper(insertion_order, deletion_order, bst);
 }

@@ -130,7 +130,7 @@ TEST(FixedDeque, CountConstructor)
 
     // NonAssignable<T>
     {
-        FixedDeque<MockNonAssignable, 8> v{5};
+        const FixedDeque<MockNonAssignable, 8> v{5};
         ASSERT_EQ(5, v.size());
     }
 }
@@ -713,8 +713,8 @@ TEST(FixedDeque, Comparison)
 
         // Equal size, left < right
         {
-            std::deque<int> left{1, 2, 3};
-            std::deque<int> right{1, 2, 4};
+            const std::deque<int> left{1, 2, 3};
+            const std::deque<int> right{1, 2, 4};
 
             ASSERT_TRUE(left < right);
             ASSERT_TRUE(left <= right);
@@ -739,8 +739,8 @@ TEST(FixedDeque, Comparison)
 
         // Left has fewer elements, left > right
         {
-            std::deque<int> left{1, 5};
-            std::deque<int> right{1, 2, 4};
+            const std::deque<int> left{1, 5};
+            const std::deque<int> right{1, 2, 4};
 
             ASSERT_TRUE(!(left < right));
             ASSERT_TRUE(!(left <= right));
@@ -765,8 +765,8 @@ TEST(FixedDeque, Comparison)
 
         // Right has fewer elements, left < right
         {
-            std::deque<int> left{1, 2, 3};
-            std::deque<int> right{1, 5};
+            const std::deque<int> left{1, 2, 3};
+            const std::deque<int> right{1, 5};
 
             ASSERT_TRUE(left < right);
             ASSERT_TRUE(left <= right);
@@ -791,8 +791,8 @@ TEST(FixedDeque, Comparison)
 
         // Left has one additional element
         {
-            std::deque<int> left{1, 2, 3};
-            std::deque<int> right{1, 2};
+            const std::deque<int> left{1, 2, 3};
+            const std::deque<int> right{1, 2};
 
             ASSERT_TRUE(!(left < right));
             ASSERT_TRUE(!(left <= right));
@@ -817,8 +817,8 @@ TEST(FixedDeque, Comparison)
 
         // Right has one additional element
         {
-            std::deque<int> left{1, 2};
-            std::deque<int> right{1, 2, 3};
+            const std::deque<int> left{1, 2};
+            const std::deque<int> right{1, 2, 3};
 
             ASSERT_TRUE(left < right);
             ASSERT_TRUE(left <= right);
@@ -848,7 +848,7 @@ TEST(FixedDeque, Comparison)
 
 TEST(FixedDeque, IteratorAssignment)
 {
-    FixedDeque<int, 8>::iterator it;              // Default construction
+    const FixedDeque<int, 8>::iterator it;        // Default construction
     FixedDeque<int, 8>::const_iterator const_it;  // Default construction
 
     const_it = it;  // Non-const needs to be assignable to const
@@ -1869,7 +1869,7 @@ TEST(FixedDeque, EraseFreeFunction)
             constexpr auto v1 = []()
             {
                 auto v = Factory::template create<int, 8>({3, 0, 1, 2, 3, 4, 5, 3});
-                std::size_t removed_count = fixed_containers::erase(v, 3);
+                const std::size_t removed_count = fixed_containers::erase(v, 3);
                 assert_or_abort(3 == removed_count);
                 return v;
             }();
@@ -1896,7 +1896,7 @@ TEST(FixedDeque, EraseIf)
         constexpr auto v1 = []()
         {
             auto v = Factory::template create<int, 8>({0, 1, 2, 3, 4, 5, 6});
-            std::size_t removed_count =
+            const std::size_t removed_count =
                 fixed_containers::erase_if(v, [](const int& a) { return (a % 2) == 0; });
             assert_or_abort(4 == removed_count);
             return v;
@@ -2135,7 +2135,7 @@ TEST(FixedDeque, OverloadedAddressOfOperator)
 TEST(FixedDeque, ClassTemplateArgumentDeduction)
 {
     // Compile-only test
-    FixedDeque a = FixedDeque<int, 5>{};
+    const FixedDeque a = FixedDeque<int, 5>{};
     (void)a;
 }
 
@@ -2156,7 +2156,7 @@ TEST(FixedDeque, UsageAsTemplateParameter)
 {
     static constexpr FixedDeque<int, 5> VEC1{};
     fixed_deque_instance_can_be_used_as_a_template_parameter<VEC1>();
-    FixedDequeInstanceCanBeUsedAsATemplateParameter<VEC1> my_struct{};
+    const FixedDequeInstanceCanBeUsedAsATemplateParameter<VEC1> my_struct{};
     static_cast<void>(my_struct);
 }
 
@@ -2199,7 +2199,7 @@ TYPED_TEST_P(FixedDequeInstanceCheckFixture, FixedDequeInstanceCheck)
     ASSERT_EQ(0, InstanceCounterType::counter);
     {  // IMPORTANT SCOPE, don't remove.
         // This will be destroyed when we go out of scope
-        InstanceCounterType aa{};
+        const InstanceCounterType aa{};
         ASSERT_EQ(1, InstanceCounterType::counter);
         v1.push_back(aa);
         ASSERT_EQ(2, InstanceCounterType::counter);
@@ -2233,7 +2233,7 @@ TYPED_TEST_P(FixedDequeInstanceCheckFixture, FixedDequeInstanceCheck)
 
     {  // IMPORTANT SCOPE, don't remove.
         // This will be destroyed when we go out of scope
-        InstanceCounterType item{};
+        const InstanceCounterType item{};
         ASSERT_EQ(1, InstanceCounterType::counter);
         v1.push_back(item);
         ASSERT_EQ(2, InstanceCounterType::counter);
@@ -2270,7 +2270,7 @@ TYPED_TEST_P(FixedDequeInstanceCheckFixture, FixedDequeInstanceCheck)
         ASSERT_EQ(5, InstanceCounterType::counter);
         v1.insert(std::next(v1.begin(), 3), InstanceCounterType{});
         ASSERT_EQ(6, InstanceCounterType::counter);
-        InstanceCounterType aa{};
+        const InstanceCounterType aa{};
         ASSERT_EQ(7, InstanceCounterType::counter);
         v1.insert(v1.begin(), aa);
         ASSERT_EQ(8, InstanceCounterType::counter);
@@ -2303,14 +2303,14 @@ TYPED_TEST_P(FixedDequeInstanceCheckFixture, FixedDequeInstanceCheck)
     ASSERT_EQ(2, InstanceCounterType::counter);
 
     {  // IMPORTANT SCOPE, don't remove.
-        DequeOfInstanceCounterType v2{v1};
+        const DequeOfInstanceCounterType v2{v1};
         (void)v2;
         ASSERT_EQ(4, InstanceCounterType::counter);
     }
     ASSERT_EQ(2, InstanceCounterType::counter);
 
     {  // IMPORTANT SCOPE, don't remove.
-        DequeOfInstanceCounterType v2 = v1;
+        const DequeOfInstanceCounterType v2 = v1;
         ASSERT_EQ(4, InstanceCounterType::counter);
         v1 = v2;
         ASSERT_EQ(4, InstanceCounterType::counter);
@@ -2318,7 +2318,7 @@ TYPED_TEST_P(FixedDequeInstanceCheckFixture, FixedDequeInstanceCheck)
     ASSERT_EQ(2, InstanceCounterType::counter);
 
     {  // IMPORTANT SCOPE, don't remove.
-        DequeOfInstanceCounterType v2{std::move(v1)};
+        const DequeOfInstanceCounterType v2{std::move(v1)};
         ASSERT_EQ(2, InstanceCounterType::counter);
     }
     ASSERT_EQ(0, InstanceCounterType::counter);
@@ -2329,7 +2329,7 @@ TYPED_TEST_P(FixedDequeInstanceCheckFixture, FixedDequeInstanceCheck)
     ASSERT_EQ(2, InstanceCounterType::counter);
 
     {  // IMPORTANT SCOPE, don't remove.
-        DequeOfInstanceCounterType v2 = std::move(v1);
+        const DequeOfInstanceCounterType v2 = std::move(v1);
         ASSERT_EQ(2, InstanceCounterType::counter);
     }
     ASSERT_EQ(0, InstanceCounterType::counter);

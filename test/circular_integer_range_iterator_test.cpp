@@ -21,11 +21,11 @@ static_assert(sizeof(CircularIntegerRangeIterator<IteratorDirection::FORWARD,
 TEST(CircularIntegerRangeIterator, DefaultConstructor)
 {
     using ItType = CircularIntegerRangeIterator<IteratorDirection::FORWARD>;
-    ItType it{};
+    const ItType it{};
     (void)it;
 
     using ReverseItType = CircularIntegerRangeIterator<IteratorDirection::REVERSE>;
-    ReverseItType revert_it{};
+    const ReverseItType revert_it{};
     (void)revert_it;
 }
 

@@ -241,7 +241,7 @@ public:
         CharT v,
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
-        ScopedNullTermination guard{this, loc};
+        const ScopedNullTermination guard{this, loc};
         return vec().insert(it, v, loc);
     }
     template <InputIterator InputIt>
@@ -251,7 +251,7 @@ public:
         InputIt last,
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
-        ScopedNullTermination guard{this, loc};
+        const ScopedNullTermination guard{this, loc};
         return vec().insert(it, first, last, loc);
     }
     constexpr iterator insert(
@@ -259,7 +259,7 @@ public:
         std::initializer_list<CharT> ilist,
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
-        ScopedNullTermination guard{this, loc};
+        const ScopedNullTermination guard{this, loc};
         return vec().insert(it, ilist, loc);
     }
     constexpr iterator insert(
@@ -267,7 +267,7 @@ public:
         std::string_view s,
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
-        ScopedNullTermination guard{this, loc};
+        const ScopedNullTermination guard{this, loc};
         return vec().insert(it, s.begin(), s.end(), loc);
     }
 
@@ -275,7 +275,7 @@ public:
         const_iterator position,
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
-        ScopedNullTermination guard{this, loc};
+        const ScopedNullTermination guard{this, loc};
         return vec().erase(position, loc);
     }
     constexpr iterator erase(
@@ -283,7 +283,7 @@ public:
         const_iterator last,
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
-        ScopedNullTermination guard{this, loc};
+        const ScopedNullTermination guard{this, loc};
         return vec().erase(first, last, loc);
     }
 

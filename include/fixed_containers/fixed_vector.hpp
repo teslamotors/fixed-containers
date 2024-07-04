@@ -394,8 +394,8 @@ public:
         const auto entry_count_to_move = std::distance(last, cend());
         const auto entry_count_to_remove = std::distance(first, last);
 
-        iterator read_start_it = const_to_mutable_it(last);
-        iterator read_end_it = std::next(read_start_it, entry_count_to_move);
+        const iterator read_start_it = const_to_mutable_it(last);
+        const iterator read_end_it = std::next(read_start_it, entry_count_to_move);
         iterator write_start_it = const_to_mutable_it(first);
 
         if (!std::is_constant_evaluated())
@@ -412,7 +412,7 @@ public:
         else
         {
             // Do the move
-            iterator write_end_it = std::move(read_start_it, read_end_it, write_start_it);
+            const iterator write_end_it = std::move(read_start_it, read_end_it, write_start_it);
 
             // Clean out the tail
             destroy_range(write_end_it, read_end_it);

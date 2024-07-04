@@ -368,7 +368,7 @@ TEST(EnumSet, InsertIterators)
 
     static_assert(std::is_same_v<decltype(*s1.begin()), const TestEnum1&>);
 
-    EnumSet<TestEnum1> s_non_const{};
+    const EnumSet<TestEnum1> s_non_const{};
     static_assert(std::is_same_v<decltype(*s_non_const.begin()), const TestEnum1&>);
 }
 
@@ -559,7 +559,7 @@ TEST(EnumSet, EraseIf)
     constexpr auto s1 = []()
     {
         EnumSet<TestEnum1> s{TestEnum1::TWO, TestEnum1::THREE, TestEnum1::FOUR};
-        std::size_t removed_count = fixed_containers::erase_if(
+        const std::size_t removed_count = fixed_containers::erase_if(
             s, [](const auto& key) { return key == TestEnum1::TWO or key == TestEnum1::FOUR; });
         assert_or_abort(2 == removed_count);
         return s;
@@ -718,7 +718,7 @@ TEST(EnumSet, Ranges)
 TEST(EnumSet, ClassTemplateArgumentDeduction)
 {
     // Compile-only test
-    EnumSet a = EnumSet<TestEnum1>{};
+    const EnumSet a = EnumSet<TestEnum1>{};
     (void)a;
 }
 
@@ -726,8 +726,8 @@ TEST(EnumSet, SetIntersection)
 {
     constexpr EnumSet<TestEnum1> s1 = []()
     {
-        EnumSet<TestEnum1> v1{TestEnum1::ONE, TestEnum1::FOUR};
-        EnumSet<TestEnum1> v2{TestEnum1::ONE};
+        const EnumSet<TestEnum1> v1{TestEnum1::ONE, TestEnum1::FOUR};
+        const EnumSet<TestEnum1> v2{TestEnum1::ONE};
 
         EnumSet<TestEnum1> v_intersection;
         std::set_intersection(v1.begin(),
@@ -762,7 +762,7 @@ TEST(EnumSet, UsageAsTemplateParameter)
 {
     static constexpr EnumSet<TestEnum1> INSTANCE1{};
     enum_set_instance_can_be_used_as_a_template_parameter<INSTANCE1>();
-    EnumSetInstanceCanBeUsedAsATemplateParameter<INSTANCE1> my_struct{};
+    const EnumSetInstanceCanBeUsedAsATemplateParameter<INSTANCE1> my_struct{};
     static_cast<void>(my_struct);
 }
 
