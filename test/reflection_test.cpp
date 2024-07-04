@@ -246,7 +246,7 @@ TEST(Reflection, DebuggingHelper)
     (void)instance;
 }
 
-TEST(Reflection, FieldInfo_StructWithNestedStructs)
+TEST(Reflection, FieldInfoStructWithNestedStructs)
 {
     static_assert(
         consteval_compare::equal<4, reflection::field_count_of<StructWithNestedStructs>()>);
@@ -286,7 +286,7 @@ TEST(Reflection, FieldInfo_StructWithNestedStructs)
     static_assert(!FIELD_INFO.at(3).providing_base_class_name().has_value());
 }
 
-TEST(Reflection, FieldInfo_StructWithNonAggregates)
+TEST(Reflection, FieldInfoStructWithNonAggregates)
 {
     static_assert(
         consteval_compare::equal<2, reflection::field_count_of<StructWithNonAggregates>()>);
@@ -308,7 +308,7 @@ TEST(Reflection, FieldInfo_StructWithNonAggregates)
     static_assert(!FIELD_INFO.at(1).providing_base_class_name().has_value());
 }
 
-TEST(Reflection, FieldInfo_StructWithNestedStructs_ExhaustiveUntilNonAggregates)
+TEST(Reflection, FieldInfoStructWithNestedStructsExhaustiveUntilNonAggregates)
 {
     // This is fully exhaustive, because the struct is composed from aggregates only.
     static_assert(consteval_compare::equal<10,
@@ -405,7 +405,7 @@ TEST(Reflection, FieldInfo_StructWithNestedStructs_ExhaustiveUntilNonAggregates)
     }
 }
 
-TEST(Reflection, FieldInfo_StructWithNonAggregates_ExhaustiveUntilNonAggregates)
+TEST(Reflection, FieldInfoStructWithNonAggregatesExhaustiveUntilNonAggregates)
 {
     static_assert(consteval_compare::equal<2,
                                            field_count_of_exhaustive_until_non_aggregates_impl(
@@ -545,7 +545,7 @@ TEST(Reflection, ForEachField)
     static_assert(FIELD_LIST.at(3) == "purple");
 }
 
-TEST(Reflection, ForEachField_LimitedConstructibility)
+TEST(Reflection, ForEachFieldLimitedConstructibility)
 {
     StructWithFieldsWithLimitedConstructibility a{};
     FixedVector<std::string_view, 10> field_list{};
@@ -568,7 +568,7 @@ TEST(Reflection, ForEachField_LimitedConstructibility)
     EXPECT_EQ(field_list.at(2), "non_copyable");
 }
 
-TEST(Reflection, ForEachField_EmptyStruct)
+TEST(Reflection, ForEachFieldEmptyStruct)
 {
     constexpr std::size_t COUNTER = []()
     {

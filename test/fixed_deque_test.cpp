@@ -135,7 +135,7 @@ TEST(FixedDeque, CountConstructor)
     }
 }
 
-TEST(FixedDeque, CountConstructor_ExceedsCapacity)
+TEST(FixedDeque, CountConstructorExceedsCapacity)
 {
     EXPECT_DEATH((FixedDeque<int, 8>(1000, 3)), "");
 }
@@ -161,7 +161,7 @@ TEST(FixedDeque, IteratorConstructor)
     static_assert(std::ranges::equal(v2, std::array{77, 99}));
 }
 
-TEST(FixedDeque, IteratorConstructor_ExceedsCapacity)
+TEST(FixedDeque, IteratorConstructorExceedsCapacity)
 {
     constexpr std::array<int, 5> v1{1, 2, 3, 4, 5};
 
@@ -176,7 +176,7 @@ TEST(FixedDeque, InputIteratorConstructor)
     EXPECT_TRUE(std::ranges::equal(v, std::array{3, 2, 1}));
 }
 
-TEST(FixedDeque, InputIteratorConstructor_ExceedsCapacity)
+TEST(FixedDeque, InputIteratorConstructorExceedsCapacity)
 {
     MockIntegralStream<int> stream{7};
     EXPECT_DEATH((FixedDeque<int, 3>{stream.begin(), stream.end()}), "");
@@ -194,7 +194,7 @@ TEST(FixedDeque, InitializerConstructor)
     EXPECT_TRUE(std::ranges::equal(v2, std::array{66, 55}));
 }
 
-TEST(FixedDeque, InitializerConstructor_ExceedsCapacity)
+TEST(FixedDeque, InitializerConstructorExceedsCapacity)
 {
     EXPECT_DEATH((FixedDeque<int, 3>{1, 2, 3, 4, 5}), "");
 }
@@ -228,7 +228,7 @@ TEST(FixedDeque, PushBack)
     run_test(FixedDequeInitialStateLastIndex{});
 }
 
-TEST(FixedDeque, PushBack_ExceedsCapacity)
+TEST(FixedDeque, PushBackExceedsCapacity)
 {
     auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
     {
@@ -288,7 +288,7 @@ TEST(FixedDeque, EmplaceBack)
     run_test(FixedDequeInitialStateLastIndex{});
 }
 
-TEST(FixedDeque, EmplaceBack_ExceedsCapacity)
+TEST(FixedDeque, EmplaceBackExceedsCapacity)
 {
     auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
     {
@@ -429,7 +429,7 @@ TEST(FixedDeque, PopBack)
     run_test(FixedDequeInitialStateLastIndex{});
 }
 
-TEST(FixedDeque, PopBack_Empty)
+TEST(FixedDeque, PopBackEmpty)
 {
     auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
     {
@@ -470,7 +470,7 @@ TEST(FixedDeque, PushFront)
     run_test(FixedDequeInitialStateLastIndex{});
 }
 
-TEST(FixedDeque, PushFront_ExceedsCapacity)
+TEST(FixedDeque, PushFrontExceedsCapacity)
 {
     auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
     {
@@ -530,7 +530,7 @@ TEST(FixedDeque, EmplaceFront)
     run_test(FixedDequeInitialStateLastIndex{});
 }
 
-TEST(FixedDeque, EmplaceFront_ExceedsCapacity)
+TEST(FixedDeque, EmplaceFrontExceedsCapacity)
 {
     auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
     {
@@ -566,7 +566,7 @@ TEST(FixedDeque, PopFront)
     run_test(FixedDequeInitialStateLastIndex{});
 }
 
-TEST(FixedDeque, PopFront_Empty)
+TEST(FixedDeque, PopFrontEmpty)
 {
     auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
     {
@@ -652,7 +652,7 @@ TEST(FixedDeque, At)
     run_test(FixedDequeInitialStateLastIndex{});
 }
 
-TEST(FixedDeque, At_OutOfBounds)
+TEST(FixedDeque, AtOutOfBounds)
 {
     auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
     {
@@ -1080,8 +1080,8 @@ TEST(FixedDeque, ReverseIteratorBase)
 // - the iterator would use a CircularIndexEntryProvider
 // This ended up being problematic when having an iterator and the starting_index changes
 // after it is created. Keeping this test as a Regression test for the future.
-// The comments in this test refer to the aforementioned old state.
-TEST(FixedDeque, Iterator_Regression_ConsistencyWhenTheStartingIndexIsChanged)
+// The comments in this test refer to the afdorementioned old state.
+TEST(FixedDeque, IteratorRegressionConsistencyWhenTheStartingIndexIsChanged)
 {
     {
         // Old start = 2, New start = 0
@@ -1218,7 +1218,7 @@ TEST(FixedDeque, Resize)
     run_test(FixedDequeInitialStateLastIndex{});
 }
 
-TEST(FixedDeque, Resize_ExceedsCapacity)
+TEST(FixedDeque, ResizeExceedsCapacity)
 {
     auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
     {
@@ -1335,7 +1335,7 @@ TEST(FixedDeque, Emplace)
     run_test(FixedDequeInitialStateLastIndex{});
 }
 
-TEST(FixedDeque, Emplace_ExceedsCapacity)
+TEST(FixedDeque, EmplaceExceedsCapacity)
 {
     auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
     {
@@ -1397,7 +1397,7 @@ TEST(FixedDeque, AssignValue)
     run_test(FixedDequeInitialStateLastIndex{});
 }
 
-TEST(FixedDeque, AssignValue_ExceedsCapacity)
+TEST(FixedDeque, AssignValueExceedsCapacity)
 {
     auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
     {
@@ -1444,7 +1444,7 @@ TEST(FixedDeque, AssignIterator)
     run_test(FixedDequeInitialStateLastIndex{});
 }
 
-TEST(FixedDeque, AssignIterator_ExceedsCapacity)
+TEST(FixedDeque, AssignIteratorExceedsCapacity)
 {
     auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
     {
@@ -1472,7 +1472,7 @@ TEST(FixedDeque, AssignInputIterator)
     run_test(FixedDequeInitialStateLastIndex{});
 }
 
-TEST(FixedDeque, AssignInputIterator_ExceedsCapacity)
+TEST(FixedDeque, AssignInputIteratorExceedsCapacity)
 {
     auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
     {
@@ -1518,7 +1518,7 @@ TEST(FixedDeque, AssignInitializerList)
     run_test(FixedDequeInitialStateLastIndex{});
 }
 
-TEST(FixedDeque, AssignInitializerList_ExceedsCapacity)
+TEST(FixedDeque, AssignInitializerListExceedsCapacity)
 {
     auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
     {
@@ -1593,7 +1593,7 @@ TEST(FixedDeque, InsertValue)
     run_test(FixedDequeInitialStateLastIndex{});
 }
 
-TEST(FixedDeque, InsertValue_ExceedsCapacity)
+TEST(FixedDeque, InsertValueExceedsCapacity)
 {
     auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
     {
@@ -1650,7 +1650,7 @@ TEST(FixedDeque, InsertIterator)
     run_test(FixedDequeInitialStateLastIndex{});
 }
 
-TEST(FixedDeque, InsertIterator_ExceedsCapacity)
+TEST(FixedDeque, InsertIteratorExceedsCapacity)
 {
     auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
     {
@@ -1679,7 +1679,7 @@ TEST(FixedDeque, InsertInputIterator)
     run_test(FixedDequeInitialStateLastIndex{});
 }
 
-TEST(FixedDeque, InsertInputIterator_ExceedsCapacity)
+TEST(FixedDeque, InsertInputIteratorExceedsCapacity)
 {
     auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
     {
@@ -1722,7 +1722,7 @@ TEST(FixedDeque, InsertInitializerList)
     run_test(FixedDequeInitialStateLastIndex{});
 }
 
-TEST(FixedDeque, InsertInitializerList_ExceedsCapacity)
+TEST(FixedDeque, InsertInitializerListExceedsCapacity)
 {
     auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
     {
@@ -1827,7 +1827,7 @@ TEST(FixedDeque, EraseOne)
     run_test(FixedDequeInitialStateLastIndex{});
 }
 
-TEST(FixedDeque, Erase_Empty)
+TEST(FixedDeque, EraseEmpty)
 {
     auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
     {
@@ -1935,7 +1935,7 @@ TEST(FixedDeque, Front)
     run_test(FixedDequeInitialStateLastIndex{});
 }
 
-TEST(FixedDeque, Front_EmptyContainer)
+TEST(FixedDeque, FrontEmptyContainer)
 {
     auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
     {
@@ -1979,7 +1979,7 @@ TEST(FixedDeque, Back)
     run_test(FixedDequeInitialStateLastIndex{});
 }
 
-TEST(FixedDeque, Back_EmptyContainer)
+TEST(FixedDeque, BackEmptyContainer)
 {
     auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
     {
@@ -2189,7 +2189,7 @@ struct FixedDequeInstanceCheckFixture : public ::testing::Test
 TYPED_TEST_SUITE_P(FixedDequeInstanceCheckFixture);
 }  // namespace
 
-TYPED_TEST_P(FixedDequeInstanceCheckFixture, FixedDeque_InstanceCheck)
+TYPED_TEST_P(FixedDequeInstanceCheckFixture, FixedDequeInstanceCheck)
 {
     using DequeOfInstanceCounterType = TypeParam;
     using InstanceCounterType = typename DequeOfInstanceCounterType::value_type;
@@ -2361,7 +2361,7 @@ TYPED_TEST_P(FixedDequeInstanceCheckFixture, FixedDeque_InstanceCheck)
     ASSERT_EQ(0, InstanceCounterType::counter);
 }
 
-REGISTER_TYPED_TEST_SUITE_P(FixedDequeInstanceCheckFixture, FixedDeque_InstanceCheck);
+REGISTER_TYPED_TEST_SUITE_P(FixedDequeInstanceCheckFixture, FixedDequeInstanceCheck);
 
 // We want same semantics as std::deque, so run it with std::deque as well
 using FixedDequeInstanceCheckTypes =

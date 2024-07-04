@@ -88,7 +88,7 @@ TEST(FilteredIntegerRangeIterator, DefaultConstructor)
     (void)revert_it;
 }
 
-TEST(FilteredIntegerRangeIterator, Forward_AlwaysTruePredicate_StartingConditions)
+TEST(FilteredIntegerRangeIterator, ForwardAlwaysTruePredicateStartingConditions)
 {
     using ItType = FilteredIntegerRangeIterator<AlwaysTruePredicate, IteratorDirection::FORWARD>;
     {
@@ -126,7 +126,7 @@ TEST(FilteredIntegerRangeIterator, Forward_AlwaysTruePredicate_StartingCondition
     }
 }
 
-TEST(FilteredIntegerRangeIterator, Forward_EvenValuesOnly_StartingConditions)
+TEST(FilteredIntegerRangeIterator, ForwardEvenValuesOnlyStartingConditions)
 {
     using ItType = FilteredIntegerRangeIterator<EvenValuesOnly, IteratorDirection::FORWARD>;
     {
@@ -164,7 +164,7 @@ TEST(FilteredIntegerRangeIterator, Forward_EvenValuesOnly_StartingConditions)
     }
 }
 
-TEST(FilteredIntegerRangeIterator, Forward_AlwaysFalsePredicate_EmptyIterator)
+TEST(FilteredIntegerRangeIterator, ForwardAlwaysFalsePredicateEmptyIterator)
 {
     using ItType = FilteredIntegerRangeIterator<AlwaysFalsePredicate, IteratorDirection::FORWARD>;
     {
@@ -177,7 +177,7 @@ TEST(FilteredIntegerRangeIterator, Forward_AlwaysFalsePredicate_EmptyIterator)
     }
 }
 
-TEST(FilteredIntegerRangeIterator, Reverse_AlwaysFalsePredicate_EmptyIterator)
+TEST(FilteredIntegerRangeIterator, ReverseAlwaysFalsePredicateEmptyIterator)
 {
     using ItType = FilteredIntegerRangeIterator<AlwaysFalsePredicate, IteratorDirection::REVERSE>;
     {
@@ -190,7 +190,7 @@ TEST(FilteredIntegerRangeIterator, Reverse_AlwaysFalsePredicate_EmptyIterator)
     }
 }
 
-TEST(FilteredIntegerRangeIterator, Reverse_AlwaysTruePredicate_StartingConditions)
+TEST(FilteredIntegerRangeIterator, ReverseAlwaysTruePredicateStartingConditions)
 {
     using ItType = FilteredIntegerRangeIterator<AlwaysTruePredicate, IteratorDirection::REVERSE>;
     {
@@ -228,7 +228,7 @@ TEST(FilteredIntegerRangeIterator, Reverse_AlwaysTruePredicate_StartingCondition
     }
 }
 
-TEST(FilteredIntegerRangeIterator, Reverse_EvenValuesOnly_StartingConditions)
+TEST(FilteredIntegerRangeIterator, ReverseEvenValuesOnlyStartingConditions)
 {
     using ItType = FilteredIntegerRangeIterator<EvenValuesOnly, IteratorDirection::REVERSE>;
 

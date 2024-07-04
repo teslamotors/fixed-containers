@@ -76,7 +76,7 @@ TEST(EnumArray, InitializerConstructor)
     static_assert(consteval_compare::equal<40, s1.at(TestEnum1::FOUR)>);
 }
 
-TEST(EnumArray, InitializerConstructor_Partial)
+TEST(EnumArray, InitializerConstructorPartial)
 {
     constexpr EnumArray<TestEnum1, int> s1{
         {TestEnum1::FOUR, 40},

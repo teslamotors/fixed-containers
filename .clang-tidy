@@ -84,7 +84,6 @@ Checks: >
   -bugprone-switch-missing-default-case,
   -bugprone-unchecked-optional-access,
 
-  -google-readability-avoid-underscore-in-googletest-name,
   -modernize-use-nodiscard,
   -modernize-pass-by-value,
   -misc-const-correctness,

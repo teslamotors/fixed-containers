@@ -134,7 +134,7 @@ TEST(FixedMap, EmptySizeFull)
     static_assert(!is_full(s4));
 }
 
-TEST(FixedMap, OperatorBracket_Constexpr)
+TEST(FixedMap, OperatorBracketConstexpr)
 {
     constexpr auto s1 = []()
     {
@@ -168,7 +168,7 @@ TEST(FixedMap, MaxSizeDeduction)
     }
 }
 
-TEST(FixedMap, OperatorBracket_NonConstexpr)
+TEST(FixedMap, OperatorBracketNonConstexpr)
 {
     FixedMap<int, int, 10> s1{};
     s1[2] = 25;
@@ -180,7 +180,7 @@ TEST(FixedMap, OperatorBracket_NonConstexpr)
     ASSERT_TRUE(s1.contains(4));
 }
 
-TEST(FixedMap, OperatorBracket_ExceedsCapacity)
+TEST(FixedMap, OperatorBracketExceedsCapacity)
 {
     {
         FixedMap<int, int, 2> s1{};
@@ -225,7 +225,7 @@ struct ConstructionCounter
 int ConstructionCounter::counter = 0;
 }  // namespace
 
-TEST(FixedMap, OperatorBracket_EnsureNoUnnecessaryTemporaries)
+TEST(FixedMap, OperatorBracketEnsureNoUnnecessaryTemporaries)
 {
     FixedMap<int, ConstructionCounter, 10> s1{};
     ASSERT_EQ(0, ConstructionCounter::counter);
@@ -257,7 +257,7 @@ TEST(FixedMap, Insert)
     static_assert(s1.contains(4));
 }
 
-TEST(FixedMap, Insert_ExceedsCapacity)
+TEST(FixedMap, InsertExceedsCapacity)
 {
     {
         FixedMap<int, int, 2> s1{};
@@ -392,7 +392,7 @@ TEST(FixedMap, InsertOrAssign)
     static_assert(s1.contains(4));
 }
 
-TEST(FixedMap, InsertOrAssign_ExceedsCapacity)
+TEST(FixedMap, InsertOrAssignExceedsCapacity)
 {
     {
         FixedMap<int, int, 2> s1{};
@@ -470,7 +470,7 @@ TEST(FixedMap, TryEmplace)
     }
 }
 
-TEST(FixedMap, TryEmplace_ExceedsCapacity)
+TEST(FixedMap, TryEmplaceExceedsCapacity)
 {
     {
         FixedMap<int, int, 2> s1{};
@@ -491,7 +491,7 @@ TEST(FixedMap, TryEmplace_ExceedsCapacity)
     }
 }
 
-TEST(FixedMap, TryEmplace_TypeConversion)
+TEST(FixedMap, TryEmplaceTypeConversion)
 {
     {
         int* raw_ptr = new int;
@@ -581,7 +581,7 @@ TEST(FixedMap, Emplace)
     }
 }
 
-TEST(FixedMap, Emplace_ExceedsCapacity)
+TEST(FixedMap, EmplaceExceedsCapacity)
 {
     {
         FixedMap<int, int, 2> s1{};
@@ -661,7 +661,7 @@ TEST(FixedMap, EraseIterator)
     static_assert(s1.contains(4));
 }
 
-TEST(FixedMap, EraseIterator_Ambiguity)
+TEST(FixedMap, EraseIteratorAmbiguity)
 {
     // If the iterator has extraneous auto-conversions, it might cause ambiguity between the various
     // overloads
@@ -669,7 +669,7 @@ TEST(FixedMap, EraseIterator_Ambiguity)
     s1.erase("");
 }
 
-TEST(FixedMap, EraseIterator_InvalidIterator)
+TEST(FixedMap, EraseIteratorInvalidIterator)
 {
     FixedMap<int, int, 10> s{{2, 20}, {4, 40}};
     {
@@ -762,7 +762,7 @@ TEST(FixedMap, EraseIf)
     static_assert(s1.at(3) == 30);
 }
 
-TEST(FixedMap, Iterator_StructuredBinding)
+TEST(FixedMap, IteratorStructuredBinding)
 {
     constexpr auto s1 = []()
     {
@@ -1021,7 +1021,7 @@ TEST(FixedMap, IteratorAssignment)
     static_assert(s1.size() == 2);
 }
 
-TEST(FixedMap, Iterator_OffByOneIssues)
+TEST(FixedMap, IteratorOffByOneIssues)
 {
     constexpr FixedMap<int, int, 10> s1{{{1, 10}, {4, 40}}};
 
@@ -1038,7 +1038,7 @@ TEST(FixedMap, Iterator_OffByOneIssues)
     static_assert(std::prev(s1.end(), 2)->second == 10);
 }
 
-TEST(FixedMap, Iterator_EnsureOrder)
+TEST(FixedMap, IteratorEnsureOrder)
 {
     constexpr auto s1 = []()
     {
@@ -1081,7 +1081,7 @@ TEST(FixedMap, DereferencedIteratorAssignability)
     }
 }
 
-TEST(FixedMap, Iterator_AccessingDefaultConstructedIteratorFails)
+TEST(FixedMap, IteratorAccessingDefaultConstructedIteratorFails)
 {
     auto it = FixedMap<int, int, 10>::iterator{};
 
@@ -1234,7 +1234,7 @@ TEST(FixedMap, Find)
     static_assert(s1.at(4) == 40);
 }
 
-TEST(FixedMap, Find_TransparentComparator)
+TEST(FixedMap, FindTransparentComparator)
 {
     constexpr FixedMap<MockAComparableToB, int, 3, std::less<>> s{};
     constexpr MockBComparableToA b{5};
@@ -1271,7 +1271,7 @@ TEST(FixedMap, Contains)
     static_assert(s1.at(4) == 40);
 }
 
-TEST(FixedMap, Contains_TransparentComparator)
+TEST(FixedMap, ContainsTransparentComparator)
 {
     constexpr FixedMap<MockAComparableToB, int, 5, std::less<>> s{
         {MockAComparableToB{1}, 10}, {MockAComparableToB{3}, 30}, {MockAComparableToB{5}, 50}};
@@ -1293,7 +1293,7 @@ TEST(FixedMap, Count)
     static_assert(s1.at(4) == 40);
 }
 
-TEST(FixedMap, Count_TransparentComparator)
+TEST(FixedMap, CountTransparentComparator)
 {
     constexpr FixedMap<MockAComparableToB, int, 5, std::less<>> s{
         {MockAComparableToB{1}, 10}, {MockAComparableToB{3}, 30}, {MockAComparableToB{5}, 50}};
@@ -1313,7 +1313,7 @@ TEST(FixedMap, LowerBound)
     static_assert(s1.lower_bound(5) == s1.cend());
 }
 
-TEST(FixedMap, LowerBound_TransparentComparator)
+TEST(FixedMap, LowerBoundTransparentComparator)
 {
     constexpr FixedMap<MockAComparableToB, int, 5, std::less<>> s{
         {MockAComparableToB{1}, 10}, {MockAComparableToB{3}, 30}, {MockAComparableToB{5}, 50}};
@@ -1333,7 +1333,7 @@ TEST(FixedMap, UpperBound)
     static_assert(s1.upper_bound(5) == s1.cend());
 }
 
-TEST(FixedMap, UpperBound_TransparentComparator)
+TEST(FixedMap, UpperBoundTransparentComparator)
 {
     constexpr FixedMap<MockAComparableToB, int, 5, std::less<>> s{
         {MockAComparableToB{1}, 10}, {MockAComparableToB{3}, 30}, {MockAComparableToB{5}, 50}};
@@ -1362,7 +1362,7 @@ TEST(FixedMap, EqualRange)
     static_assert(s1.equal_range(5).second == s1.upper_bound(5));
 }
 
-TEST(FixedMap, EqualRange_TransparentComparator)
+TEST(FixedMap, EqualRangeTransparentComparator)
 {
     constexpr FixedMap<MockAComparableToB, int, 5, std::less<>> s{
         {MockAComparableToB{1}, 10}, {MockAComparableToB{3}, 30}, {MockAComparableToB{5}, 50}};
@@ -1632,7 +1632,7 @@ struct FixedMapInstanceCheckFixture : public ::testing::Test
 TYPED_TEST_SUITE_P(FixedMapInstanceCheckFixture);
 }  // namespace
 
-TYPED_TEST_P(FixedMapInstanceCheckFixture, FixedMap_InstanceCheck)
+TYPED_TEST_P(FixedMapInstanceCheckFixture, FixedMapInstanceCheck)
 {
     using MapOfInstanceCounterType = TypeParam;
     using InstanceCounterType = typename MapOfInstanceCounterType::key_type;
@@ -1901,7 +1901,7 @@ TYPED_TEST_P(FixedMapInstanceCheckFixture, FixedMap_InstanceCheck)
     ASSERT_EQ(0, InstanceCounterType::counter);
 }
 
-REGISTER_TYPED_TEST_SUITE_P(FixedMapInstanceCheckFixture, FixedMap_InstanceCheck);
+REGISTER_TYPED_TEST_SUITE_P(FixedMapInstanceCheckFixture, FixedMapInstanceCheck);
 
 // We want same semantics as std::map, so run it with std::map as well
 using FixedMapInstanceCheckTypes = testing::Types<

@@ -532,7 +532,7 @@ TEST(FixedRedBlackTree, InsertionExample2)
     }
 }
 
-TEST(FixedRedBlackTree, Insertion_FocusOnTheRight)
+TEST(FixedRedBlackTree, InsertionFocusOnTheRight)
 {
     FixedRedBlackTree<int, int, 20> bst;
 
@@ -713,7 +713,7 @@ TEST(FixedRedBlackTree, Insertion_FocusOnTheRight)
 }
 
 // This is symmetric to Example3: for every key x do (20 - x) instead
-TEST(FixedRedBlackTree, Insertion_FocusOnTheLeft)
+TEST(FixedRedBlackTree, InsertionFocusOnTheLeft)
 {
     FixedRedBlackTree<int, int, 20> bst;
 
@@ -1382,7 +1382,7 @@ TEST(FixedRedBlackTree, Deletion)
     }
 }
 
-TEST(FixedRedBlackTree, Deletion_CornerCases)
+TEST(FixedRedBlackTree, DeletionCornerCases)
 {
     // Delete root as the last element
     {

@@ -113,7 +113,7 @@ TEST(EnumSet, CopyOf)
     static_assert(s1.size() == 2);
 }
 
-TEST(EnumSet, Builder_Insert)
+TEST(EnumSet, BuilderInsert)
 {
     constexpr EnumSet<TestEnum1> a{TestEnum1::TWO, TestEnum1::FOUR};
     constexpr TestEnum1 b = TestEnum1 ::TWO;
@@ -134,7 +134,7 @@ TEST(EnumSet, Builder_Insert)
     static_assert(s1.contains(TestEnum1::FOUR));
 }
 
-TEST(EnumSet, Builder_FluentSyntaxWithNoCopies)
+TEST(EnumSet, BuilderFluentSyntaxWithNoCopies)
 {
     // Constructing like this to bypass the imposed non-copyability of this enum
     constexpr std::array<NonCopyableRichEnum, 2> a{
@@ -160,7 +160,7 @@ TEST(EnumSet, Builder_FluentSyntaxWithNoCopies)
     static_assert(s1.contains(NonCopyableRichEnum::C_FOUR()));
 }
 
-TEST(EnumSet, Builder_MultipleOuts)
+TEST(EnumSet, BuilderMultipleOuts)
 {
     constexpr std::array<TestEnum1, 2> a{TestEnum1::TWO, TestEnum1::FOUR};
     constexpr TestEnum1 b = TestEnum1::TWO;
@@ -350,7 +350,7 @@ TEST(EnumSet, InsertInitializer)
     static_assert(s1.contains(TestEnum1::FOUR));
 }
 
-TEST(EnumSet, Insert_Iterators)
+TEST(EnumSet, InsertIterators)
 {
     constexpr auto s1 = []()
     {
@@ -487,7 +487,7 @@ TEST(EnumSet, EraseIterator)
     static_assert(s1.contains(TestEnum1::FOUR));
 }
 
-TEST(EnumSet, EraseIterator_InvalidIterator)
+TEST(EnumSet, EraseIteratorInvalidIterator)
 {
     EnumSet<TestEnum1> s{TestEnum1::TWO, TestEnum1::FOUR};
     {
@@ -590,7 +590,7 @@ TEST(EnumSet, IteratorBasic)
     static_assert(*std::prev(s1.end(), 4) == TestEnum1::ONE);
 }
 
-TEST(EnumSet, Iterator_OffByOneIssues)
+TEST(EnumSet, IteratorOffByOneIssues)
 {
     constexpr EnumSet<TestEnum1> s1{{TestEnum1::ONE, TestEnum1::FOUR}};
 
@@ -603,7 +603,7 @@ TEST(EnumSet, Iterator_OffByOneIssues)
     static_assert(*std::prev(s1.end(), 2) == TestEnum1::ONE);
 }
 
-TEST(EnumSet, Iterator_EnsureOrder)
+TEST(EnumSet, IteratorEnsureOrder)
 {
     constexpr auto s1 = []()
     {

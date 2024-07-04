@@ -129,7 +129,7 @@ TEST(FixedCircularQueue, Push)
     static_assert(s1.size() == 2);
 }
 
-TEST(FixedCircularQueue, Push_ExceedsCapacity)
+TEST(FixedCircularQueue, PushExceedsCapacity)
 {
     constexpr auto v1 = []()
     {
@@ -165,7 +165,7 @@ TEST(FixedCircularQueue, Emplace)
     static_assert(s1.size() == 2);
 }
 
-TEST(FixedCircularQueue, Emplace_ExceedsCapacity)
+TEST(FixedCircularQueue, EmplaceExceedsCapacity)
 {
     constexpr FixedCircularQueue<int, 4> s1 = []()
     {

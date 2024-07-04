@@ -136,7 +136,7 @@ TEST(FixedCircularDeque, CountConstructor)
     }
 }
 
-TEST(FixedCircularDeque, CountConstructor_ExceedsCapacity)
+TEST(FixedCircularDeque, CountConstructorExceedsCapacity)
 {
     constexpr FixedCircularDeque<int, 8> v2(1000, 3);
     static_assert(v2.size() == 8);
@@ -165,7 +165,7 @@ TEST(FixedCircularDeque, IteratorConstructor)
     static_assert(std::ranges::equal(v2, std::array{77, 99}));
 }
 
-TEST(FixedCircularDeque, IteratorConstructor_ExceedsCapacity)
+TEST(FixedCircularDeque, IteratorConstructorExceedsCapacity)
 {
     constexpr std::array<int, 7> v1{7, 6, 5, 4, 3, 2, 1};
 
@@ -184,7 +184,7 @@ TEST(FixedCircularDeque, InputIteratorConstructor)
     EXPECT_TRUE(std::ranges::equal(v, std::array{3, 2, 1}));
 }
 
-TEST(FixedCircularDeque, InputIteratorConstructor_ExceedsCapacity)
+TEST(FixedCircularDeque, InputIteratorConstructorExceedsCapacity)
 {
     MockIntegralStream<int> stream{7};
     FixedCircularDeque<int, 3> v{stream.begin(), stream.end()};
@@ -204,7 +204,7 @@ TEST(FixedCircularDeque, InitializerConstructor)
     EXPECT_TRUE(std::ranges::equal(v2, std::array{66, 55}));
 }
 
-TEST(FixedCircularDeque, InitializerConstructor_ExceedsCapacity)
+TEST(FixedCircularDeque, InitializerConstructorExceedsCapacity)
 {
     constexpr FixedCircularDeque<int, 3> v2{1, 2, 3, 4, 5};
     static_assert(v2.size() == 3);
@@ -242,7 +242,7 @@ TEST(FixedCircularDeque, PushBack)
     run_test(FixedCircularDequeInitialStateLastIndex{});
 }
 
-TEST(FixedCircularDeque, PushBack_ExceedsCapacity)
+TEST(FixedCircularDeque, PushBackExceedsCapacity)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
@@ -310,7 +310,7 @@ TEST(FixedCircularDeque, EmplaceBack)
     run_test(FixedCircularDequeInitialStateLastIndex{});
 }
 
-TEST(FixedCircularDeque, EmplaceBack_ExceedsCapacity)
+TEST(FixedCircularDeque, EmplaceBackExceedsCapacity)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
@@ -459,7 +459,7 @@ TEST(FixedCircularDeque, PopBack)
     run_test(FixedCircularDequeInitialStateLastIndex{});
 }
 
-TEST(FixedCircularDeque, PopBack_Empty)
+TEST(FixedCircularDeque, PopBackEmpty)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
@@ -500,7 +500,7 @@ TEST(FixedCircularDeque, PushFront)
     run_test(FixedCircularDequeInitialStateLastIndex{});
 }
 
-TEST(FixedCircularDeque, PushFront_ExceedsCapacity)
+TEST(FixedCircularDeque, PushFrontExceedsCapacity)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
@@ -568,7 +568,7 @@ TEST(FixedCircularDeque, EmplaceFront)
     run_test(FixedCircularDequeInitialStateLastIndex{});
 }
 
-TEST(FixedCircularDeque, EmplaceFront_ExceedsCapacity)
+TEST(FixedCircularDeque, EmplaceFrontExceedsCapacity)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
@@ -612,7 +612,7 @@ TEST(FixedCircularDeque, PopFront)
     run_test(FixedCircularDequeInitialStateLastIndex{});
 }
 
-TEST(FixedCircularDeque, PopFront_Empty)
+TEST(FixedCircularDeque, PopFrontEmpty)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
@@ -698,7 +698,7 @@ TEST(FixedCircularDeque, At)
     run_test(FixedCircularDequeInitialStateLastIndex{});
 }
 
-TEST(FixedCircularDeque, At_OutOfBounds)
+TEST(FixedCircularDeque, AtOutOfBounds)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
@@ -1128,7 +1128,7 @@ TEST(FixedCircularDeque, ReverseIteratorBase)
 // This ended up being problematic when having an iterator and the starting_index changes
 // after it is created. Keeping this test as a Regression test for the future.
 // The comments in this test refer to the aforementioned old state.
-TEST(FixedCircularDeque, Iterator_Regression_ConsistencyWhenTheStartingIndexIsChanged)
+TEST(FixedCircularDeque, IteratorRegressionConsistencyWhenTheStartingIndexIsChanged)
 {
     {
         // Old start = 2, New start = 0
@@ -1265,7 +1265,7 @@ TEST(FixedCircularDeque, Resize)
     run_test(FixedCircularDequeInitialStateLastIndex{});
 }
 
-TEST(FixedCircularDeque, Resize_ExceedsCapacity)
+TEST(FixedCircularDeque, ResizeExceedsCapacity)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
@@ -1382,7 +1382,7 @@ TEST(FixedCircularDeque, Emplace)
     run_test(FixedCircularDequeInitialStateLastIndex{});
 }
 
-TEST(FixedCircularDeque, Emplace_ExceedsCapacity)
+TEST(FixedCircularDeque, EmplaceExceedsCapacity)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
@@ -1452,7 +1452,7 @@ TEST(FixedCircularDeque, AssignValue)
     run_test(FixedCircularDequeInitialStateLastIndex{});
 }
 
-TEST(FixedCircularDeque, AssignValue_ExceedsCapacity)
+TEST(FixedCircularDeque, AssignValueExceedsCapacity)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
@@ -1508,7 +1508,7 @@ TEST(FixedCircularDeque, AssignIterator)
     run_test(FixedCircularDequeInitialStateLastIndex{});
 }
 
-TEST(FixedCircularDeque, AssignIterator_ExceedsCapacity)
+TEST(FixedCircularDeque, AssignIteratorExceedsCapacity)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
@@ -1545,7 +1545,7 @@ TEST(FixedCircularDeque, AssignInputIterator)
     run_test(FixedCircularDequeInitialStateLastIndex{});
 }
 
-TEST(FixedCircularDeque, AssignInputIterator_ExceedsCapacity)
+TEST(FixedCircularDeque, AssignInputIteratorExceedsCapacity)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
@@ -1593,7 +1593,7 @@ TEST(FixedCircularDeque, AssignInitializerList)
     run_test(FixedCircularDequeInitialStateLastIndex{});
 }
 
-TEST(FixedCircularDeque, AssignInitializerList_ExceedsCapacity)
+TEST(FixedCircularDeque, AssignInitializerListExceedsCapacity)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
@@ -1677,7 +1677,7 @@ TEST(FixedCircularDeque, InsertValue)
     run_test(FixedCircularDequeInitialStateLastIndex{});
 }
 
-TEST(FixedCircularDeque, InsertValue_ExceedsCapacity)
+TEST(FixedCircularDeque, InsertValueExceedsCapacity)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
@@ -1740,7 +1740,7 @@ TEST(FixedCircularDeque, InsertIterator)
     run_test(FixedCircularDequeInitialStateLastIndex{});
 }
 
-TEST(FixedCircularDeque, InsertIterator_ExceedsCapacity)
+TEST(FixedCircularDeque, InsertIteratorExceedsCapacity)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
@@ -1759,7 +1759,7 @@ TEST(FixedCircularDeque, InsertIterator_ExceedsCapacity)
     run_test(FixedCircularDequeInitialStateLastIndex{});
 }
 
-TEST(FixedCircularDeque, InsertIterator_ExceedsCapacityAndMeetsInsertingLocation)
+TEST(FixedCircularDeque, InsertIteratorExceedsCapacityAndMeetsInsertingLocation)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
@@ -1825,7 +1825,7 @@ TEST(FixedCircularDeque, InsertIterator_ExceedsCapacityAndMeetsInsertingLocation
     run_test(FixedCircularDequeInitialStateLastIndex{});
 }
 
-TEST(FixedCircularDeque, InsertIterator_ExceedsCapacityAndIsEndIterator)
+TEST(FixedCircularDeque, InsertIteratorExceedsCapacityAndIsEndIterator)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
@@ -1893,7 +1893,7 @@ TEST(FixedCircularDeque, InsertInputIterator)
     run_test(FixedCircularDequeInitialStateLastIndex{});
 }
 
-TEST(FixedCircularDeque, InsertInputIterator_ExceedsCapacity)
+TEST(FixedCircularDeque, InsertInputIteratorExceedsCapacity)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
@@ -1909,7 +1909,7 @@ TEST(FixedCircularDeque, InsertInputIterator_ExceedsCapacity)
     run_test(FixedCircularDequeInitialStateLastIndex{});
 }
 
-TEST(FixedCircularDeque, InsertInputIterator_ExceedsCapacityAndMeetsInsertingLocation)
+TEST(FixedCircularDeque, InsertInputIteratorExceedsCapacityAndMeetsInsertingLocation)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
@@ -1959,7 +1959,7 @@ TEST(FixedCircularDeque, InsertInputIterator_ExceedsCapacityAndMeetsInsertingLoc
     run_test(FixedCircularDequeInitialStateLastIndex{});
 }
 
-TEST(FixedCircularDeque, InsertInputIterator_ExceedsCapacityAndIsEndIterator)
+TEST(FixedCircularDeque, InsertInputIteratorExceedsCapacityAndIsEndIterator)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
@@ -2029,7 +2029,7 @@ TEST(FixedCircularDeque, InsertInitializerList)
     run_test(FixedCircularDequeInitialStateLastIndex{});
 }
 
-TEST(FixedCircularDeque, InsertInitializerList_ExceedsCapacity)
+TEST(FixedCircularDeque, InsertInitializerListExceedsCapacity)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
@@ -2140,7 +2140,7 @@ TEST(FixedCircularDeque, EraseOne)
     run_test(FixedCircularDequeInitialStateLastIndex{});
 }
 
-TEST(FixedCircularDeque, Erase_Empty)
+TEST(FixedCircularDeque, EraseEmpty)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
@@ -2249,7 +2249,7 @@ TEST(FixedCircularDeque, Front)
     run_test(FixedCircularDequeInitialStateLastIndex{});
 }
 
-TEST(FixedCircularDeque, Front_EmptyContainer)
+TEST(FixedCircularDeque, FrontEmptyContainer)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
@@ -2293,7 +2293,7 @@ TEST(FixedCircularDeque, Back)
     run_test(FixedCircularDequeInitialStateLastIndex{});
 }
 
-TEST(FixedCircularDeque, Back_EmptyContainer)
+TEST(FixedCircularDeque, BackEmptyContainer)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
@@ -2427,7 +2427,7 @@ struct FixedCircularDequeInstanceCheckFixture : public ::testing::Test
 TYPED_TEST_SUITE_P(FixedCircularDequeInstanceCheckFixture);
 }  // namespace
 
-TYPED_TEST_P(FixedCircularDequeInstanceCheckFixture, FixedCircularDeque_InstanceCheck)
+TYPED_TEST_P(FixedCircularDequeInstanceCheckFixture, FixedCircularDequeInstanceCheck)
 {
     using CircularDequeOfInstanceCounterType = TypeParam;
     using InstanceCounterType = typename CircularDequeOfInstanceCounterType::value_type;
@@ -2601,7 +2601,7 @@ TYPED_TEST_P(FixedCircularDequeInstanceCheckFixture, FixedCircularDeque_Instance
 }
 
 REGISTER_TYPED_TEST_SUITE_P(FixedCircularDequeInstanceCheckFixture,
-                            FixedCircularDeque_InstanceCheck);
+                            FixedCircularDequeInstanceCheck);
 
 // We want same semantics as std::deque, so run it with std::deque as well
 // Note: there is not std:: equivalent, but std::deque is the closest

@@ -307,7 +307,7 @@ TEST(FixedVector, MockTriviallyCopyableButNotCopyableOrMoveable)
     }
 }
 
-TEST(FixedVector, Builder_FluentSyntaxWithNoExtraCopies)
+TEST(FixedVector, BuilderFluentSyntaxWithNoExtraCopies)
 {
     {
         constexpr std::array<int, 2> a{2, 4};
@@ -342,7 +342,7 @@ TEST(FixedVector, Builder_FluentSyntaxWithNoExtraCopies)
     }
 }
 
-TEST(FixedVector, Builder_MultipleOuts)
+TEST(FixedVector, BuilderMultipleOuts)
 {
     {
         constexpr std::array<int, 2> a{2, 4};
@@ -460,7 +460,7 @@ TEST(FixedVector, CountConstructor)
     }
 }
 
-TEST(FixedVector, CountConstructor_ExceedsCapacity)
+TEST(FixedVector, CountConstructorExceedsCapacity)
 {
     EXPECT_DEATH((FixedVector<int, 8>(1000, 3)), "");
 }
@@ -473,7 +473,7 @@ TEST(FixedVector, IteratorConstructor)
     static_assert(std::ranges::equal(v2, std::array{77, 99}));
 }
 
-TEST(FixedVector, IteratorConstructor_ExceedsCapacity)
+TEST(FixedVector, IteratorConstructorExceedsCapacity)
 {
     constexpr std::array<int, 5> v1{1, 2, 3, 4, 5};
 
@@ -488,7 +488,7 @@ TEST(FixedVector, InputIteratorConstructor)
     EXPECT_TRUE(std::ranges::equal(v, std::array{3, 2, 1}));
 }
 
-TEST(FixedVector, InputIteratorConstructor_ExceedsCapacity)
+TEST(FixedVector, InputIteratorConstructorExceedsCapacity)
 {
     MockIntegralStream<int> stream{7};
     EXPECT_DEATH((FixedVector<int, 3>{stream.begin(), stream.end()}), "");
@@ -506,7 +506,7 @@ TEST(FixedVector, InitializerConstructor)
     EXPECT_TRUE(std::ranges::equal(v2, std::array{66, 55}));
 }
 
-TEST(FixedVector, InitializerConstructor_ExceedsCapacity)
+TEST(FixedVector, InitializerConstructorExceedsCapacity)
 {
     EXPECT_DEATH((FixedVector<int, 3>{1, 2, 3, 4, 5}), "");
 }
@@ -534,7 +534,7 @@ TEST(FixedVector, PushBack)
     static_assert(v2.size() == 1);
 }
 
-TEST(FixedVector, PushBack_ExceedsCapacity)
+TEST(FixedVector, PushBackExceedsCapacity)
 {
     FixedVector<int, 2> v{};
     v.push_back(0);
@@ -582,7 +582,7 @@ TEST(FixedVector, EmplaceBack)
     }
 }
 
-TEST(FixedVector, EmplaceBack_ExceedsCapacity)
+TEST(FixedVector, EmplaceBackExceedsCapacity)
 {
     FixedVector<int, 2> v{};
     v.emplace_back(0);
@@ -659,7 +659,7 @@ TEST(FixedVector, PopBack)
     EXPECT_TRUE(std::ranges::equal(v2, std::array{10, 11}));
 }
 
-TEST(FixedVector, PopBack_Empty)
+TEST(FixedVector, PopBackEmpty)
 {
     FixedVector<int, 5> v1{};
     EXPECT_DEATH(v1.pop_back(), "");
@@ -729,7 +729,7 @@ TEST(FixedVector, At)
     EXPECT_EQ(v3.at(2), 2);
 }
 
-TEST(FixedVector, At_OutOfBounds)
+TEST(FixedVector, AtOutOfBounds)
 {
     auto v2 = FixedVector<int, 11>{0, 1, 2};
     EXPECT_DEATH(v2.at(3) = 901, "");
@@ -1206,7 +1206,7 @@ TEST(FixedVector, Resize)
     }
 }
 
-TEST(FixedVector, Resize_ExceedsCapacity)
+TEST(FixedVector, ResizeExceedsCapacity)
 {
     FixedVector<int, 3> v1{};
     EXPECT_DEATH(v1.resize(6), "");
@@ -1347,7 +1347,7 @@ TEST(FixedVector, Emplace)
     }
 }
 
-TEST(FixedVector, Emplace_ExceedsCapacity)
+TEST(FixedVector, EmplaceExceedsCapacity)
 {
     FixedVector<int, 2> v{};
     v.emplace(v.begin(), 0);
@@ -1397,7 +1397,7 @@ TEST(FixedVector, AssignValue)
     }
 }
 
-TEST(FixedVector, AssignValue_ExceedsCapacity)
+TEST(FixedVector, AssignValueExceedsCapacity)
 {
     FixedVector<int, 3> v1{0, 1, 2};
     EXPECT_DEATH(v1.assign(5, 100), "");
@@ -1432,7 +1432,7 @@ TEST(FixedVector, AssignIterator)
     }
 }
 
-TEST(FixedVector, AssignIterator_ExceedsCapacity)
+TEST(FixedVector, AssignIteratorExceedsCapacity)
 {
     FixedVector<int, 3> v1{0, 1, 2};
     std::array<int, 5> a{300, 300, 300, 300, 300};
@@ -1448,7 +1448,7 @@ TEST(FixedVector, AssignInputIterator)
     EXPECT_TRUE(std::ranges::equal(v, std::array{3, 2, 1}));
 }
 
-TEST(FixedVector, AssignInputIterator_ExceedsCapacity)
+TEST(FixedVector, AssignInputIteratorExceedsCapacity)
 {
     MockIntegralStream<int> stream{7};
     FixedVector<int, 2> v{};
@@ -1482,7 +1482,7 @@ TEST(FixedVector, AssignInitializerList)
     }
 }
 
-TEST(FixedVector, AssignInitializerList_ExceedsCapacity)
+TEST(FixedVector, AssignInitializerListExceedsCapacity)
 {
     FixedVector<int, 3> v{0, 1, 2};
     EXPECT_DEATH(v.assign({300, 300, 300, 300, 300}), "");
@@ -1543,7 +1543,7 @@ TEST(FixedVector, InsertValue)
     }
 }
 
-TEST(FixedVector, InsertValue_ExceedsCapacity)
+TEST(FixedVector, InsertValueExceedsCapacity)
 {
     FixedVector<int, 4> v1{0, 1, 2, 3};
     EXPECT_DEATH(v1.insert(std::next(v1.begin(), 1), 5), "");
@@ -1588,7 +1588,7 @@ TEST(FixedVector, InsertIterator)
     }
 }
 
-TEST(FixedVector, InsertIterator_ExceedsCapacity)
+TEST(FixedVector, InsertIteratorExceedsCapacity)
 {
     FixedVector<int, 4> v1{0, 1, 2};
     std::array<int, 2> a{3, 4};
@@ -1605,7 +1605,7 @@ TEST(FixedVector, InsertInputIterator)
     EXPECT_EQ(it, std::next(v.begin(), 2));
 }
 
-TEST(FixedVector, InsertInputIterator_ExceedsCapacity)
+TEST(FixedVector, InsertInputIteratorExceedsCapacity)
 {
     MockIntegralStream<int> stream{3};
     FixedVector<int, 6> v{10, 20, 30, 40};
@@ -1636,7 +1636,7 @@ TEST(FixedVector, InsertInitializerList)
     }
 }
 
-TEST(FixedVector, InsertInitializerList_ExceedsCapacity)
+TEST(FixedVector, InsertInitializerListExceedsCapacity)
 {
     FixedVector<int, 4> v1{0, 1, 2};
     EXPECT_DEATH(v1.insert(std::next(v1.begin(), 1), {3, 4}), "");
@@ -1717,7 +1717,7 @@ TEST(FixedVector, EraseOne)
     }
 }
 
-TEST(FixedVector, Erase_Empty)
+TEST(FixedVector, EraseEmpty)
 {
     {
         FixedVector<int, 3> v1{};
@@ -1799,7 +1799,7 @@ TEST(FixedVector, Front)
     EXPECT_EQ(v2_const_ref.front(), 777);  // const variant
 }
 
-TEST(FixedVector, Front_EmptyContainer)
+TEST(FixedVector, FrontEmptyContainer)
 {
     {
         const FixedVector<int, 3> v{};
@@ -1831,7 +1831,7 @@ TEST(FixedVector, Back)
     EXPECT_EQ(v2_const_ref.back(), 999);  // const variant
 }
 
-TEST(FixedVector, Back_EmptyContainer)
+TEST(FixedVector, BackEmptyContainer)
 {
     {
         const FixedVector<int, 3> v{};
@@ -2078,7 +2078,7 @@ struct FixedVectorInstanceCheckFixture : public ::testing::Test
 TYPED_TEST_SUITE_P(FixedVectorInstanceCheckFixture);
 }  // namespace
 
-TYPED_TEST_P(FixedVectorInstanceCheckFixture, FixedVector_InstanceCheck)
+TYPED_TEST_P(FixedVectorInstanceCheckFixture, FixedVectorInstanceCheck)
 {
     using VectorOfInstanceCounterType = TypeParam;
     using InstanceCounterType = typename VectorOfInstanceCounterType::value_type;
@@ -2250,7 +2250,7 @@ TYPED_TEST_P(FixedVectorInstanceCheckFixture, FixedVector_InstanceCheck)
     ASSERT_EQ(0, InstanceCounterType::counter);
 }
 
-REGISTER_TYPED_TEST_SUITE_P(FixedVectorInstanceCheckFixture, FixedVector_InstanceCheck);
+REGISTER_TYPED_TEST_SUITE_P(FixedVectorInstanceCheckFixture, FixedVectorInstanceCheck);
 
 // We want same semantics as std::vector, so run it with std::vector as well
 using FixedVectorInstanceCheckTypes =

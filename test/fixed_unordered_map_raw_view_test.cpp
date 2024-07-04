@@ -107,7 +107,7 @@ TEST(FixedUnorderedMapRawView, PairSizeComputations)
     test_size_computations<int, char[5]>();
 }
 
-TYPED_TEST_P(FixedUnorderedMapRawViewEntryViewFixture, MapEntryRawView_Test)
+TYPED_TEST_P(FixedUnorderedMapRawViewEntryViewFixture, MapEntryRawViewTest)
 {
     auto map_entry = TypeParam::VALUE;
     using Entry = decltype(map_entry);
@@ -117,7 +117,7 @@ TYPED_TEST_P(FixedUnorderedMapRawViewEntryViewFixture, MapEntryRawView_Test)
     EXPECT_EQ(map_entry.value(), get_from_ptr<typename Entry::ValueType>(view.value()));
 }
 
-TYPED_TEST_P(FixedUnorderedMapRawViewEntryViewFixture, MapEntrySizeComputations_Test)
+TYPED_TEST_P(FixedUnorderedMapRawViewEntryViewFixture, MapEntrySizeComputationsTest)
 {
     using Pair = decltype(TypeParam::VALUE);
     using Key = typename Pair::KeyType;
@@ -130,8 +130,8 @@ TYPED_TEST_P(FixedUnorderedMapRawViewEntryViewFixture, MapEntrySizeComputations_
 }
 
 REGISTER_TYPED_TEST_SUITE_P(FixedUnorderedMapRawViewEntryViewFixture,
-                            MapEntryRawView_Test,
-                            MapEntrySizeComputations_Test);
+                            MapEntryRawViewTest,
+                            MapEntrySizeComputationsTest);
 
 using MapEntryRawViewTypes = ::testing::Types<
     TestSetArgument<MapEntry<int, int>{31, 13}>,

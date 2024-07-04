@@ -14,7 +14,7 @@
 namespace fixed_containers
 {
 
-TEST(PairView, std_get)
+TEST(PairView, stdget)
 {
     {
         int first_value = 5;

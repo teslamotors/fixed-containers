@@ -24,7 +24,7 @@ namespace
 using fixed_containers::type_name;
 using test_namespace::Fruit;
 
-TEST(type_name, with_enum)
+TEST(TypeName, WithEnum)
 {
 #if defined(__clang__) || defined(__GNUC__)
     static_assert(type_name<Fruit>() == "test_namespace::Fruit");
@@ -74,7 +74,7 @@ TEST(type_name, with_enum)
 
 using MyVariant = std::variant<Fruit, float>;
 
-TEST(type_name, with_variant)
+TEST(TypeName, WithVariant)
 {
 #if defined(__clang__) || defined(__GNUC__)
     static_assert(type_name<MyVariant>() == "std::variant<test_namespace::Fruit, float>");

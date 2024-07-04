@@ -79,7 +79,7 @@ TEST(FixedSet, Initializer)
     static_assert(s2.size() == 1);
 }
 
-TEST(FixedSet, Find_TransparentComparator)
+TEST(FixedSet, FindTransparentComparator)
 {
     constexpr FixedSet<MockAComparableToB, 3, std::less<>> s{};
     constexpr MockBComparableToA b{5};
@@ -97,7 +97,7 @@ TEST(FixedSet, Contains)
     static_assert(s1.contains(4));
 }
 
-TEST(FixedSet, Contains_TransparentComparator)
+TEST(FixedSet, ContainsTransparentComparator)
 {
     constexpr FixedSet<MockAComparableToB, 5, std::less<>> s{
         MockAComparableToB{1}, MockAComparableToB{3}, MockAComparableToB{5}};
@@ -105,7 +105,7 @@ TEST(FixedSet, Contains_TransparentComparator)
     static_assert(s.contains(b));
 }
 
-TEST(FixedSet, Count_TransparentComparator)
+TEST(FixedSet, CountTransparentComparator)
 {
     constexpr FixedSet<MockAComparableToB, 5, std::less<>> s{
         MockAComparableToB{1}, MockAComparableToB{3}, MockAComparableToB{5}};
@@ -125,7 +125,7 @@ TEST(FixedSet, LowerBound)
     static_assert(s1.lower_bound(5) == s1.cend());
 }
 
-TEST(FixedSet, LowerBound_TransparentComparator)
+TEST(FixedSet, LowerBoundTransparentComparator)
 {
     constexpr FixedSet<MockAComparableToB, 5, std::less<>> s{
         MockAComparableToB{1}, MockAComparableToB{3}, MockAComparableToB{5}};
@@ -145,7 +145,7 @@ TEST(FixedSet, UpperBound)
     static_assert(s1.upper_bound(5) == s1.cend());
 }
 
-TEST(FixedSet, UpperBound_TransparentComparator)
+TEST(FixedSet, UpperBoundTransparentComparator)
 {
     constexpr FixedSet<MockAComparableToB, 5, std::less<>> s{
         MockAComparableToB{1}, MockAComparableToB{3}, MockAComparableToB{5}};
@@ -174,7 +174,7 @@ TEST(FixedSet, EqualRange)
     static_assert(s1.equal_range(5).second == s1.upper_bound(5));
 }
 
-TEST(FixedSet, EqualRange_TransparentComparator)
+TEST(FixedSet, EqualRangeTransparentComparator)
 {
     constexpr FixedSet<MockAComparableToB, 5, std::less<>> s{
         MockAComparableToB{1}, MockAComparableToB{3}, MockAComparableToB{5}};
@@ -250,7 +250,7 @@ TEST(FixedSet, Insert)
     static_assert(s1.contains(4));
 }
 
-TEST(FixedSet, Insert_ExceedsCapacity)
+TEST(FixedSet, InsertExceedsCapacity)
 {
     {
         FixedSet<int, 2> s1{};
@@ -322,7 +322,7 @@ TEST(FixedSet, InsertInitializer)
     static_assert(s1.contains(4));
 }
 
-TEST(FixedSet, Insert_Iterators)
+TEST(FixedSet, InsertIterators)
 {
     constexpr auto s1 = []()
     {
@@ -390,7 +390,7 @@ TEST(FixedSet, Emplace)
     }
 }
 
-TEST(FixedSet, Emplace_ExceedsCapacity)
+TEST(FixedSet, EmplaceExceedsCapacity)
 {
     {
         FixedSet<int, 2> s1{};
@@ -468,7 +468,7 @@ TEST(FixedSet, EraseIterator)
     static_assert(s1.contains(4));
 }
 
-TEST(FixedSet, EraseIterator_Ambiguity)
+TEST(FixedSet, EraseIteratorAmbiguity)
 {
     // If the iterator has extraneous auto-conversions, it might cause ambiguity between the various
     // overloads
@@ -476,7 +476,7 @@ TEST(FixedSet, EraseIterator_Ambiguity)
     s1.erase("");
 }
 
-TEST(FixedSet, EraseIterator_InvalidIterator)
+TEST(FixedSet, EraseIteratorInvalidIterator)
 {
     FixedSet<int, 10> s{2, 4};
     {
@@ -578,7 +578,7 @@ TEST(FixedSet, IteratorBasic)
     static_assert(*std::prev(s1.end(), 4) == 1);
 }
 
-TEST(FixedSet, Iterator_OffByOneIssues)
+TEST(FixedSet, IteratorOffByOneIssues)
 {
     constexpr FixedSet<int, 10> s1{{1, 4}};
 
@@ -591,7 +591,7 @@ TEST(FixedSet, Iterator_OffByOneIssues)
     static_assert(*std::prev(s1.end(), 2) == 1);
 }
 
-TEST(FixedSet, Iterator_EnsureOrder)
+TEST(FixedSet, IteratorEnsureOrder)
 {
     constexpr auto s1 = []()
     {

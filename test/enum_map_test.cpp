@@ -127,7 +127,7 @@ TEST(EnumMap, Initializer)
     static_assert(s2.size() == 1);
 }
 
-TEST(EnumMap, Builder_FluentSyntaxWithNoExtraCopies)
+TEST(EnumMap, BuilderFluentSyntaxWithNoExtraCopies)
 {
     constexpr std::array<std::pair<TestRichEnum1, int>, 2> a{
         std::pair{TestRichEnum1::C_THREE(), 33},
@@ -157,7 +157,7 @@ TEST(EnumMap, Builder_FluentSyntaxWithNoExtraCopies)
     static_assert(s1.at(TestRichEnum1::C_FOUR()) == 44);
 }
 
-TEST(EnumMap, Builder_MultipleOuts)
+TEST(EnumMap, BuilderMultipleOuts)
 {
     constexpr std::array<std::pair<TestEnum1, int>, 2> a{
         std::pair{TestEnum1::THREE, 33},
@@ -210,7 +210,7 @@ TEST(EnumMap, Builder_MultipleOuts)
     }
 }
 
-TEST(EnumMap, StaticFactory_CreateWithKeys)
+TEST(EnumMap, StaticFactoryCreateWithKeys)
 {
     {
         constexpr std::array keys{TestEnum1 ::ONE, TestEnum1 ::FOUR};
@@ -391,7 +391,7 @@ TEST(EnumMap, EmptySizeFull)
     static_assert(!is_full(s4));
 }
 
-TEST(EnumMap, OperatorBracket_Constexpr)
+TEST(EnumMap, OperatorBracketConstexpr)
 {
     constexpr auto s1 = []()
     {
@@ -408,7 +408,7 @@ TEST(EnumMap, OperatorBracket_Constexpr)
     static_assert(s1.contains(TestEnum1::FOUR));
 }
 
-TEST(EnumMap, OperatorBracket_NonConstexpr)
+TEST(EnumMap, OperatorBracketNonConstexpr)
 {
     EnumMap<TestEnum1, int> s1{};
     s1[TestEnum1::TWO] = 25;
@@ -444,7 +444,7 @@ struct ConstructionCounter
 int ConstructionCounter::counter = 0;
 }  // namespace
 
-TEST(EnumMap, OperatorBracket_EnsureNoUnnecessaryTemporaries)
+TEST(EnumMap, OperatorBracketEnsureNoUnnecessaryTemporaries)
 {
     EnumMap<TestEnum1, ConstructionCounter> s1{};
     ASSERT_EQ(0, ConstructionCounter::counter);
@@ -654,7 +654,7 @@ TEST(EnumMap, TryEmplace)
     }
 }
 
-TEST(EnumMap, TryEmplace_TypeConversion)
+TEST(EnumMap, TryEmplaceTypeConversion)
 {
     {
         int* raw_ptr = new int;
@@ -805,7 +805,7 @@ TEST(EnumMap, EraseIterator)
     static_assert(s1.contains(TestEnum1::FOUR));
 }
 
-TEST(EnumMap, EraseIterator_InvalidIterator)
+TEST(EnumMap, EraseIteratorInvalidIterator)
 {
     EnumMap<TestEnum1, int> s{{TestEnum1::TWO, 20}, {TestEnum1::FOUR, 40}};
     {
@@ -901,7 +901,7 @@ TEST(EnumMap, EraseIf)
     static_assert(s1.at(TestEnum1::THREE) == 30);
 }
 
-TEST(EnumMap, Iterator_StructuredBinding)
+TEST(EnumMap, IteratorStructuredBinding)
 {
     constexpr auto s1 = []()
     {
@@ -1167,7 +1167,7 @@ TEST(EnumMap, IteratorAssignment)
     static_assert(s1.size() == 2);
 }
 
-TEST(EnumMap, Iterator_OffByOneIssues)
+TEST(EnumMap, IteratorOffByOneIssues)
 {
     constexpr EnumMap<TestEnum1, int> s1{{{TestEnum1::ONE, 10}, {TestEnum1::FOUR, 40}}};
 
@@ -1184,7 +1184,7 @@ TEST(EnumMap, Iterator_OffByOneIssues)
     static_assert(std::prev(s1.end(), 2)->second == 10);
 }
 
-TEST(EnumMap, Iterator_EnsureOrder)
+TEST(EnumMap, IteratorEnsureOrder)
 {
     constexpr auto s1 = []()
     {
@@ -1227,7 +1227,7 @@ TEST(EnumMap, DereferencedIteratorAssignability)
     }
 }
 
-TEST(EnumMap, Iterator_AccessingDefaultConstructedIteratorFails)
+TEST(EnumMap, IteratorAccessingDefaultConstructedIteratorFails)
 {
     auto it = EnumMap<TestEnum1, int>::iterator{};
 
@@ -1656,7 +1656,7 @@ struct EnumMapInstanceCheckFixture : public ::testing::Test
 TYPED_TEST_SUITE_P(EnumMapInstanceCheckFixture);
 }  // namespace
 
-TYPED_TEST_P(EnumMapInstanceCheckFixture, EnumMap_InstanceCheck)
+TYPED_TEST_P(EnumMapInstanceCheckFixture, EnumMapInstanceCheck)
 {
     using MapOfInstanceCounterType = TypeParam;
     using InstanceCounterType = typename MapOfInstanceCounterType::mapped_type;
@@ -1924,7 +1924,7 @@ TYPED_TEST_P(EnumMapInstanceCheckFixture, EnumMap_InstanceCheck)
     ASSERT_EQ(0, InstanceCounterType::counter);
 }
 
-REGISTER_TYPED_TEST_SUITE_P(EnumMapInstanceCheckFixture, EnumMap_InstanceCheck);
+REGISTER_TYPED_TEST_SUITE_P(EnumMapInstanceCheckFixture, EnumMapInstanceCheck);
 
 // We want same semantics as std::map, so run it with std::map as well
 using EnumMapInstanceCheckTypes =

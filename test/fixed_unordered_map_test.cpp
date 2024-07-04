@@ -132,7 +132,7 @@ TEST(FixedUnorderedMap, EmptySizeFull)
     static_assert(!is_full(s4));
 }
 
-TEST(FixedUnorderedMap, OperatorBracket_Constexpr)
+TEST(FixedUnorderedMap, OperatorBracketConstexpr)
 {
     constexpr auto s1 = []()
     {
@@ -166,7 +166,7 @@ TEST(FixedUnorderedMap, MaxSizeDeduction)
     }
 }
 
-TEST(FixedUnorderedMap, OperatorBracket_NonConstexpr)
+TEST(FixedUnorderedMap, OperatorBracketNonConstexpr)
 {
     FixedUnorderedMap<int, int, 10> s1{};
     s1[2] = 25;
@@ -178,7 +178,7 @@ TEST(FixedUnorderedMap, OperatorBracket_NonConstexpr)
     ASSERT_TRUE(s1.contains(4));
 }
 
-TEST(FixedUnorderedMap, OperatorBracket_ExceedsCapacity)
+TEST(FixedUnorderedMap, OperatorBracketExceedsCapacity)
 {
     {
         FixedUnorderedMap<int, int, 2> s1{};
@@ -223,7 +223,7 @@ struct ConstructionCounter
 int ConstructionCounter::counter = 0;
 }  // namespace
 
-TEST(FixedUnorderedMap, OperatorBracket_EnsureNoUnnecessaryTemporaries)
+TEST(FixedUnorderedMap, OperatorBracketEnsureNoUnnecessaryTemporaries)
 {
     FixedUnorderedMap<int, ConstructionCounter, 10> s1{};
     ASSERT_EQ(0, ConstructionCounter::counter);
@@ -255,7 +255,7 @@ TEST(FixedUnorderedMap, Insert)
     static_assert(s1.contains(4));
 }
 
-TEST(FixedUnorderedMap, Insert_ExceedsCapacity)
+TEST(FixedUnorderedMap, InsertExceedsCapacity)
 {
     {
         FixedUnorderedMap<int, int, 2> s1{};
@@ -390,7 +390,7 @@ TEST(FixedUnorderedMap, InsertOrAssign)
     static_assert(s1.contains(4));
 }
 
-TEST(FixedUnorderedMap, InsertOrAssign_ExceedsCapacity)
+TEST(FixedUnorderedMap, InsertOrAssignExceedsCapacity)
 {
     {
         FixedUnorderedMap<int, int, 2> s1{};
@@ -468,7 +468,7 @@ TEST(FixedUnorderedMap, TryEmplace)
     }
 }
 
-TEST(FixedUnorderedMap, TryEmplace_ExceedsCapacity)
+TEST(FixedUnorderedMap, TryEmplaceExceedsCapacity)
 {
     {
         FixedUnorderedMap<int, int, 2> s1{};
@@ -489,7 +489,7 @@ TEST(FixedUnorderedMap, TryEmplace_ExceedsCapacity)
     }
 }
 
-TEST(FixedUnorderedMap, TryEmplace_TypeConversion)
+TEST(FixedUnorderedMap, TryEmplaceTypeConversion)
 {
     {
         int* raw_ptr = new int;
@@ -579,7 +579,7 @@ TEST(FixedUnorderedMap, Emplace)
     }
 }
 
-TEST(FixedUnorderedMap, Emplace_ExceedsCapacity)
+TEST(FixedUnorderedMap, EmplaceExceedsCapacity)
 {
     {
         FixedUnorderedMap<int, int, 2> s1{};
@@ -659,7 +659,7 @@ TEST(FixedUnorderedMap, EraseIterator)
     static_assert(s1.contains(4));
 }
 
-TEST(FixedUnorderedMap, EraseIterator_Ambiguity)
+TEST(FixedUnorderedMap, EraseIteratorAmbiguity)
 {
     // If the iterator has extraneous auto-conversions, it might cause ambiguity between the various
     // overloads
@@ -667,7 +667,7 @@ TEST(FixedUnorderedMap, EraseIterator_Ambiguity)
     s1.erase("");
 }
 
-TEST(FixedUnorderedMap, EraseIterator_InvalidIterator)
+TEST(FixedUnorderedMap, EraseIteratorInvalidIterator)
 {
     FixedUnorderedMap<int, int, 10> s{{2, 20}, {4, 40}};
     {
@@ -760,7 +760,7 @@ TEST(FixedUnorderedMap, EraseIf)
     static_assert(s1.at(3) == 30);
 }
 
-TEST(FixedUnorderedMap, Iterator_StructuredBinding)
+TEST(FixedUnorderedMap, IteratorStructuredBinding)
 {
     constexpr auto s1 = []()
     {
@@ -1007,7 +1007,7 @@ TEST(FixedUnorderedMap, IteratorAssignment)
     static_assert(s1.size() == 2);
 }
 
-TEST(FixedUnorderedMap, Iterator_OffByOneIssues)
+TEST(FixedUnorderedMap, IteratorOffByOneIssues)
 {
     constexpr FixedUnorderedMap<int, int, 10> s1{{{1, 10}, {4, 40}}};
 
@@ -1019,7 +1019,7 @@ TEST(FixedUnorderedMap, Iterator_OffByOneIssues)
     static_assert(std::next(s1.begin(), 1)->second == 40);
 }
 
-TEST(FixedUnorderedMap, Iterator_EnsureOrder)
+TEST(FixedUnorderedMap, IteratorEnsureOrder)
 {
     constexpr auto s1 = []()
     {
@@ -1055,7 +1055,7 @@ TEST(FixedUnorderedMap, DereferencedIteratorAssignability)
     }
 }
 
-TEST(FixedUnorderedMap, Iterator_AccessingDefaultConstructedIteratorFails)
+TEST(FixedUnorderedMap, IteratorAccessingDefaultConstructedIteratorFails)
 {
     auto it = FixedUnorderedMap<int, int, 10>::iterator{};
 
@@ -1491,7 +1491,7 @@ struct FixedUnorderedMapInstanceCheckFixture : public ::testing::Test
 TYPED_TEST_SUITE_P(FixedUnorderedMapInstanceCheckFixture);
 }  // namespace
 
-TYPED_TEST_P(FixedUnorderedMapInstanceCheckFixture, FixedUnorderedMap_InstanceCheck)
+TYPED_TEST_P(FixedUnorderedMapInstanceCheckFixture, FixedUnorderedMapInstanceCheck)
 {
     using MapOfInstanceCounterType = TypeParam;
     using InstanceCounterType = typename MapOfInstanceCounterType::key_type;
@@ -1760,7 +1760,7 @@ TYPED_TEST_P(FixedUnorderedMapInstanceCheckFixture, FixedUnorderedMap_InstanceCh
     ASSERT_EQ(0, InstanceCounterType::counter);
 }
 
-REGISTER_TYPED_TEST_SUITE_P(FixedUnorderedMapInstanceCheckFixture, FixedUnorderedMap_InstanceCheck);
+REGISTER_TYPED_TEST_SUITE_P(FixedUnorderedMapInstanceCheckFixture, FixedUnorderedMapInstanceCheck);
 
 // We want same semantics as std::unordered_map, so run it with std::unordered_map as well
 using FixedUnorderedMapInstanceCheckTypes = testing::Types<

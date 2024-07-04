@@ -180,7 +180,7 @@ TEST(FixedUnorderedSet, Insert)
     static_assert(s1.contains(4));
 }
 
-TEST(FixedUnorderedSet, Insert_ExceedsCapacity)
+TEST(FixedUnorderedSet, InsertExceedsCapacity)
 {
     {
         FixedUnorderedSet<int, 2> s1{};
@@ -252,7 +252,7 @@ TEST(FixedUnorderedSet, InsertInitializer)
     static_assert(s1.contains(4));
 }
 
-TEST(FixedUnorderedSet, Insert_Iterators)
+TEST(FixedUnorderedSet, InsertIterators)
 {
     constexpr auto s1 = []()
     {
@@ -320,7 +320,7 @@ TEST(FixedUnorderedSet, Emplace)
     }
 }
 
-TEST(FixedUnorderedSet, Emplace_ExceedsCapacity)
+TEST(FixedUnorderedSet, EmplaceExceedsCapacity)
 {
     {
         FixedUnorderedSet<int, 2> s1{};
@@ -398,7 +398,7 @@ TEST(FixedUnorderedSet, EraseIterator)
     static_assert(s1.contains(4));
 }
 
-TEST(FixedUnorderedSet, EraseIterator_Ambiguity)
+TEST(FixedUnorderedSet, EraseIteratorAmbiguity)
 {
     // If the iterator has extraneous auto-conversions, it might cause ambiguity between the various
     // overloads
@@ -406,7 +406,7 @@ TEST(FixedUnorderedSet, EraseIterator_Ambiguity)
     s1.erase("");
 }
 
-TEST(FixedUnorderedSet, EraseIterator_InvalidIterator)
+TEST(FixedUnorderedSet, EraseIteratorInvalidIterator)
 {
     FixedUnorderedSet<int, 10> s{2, 4};
     {
@@ -503,7 +503,7 @@ TEST(FixedUnorderedSet, IteratorBasic)
     static_assert(*std::next(s1.begin(), 3) == 4);
 }
 
-TEST(FixedUnorderedSet, Iterator_OffByOneIssues)
+TEST(FixedUnorderedSet, IteratorOffByOneIssues)
 {
     constexpr FixedUnorderedSet<int, 10> s1{{1, 4}};
 
@@ -513,7 +513,7 @@ TEST(FixedUnorderedSet, Iterator_OffByOneIssues)
     static_assert(*std::next(s1.begin(), 1) == 4);
 }
 
-TEST(FixedUnorderedSet, Iterator_EnsureOrder)
+TEST(FixedUnorderedSet, IteratorEnsureOrder)
 {
     constexpr auto s1 = []()
     {

@@ -106,7 +106,7 @@ TEST(Tuples, AsTupleView)
     static_assert(result.a5 == 'z');
 }
 
-TEST(Tuples, ForEachEntry_Empty)
+TEST(Tuples, ForEachEntryEmpty)
 {
     constexpr auto result = []()
     {
@@ -140,7 +140,7 @@ TEST(Tuples, ForEachEntry)
     static_assert(std::get<1>(result) == 4.0);
 }
 
-TEST(Tuples, ForEachEntry_WithIndex)
+TEST(Tuples, ForEachEntryWithIndex)
 {
     constexpr auto result = []()
     {

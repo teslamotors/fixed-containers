@@ -332,10 +332,7 @@ TEST(FixedList, CountConstructor)
     }
 }
 
-TEST(FixedList, CountConstructor_ExceedsCapacity)
-{
-    EXPECT_DEATH((FixedList<int, 8>(1000, 3)), "");
-}
+TEST(FixedList, CountConstructorExceedsCapacity) { EXPECT_DEATH((FixedList<int, 8>(1000, 3)), ""); }
 
 TEST(FixedList, IteratorConstructor)
 {
@@ -345,7 +342,7 @@ TEST(FixedList, IteratorConstructor)
     static_assert(std::ranges::equal(v2, std::array{77, 99}));
 }
 
-TEST(FixedList, IteratorConstructor_ExceedsCapacity)
+TEST(FixedList, IteratorConstructorExceedsCapacity)
 {
     constexpr std::array<int, 5> v1{1, 2, 3, 4, 5};
 
@@ -360,7 +357,7 @@ TEST(FixedList, InputIteratorConstructor)
     EXPECT_TRUE(std::ranges::equal(v, std::array{3, 2, 1}));
 }
 
-TEST(FixedList, InputIteratorConstructor_ExceedsCapacity)
+TEST(FixedList, InputIteratorConstructorExceedsCapacity)
 {
     MockIntegralStream<int> stream{7};
     EXPECT_DEATH((FixedList<int, 3>{stream.begin(), stream.end()}), "");
@@ -378,7 +375,7 @@ TEST(FixedList, InitializerConstructor)
     EXPECT_TRUE(std::ranges::equal(v2, std::array{66, 55}));
 }
 
-TEST(FixedList, InitializerConstructor_ExceedsCapacity)
+TEST(FixedList, InitializerConstructorExceedsCapacity)
 {
     EXPECT_DEATH((FixedList<int, 3>{1, 2, 3, 4, 5}), "");
 }
@@ -406,7 +403,7 @@ TEST(FixedList, PushBack)
     static_assert(v2.size() == 1);
 }
 
-TEST(FixedList, PushBack_ExceedsCapacity)
+TEST(FixedList, PushBackExceedsCapacity)
 {
     FixedList<int, 2> v{};
     v.push_back(0);
@@ -454,7 +451,7 @@ TEST(FixedList, EmplaceBack)
     }
 }
 
-TEST(FixedList, EmplaceBack_ExceedsCapacity)
+TEST(FixedList, EmplaceBackExceedsCapacity)
 {
     FixedList<int, 2> v{};
     v.emplace_back(0);
@@ -506,7 +503,7 @@ TEST(FixedList, PopBack)
     EXPECT_TRUE(std::ranges::equal(v2, std::array{10, 11}));
 }
 
-TEST(FixedList, PopBack_Empty)
+TEST(FixedList, PopBackEmpty)
 {
     FixedList<int, 5> v1{};
     EXPECT_DEATH(v1.pop_back(), "");
@@ -535,7 +532,7 @@ TEST(FixedList, PushFront)
     static_assert(v2.size() == 1);
 }
 
-TEST(FixedList, PushFront_ExceedsCapacity)
+TEST(FixedList, PushFrontExceedsCapacity)
 {
     FixedList<int, 2> v{};
     v.push_front(0);
@@ -583,7 +580,7 @@ TEST(FixedList, EmplaceFront)
     }
 }
 
-TEST(FixedList, EmplaceFront_ExceedsCapacity)
+TEST(FixedList, EmplaceFrontExceedsCapacity)
 {
     FixedList<int, 2> v{};
     v.emplace_front(0);
@@ -607,7 +604,7 @@ TEST(FixedList, PopFront)
     EXPECT_TRUE(std::ranges::equal(v2, std::array{11, 12}));
 }
 
-TEST(FixedList, PopFront_Empty)
+TEST(FixedList, PopFrontEmpty)
 {
     FixedList<int, 5> v1{};
     EXPECT_DEATH(v1.pop_front(), "");
@@ -1073,7 +1070,7 @@ TEST(FixedList, Resize)
     }
 }
 
-TEST(FixedList, Resize_ExceedsCapacity)
+TEST(FixedList, ResizeExceedsCapacity)
 {
     FixedList<int, 3> v1{};
     EXPECT_DEATH(v1.resize(6), "");
@@ -1171,7 +1168,7 @@ TEST(FixedList, Emplace)
     }
 }
 
-TEST(FixedList, Emplace_ExceedsCapacity)
+TEST(FixedList, EmplaceExceedsCapacity)
 {
     FixedList<int, 2> v{};
     v.emplace(v.begin(), 0);
@@ -1221,7 +1218,7 @@ TEST(FixedList, AssignValue)
     }
 }
 
-TEST(FixedList, AssignValue_ExceedsCapacity)
+TEST(FixedList, AssignValueExceedsCapacity)
 {
     FixedList<int, 3> v1{0, 1, 2};
     EXPECT_DEATH(v1.assign(5, 100), "");
@@ -1256,7 +1253,7 @@ TEST(FixedList, AssignIterator)
     }
 }
 
-TEST(FixedList, AssignIterator_ExceedsCapacity)
+TEST(FixedList, AssignIteratorExceedsCapacity)
 {
     FixedList<int, 3> v1{0, 1, 2};
     std::array<int, 5> a{300, 300, 300, 300, 300};
@@ -1272,7 +1269,7 @@ TEST(FixedList, AssignInputIterator)
     EXPECT_TRUE(std::ranges::equal(v, std::array{3, 2, 1}));
 }
 
-TEST(FixedList, AssignInputIterator_ExceedsCapacity)
+TEST(FixedList, AssignInputIteratorExceedsCapacity)
 {
     MockIntegralStream<int> stream{7};
     FixedList<int, 2> v{};
@@ -1306,7 +1303,7 @@ TEST(FixedList, AssignInitializerList)
     }
 }
 
-TEST(FixedList, AssignInitializerList_ExceedsCapacity)
+TEST(FixedList, AssignInitializerListExceedsCapacity)
 {
     FixedList<int, 3> v{0, 1, 2};
     EXPECT_DEATH(v.assign({300, 300, 300, 300, 300}), "");
@@ -1367,7 +1364,7 @@ TEST(FixedList, InsertValue)
     }
 }
 
-TEST(FixedList, InsertValue_ExceedsCapacity)
+TEST(FixedList, InsertValueExceedsCapacity)
 {
     FixedList<int, 4> v1{0, 1, 2, 3};
     EXPECT_DEATH(v1.insert(std::next(v1.begin(), 1), 5), "");
@@ -1412,7 +1409,7 @@ TEST(FixedList, InsertIterator)
     }
 }
 
-TEST(FixedList, InsertIterator_ExceedsCapacity)
+TEST(FixedList, InsertIteratorExceedsCapacity)
 {
     FixedList<int, 4> v1{0, 1, 2};
     std::array<int, 2> a{3, 4};
@@ -1429,7 +1426,7 @@ TEST(FixedList, InsertInputIterator)
     EXPECT_EQ(it, std::next(v.begin(), 2));
 }
 
-TEST(FixedList, InsertInputIterator_ExceedsCapacity)
+TEST(FixedList, InsertInputIteratorExceedsCapacity)
 {
     MockIntegralStream<int> stream{3};
     FixedList<int, 6> v{10, 20, 30, 40};
@@ -1460,7 +1457,7 @@ TEST(FixedList, InsertInitializerList)
     }
 }
 
-TEST(FixedList, InsertInitializerList_ExceedsCapacity)
+TEST(FixedList, InsertInitializerListExceedsCapacity)
 {
     FixedList<int, 4> v1{0, 1, 2};
     EXPECT_DEATH(v1.insert(std::next(v1.begin(), 1), {3, 4}), "");
@@ -1479,7 +1476,7 @@ TEST(FixedList, Remove)
     static_assert(std::ranges::equal(v1, std::array<int, 5>{0, 1, 2, 4, 5}));
 }
 
-TEST(FixedList, Remove_Invalidation)
+TEST(FixedList, RemoveInvalidation)
 {
     FixedList<int, 10> v{10, 20, 30, 40, 50};
     auto it1 = v.begin();
@@ -1524,7 +1521,7 @@ TEST(FixedList, RemoveIf)
     static_assert(std::ranges::equal(v1, std::array<int, 3>{1, 3, 5}));
 }
 
-TEST(FixedList, RemoveIf_Invalidation)
+TEST(FixedList, RemoveIfInvalidation)
 {
     FixedList<int, 10> v{10, 20, 30, 40, 50};
     auto it1 = v.begin();
@@ -1586,7 +1583,7 @@ TEST(FixedList, EraseRange)
     }
 }
 
-TEST(FixedList, EraseRange_Invalidation)
+TEST(FixedList, EraseRangeInvalidation)
 {
     FixedList<int, 10> v{10, 20, 30, 40, 50};
     auto it1 = v.begin();
@@ -1664,7 +1661,7 @@ TEST(FixedList, EraseOne)
     }
 }
 
-TEST(FixedList, EraseOne_Invalidation)
+TEST(FixedList, EraseOneInvalidation)
 {
     FixedList<int, 10> v{10, 20, 30, 40, 50};
     auto it1 = v.begin();
@@ -1696,7 +1693,7 @@ TEST(FixedList, EraseOne_Invalidation)
     EXPECT_EQ(address_5, &*it5);
 }
 
-TEST(FixedList, Erase_Empty)
+TEST(FixedList, EraseEmpty)
 {
     {
         FixedList<int, 3> v1{};
@@ -1744,7 +1741,7 @@ TEST(FixedList, EraseFreeFunction)
     }
 }
 
-TEST(FixedList, EraseFreeFunction_Invalidation)
+TEST(FixedList, EraseFreeFunctionInvalidation)
 {
     FixedList<int, 10> v{10, 20, 30, 40, 50};
     auto it1 = v.begin();
@@ -1790,7 +1787,7 @@ TEST(FixedList, EraseIf)
     static_assert(std::ranges::equal(v1, std::array<int, 3>{1, 3, 5}));
 }
 
-TEST(FixedList, EraseIf_Invalidation)
+TEST(FixedList, EraseIfInvalidation)
 {
     FixedList<int, 10> v{10, 20, 30, 40, 50};
     auto it1 = v.begin();
@@ -1842,7 +1839,7 @@ TEST(FixedList, Front)
     EXPECT_EQ(v2_const_ref.front(), 777);  // const variant
 }
 
-TEST(FixedList, Front_EmptyContainer)
+TEST(FixedList, FrontEmptyContainer)
 {
     {
         const FixedList<int, 3> v{};
@@ -1874,7 +1871,7 @@ TEST(FixedList, Back)
     EXPECT_EQ(v2_const_ref.back(), 999);  // const variant
 }
 
-TEST(FixedList, Back_EmptyContainer)
+TEST(FixedList, BackEmptyContainer)
 {
     {
         const FixedList<int, 3> v{};
@@ -2089,7 +2086,7 @@ struct FixedListInstanceCheckFixture : public ::testing::Test
 TYPED_TEST_SUITE_P(FixedListInstanceCheckFixture);
 }  // namespace
 
-TYPED_TEST_P(FixedListInstanceCheckFixture, FixedList_InstanceCheck)
+TYPED_TEST_P(FixedListInstanceCheckFixture, FixedListInstanceCheck)
 {
     using ListOfInstanceCounterType = TypeParam;
     using InstanceCounterType = typename ListOfInstanceCounterType::value_type;
@@ -2257,7 +2254,7 @@ TYPED_TEST_P(FixedListInstanceCheckFixture, FixedList_InstanceCheck)
     ASSERT_EQ(0, InstanceCounterType::counter);
 }
 
-REGISTER_TYPED_TEST_SUITE_P(FixedListInstanceCheckFixture, FixedList_InstanceCheck);
+REGISTER_TYPED_TEST_SUITE_P(FixedListInstanceCheckFixture, FixedListInstanceCheck);
 
 // We want same semantics as std::list, so run it with std::list as well
 using FixedListInstanceCheckTypes =
