@@ -19,52 +19,38 @@ concept has_enum_typename = requires() { typename T::Enum; };
 
 template <typename T>
 concept has_member_std_string_view_to_string_void_const = requires(T t) {
-    {
-        t.to_string()
-    } -> std::same_as<std::string_view>;
+    { t.to_string() } -> std::same_as<std::string_view>;
 };
 
 template <typename T>
 concept has_member_sizet_ordinal_void_const = requires(T t) {
-    {
-        t.ordinal()
-    } -> std::same_as<std::size_t>;
+    { t.ordinal() } -> std::same_as<std::size_t>;
 };
 
 template <typename T>
 concept has_backing_enum_typename_and_member_backing_enum_void_const = requires(T t) {
     typename T::BackingEnum;
-    {
-        t.backing_enum()
-    } -> std::same_as<const typename T::BackingEnum&>;
+    { t.backing_enum() } -> std::same_as<const typename T::BackingEnum&>;
 };
 
 template <typename T>
 concept has_static_sizet_count_void = requires() {
-    {
-        T::count()
-    } -> std::same_as<std::size_t>;
+    { T::count() } -> std::same_as<std::size_t>;
 };
 
 template <typename T, typename EnumType, std::size_t ENTRY_COUNT>
 concept has_static_const_ref_array_values_void = requires() {
-    {
-        T::values()
-    } -> std::same_as<const std::array<EnumType, ENTRY_COUNT>&>;
+    { T::values() } -> std::same_as<const std::array<EnumType, ENTRY_COUNT>&>;
 };
 
 template <typename T, typename R>
 concept has_static_std_string_view_to_string_r = requires(const R r) {
-    {
-        T::to_string(r)
-    } -> std::same_as<std::string_view>;
+    { T::to_string(r) } -> std::same_as<std::string_view>;
 };
 
 template <typename T, typename R>
 concept has_static_sizet_ordinal_r = requires(const R r) {
-    {
-        T::ordinal(r)
-    } -> std::same_as<std::size_t>;
+    { T::ordinal(r) } -> std::same_as<std::size_t>;
 };
 
 template <class T>
@@ -232,12 +218,8 @@ concept IsRichEnumStorage = requires(const T& const_s, const T& const_s2) {
     typename T::UnderlyingType;
     const_s == const_s2;
 
-    {
-        const_s.has_value()
-    } -> std::same_as<bool>;
-    {
-        const_s.value()
-    } -> std::same_as<const typename T::UnderlyingType&>;
+    { const_s.has_value() } -> std::same_as<bool>;
+    { const_s.value() } -> std::same_as<const typename T::UnderlyingType&>;
 };
 
 template <typename T>
@@ -436,9 +418,7 @@ concept IsInfusedDataProvider = requires(const T& provider, const typename T::En
     typename T::EnumType;
     typename T::DataType;
 
-    {
-        T::get(e)
-    } -> std::convertible_to<typename T::DataType>;
+    { T::get(e) } -> std::convertible_to<typename T::DataType>;
 };
 
 template <class RichEnumType>

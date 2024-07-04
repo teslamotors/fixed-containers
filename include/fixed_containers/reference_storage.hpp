@@ -21,4 +21,4 @@ struct ReferenceStorage
     constexpr const T& get() const { return value.get(); }
     constexpr T& get() { return value.get(); }
 };
-}  // namespace fixed_containers::value_storage_detail
+}  // namespace fixed_containers::reference_storage_detail
