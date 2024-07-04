@@ -204,7 +204,7 @@ TEST(FixedSet, EmptySizeFull)
     static_assert(!s1.empty());
 
     constexpr FixedSet<int, 10> s2{};
-    static_assert(s2.size() == 0);
+    static_assert(s2.size() == 0);  // NOLINT(readability-container-size-empty)
     static_assert(s2.empty());
 
     constexpr FixedSet<int, 2> s3{2, 4};
@@ -228,7 +228,7 @@ TEST(FixedSet, MaxSizeDeduction)
     }
     {
         constexpr auto s1 = make_fixed_set<int>({});
-        static_assert(s1.size() == 0);
+        static_assert(s1.empty());
         static_assert(s1.max_size() == 0);
     }
 }

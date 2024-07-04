@@ -257,14 +257,14 @@ TEST(Reflection, FieldInfoStructWithNestedStructs)
     static_assert(FIELD_INFO.at(0).field_name() == "yellow");
     static_assert(FIELD_INFO.at(0).enclosing_field_type_name() ==
                   "fixed_containers::(anonymous namespace)::StructWithNestedStructs");
-    static_assert(FIELD_INFO.at(0).enclosing_field_name() == "");
+    static_assert(FIELD_INFO.at(0).enclosing_field_name().empty());
     static_assert(!FIELD_INFO.at(0).providing_base_class_name().has_value());
 
     static_assert(FIELD_INFO.at(1).field_type_name() == "double[17]");
     static_assert(FIELD_INFO.at(1).field_name() == "red");
     static_assert(FIELD_INFO.at(1).enclosing_field_type_name() ==
                   "fixed_containers::(anonymous namespace)::StructWithNestedStructs");
-    static_assert(FIELD_INFO.at(1).enclosing_field_name() == "");
+    static_assert(FIELD_INFO.at(1).enclosing_field_name().empty());
     static_assert(!FIELD_INFO.at(1).providing_base_class_name().has_value());
 
     static_assert(FIELD_INFO.at(2).field_type_name() ==
@@ -273,7 +273,7 @@ TEST(Reflection, FieldInfoStructWithNestedStructs)
     static_assert(FIELD_INFO.at(2).field_name() == "green");
     static_assert(FIELD_INFO.at(2).enclosing_field_type_name() ==
                   "fixed_containers::(anonymous namespace)::StructWithNestedStructs");
-    static_assert(FIELD_INFO.at(2).enclosing_field_name() == "");
+    static_assert(FIELD_INFO.at(2).enclosing_field_name().empty());
     static_assert(!FIELD_INFO.at(2).providing_base_class_name().has_value());
 
     static_assert(FIELD_INFO.at(3).field_type_name() ==
@@ -282,7 +282,7 @@ TEST(Reflection, FieldInfoStructWithNestedStructs)
     static_assert(FIELD_INFO.at(3).field_name() == "purple");
     static_assert(FIELD_INFO.at(3).enclosing_field_type_name() ==
                   "fixed_containers::(anonymous namespace)::StructWithNestedStructs");
-    static_assert(FIELD_INFO.at(3).enclosing_field_name() == "");
+    static_assert(FIELD_INFO.at(3).enclosing_field_name().empty());
     static_assert(!FIELD_INFO.at(3).providing_base_class_name().has_value());
 }
 
@@ -297,14 +297,14 @@ TEST(Reflection, FieldInfoStructWithNonAggregates)
     static_assert(FIELD_INFO.at(0).field_name() == "a1");
     static_assert(FIELD_INFO.at(0).enclosing_field_type_name() ==
                   "fixed_containers::(anonymous namespace)::StructWithNonAggregates");
-    static_assert(FIELD_INFO.at(0).enclosing_field_name() == "");
+    static_assert(FIELD_INFO.at(0).enclosing_field_name().empty());
     static_assert(!FIELD_INFO.at(0).providing_base_class_name().has_value());
 
     static_assert(FIELD_INFO.at(1).field_type_name() == "MockNonAggregate");
     static_assert(FIELD_INFO.at(1).field_name() == "non_aggregate");
     static_assert(FIELD_INFO.at(1).enclosing_field_type_name() ==
                   "fixed_containers::(anonymous namespace)::StructWithNonAggregates");
-    static_assert(FIELD_INFO.at(1).enclosing_field_name() == "");
+    static_assert(FIELD_INFO.at(1).enclosing_field_name().empty());
     static_assert(!FIELD_INFO.at(1).providing_base_class_name().has_value());
 }
 
@@ -322,14 +322,14 @@ TEST(Reflection, FieldInfoStructWithNestedStructsExhaustiveUntilNonAggregates)
     static_assert(FIELD_INFO.at(0).field_name() == "yellow");
     static_assert(FIELD_INFO.at(0).enclosing_field_type_name() ==
                   "fixed_containers::(anonymous namespace)::StructWithNestedStructs");
-    static_assert(FIELD_INFO.at(0).enclosing_field_name() == "");
+    static_assert(FIELD_INFO.at(0).enclosing_field_name().empty());
     static_assert(!FIELD_INFO.at(0).providing_base_class_name().has_value());
 
     static_assert(FIELD_INFO.at(1).field_type_name() == "double[17]");
     static_assert(FIELD_INFO.at(1).field_name() == "red");
     static_assert(FIELD_INFO.at(1).enclosing_field_type_name() ==
                   "fixed_containers::(anonymous namespace)::StructWithNestedStructs");
-    static_assert(FIELD_INFO.at(1).enclosing_field_name() == "");
+    static_assert(FIELD_INFO.at(1).enclosing_field_name().empty());
     static_assert(!FIELD_INFO.at(1).providing_base_class_name().has_value());
 
     static_assert(FIELD_INFO.at(2).field_type_name() ==
@@ -338,7 +338,7 @@ TEST(Reflection, FieldInfoStructWithNestedStructsExhaustiveUntilNonAggregates)
     static_assert(FIELD_INFO.at(2).field_name() == "green");
     static_assert(FIELD_INFO.at(2).enclosing_field_type_name() ==
                   "fixed_containers::(anonymous namespace)::StructWithNestedStructs");
-    static_assert(FIELD_INFO.at(2).enclosing_field_name() == "");
+    static_assert(FIELD_INFO.at(2).enclosing_field_name().empty());
     static_assert(!FIELD_INFO.at(2).providing_base_class_name().has_value());
 
     {
@@ -365,7 +365,7 @@ TEST(Reflection, FieldInfoStructWithNestedStructsExhaustiveUntilNonAggregates)
     static_assert(FIELD_INFO.at(5).field_name() == "purple");
     static_assert(FIELD_INFO.at(5).enclosing_field_type_name() ==
                   "fixed_containers::(anonymous namespace)::StructWithNestedStructs");
-    static_assert(FIELD_INFO.at(5).enclosing_field_name() == "");
+    static_assert(FIELD_INFO.at(5).enclosing_field_name().empty());
     static_assert(!FIELD_INFO.at(5).providing_base_class_name().has_value());
 
     {
@@ -418,14 +418,14 @@ TEST(Reflection, FieldInfoStructWithNonAggregatesExhaustiveUntilNonAggregates)
     static_assert(FIELD_INFO.at(0).field_name() == "a1");
     static_assert(FIELD_INFO.at(0).enclosing_field_type_name() ==
                   "fixed_containers::(anonymous namespace)::StructWithNonAggregates");
-    static_assert(FIELD_INFO.at(0).enclosing_field_name() == "");
+    static_assert(FIELD_INFO.at(0).enclosing_field_name().empty());
     static_assert(!FIELD_INFO.at(0).providing_base_class_name().has_value());
 
     static_assert(FIELD_INFO.at(1).field_type_name() == "MockNonAggregate");
     static_assert(FIELD_INFO.at(1).field_name() == "non_aggregate");
     static_assert(FIELD_INFO.at(1).enclosing_field_type_name() ==
                   "fixed_containers::(anonymous namespace)::StructWithNonAggregates");
-    static_assert(FIELD_INFO.at(1).enclosing_field_name() == "");
+    static_assert(FIELD_INFO.at(1).enclosing_field_name().empty());
     static_assert(!FIELD_INFO.at(1).providing_base_class_name().has_value());
 }
 
@@ -443,7 +443,7 @@ TEST(Reflection, NonConstexprDefaultConstructible)
     static_assert(
         FIELD_INFO.at(0).enclosing_field_type_name() ==
         "fixed_containers::(anonymous namespace)::NonConstexprDefaultConstructibleWithFields");
-    static_assert(FIELD_INFO.at(0).enclosing_field_name() == "");
+    static_assert(FIELD_INFO.at(0).enclosing_field_name().empty());
     static_assert(!FIELD_INFO.at(0).providing_base_class_name().has_value());
 
     static_assert(FIELD_INFO.at(1).field_type_name() == "double");
@@ -451,7 +451,7 @@ TEST(Reflection, NonConstexprDefaultConstructible)
     static_assert(
         FIELD_INFO.at(1).enclosing_field_type_name() ==
         "fixed_containers::(anonymous namespace)::NonConstexprDefaultConstructibleWithFields");
-    static_assert(FIELD_INFO.at(1).enclosing_field_name() == "");
+    static_assert(FIELD_INFO.at(1).enclosing_field_name().empty());
     static_assert(!FIELD_INFO.at(1).providing_base_class_name().has_value());
 }
 

@@ -86,7 +86,6 @@ Checks: >
 
   -modernize-pass-by-value,
   -misc-const-correctness,
-  -readability-container-size-empty,
   -readability-identifier-naming,
   -readability-qualified-auto,
   -readability-redundant-access-specifiers,

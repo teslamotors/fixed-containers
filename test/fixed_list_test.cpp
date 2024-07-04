@@ -1084,7 +1084,7 @@ TEST(FixedList, Size)
 {
     {
         constexpr auto v1 = []() { return FixedList<int, 7>{}; }();
-        static_assert(v1.size() == 0);
+        static_assert(v1.size() == 0);  // NOLINT(readability-container-size-empty)
         static_assert(v1.max_size() == 7);
     }
 

@@ -380,7 +380,7 @@ TEST(EnumMap, EmptySizeFull)
     static_assert(!s1.empty());
 
     constexpr EnumMap<TestEnum1, int> s2{};
-    static_assert(s2.size() == 0);
+    static_assert(s2.size() == 0);  // NOLINT(readability-container-size-empty)
     static_assert(s2.empty());
 
     constexpr EnumMap<TestEnum1, int> s3{

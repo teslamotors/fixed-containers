@@ -122,7 +122,7 @@ TEST(FixedUnorderedMap, EmptySizeFull)
     static_assert(!s1.empty());
 
     constexpr FixedUnorderedMap<int, int, 10> s2{};
-    static_assert(s2.size() == 0);
+    static_assert(s2.size() == 0);  // NOLINT(readability-container-size-empty)
     static_assert(s2.empty());
 
     constexpr FixedUnorderedMap<int, int, 2> s3{{2, 20}, {4, 40}};
@@ -161,7 +161,7 @@ TEST(FixedUnorderedMap, MaxSizeDeduction)
     }
     {
         constexpr auto s1 = make_fixed_unordered_map<int, int>({});
-        static_assert(s1.size() == 0);
+        static_assert(s1.empty());
         static_assert(s1.max_size() == 0);
     }
 }
