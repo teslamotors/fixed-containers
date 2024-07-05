@@ -106,10 +106,10 @@ public:
          */
         [[nodiscard]] std::size_t size() const
         {
-            const auto bptr = reinterpret_cast<const std::byte*>(base_);
+            const auto* const bptr = reinterpret_cast<const std::byte*>(base_);
             const auto root_index_offset = tree_storage_size_bytes();
             const auto size_offset = root_index_offset + sizeof(NodeIndex);
-            const auto size_ptr = std::next(bptr, static_cast<difference_type>(size_offset));
+            const auto* const size_ptr = std::next(bptr, static_cast<difference_type>(size_offset));
             return *reinterpret_cast<const std::size_t*>(size_ptr);
         }
 
@@ -157,7 +157,7 @@ public:
          */
         [[nodiscard]] NodeIndex left_index(NodeIndex i) const
         {
-            const auto node = node_pointer(i); /* key_ */
+            const auto* const node = node_pointer(i); /* key_ */
             const auto parent_index_offset = align_up(elem_size_bytes_, sizeof(uintptr_t));
             const auto left_index_offset =
                 static_cast<difference_type>(parent_index_offset + sizeof(NodeIndex));
@@ -169,7 +169,7 @@ public:
          */
         [[nodiscard]] NodeIndex right_index(NodeIndex i) const
         {
-            const auto node = node_pointer(i);
+            const auto* const node = node_pointer(i);
             const auto parent_index_offset = align_up(elem_size_bytes_, sizeof(uintptr_t));
             const auto left_index_offset = parent_index_offset + sizeof(NodeIndex);
             const auto right_index_offset =
@@ -185,10 +185,10 @@ public:
         {
             using fixed_red_black_tree_detail::NodeIndexWithColorEmbeddedInTheMostSignificantBit;
 
-            const auto node = node_pointer(i);
+            const auto* const node = node_pointer(i);
             const auto parent_index_offset =
                 static_cast<difference_type>(align_up(elem_size_bytes_, sizeof(uintptr_t)));
-            const auto parent_idx_ptr = std::next(node, parent_index_offset);
+            const auto* const parent_idx_ptr = std::next(node, parent_index_offset);
 
             switch (compactness_)
             {
@@ -243,9 +243,9 @@ public:
          */
         [[nodiscard]] NodeIndex root_index() const
         {
-            const auto bptr = reinterpret_cast<const std::byte*>(base_);
-            const auto tree_storage_ptr = bptr;
-            const auto root_index_ptr = std::next(
+            const auto* const bptr = reinterpret_cast<const std::byte*>(base_);
+            const auto* const tree_storage_ptr = bptr;
+            const auto* const root_index_ptr = std::next(
                 tree_storage_ptr, static_cast<difference_type>(tree_storage_size_bytes()));
             return *reinterpret_cast<const std::size_t*>(root_index_ptr);
         }
@@ -281,9 +281,9 @@ public:
         [[nodiscard]] const std::byte* iov_array_base() const
         {
             assert_or_abort(storage_type_ == StorageType::FIXED_INDEX_POOL);
-            const auto bptr = reinterpret_cast<const std::byte*>(base_);
-            const auto storage_ptr = bptr;
-            const auto iov_array = storage_ptr;
+            const auto* const bptr = reinterpret_cast<const std::byte*>(base_);
+            const auto* const storage_ptr = bptr;
+            const auto* const iov_array = storage_ptr;
             return iov_array;
         }
 
@@ -294,10 +294,10 @@ public:
         [[nodiscard]] const std::byte* contiguous_array_base() const
         {
             assert_or_abort(storage_type_ == StorageType::FIXED_INDEX_CONTIGUOUS);
-            const auto bptr = reinterpret_cast<const std::byte*>(base_);
-            const auto storage_ptr = bptr;
-            const auto fixed_vector_ptr = storage_ptr;
-            const auto array_ptr =
+            const auto* const bptr = reinterpret_cast<const std::byte*>(base_);
+            const auto* const storage_ptr = bptr;
+            const auto* const fixed_vector_ptr = storage_ptr;
+            const auto* const array_ptr =
                 std::next(fixed_vector_ptr, static_cast<difference_type>(sizeof(std::size_t)));
             return array_ptr;
         }
@@ -309,9 +309,9 @@ public:
         [[nodiscard]] std::size_t contiguous_vector_size_bytes() const
         {
             assert_or_abort(storage_type_ == StorageType::FIXED_INDEX_CONTIGUOUS);
-            const auto bptr = reinterpret_cast<const std::byte*>(base_);
-            const auto storage_ptr = bptr;
-            const auto fixed_vector_ptr = storage_ptr;
+            const auto* const bptr = reinterpret_cast<const std::byte*>(base_);
+            const auto* const storage_ptr = bptr;
+            const auto* const fixed_vector_ptr = storage_ptr;
             return *reinterpret_cast<const std::size_t*>(fixed_vector_ptr);
         }
 

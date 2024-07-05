@@ -418,7 +418,7 @@ TEST(FixedString, Data)
         FixedString<8> v2{"abc"};
         const auto& v2_const_ref = v2;
 
-        auto it = std::next(v2.data(), 1);
+        auto* it = std::next(v2.data(), 1);
         EXPECT_EQ(*it, 'b');  // non-const variant
         *it = 'z';
         EXPECT_EQ(*it, 'z');

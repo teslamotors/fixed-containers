@@ -657,7 +657,8 @@ private:
 
     constexpr iterator create_iterator(const std::size_t offset_from_start) noexcept
     {
-        auto array_it =
+        //  Not a pointer in all platforms, e.g msvc
+        auto array_it =  // NOLINT(readability-qualified-auto)
             std::next(std::begin(array()), static_cast<difference_type>(offset_from_start));
         return iterator{array_it, Mapper{}};
     }
@@ -665,7 +666,8 @@ private:
     [[nodiscard]] constexpr const_iterator create_const_iterator(
         const std::size_t offset_from_start) const noexcept
     {
-        auto array_it =
+        //  Not a pointer in all platforms, e.g msvc
+        auto array_it =  // NOLINT(readability-qualified-auto)
             std::next(std::begin(array()), static_cast<difference_type>(offset_from_start));
         return const_iterator{array_it, Mapper{}};
     }

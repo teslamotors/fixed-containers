@@ -1867,7 +1867,7 @@ TEST(FixedVector, Data)
         FixedVector<int, 8> v2{100, 101, 102};
         const auto& v2_const_ref = v2;
 
-        auto it = std::next(v2.data(), 1);
+        auto* it = std::next(v2.data(), 1);
         EXPECT_EQ(*it, 101);  // non-const variant
         *it = 999;
         EXPECT_EQ(*it, 999);

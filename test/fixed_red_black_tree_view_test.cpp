@@ -30,7 +30,7 @@ TEST(FixedRedBlackTreeView, ViewOfPoolStorage)
 
     FixedSetType s1{1, 2, 3, 4};
 
-    const auto ptr = reinterpret_cast<const void*>(&s1);
+    const auto* const ptr = reinterpret_cast<const void*>(&s1);
     auto view = FixedRedBlackTreeRawView(
         ptr,
         sizeof(FixedSetType::value_type),
@@ -75,7 +75,7 @@ TEST(FixedRedBlackTreeView, ViewWithStructValue)
 
     FixedSetType s1{A(1), A(2), A(3)};
 
-    const auto ptr = reinterpret_cast<const void*>(&s1);
+    const auto* const ptr = reinterpret_cast<const void*>(&s1);
     auto view = FixedRedBlackTreeRawView(
         ptr,
         sizeof(FixedSetType::value_type),
@@ -104,7 +104,7 @@ TEST(FixedRedBlackTreeView, ViewOfContiguousStorage)
 
     FixedSetType s1{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 
-    const auto ptr = reinterpret_cast<const void*>(&s1);
+    const auto* const ptr = reinterpret_cast<const void*>(&s1);
     auto view = FixedRedBlackTreeRawView(
         ptr,
         sizeof(FixedSetType::value_type),
@@ -133,7 +133,7 @@ TEST(FixedRedBlackTreeView, PreservedOrdering)
     FixedSetType s1{4, 1, 2, 6, 3, 5};
     const FixedVector<int, 10> v1{1, 2, 3, 4, 5, 6};
 
-    const auto ptr = reinterpret_cast<const void*>(&s1);
+    const auto* const ptr = reinterpret_cast<const void*>(&s1);
     auto view = FixedRedBlackTreeRawView(
         ptr,
         sizeof(FixedSetType::value_type),

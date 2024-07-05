@@ -86,7 +86,6 @@ Checks: >
 
   -modernize-pass-by-value,
   -readability-identifier-naming,
-  -readability-qualified-auto,
   -readability-redundant-access-specifiers,
 
 # Turn all the warnings from the checks above into errors.
