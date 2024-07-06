@@ -9,25 +9,11 @@ namespace fixed_containers
 {
 template <typename T>
 concept IsIntegerRange = requires(const T t, const T t2, std::size_t i) {
-    {
-        t.start_inclusive()
-    } -> std::same_as<std::size_t>;
-
-    {
-        t.end_exclusive()
-    } -> std::same_as<std::size_t>;
-
-    {
-        t.contains(i)
-    } -> std::same_as<bool>;
-
-    {
-        t.distance()
-    } -> std::same_as<std::size_t>;
-
-    {
-        t == t2
-    } -> std::same_as<bool>;
+    { t.start_inclusive() } -> std::same_as<std::size_t>;
+    { t.end_exclusive() } -> std::same_as<std::size_t>;
+    { t.contains(i) } -> std::same_as<bool>;
+    { t.distance() } -> std::same_as<std::size_t>;
+    { t == t2 } -> std::same_as<bool>;
 };
 
 template <std::size_t START_INCLUSIVE, std::size_t END_EXCLUSIVE>

@@ -16,9 +16,7 @@ inline constexpr std::size_t max_size_v = max_size<T>::value;
 
 template <typename T>
 concept has_static_sizet_static_max_size_void = requires() {
-    {
-        T::static_max_size()
-    } -> std::same_as<std::size_t>;
+    { T::static_max_size() } -> std::same_as<std::size_t>;
 };
 
 template <has_static_sizet_static_max_size_void T>
