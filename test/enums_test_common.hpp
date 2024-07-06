@@ -187,7 +187,7 @@ public:
     FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(TestRichEnum2, C_FOUR)
 
 public:
-    constexpr std::size_t value() const { return enum_data().value; }
+    [[nodiscard]] constexpr std::size_t value() const { return enum_data().value; }
 };
 
 constexpr const std::array<TestRichEnum2, TestRichEnum2::count()>& TestRichEnum2::values()
@@ -234,11 +234,14 @@ private:
     }
 
 public:
-    constexpr std::size_t index() const
+    [[nodiscard]] constexpr std::size_t index() const
     {
         return static_cast<std::size_t>(magic_enum::enum_integer(backing_enum_));
     }
-    constexpr std::string_view str() const { return magic_enum::enum_name(backing_enum_); }
+    [[nodiscard]] constexpr std::string_view str() const
+    {
+        return magic_enum::enum_name(backing_enum_);
+    }
 };
 
 class NonConformingTestRichEnum1Values
@@ -322,12 +325,15 @@ public:
     constexpr NonCopyableRichEnum& operator=(const NonCopyableRichEnum& other) = delete;
 
 public:
-    constexpr const BackingEnum& backing_enum() const { return backing_enum_; }
-    constexpr std::size_t ordinal() const
+    [[nodiscard]] constexpr const BackingEnum& backing_enum() const { return backing_enum_; }
+    [[nodiscard]] constexpr std::size_t ordinal() const
     {
         return static_cast<std::size_t>(magic_enum::enum_integer(backing_enum_));
     }
-    constexpr std::string_view to_string() const { return magic_enum::enum_name(backing_enum_); }
+    [[nodiscard]] constexpr std::string_view to_string() const
+    {
+        return magic_enum::enum_name(backing_enum_);
+    }
 };
 
 class NonCopyableRichEnumValues

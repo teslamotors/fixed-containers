@@ -46,7 +46,7 @@ public:
     }
     ~InstanceCounterNonTrivialAssignment() { counter--; }
 
-    int get() const { return value; }
+    [[nodiscard]] int get() const { return value; }
 
     bool operator==(const Self& other) const { return value == other.value; }
     std::strong_ordering operator<=>(const Self& other) const { return value <=> other.value; }

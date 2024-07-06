@@ -11,6 +11,11 @@
 #include <memory>
 #include <optional>
 
+namespace fixed_containers::mock_testing_types_detail
+{
+constexpr void noop_constexpr_function_to_induce_non_triviality() {}
+}  // namespace fixed_containers::mock_testing_types_detail
+
 namespace fixed_containers
 {
 struct MockNonDefaultConstructible
@@ -22,8 +27,8 @@ struct MockNonDefaultConstructible
     constexpr MockNonDefaultConstructible(MockNonDefaultConstructible&& other) noexcept = default;
     constexpr MockNonDefaultConstructible& operator=(
         const MockNonDefaultConstructible& other) noexcept = default;
-    constexpr MockNonDefaultConstructible& operator=(MockNonDefaultConstructible&& other) noexcept =
-        default;
+    constexpr MockNonDefaultConstructible& operator=(
+        MockNonDefaultConstructible&& /*other*/) noexcept = default;
 };
 static_assert(NotDefaultConstructible<MockNonDefaultConstructible>);
 
@@ -38,7 +43,10 @@ struct MockNonTrivialDestructible
         default;
     MockNonTrivialDestructible& operator=(MockNonTrivialDestructible&& other) noexcept = default;
 
-    constexpr ~MockNonTrivialDestructible() {}
+    constexpr ~MockNonTrivialDestructible()
+    {
+        mock_testing_types_detail::noop_constexpr_function_to_induce_non_triviality();
+    }
 };
 
 static_assert(NotTriviallyDestructible<MockNonTrivialDestructible>);
@@ -57,6 +65,7 @@ struct MockNonTrivialCopyAssignable
 
     constexpr MockNonTrivialCopyAssignable& operator=(const MockNonTrivialCopyAssignable&) noexcept
     {
+        mock_testing_types_detail::noop_constexpr_function_to_induce_non_triviality();
         return *this;
     }
 };
@@ -65,7 +74,10 @@ struct MockNonTrivialCopyConstructible
 {
     constexpr MockNonTrivialCopyConstructible() = default;
 
-    constexpr MockNonTrivialCopyConstructible(const MockNonTrivialCopyConstructible&) noexcept {}
+    constexpr MockNonTrivialCopyConstructible(const MockNonTrivialCopyConstructible&) noexcept
+    {
+        mock_testing_types_detail::noop_constexpr_function_to_induce_non_triviality();
+    }
     constexpr MockNonTrivialCopyConstructible(MockNonTrivialCopyConstructible&& other) noexcept =
         default;
 
@@ -110,6 +122,7 @@ struct MockNonTriviallyCopyAssignable
 
     MockNonTriviallyCopyAssignable& operator=(const MockNonTriviallyCopyAssignable&) noexcept
     {
+        mock_testing_types_detail::noop_constexpr_function_to_induce_non_triviality();
         return *this;
     }
     MockNonTriviallyCopyAssignable& operator=(MockNonTriviallyCopyAssignable&&) noexcept
@@ -131,8 +144,8 @@ struct MockMoveableButNotCopyable
 
     constexpr MockMoveableButNotCopyable& operator=(
         const MockMoveableButNotCopyable& other) noexcept = delete;
-    constexpr MockMoveableButNotCopyable& operator=(MockMoveableButNotCopyable&& other) noexcept =
-        default;
+    constexpr MockMoveableButNotCopyable& operator=(
+        MockMoveableButNotCopyable&& /*other*/) noexcept = default;
 };
 
 // std::atomic<int> and std::mutex are examples of this
@@ -182,6 +195,7 @@ struct MockNonTrivialInt
 
     constexpr MockNonTrivialInt& operator=(const MockNonTrivialInt& other) noexcept
     {
+        mock_testing_types_detail::noop_constexpr_function_to_induce_non_triviality();
         value = other.value;
         return *this;
     }
@@ -191,7 +205,10 @@ struct MockNonTrivialInt
         return *this;
     }
 
-    constexpr ~MockNonTrivialInt() {}
+    constexpr ~MockNonTrivialInt()
+    {
+        mock_testing_types_detail::noop_constexpr_function_to_induce_non_triviality();
+    }
 
     constexpr bool operator==(const MockNonTrivialInt& other) const { return value == other.value; }
 };
