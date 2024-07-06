@@ -32,7 +32,7 @@ class Color : public fixed_containers::rich_enums::SkeletalRichEnum<Color, detai
 public:
     static constexpr const std::array<Color, count()>& values();
 
-    static constexpr const Color& RED()
+    static constexpr const Color& RED()  // NOLINT(readability-identifier-naming)
     {
         return ::fixed_containers::rich_enums_detail::value_of<Color>(BackingEnum::RED).value();
     }
@@ -222,8 +222,16 @@ private:
     }
 
 public:
-    static constexpr const NonConformingTestRichEnum1& NC_ONE() { return at(BackingEnum::NC_ONE); }
-    static constexpr const NonConformingTestRichEnum1& NC_TWO() { return at(BackingEnum::NC_TWO); }
+    static constexpr const NonConformingTestRichEnum1&
+    NC_ONE()  // NOLINT(readability-identifier-naming)
+    {
+        return at(BackingEnum::NC_ONE);
+    }
+    static constexpr const NonConformingTestRichEnum1&
+    NC_TWO()  // NOLINT(readability-identifier-naming)
+    {
+        return at(BackingEnum::NC_TWO);
+    }
 
 private:
     BackingEnum backing_enum_;
@@ -308,10 +316,22 @@ private:
     }
 
 public:
-    static constexpr const NonCopyableRichEnum& C_ONE() { return at(BackingEnum::C_ONE); }
-    static constexpr const NonCopyableRichEnum& C_TWO() { return at(BackingEnum::C_TWO); }
-    static constexpr const NonCopyableRichEnum& C_THREE() { return at(BackingEnum::C_THREE); }
-    static constexpr const NonCopyableRichEnum& C_FOUR() { return at(BackingEnum::C_FOUR); }
+    static constexpr const NonCopyableRichEnum& C_ONE()  // NOLINT(readability-identifier-naming)
+    {
+        return at(BackingEnum::C_ONE);
+    }
+    static constexpr const NonCopyableRichEnum& C_TWO()  // NOLINT(readability-identifier-naming)
+    {
+        return at(BackingEnum::C_TWO);
+    }
+    static constexpr const NonCopyableRichEnum& C_THREE()  // NOLINT(readability-identifier-naming)
+    {
+        return at(BackingEnum::C_THREE);
+    }
+    static constexpr const NonCopyableRichEnum& C_FOUR()  // NOLINT(readability-identifier-naming)
+    {
+        return at(BackingEnum::C_FOUR);
+    }
 
 private:
     BackingEnum backing_enum_;

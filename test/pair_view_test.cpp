@@ -150,15 +150,15 @@ TEST(PairView, constness)
 
 TEST(PairView, References)
 {
-    static constexpr int a = 5;
-    static constexpr double b = 3.0;
+    static constexpr int VAL_A = 5;
+    static constexpr double VAL_B = 3.0;
 
-    static constexpr const int& ar = a;
-    static constexpr const double& br = b;
+    static constexpr const int& REF_A = VAL_A;
+    static constexpr const double& REF_B = VAL_B;
 
-    constexpr PairView<const int&, const double&> p1{&ar, &br};
+    constexpr PairView<const int&, const double&> PAIR_VIEW_1{&REF_A, &REF_B};
 
-    static_assert(5 == p1.first());
+    static_assert(5 == PAIR_VIEW_1.first());
 }
 
 TEST(PairView, Assignability)

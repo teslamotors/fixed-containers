@@ -43,15 +43,15 @@ TEST(StringLiteral, Constructor)
 {
     static constexpr const char MY_LITERAL[5] = "blah";  // 4 chars + null terminator
 
-    constexpr StringLiteral s = MY_LITERAL;
-    constexpr StringLiteral s2 = s;
+    constexpr StringLiteral VAL1 = MY_LITERAL;
+    constexpr StringLiteral VAL2 = VAL1;
 
-    static_assert(s.as_view() == MY_LITERAL);
-    static_assert(s.as_view() == s2);
-    static_assert(s == s2.as_view());
+    static_assert(VAL1.as_view() == MY_LITERAL);
+    static_assert(VAL1.as_view() == VAL2);
+    static_assert(VAL1 == VAL2.as_view());
 
-    static_assert(s.size() == 4);
-    static_assert(s2.size() == 4);
+    static_assert(VAL1.size() == 4);
+    static_assert(VAL2.size() == 4);
 }
 
 TEST(StringLiteral, CopyandMoveConstructor)
@@ -62,28 +62,28 @@ TEST(StringLiteral, CopyandMoveConstructor)
         StringLiteral b;
     };
 
-    constexpr MyStruct t{"foo", "bar"};
+    constexpr MyStruct VAL1{"foo", "bar"};
 
-    static_assert(t.a.as_view() == "foo");
-    static_assert(t.b.as_view() == "bar");
+    static_assert(VAL1.a.as_view() == "foo");
+    static_assert(VAL1.b.as_view() == "bar");
 
     // For trivial types, move == copy.
-    constexpr MyStruct h{t};
-    static_assert(h.a.as_view() == "foo");
-    static_assert(h.b.as_view() == "bar");
+    constexpr MyStruct VAL2{VAL1};
+    static_assert(VAL2.a.as_view() == "foo");
+    static_assert(VAL2.b.as_view() == "bar");
 }
 
 TEST(StringLiteral, CStr)
 {
     static constexpr const char MY_LITERAL[5] = "blah";  // 4 chars + null terminator
-    constexpr StringLiteral s = MY_LITERAL;
-    static_assert(s.as_view() == MY_LITERAL);
-    static_assert(s.size() == 4);
+    constexpr StringLiteral VAL = MY_LITERAL;
+    static_assert(VAL.as_view() == MY_LITERAL);
+    static_assert(VAL.size() == 4);
 
     const std::string no_string_interning = std::string{"bla"} + std::string{"h"};
-    const char* as_auto_converted_char = s;
+    const char* as_auto_converted_char = VAL;
     EXPECT_TRUE((std::string{as_auto_converted_char} == no_string_interning));
-    EXPECT_TRUE((std::string{s.c_str()} == no_string_interning));
+    EXPECT_TRUE((std::string{VAL.c_str()} == no_string_interning));
 }
 
 }  // namespace fixed_containers

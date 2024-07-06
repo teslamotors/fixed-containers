@@ -56,140 +56,140 @@ static_assert(std::is_same_v<typename std::iterator_traits<ES_1::const_iterator>
 
 TEST(FixedSet, DefaultConstructor)
 {
-    constexpr FixedSet<int, 10> s1{};
-    static_assert(s1.empty());
+    constexpr FixedSet<int, 10> VAL1{};
+    static_assert(VAL1.empty());
 }
 
 TEST(FixedSet, IteratorConstructor)
 {
     constexpr std::array INPUT{2, 4};
-    constexpr FixedSet<int, 10> s2{INPUT.begin(), INPUT.end()};
+    constexpr FixedSet<int, 10> VAL2{INPUT.begin(), INPUT.end()};
 
-    static_assert(s2.size() == 2);
-    static_assert(s2.contains(2));
-    static_assert(s2.contains(4));
+    static_assert(VAL2.size() == 2);
+    static_assert(VAL2.contains(2));
+    static_assert(VAL2.contains(4));
 }
 
 TEST(FixedSet, Initializer)
 {
-    constexpr FixedSet<int, 10> s1{2, 4};
-    static_assert(s1.size() == 2);
+    constexpr FixedSet<int, 10> VAL1{2, 4};
+    static_assert(VAL1.size() == 2);
 
-    constexpr FixedSet<int, 10> s2{3};
-    static_assert(s2.size() == 1);
+    constexpr FixedSet<int, 10> VAL2{3};
+    static_assert(VAL2.size() == 1);
 }
 
 TEST(FixedSet, FindTransparentComparator)
 {
-    constexpr FixedSet<MockAComparableToB, 3, std::less<>> s{};
-    constexpr MockBComparableToA b{5};
-    static_assert(s.find(b) == s.end());
+    constexpr FixedSet<MockAComparableToB, 3, std::less<>> VAL{};
+    constexpr MockBComparableToA KEY_B{5};
+    static_assert(VAL.find(KEY_B) == VAL.end());
 }
 
 TEST(FixedSet, Contains)
 {
-    constexpr FixedSet<int, 10> s1{2, 4};
-    static_assert(s1.size() == 2);
+    constexpr FixedSet<int, 10> VAL1{2, 4};
+    static_assert(VAL1.size() == 2);
 
-    static_assert(!s1.contains(1));
-    static_assert(s1.contains(2));
-    static_assert(!s1.contains(3));
-    static_assert(s1.contains(4));
+    static_assert(!VAL1.contains(1));
+    static_assert(VAL1.contains(2));
+    static_assert(!VAL1.contains(3));
+    static_assert(VAL1.contains(4));
 }
 
 TEST(FixedSet, ContainsTransparentComparator)
 {
-    constexpr FixedSet<MockAComparableToB, 5, std::less<>> s{
+    constexpr FixedSet<MockAComparableToB, 5, std::less<>> VAL{
         MockAComparableToB{1}, MockAComparableToB{3}, MockAComparableToB{5}};
-    constexpr MockBComparableToA b{5};
-    static_assert(s.contains(b));
+    constexpr MockBComparableToA KEY_B{5};
+    static_assert(VAL.contains(KEY_B));
 }
 
 TEST(FixedSet, CountTransparentComparator)
 {
-    constexpr FixedSet<MockAComparableToB, 5, std::less<>> s{
+    constexpr FixedSet<MockAComparableToB, 5, std::less<>> VAL{
         MockAComparableToB{1}, MockAComparableToB{3}, MockAComparableToB{5}};
-    constexpr MockBComparableToA b{5};
-    static_assert(s.count(b) == 1);
+    constexpr MockBComparableToA KEY_B{5};
+    static_assert(VAL.count(KEY_B) == 1);
 }
 
 TEST(FixedSet, LowerBound)
 {
-    constexpr FixedSet<int, 10> s1{2, 4};
-    static_assert(s1.size() == 2);
+    constexpr FixedSet<int, 10> VAL1{2, 4};
+    static_assert(VAL1.size() == 2);
 
-    static_assert(*s1.lower_bound(1) == 2);
-    static_assert(*s1.lower_bound(2) == 2);
-    static_assert(*s1.lower_bound(3) == 4);
-    static_assert(*s1.lower_bound(4) == 4);
-    static_assert(s1.lower_bound(5) == s1.cend());
+    static_assert(*VAL1.lower_bound(1) == 2);
+    static_assert(*VAL1.lower_bound(2) == 2);
+    static_assert(*VAL1.lower_bound(3) == 4);
+    static_assert(*VAL1.lower_bound(4) == 4);
+    static_assert(VAL1.lower_bound(5) == VAL1.cend());
 }
 
 TEST(FixedSet, LowerBoundTransparentComparator)
 {
-    constexpr FixedSet<MockAComparableToB, 5, std::less<>> s{
+    constexpr FixedSet<MockAComparableToB, 5, std::less<>> VAL{
         MockAComparableToB{1}, MockAComparableToB{3}, MockAComparableToB{5}};
-    constexpr MockBComparableToA b{3};
-    static_assert(*s.lower_bound(b) == MockAComparableToB{3});
+    constexpr MockBComparableToA KEY_B{3};
+    static_assert(*VAL.lower_bound(KEY_B) == MockAComparableToB{3});
 }
 
 TEST(FixedSet, UpperBound)
 {
-    constexpr FixedSet<int, 10> s1{2, 4};
-    static_assert(s1.size() == 2);
+    constexpr FixedSet<int, 10> VAL1{2, 4};
+    static_assert(VAL1.size() == 2);
 
-    static_assert(*s1.upper_bound(1) == 2);
-    static_assert(*s1.upper_bound(2) == 4);
-    static_assert(*s1.upper_bound(3) == 4);
-    static_assert(s1.upper_bound(4) == s1.cend());
-    static_assert(s1.upper_bound(5) == s1.cend());
+    static_assert(*VAL1.upper_bound(1) == 2);
+    static_assert(*VAL1.upper_bound(2) == 4);
+    static_assert(*VAL1.upper_bound(3) == 4);
+    static_assert(VAL1.upper_bound(4) == VAL1.cend());
+    static_assert(VAL1.upper_bound(5) == VAL1.cend());
 }
 
 TEST(FixedSet, UpperBoundTransparentComparator)
 {
-    constexpr FixedSet<MockAComparableToB, 5, std::less<>> s{
+    constexpr FixedSet<MockAComparableToB, 5, std::less<>> VAL{
         MockAComparableToB{1}, MockAComparableToB{3}, MockAComparableToB{5}};
-    constexpr MockBComparableToA b{3};
-    static_assert(*s.upper_bound(b) == MockAComparableToB{5});
+    constexpr MockBComparableToA KEY_B{3};
+    static_assert(*VAL.upper_bound(KEY_B) == MockAComparableToB{5});
 }
 
 TEST(FixedSet, EqualRange)
 {
-    constexpr FixedSet<int, 10> s1{2, 4};
-    static_assert(s1.size() == 2);
+    constexpr FixedSet<int, 10> VAL1{2, 4};
+    static_assert(VAL1.size() == 2);
 
-    static_assert(s1.equal_range(1).first == s1.lower_bound(1));
-    static_assert(s1.equal_range(1).second == s1.upper_bound(1));
+    static_assert(VAL1.equal_range(1).first == VAL1.lower_bound(1));
+    static_assert(VAL1.equal_range(1).second == VAL1.upper_bound(1));
 
-    static_assert(s1.equal_range(2).first == s1.lower_bound(2));
-    static_assert(s1.equal_range(2).second == s1.upper_bound(2));
+    static_assert(VAL1.equal_range(2).first == VAL1.lower_bound(2));
+    static_assert(VAL1.equal_range(2).second == VAL1.upper_bound(2));
 
-    static_assert(s1.equal_range(3).first == s1.lower_bound(3));
-    static_assert(s1.equal_range(3).second == s1.upper_bound(3));
+    static_assert(VAL1.equal_range(3).first == VAL1.lower_bound(3));
+    static_assert(VAL1.equal_range(3).second == VAL1.upper_bound(3));
 
-    static_assert(s1.equal_range(4).first == s1.lower_bound(4));
-    static_assert(s1.equal_range(4).second == s1.upper_bound(4));
+    static_assert(VAL1.equal_range(4).first == VAL1.lower_bound(4));
+    static_assert(VAL1.equal_range(4).second == VAL1.upper_bound(4));
 
-    static_assert(s1.equal_range(5).first == s1.lower_bound(5));
-    static_assert(s1.equal_range(5).second == s1.upper_bound(5));
+    static_assert(VAL1.equal_range(5).first == VAL1.lower_bound(5));
+    static_assert(VAL1.equal_range(5).second == VAL1.upper_bound(5));
 }
 
 TEST(FixedSet, EqualRangeTransparentComparator)
 {
-    constexpr FixedSet<MockAComparableToB, 5, std::less<>> s{
+    constexpr FixedSet<MockAComparableToB, 5, std::less<>> VAL{
         MockAComparableToB{1}, MockAComparableToB{3}, MockAComparableToB{5}};
-    constexpr MockBComparableToA b{3};
-    static_assert(s.equal_range(b).first == s.lower_bound(b));
-    static_assert(s.equal_range(b).second == s.upper_bound(b));
+    constexpr MockBComparableToA KEY_B{3};
+    static_assert(VAL.equal_range(KEY_B).first == VAL.lower_bound(KEY_B));
+    static_assert(VAL.equal_range(KEY_B).second == VAL.upper_bound(KEY_B));
 }
 
 TEST(FixedSet, MaxSize)
 {
-    constexpr FixedSet<int, 10> s1{2, 4};
-    static_assert(s1.max_size() == 10);
+    constexpr FixedSet<int, 10> VAL1{2, 4};
+    static_assert(VAL1.max_size() == 10);
 
-    constexpr FixedSet<int, 4> s2{};
-    static_assert(s2.max_size() == 4);
+    constexpr FixedSet<int, 4> VAL2{};
+    static_assert(VAL2.max_size() == 4);
 
     static_assert(FixedSet<int, 4>::static_max_size() == 4);
     EXPECT_EQ(4, (FixedSet<int, 4>::static_max_size()));
@@ -199,43 +199,43 @@ TEST(FixedSet, MaxSize)
 
 TEST(FixedSet, EmptySizeFull)
 {
-    constexpr FixedSet<int, 10> s1{2, 4};
-    static_assert(s1.size() == 2);
-    static_assert(!s1.empty());
+    constexpr FixedSet<int, 10> VAL1{2, 4};
+    static_assert(VAL1.size() == 2);
+    static_assert(!VAL1.empty());
 
-    constexpr FixedSet<int, 10> s2{};
-    static_assert(s2.size() == 0);  // NOLINT(readability-container-size-empty)
-    static_assert(s2.empty());
+    constexpr FixedSet<int, 10> VAL2{};
+    static_assert(VAL2.size() == 0);  // NOLINT(readability-container-size-empty)
+    static_assert(VAL2.empty());
 
-    constexpr FixedSet<int, 2> s3{2, 4};
-    static_assert(s3.size() == 2);
-    static_assert(is_full(s3));
+    constexpr FixedSet<int, 2> VAL3{2, 4};
+    static_assert(VAL3.size() == 2);
+    static_assert(is_full(VAL3));
 
-    constexpr FixedSet<int, 5> s4{2, 4};
-    static_assert(s4.size() == 2);
-    static_assert(!is_full(s4));
+    constexpr FixedSet<int, 5> VAL4{2, 4};
+    static_assert(VAL4.size() == 2);
+    static_assert(!is_full(VAL4));
 }
 
 TEST(FixedSet, MaxSizeDeduction)
 {
     {
-        constexpr auto s1 = make_fixed_set({30, 31});
-        static_assert(s1.size() == 2);
-        static_assert(s1.max_size() == 2);
-        static_assert(s1.contains(30));
-        static_assert(s1.contains(31));
-        static_assert(!s1.contains(32));
+        constexpr auto VAL1 = make_fixed_set({30, 31});
+        static_assert(VAL1.size() == 2);
+        static_assert(VAL1.max_size() == 2);
+        static_assert(VAL1.contains(30));
+        static_assert(VAL1.contains(31));
+        static_assert(!VAL1.contains(32));
     }
     {
-        constexpr auto s1 = make_fixed_set<int>({});
-        static_assert(s1.empty());
-        static_assert(s1.max_size() == 0);
+        constexpr auto VAL1 = make_fixed_set<int>({});
+        static_assert(VAL1.empty());
+        static_assert(VAL1.max_size() == 0);
     }
 }
 
 TEST(FixedSet, Insert)
 {
-    constexpr auto s1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedSet<int, 10> s{};
         s.insert(2);
@@ -243,11 +243,11 @@ TEST(FixedSet, Insert)
         return s;
     }();
 
-    static_assert(s1.size() == 2);
-    static_assert(!s1.contains(1));
-    static_assert(s1.contains(2));
-    static_assert(!s1.contains(3));
-    static_assert(s1.contains(4));
+    static_assert(VAL1.size() == 2);
+    static_assert(!VAL1.contains(1));
+    static_assert(VAL1.contains(2));
+    static_assert(!VAL1.contains(3));
+    static_assert(VAL1.contains(4));
 }
 
 TEST(FixedSet, InsertExceedsCapacity)
@@ -273,7 +273,7 @@ TEST(FixedSet, InsertExceedsCapacity)
 
 TEST(FixedSet, InsertMultipleTimes)
 {
-    constexpr auto s1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedSet<int, 10> s{};
         {
@@ -299,32 +299,32 @@ TEST(FixedSet, InsertMultipleTimes)
         return s;
     }();
 
-    static_assert(s1.size() == 2);
-    static_assert(!s1.contains(1));
-    static_assert(s1.contains(2));
-    static_assert(!s1.contains(3));
-    static_assert(s1.contains(4));
+    static_assert(VAL1.size() == 2);
+    static_assert(!VAL1.contains(1));
+    static_assert(VAL1.contains(2));
+    static_assert(!VAL1.contains(3));
+    static_assert(VAL1.contains(4));
 }
 
 TEST(FixedSet, InsertInitializer)
 {
-    constexpr auto s1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedSet<int, 10> s{};
         s.insert({2, 4});
         return s;
     }();
 
-    static_assert(s1.size() == 2);
-    static_assert(!s1.contains(1));
-    static_assert(s1.contains(2));
-    static_assert(!s1.contains(3));
-    static_assert(s1.contains(4));
+    static_assert(VAL1.size() == 2);
+    static_assert(!VAL1.contains(1));
+    static_assert(VAL1.contains(2));
+    static_assert(!VAL1.contains(3));
+    static_assert(VAL1.contains(4));
 }
 
 TEST(FixedSet, InsertIterators)
 {
-    constexpr auto s1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedSet<int, 10> s{};
         std::array<int, 2> a{2, 4};
@@ -332,13 +332,13 @@ TEST(FixedSet, InsertIterators)
         return s;
     }();
 
-    static_assert(s1.size() == 2);
-    static_assert(!s1.contains(1));
-    static_assert(s1.contains(2));
-    static_assert(!s1.contains(3));
-    static_assert(s1.contains(4));
+    static_assert(VAL1.size() == 2);
+    static_assert(!VAL1.contains(1));
+    static_assert(VAL1.contains(2));
+    static_assert(!VAL1.contains(3));
+    static_assert(VAL1.contains(4));
 
-    static_assert(std::is_same_v<decltype(*s1.begin()), const int&>);
+    static_assert(std::is_same_v<decltype(*VAL1.begin()), const int&>);
 
     const FixedSet<int, 10> s_non_const{};
     static_assert(std::is_same_v<decltype(*s_non_const.begin()), const int&>);
@@ -347,7 +347,7 @@ TEST(FixedSet, InsertIterators)
 TEST(FixedSet, Emplace)
 {
     {
-        constexpr FixedSet<int, 10> s = []()
+        constexpr FixedSet<int, 10> VAL = []()
         {
             FixedSet<int, 10> s1{};
             s1.emplace(2);
@@ -356,8 +356,8 @@ TEST(FixedSet, Emplace)
             return s1;
         }();
 
-        static_assert(consteval_compare::equal<1, s.size()>);
-        static_assert(s.contains(2));
+        static_assert(consteval_compare::equal<1, VAL.size()>);
+        static_assert(VAL.contains(2));
     }
 
     {
@@ -413,19 +413,19 @@ TEST(FixedSet, EmplaceExceedsCapacity)
 
 TEST(FixedSet, Clear)
 {
-    constexpr auto s1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedSet<int, 10> s{2, 4};
         s.clear();
         return s;
     }();
 
-    static_assert(s1.empty());
+    static_assert(VAL1.empty());
 }
 
 TEST(FixedSet, Erase)
 {
-    constexpr auto s1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedSet<int, 10> s{2, 4};
         auto removed_count = s.erase(2);
@@ -435,16 +435,16 @@ TEST(FixedSet, Erase)
         return s;
     }();
 
-    static_assert(s1.size() == 1);
-    static_assert(!s1.contains(1));
-    static_assert(!s1.contains(2));
-    static_assert(!s1.contains(3));
-    static_assert(s1.contains(4));
+    static_assert(VAL1.size() == 1);
+    static_assert(!VAL1.contains(1));
+    static_assert(!VAL1.contains(2));
+    static_assert(!VAL1.contains(3));
+    static_assert(VAL1.contains(4));
 }
 
 TEST(FixedSet, EraseIterator)
 {
-    constexpr auto s1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedSet<int, 10> s{2, 3, 4};
         {
@@ -461,11 +461,11 @@ TEST(FixedSet, EraseIterator)
         return s;
     }();
 
-    static_assert(s1.size() == 1);
-    static_assert(!s1.contains(1));
-    static_assert(!s1.contains(2));
-    static_assert(!s1.contains(3));
-    static_assert(s1.contains(4));
+    static_assert(VAL1.size() == 1);
+    static_assert(!VAL1.contains(1));
+    static_assert(!VAL1.contains(2));
+    static_assert(!VAL1.contains(3));
+    static_assert(VAL1.contains(4));
 }
 
 TEST(FixedSet, EraseIteratorAmbiguity)
@@ -489,7 +489,7 @@ TEST(FixedSet, EraseIteratorInvalidIterator)
 TEST(FixedSet, EraseRange)
 {
     {
-        constexpr auto s1 = []()
+        constexpr auto VAL1 = []()
         {
             FixedSet<int, 10> s{2, 3, 4};
             auto from = s.begin();
@@ -501,14 +501,14 @@ TEST(FixedSet, EraseRange)
             return s;
         }();
 
-        static_assert(consteval_compare::equal<2, s1.size()>);
-        static_assert(!s1.contains(1));
-        static_assert(s1.contains(2));
-        static_assert(!s1.contains(3));
-        static_assert(s1.contains(4));
+        static_assert(consteval_compare::equal<2, VAL1.size()>);
+        static_assert(!VAL1.contains(1));
+        static_assert(VAL1.contains(2));
+        static_assert(!VAL1.contains(3));
+        static_assert(VAL1.contains(4));
     }
     {
-        constexpr auto s1 = []()
+        constexpr auto VAL1 = []()
         {
             FixedSet<int, 10> s{2, 4};
             auto from = s.begin();
@@ -518,14 +518,14 @@ TEST(FixedSet, EraseRange)
             return s;
         }();
 
-        static_assert(consteval_compare::equal<2, s1.size()>);
-        static_assert(!s1.contains(1));
-        static_assert(s1.contains(2));
-        static_assert(!s1.contains(3));
-        static_assert(s1.contains(4));
+        static_assert(consteval_compare::equal<2, VAL1.size()>);
+        static_assert(!VAL1.contains(1));
+        static_assert(VAL1.contains(2));
+        static_assert(!VAL1.contains(3));
+        static_assert(VAL1.contains(4));
     }
     {
-        constexpr auto s1 = []()
+        constexpr auto VAL1 = []()
         {
             FixedSet<int, 10> s{1, 4};
             auto from = s.begin();
@@ -535,17 +535,17 @@ TEST(FixedSet, EraseRange)
             return s;
         }();
 
-        static_assert(consteval_compare::equal<0, s1.size()>);
-        static_assert(!s1.contains(1));
-        static_assert(!s1.contains(2));
-        static_assert(!s1.contains(3));
-        static_assert(!s1.contains(4));
+        static_assert(consteval_compare::equal<0, VAL1.size()>);
+        static_assert(!VAL1.contains(1));
+        static_assert(!VAL1.contains(2));
+        static_assert(!VAL1.contains(3));
+        static_assert(!VAL1.contains(4));
     }
 }
 
 TEST(FixedSet, EraseIf)
 {
-    constexpr auto s1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedSet<int, 10> s{2, 3, 4};
         const std::size_t removed_count =
@@ -554,46 +554,46 @@ TEST(FixedSet, EraseIf)
         return s;
     }();
 
-    static_assert(consteval_compare::equal<1, s1.size()>);
-    static_assert(!s1.contains(1));
-    static_assert(!s1.contains(2));
-    static_assert(s1.contains(3));
-    static_assert(!s1.contains(4));
+    static_assert(consteval_compare::equal<1, VAL1.size()>);
+    static_assert(!VAL1.contains(1));
+    static_assert(!VAL1.contains(2));
+    static_assert(VAL1.contains(3));
+    static_assert(!VAL1.contains(4));
 }
 
 TEST(FixedSet, IteratorBasic)
 {
-    constexpr FixedSet<int, 10> s1{1, 2, 3, 4};
+    constexpr FixedSet<int, 10> VAL1{1, 2, 3, 4};
 
-    static_assert(std::distance(s1.cbegin(), s1.cend()) == 4);
+    static_assert(std::distance(VAL1.cbegin(), VAL1.cend()) == 4);
 
-    static_assert(*s1.begin() == 1);
-    static_assert(*std::next(s1.begin(), 1) == 2);
-    static_assert(*std::next(s1.begin(), 2) == 3);
-    static_assert(*std::next(s1.begin(), 3) == 4);
+    static_assert(*VAL1.begin() == 1);
+    static_assert(*std::next(VAL1.begin(), 1) == 2);
+    static_assert(*std::next(VAL1.begin(), 2) == 3);
+    static_assert(*std::next(VAL1.begin(), 3) == 4);
 
-    static_assert(*std::prev(s1.end(), 1) == 4);
-    static_assert(*std::prev(s1.end(), 2) == 3);
-    static_assert(*std::prev(s1.end(), 3) == 2);
-    static_assert(*std::prev(s1.end(), 4) == 1);
+    static_assert(*std::prev(VAL1.end(), 1) == 4);
+    static_assert(*std::prev(VAL1.end(), 2) == 3);
+    static_assert(*std::prev(VAL1.end(), 3) == 2);
+    static_assert(*std::prev(VAL1.end(), 4) == 1);
 }
 
 TEST(FixedSet, IteratorOffByOneIssues)
 {
-    constexpr FixedSet<int, 10> s1{{1, 4}};
+    constexpr FixedSet<int, 10> VAL1{{1, 4}};
 
-    static_assert(std::distance(s1.cbegin(), s1.cend()) == 2);
+    static_assert(std::distance(VAL1.cbegin(), VAL1.cend()) == 2);
 
-    static_assert(*s1.begin() == 1);
-    static_assert(*std::next(s1.begin(), 1) == 4);
+    static_assert(*VAL1.begin() == 1);
+    static_assert(*std::next(VAL1.begin(), 1) == 4);
 
-    static_assert(*std::prev(s1.end(), 1) == 4);
-    static_assert(*std::prev(s1.end(), 2) == 1);
+    static_assert(*std::prev(VAL1.end(), 1) == 4);
+    static_assert(*std::prev(VAL1.end(), 2) == 1);
 }
 
 TEST(FixedSet, IteratorEnsureOrder)
 {
-    constexpr auto s1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedSet<int, 10> s{};
         s.insert(3);
@@ -602,37 +602,37 @@ TEST(FixedSet, IteratorEnsureOrder)
         return s;
     }();
 
-    static_assert(std::distance(s1.cbegin(), s1.cend()) == 3);
+    static_assert(std::distance(VAL1.cbegin(), VAL1.cend()) == 3);
 
-    static_assert(*s1.begin() == 1);
-    static_assert(*std::next(s1.begin(), 1) == 3);
-    static_assert(*std::next(s1.begin(), 2) == 4);
+    static_assert(*VAL1.begin() == 1);
+    static_assert(*std::next(VAL1.begin(), 1) == 3);
+    static_assert(*std::next(VAL1.begin(), 2) == 4);
 
-    static_assert(*std::prev(s1.end(), 1) == 4);
-    static_assert(*std::prev(s1.end(), 2) == 3);
-    static_assert(*std::prev(s1.end(), 3) == 1);
+    static_assert(*std::prev(VAL1.end(), 1) == 4);
+    static_assert(*std::prev(VAL1.end(), 2) == 3);
+    static_assert(*std::prev(VAL1.end(), 3) == 1);
 }
 
 TEST(FixedSet, ReverseIteratorBasic)
 {
-    constexpr FixedSet<int, 10> s1{1, 2, 3, 4};
+    constexpr FixedSet<int, 10> VAL1{1, 2, 3, 4};
 
-    static_assert(consteval_compare::equal<4, std::distance(s1.crbegin(), s1.crend())>);
+    static_assert(consteval_compare::equal<4, std::distance(VAL1.crbegin(), VAL1.crend())>);
 
-    static_assert(*s1.rbegin() == 4);
-    static_assert(*std::next(s1.rbegin(), 1) == 3);
-    static_assert(*std::next(s1.crbegin(), 2) == 2);
-    static_assert(*std::next(s1.rbegin(), 3) == 1);
+    static_assert(*VAL1.rbegin() == 4);
+    static_assert(*std::next(VAL1.rbegin(), 1) == 3);
+    static_assert(*std::next(VAL1.crbegin(), 2) == 2);
+    static_assert(*std::next(VAL1.rbegin(), 3) == 1);
 
-    static_assert(*std::prev(s1.rend(), 1) == 1);
-    static_assert(*std::prev(s1.crend(), 2) == 2);
-    static_assert(*std::prev(s1.rend(), 3) == 3);
-    static_assert(*std::prev(s1.rend(), 4) == 4);
+    static_assert(*std::prev(VAL1.rend(), 1) == 1);
+    static_assert(*std::prev(VAL1.crend(), 2) == 2);
+    static_assert(*std::prev(VAL1.rend(), 3) == 3);
+    static_assert(*std::prev(VAL1.rend(), 4) == 4);
 }
 
 TEST(FixedSet, ReverseIteratorBase)
 {
-    constexpr auto s1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedSet<int, 7> s{1, 2, 3};
         auto it = s.rbegin();  // points to 3
@@ -642,9 +642,9 @@ TEST(FixedSet, ReverseIteratorBase)
         return s;
     }();
 
-    static_assert(s1.size() == 2);
-    static_assert(s1.contains(1));
-    static_assert(s1.contains(3));
+    static_assert(VAL1.size() == 2);
+    static_assert(VAL1.contains(1));
+    static_assert(VAL1.contains(3));
 }
 
 TEST(FixedSet, IteratorInvalidation)
@@ -694,19 +694,19 @@ TEST(FixedSet, IteratorInvalidation)
 
 TEST(FixedSet, Equality)
 {
-    constexpr FixedSet<int, 10> s1{{1, 4}};
-    constexpr FixedSet<int, 10> s2{{4, 1}};
-    constexpr FixedSet<int, 10> s3{{1, 3}};
-    constexpr FixedSet<int, 10> s4{1};
+    constexpr FixedSet<int, 10> VAL1{{1, 4}};
+    constexpr FixedSet<int, 10> VAL2{{4, 1}};
+    constexpr FixedSet<int, 10> VAL3{{1, 3}};
+    constexpr FixedSet<int, 10> VAL4{1};
 
-    static_assert(s1 == s2);
-    static_assert(s2 == s1);
+    static_assert(VAL1 == VAL2);
+    static_assert(VAL2 == VAL1);
 
-    static_assert(s1 != s3);
-    static_assert(s3 != s1);
+    static_assert(VAL1 != VAL3);
+    static_assert(VAL3 != VAL1);
 
-    static_assert(s1 != s4);
-    static_assert(s4 != s1);
+    static_assert(VAL1 != VAL4);
+    static_assert(VAL4 != VAL1);
 }
 
 TEST(FixedSet, Ranges)
@@ -730,8 +730,8 @@ TEST(FixedSet, OverloadedAddressOfOperator)
     }
 
     {
-        constexpr FixedSet<MockFailingAddressOfOperator, 15> v{{2, {}}};
-        static_assert(!v.empty());
+        constexpr FixedSet<MockFailingAddressOfOperator, 15> VAL{{2, {}}};
+        static_assert(!VAL.empty());
     }
 
     {
@@ -747,9 +747,9 @@ TEST(FixedSet, OverloadedAddressOfOperator)
     }
 
     {
-        constexpr FixedSet<MockFailingAddressOfOperator, 15> v{{2, 3, 4}};
-        static_assert(!v.empty());
-        auto it = v.cbegin();
+        constexpr FixedSet<MockFailingAddressOfOperator, 15> VAL{{2, 3, 4}};
+        static_assert(!VAL.empty());
+        auto it = VAL.cbegin();
         it->do_nothing();
         (void)it++;
         (void)it--;
@@ -768,7 +768,7 @@ TEST(FixedSet, ClassTemplateArgumentDeduction)
 
 TEST(FixedSet, SetIntersection)
 {
-    constexpr FixedSet<int, 10> s1 = []()
+    constexpr FixedSet<int, 10> VAL1 = []()
     {
         const FixedSet<int, 10> v1{1, 4};
         const FixedSet<int, 10> v2{1};
@@ -782,9 +782,9 @@ TEST(FixedSet, SetIntersection)
         return v_intersection;
     }();
 
-    static_assert(consteval_compare::equal<1, s1.size()>);
-    static_assert(s1.contains(1));
-    static_assert(!s1.contains(4));
+    static_assert(consteval_compare::equal<1, VAL1.size()>);
+    static_assert(VAL1.contains(1));
+    static_assert(!VAL1.contains(4));
 }
 
 namespace

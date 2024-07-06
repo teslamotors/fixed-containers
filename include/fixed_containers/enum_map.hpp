@@ -168,12 +168,12 @@ private:
         {
         }
 
-        constexpr PairProvider(const std::array<bool, ENUM_COUNT>* array_set_,
+        constexpr PairProvider(const std::array<bool, ENUM_COUNT>* array_set,
                                ConstOrMutableValueArray* const values,
                                const std::size_t current_index) noexcept
           : present_indices_{CompileTimeIntegerRange<0, ENUM_COUNT>{},
                              current_index,
-                             IndexPredicate{array_set_}}
+                             IndexPredicate{array_set}}
           , values_{values}
         {
         }
@@ -295,12 +295,12 @@ public:
         return OUTPUT;
     }
 
-    template <class EnumMapType, auto Arg0, auto... Args>
-        requires(not HasValueType<decltype(Arg0)>)
+    template <class EnumMapType, auto ARG0, auto... ARGS>
+        requires(not HasValueType<decltype(ARG0)>)
     static consteval auto create_with_all_entries()
     {
-        using T1 = typename decltype(Arg0)::first_type;
-        using T2 = typename decltype(Arg0)::second_type;
+        using T1 = typename decltype(ARG0)::first_type;
+        using T2 = typename decltype(ARG0)::second_type;
 
 #if defined(_GLIBCXX_RELEASE) and _GLIBCXX_RELEASE < 12
         using PairType = Pair<T1, T2>;
@@ -308,7 +308,7 @@ public:
         using PairType = std::pair<T1, T2>;
 #endif
 
-        constexpr std::array<PairType, 1 + sizeof...(Args)> AS_ARRAY{Arg0, Args...};
+        constexpr std::array<PairType, 1 + sizeof...(ARGS)> AS_ARRAY{ARG0, ARGS...};
         return create_with_all_entries<EnumMapType, AS_ARRAY>();
     }
 
@@ -777,17 +777,17 @@ public:
         return create_with_all_entries<Self, COLLECTION_OF_PAIRS>();
     }
 
-    template <class EnumMapType, auto Arg0, auto... Args>
-        requires(not HasValueType<decltype(Arg0)>)
+    template <class EnumMapType, auto ARG0, auto... ARGS>
+        requires(not HasValueType<decltype(ARG0)>)
     static consteval auto create_with_all_entries()
     {
-        return Base::template create_with_all_entries<EnumMapType, Arg0, Args...>();
+        return Base::template create_with_all_entries<EnumMapType, ARG0, ARGS...>();
     }
-    template <auto Arg0, auto... Args>
-        requires(not HasValueType<decltype(Arg0)>)
+    template <auto ARG0, auto... ARGS>
+        requires(not HasValueType<decltype(ARG0)>)
     static consteval auto create_with_all_entries()
     {
-        return create_with_all_entries<Self, Arg0, Args...>();
+        return create_with_all_entries<Self, ARG0, ARGS...>();
     }
 
     constexpr EnumMap() noexcept
@@ -939,17 +939,17 @@ public:
     {
         return create_with_all_entries<Self, COLLECTION_OF_PAIRS>();
     }
-    template <class EnumMapType, auto Arg0, auto... Args>
-        requires(not HasValueType<decltype(Arg0)>)
+    template <class EnumMapType, auto ARG0, auto... ARGS>
+        requires(not HasValueType<decltype(ARG0)>)
     static consteval auto create_with_all_entries()
     {
-        return Base::template create_with_all_entries<EnumMapType, Arg0, Args...>();
+        return Base::template create_with_all_entries<EnumMapType, ARG0, ARGS...>();
     }
-    template <auto Arg0, auto... Args>
-        requires(not HasValueType<decltype(Arg0)>)
+    template <auto ARG0, auto... ARGS>
+        requires(not HasValueType<decltype(ARG0)>)
     static consteval auto create_with_all_entries()
     {
-        return create_with_all_entries<Self, Arg0, Args...>();
+        return create_with_all_entries<Self, ARG0, ARGS...>();
     }
 
     constexpr EnumMap() noexcept
@@ -1022,17 +1022,17 @@ public:
     {
         return create_with_all_entries<Self, COLLECTION_OF_PAIRS>();
     }
-    template <class EnumMapType, auto Arg0, auto... Args>
-        requires(not HasValueType<decltype(Arg0)>)
+    template <class EnumMapType, auto ARG0, auto... ARGS>
+        requires(not HasValueType<decltype(ARG0)>)
     static consteval auto create_with_all_entries()
     {
-        return Base::template create_with_all_entries<EnumMapType, Arg0, Args...>();
+        return Base::template create_with_all_entries<EnumMapType, ARG0, ARGS...>();
     }
-    template <auto Arg0, auto... Args>
-        requires(not HasValueType<decltype(Arg0)>)
+    template <auto ARG0, auto... ARGS>
+        requires(not HasValueType<decltype(ARG0)>)
     static consteval auto create_with_all_entries()
     {
-        return create_with_all_entries<Self, Arg0, Args...>();
+        return create_with_all_entries<Self, ARG0, ARGS...>();
     }
 
     constexpr EnumMap() noexcept

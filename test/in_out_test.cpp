@@ -28,7 +28,7 @@ constexpr void increment_struct(in_out<SomeStruct> s)
 TEST(InOut, Usage1)
 {
     {
-        constexpr int result = []()
+        constexpr int RESULT = []()
         {
             const int input = 10;
             int output = 200;
@@ -36,7 +36,7 @@ TEST(InOut, Usage1)
             return output;
         }();
 
-        static_assert(210 == result);
+        static_assert(210 == RESULT);
     }
 
     {
@@ -50,15 +50,15 @@ TEST(InOut, Usage1)
 TEST(InOut, Usage2)
 {
     {
-        constexpr SomeStruct result = []()
+        constexpr SomeStruct RESULT = []()
         {
             SomeStruct s{10, 20};
             increment_struct(in_out{s});
             return s;
         }();
 
-        static_assert(11 == result.a);
-        static_assert(22 == result.b);
+        static_assert(11 == RESULT.a);
+        static_assert(22 == RESULT.b);
     }
 
     {

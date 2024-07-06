@@ -143,30 +143,30 @@ struct ComplexStruct
 
 TEST(FixedVector, DefaultConstructor)
 {
-    constexpr FixedVector<int, 8> v1{};
-    static_assert(v1.empty());
-    static_assert(v1.max_size() == 8);
+    constexpr FixedVector<int, 8> VAL1{};
+    static_assert(VAL1.empty());
+    static_assert(VAL1.max_size() == 8);
 
-    constexpr FixedVector<std::pair<int, int>, 5> v2{};
-    static_assert(v2.empty());
+    constexpr FixedVector<std::pair<int, int>, 5> VAL2{};
+    static_assert(VAL2.empty());
 }
 
 TEST(FixedVector, DefaultConstructorNonDefaultConstructible)
 {
     {
-        constexpr FixedVector<MockNonDefaultConstructible, 8> v1{};
-        static_assert(v1.empty());
-        static_assert(v1.max_size() == 8);
+        constexpr FixedVector<MockNonDefaultConstructible, 8> VAL1{};
+        static_assert(VAL1.empty());
+        static_assert(VAL1.max_size() == 8);
     }
     {
-        constexpr auto v2 = []()
+        constexpr auto VAL2 = []()
         {
             FixedVector<MockNonDefaultConstructible, 11> v{};
             v.push_back({0});
             return v;
         }();
 
-        static_assert(v2.size() == 1);
+        static_assert(VAL2.size() == 1);
     }
 }
 
@@ -310,30 +310,30 @@ TEST(FixedVector, MockTriviallyCopyableButNotCopyableOrMoveable)
 TEST(FixedVector, BuilderFluentSyntaxWithNoExtraCopies)
 {
     {
-        constexpr std::array<int, 2> a{2, 4};
-        constexpr int b = 12;
+        constexpr std::array<int, 2> ENTRY_A{2, 4};
+        constexpr int ENTRY_B = 12;
 
-        constexpr auto s1 = FixedVector<int, 17>::Builder{}
-                                .push_back_all(a.begin(), a.end())
-                                .push_back(b)
-                                .push_back_all(a)
-                                .push_back(b)
-                                .push_back_all({22, 24})
-                                .build();
+        constexpr auto VAL1 = FixedVector<int, 17>::Builder{}
+                                  .push_back_all(ENTRY_A.begin(), ENTRY_A.end())
+                                  .push_back(ENTRY_B)
+                                  .push_back_all(ENTRY_A)
+                                  .push_back(ENTRY_B)
+                                  .push_back_all({22, 24})
+                                  .build();
 
-        static_assert(s1.size() == 8);
-        static_assert(std::ranges::equal(s1, std::array{2, 4, 12, 2, 4, 12, 22, 24}));
+        static_assert(VAL1.size() == 8);
+        static_assert(std::ranges::equal(VAL1, std::array{2, 4, 12, 2, 4, 12, 22, 24}));
     }
 
     {
-        constexpr std::array<int, 2> a{2, 4};
-        constexpr int b = 12;
+        constexpr std::array<int, 2> ENTRY_A{2, 4};
+        constexpr int VALUE_B = 12;
 
         auto s1 = FixedVector<int, 17>::Builder{}
-                      .push_back_all(a.begin(), a.end())
-                      .push_back(b)
-                      .push_back_all(a)
-                      .push_back(b)
+                      .push_back_all(ENTRY_A.begin(), ENTRY_A.end())
+                      .push_back(VALUE_B)
+                      .push_back_all(ENTRY_A)
+                      .push_back(VALUE_B)
                       .push_back_all({22, 24})
                       .build();
 
@@ -345,21 +345,21 @@ TEST(FixedVector, BuilderFluentSyntaxWithNoExtraCopies)
 TEST(FixedVector, BuilderMultipleOuts)
 {
     {
-        constexpr std::array<int, 2> a{2, 4};
-        constexpr int b = 12;
+        constexpr std::array<int, 2> ENTRY_A{2, 4};
+        constexpr int ENTRY_B = 12;
 
-        constexpr std::array<FixedVector<int, 17>, 2> s_all = [&]()
+        constexpr std::array<FixedVector<int, 17>, 2> VAL_ALL = [&]()
         {
             FixedVector<int, 17>::Builder builder{};
 
-            builder.push_back(b);
+            builder.push_back(ENTRY_B);
             auto out1 = builder.build();
 
             // l-value overloads
-            builder.push_back_all(a.begin(), a.end());
-            builder.push_back(b);
-            builder.push_back_all(a);
-            builder.push_back(b);
+            builder.push_back_all(ENTRY_A.begin(), ENTRY_A.end());
+            builder.push_back(ENTRY_B);
+            builder.push_back_all(ENTRY_A);
+            builder.push_back(ENTRY_B);
             builder.push_back_all({22, 24});
             auto out2 = builder.build();
 
@@ -368,34 +368,34 @@ TEST(FixedVector, BuilderMultipleOuts)
 
         {
             // out1 should be unaffected by out2's addition of extra elements
-            constexpr FixedVector<int, 17> s1 = s_all[0];
-            static_assert(s1.size() == 1);
-            static_assert(std::ranges::equal(s1, std::array{12}));
+            constexpr FixedVector<int, 17> VAL1 = VAL_ALL[0];
+            static_assert(VAL1.size() == 1);
+            static_assert(std::ranges::equal(VAL1, std::array{12}));
         }
 
         {
-            constexpr FixedVector<int, 17> s2 = s_all[1];
-            static_assert(s2.size() == 9);
-            static_assert(std::ranges::equal(s2, std::array{12, 2, 4, 12, 2, 4, 12, 22, 24}));
+            constexpr FixedVector<int, 17> VAL2 = VAL_ALL[1];
+            static_assert(VAL2.size() == 9);
+            static_assert(std::ranges::equal(VAL2, std::array{12, 2, 4, 12, 2, 4, 12, 22, 24}));
         }
     }
 
     {
-        constexpr std::array<int, 2> a{2, 4};
-        constexpr int b = 12;
+        constexpr std::array<int, 2> ENTRY_A{2, 4};
+        constexpr int ENTRY_B = 12;
 
         std::array<FixedVector<int, 17>, 2> s_all = [&]()
         {
             FixedVector<int, 17>::Builder builder{};
 
-            builder.push_back(b);
+            builder.push_back(ENTRY_B);
             auto out1 = builder.build();
 
             // l-value overloads
-            builder.push_back_all(a.begin(), a.end());
-            builder.push_back(b);
-            builder.push_back_all(a);
-            builder.push_back(b);
+            builder.push_back_all(ENTRY_A.begin(), ENTRY_A.end());
+            builder.push_back(ENTRY_B);
+            builder.push_back_all(ENTRY_A);
+            builder.push_back(ENTRY_B);
             builder.push_back_all({22, 24});
             auto out2 = builder.build();
 
@@ -420,13 +420,13 @@ TEST(FixedVector, BuilderMultipleOuts)
 TEST(FixedVector, MaxSizeDeduction)
 {
     {
-        constexpr auto v1 = make_fixed_vector({10, 11, 12, 13, 14});
-        static_assert(v1.max_size() == 5);
-        static_assert(std::ranges::equal(v1, std::array{10, 11, 12, 13, 14}));
+        constexpr auto VAL1 = make_fixed_vector({10, 11, 12, 13, 14});
+        static_assert(VAL1.max_size() == 5);
+        static_assert(std::ranges::equal(VAL1, std::array{10, 11, 12, 13, 14}));
     }
     {
-        constexpr auto v1 = make_fixed_vector<int>({});
-        static_assert(v1.max_size() == 0);
+        constexpr auto VAL1 = make_fixed_vector<int>({});
+        static_assert(VAL1.max_size() == 0);
     }
 }
 
@@ -434,23 +434,23 @@ TEST(FixedVector, CountConstructor)
 {
     // Caution: Using braces calls initializer list ctor!
     {
-        constexpr FixedVector<int, 8> v{5};
-        static_assert(v.size() == 1);
+        constexpr FixedVector<int, 8> VAL{5};
+        static_assert(VAL.size() == 1);
     }
 
     // Use parens to get the count ctor!
     {
-        constexpr FixedVector<int, 8> v1(5);
-        static_assert(v1.size() == 5);
-        static_assert(v1.max_size() == 8);
-        static_assert(std::ranges::equal(v1, std::array{0, 0, 0, 0, 0}));
+        constexpr FixedVector<int, 8> VAL1(5);
+        static_assert(VAL1.size() == 5);
+        static_assert(VAL1.max_size() == 8);
+        static_assert(std::ranges::equal(VAL1, std::array{0, 0, 0, 0, 0}));
     }
 
     {
-        constexpr FixedVector<int, 8> v2(5, 3);
-        static_assert(v2.size() == 5);
-        static_assert(v2.max_size() == 8);
-        static_assert(std::ranges::equal(v2, std::array{3, 3, 3, 3, 3}));
+        constexpr FixedVector<int, 8> VAL2(5, 3);
+        static_assert(VAL2.size() == 5);
+        static_assert(VAL2.max_size() == 8);
+        static_assert(std::ranges::equal(VAL2, std::array{3, 3, 3, 3, 3}));
     }
 
     // NonAssignable<T>
@@ -467,17 +467,17 @@ TEST(FixedVector, CountConstructorExceedsCapacity)
 
 TEST(FixedVector, IteratorConstructor)
 {
-    constexpr std::array<int, 2> v1{77, 99};
+    constexpr std::array<int, 2> VAL1{77, 99};
 
-    constexpr FixedVector<int, 15> v2{v1.begin(), v1.end()};
-    static_assert(std::ranges::equal(v2, std::array{77, 99}));
+    constexpr FixedVector<int, 15> VAL2{VAL1.begin(), VAL1.end()};
+    static_assert(std::ranges::equal(VAL2, std::array{77, 99}));
 }
 
 TEST(FixedVector, IteratorConstructorExceedsCapacity)
 {
-    constexpr std::array<int, 5> v1{1, 2, 3, 4, 5};
+    constexpr std::array<int, 5> VAL1{1, 2, 3, 4, 5};
 
-    EXPECT_DEATH((FixedVector<int, 3>(v1.begin(), v1.end())), "");
+    EXPECT_DEATH((FixedVector<int, 3>(VAL1.begin(), VAL1.end())), "");
 }
 
 TEST(FixedVector, InputIteratorConstructor)
@@ -496,14 +496,14 @@ TEST(FixedVector, InputIteratorConstructorExceedsCapacity)
 
 TEST(FixedVector, InitializerConstructor)
 {
-    constexpr FixedVector<int, 3> v1{77, 99};
-    static_assert(std::ranges::equal(v1, std::array{77, 99}));
+    constexpr FixedVector<int, 3> VAL1{77, 99};
+    static_assert(std::ranges::equal(VAL1, std::array{77, 99}));
 
-    constexpr FixedVector<int, 3> v2{{66, 55}};
-    static_assert(std::ranges::equal(v2, std::array{66, 55}));
+    constexpr FixedVector<int, 3> VAL2{{66, 55}};
+    static_assert(std::ranges::equal(VAL2, std::array{66, 55}));
 
-    EXPECT_TRUE(std::ranges::equal(v1, std::array{77, 99}));
-    EXPECT_TRUE(std::ranges::equal(v2, std::array{66, 55}));
+    EXPECT_TRUE(std::ranges::equal(VAL1, std::array{77, 99}));
+    EXPECT_TRUE(std::ranges::equal(VAL2, std::array{66, 55}));
 }
 
 TEST(FixedVector, InitializerConstructorExceedsCapacity)
@@ -513,7 +513,7 @@ TEST(FixedVector, InitializerConstructorExceedsCapacity)
 
 TEST(FixedVector, PushBack)
 {
-    constexpr auto v1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedVector<int, 11> v{};
         v.push_back(0);
@@ -523,15 +523,15 @@ TEST(FixedVector, PushBack)
         return v;
     }();
 
-    static_assert(std::ranges::equal(v1, std::array{0, 1, 2}));
+    static_assert(std::ranges::equal(VAL1, std::array{0, 1, 2}));
 
-    constexpr auto v2 = []()
+    constexpr auto VAL2 = []()
     {
         FixedVector<MockNonTrivialCopyConstructible, 5> aaa{};
         aaa.push_back(MockNonTrivialCopyConstructible{});
         return aaa;
     }();
-    static_assert(v2.size() == 1);
+    static_assert(VAL2.size() == 1);
 }
 
 TEST(FixedVector, PushBackExceedsCapacity)
@@ -546,7 +546,7 @@ TEST(FixedVector, PushBackExceedsCapacity)
 TEST(FixedVector, EmplaceBack)
 {
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             FixedVector<int, 11> v{0, 1, 2};
             v.emplace_back(3);
@@ -554,7 +554,7 @@ TEST(FixedVector, EmplaceBack)
             return v;
         }();
 
-        static_assert(std::ranges::equal(v1, std::array{0, 1, 2, 3, 4}));
+        static_assert(std::ranges::equal(VAL1, std::array{0, 1, 2, 3, 4}));
     }
     {
         auto v1 = []()
@@ -593,9 +593,9 @@ TEST(FixedVector, EmplaceBackExceedsCapacity)
 TEST(FixedVector, CapacityAndMaxSize)
 {
     {
-        constexpr FixedVector<int, 3> v1{};
-        static_assert(v1.capacity() == 3);
-        static_assert(v1.max_size() == 3);
+        constexpr FixedVector<int, 3> VAL1{};
+        static_assert(VAL1.capacity() == 3);
+        static_assert(VAL1.max_size() == 3);
     }
 
     {
@@ -614,15 +614,15 @@ TEST(FixedVector, CapacityAndMaxSize)
 
 TEST(FixedVector, Reserve)
 {
-    constexpr auto v1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedVector<int, 11> v{};
         v.reserve(5);
         return v;
     }();
 
-    static_assert(v1.capacity() == 11);
-    static_assert(v1.max_size() == 11);
+    static_assert(VAL1.capacity() == 11);
+    static_assert(VAL1.max_size() == 11);
 
     FixedVector<int, 7> v2{};
     v2.reserve(5);
@@ -645,14 +645,14 @@ TEST(FixedVector, ExceedsCapacity)
 
 TEST(FixedVector, PopBack)
 {
-    constexpr auto v1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedVector<int, 11> v{0, 1, 2};
         v.pop_back();
         return v;
     }();
 
-    static_assert(std::ranges::equal(v1, std::array{0, 1}));
+    static_assert(std::ranges::equal(VAL1, std::array{0, 1}));
 
     FixedVector<int, 17> v2{10, 11, 12};
     v2.pop_back();
@@ -668,7 +668,7 @@ TEST(FixedVector, PopBackEmpty)
 TEST(FixedVector, BracketOperator)
 {
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             FixedVector<int, 11> v{};
             v.resize(3);
@@ -680,10 +680,10 @@ TEST(FixedVector, BracketOperator)
             return v;
         }();
 
-        static_assert(v1[0] == 100);
-        static_assert(v1[1] == 201);
-        static_assert(v1[2] == 102);
-        static_assert(v1.size() == 3);
+        static_assert(VAL1[0] == 100);
+        static_assert(VAL1[1] == 201);
+        static_assert(VAL1[2] == 102);
+        static_assert(VAL1.size() == 3);
 
         auto v2 = FixedVector<int, 11>{0, 1, 2};
         v2[1] = 901;
@@ -700,7 +700,7 @@ TEST(FixedVector, BracketOperator)
 
 TEST(FixedVector, At)
 {
-    constexpr auto v1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedVector<int, 11> v{};
         v.resize(3);
@@ -712,10 +712,10 @@ TEST(FixedVector, At)
         return v;
     }();
 
-    static_assert(v1.at(0) == 100);
-    static_assert(v1.at(1) == 201);
-    static_assert(v1.at(2) == 102);
-    static_assert(v1.size() == 3);
+    static_assert(VAL1.at(0) == 100);
+    static_assert(VAL1.at(1) == 201);
+    static_assert(VAL1.at(2) == 102);
+    static_assert(VAL1.size() == 3);
 
     auto v2 = FixedVector<int, 11>{0, 1, 2};
     v2.at(1) = 901;
@@ -742,23 +742,23 @@ TEST(FixedVector, AtOutOfBounds)
 
 TEST(FixedVector, Equality)
 {
-    constexpr auto v1 = FixedVector<int, 12>{0, 1, 2};
+    constexpr auto VAL1 = FixedVector<int, 12>{0, 1, 2};
     // Capacity difference should not affect equality
-    constexpr auto v2 = FixedVector<int, 11>{0, 1, 2};
-    constexpr auto v3 = FixedVector<int, 12>{0, 101, 2};
-    constexpr auto v4 = FixedVector<int, 12>{0, 1};
-    constexpr auto v5 = FixedVector<int, 12>{0, 1, 2, 3, 4, 5};
+    constexpr auto VAL2 = FixedVector<int, 11>{0, 1, 2};
+    constexpr auto VAL3 = FixedVector<int, 12>{0, 101, 2};
+    constexpr auto VAL4 = FixedVector<int, 12>{0, 1};
+    constexpr auto VAL5 = FixedVector<int, 12>{0, 1, 2, 3, 4, 5};
 
-    static_assert(v1 == v2);
-    static_assert(v1 != v3);
-    static_assert(v1 != v4);
-    static_assert(v1 != v5);
+    static_assert(VAL1 == VAL2);
+    static_assert(VAL1 != VAL3);
+    static_assert(VAL1 != VAL4);
+    static_assert(VAL1 != VAL5);
 
-    EXPECT_EQ(v1, v1);
-    EXPECT_EQ(v1, v2);
-    EXPECT_NE(v1, v3);
-    EXPECT_NE(v1, v4);
-    EXPECT_NE(v1, v5);
+    EXPECT_EQ(VAL1, VAL1);
+    EXPECT_EQ(VAL1, VAL2);
+    EXPECT_NE(VAL1, VAL3);
+    EXPECT_NE(VAL1, VAL4);
+    EXPECT_NE(VAL1, VAL5);
 }
 
 TEST(FixedVector, Comparison)
@@ -777,18 +777,18 @@ TEST(FixedVector, Comparison)
     }
 
     {
-        constexpr FixedVector<int, 5> left{1, 2, 3};
-        constexpr FixedVector<int, 5> right{1, 2, 4};
+        constexpr FixedVector<int, 5> LEFT{1, 2, 3};
+        constexpr FixedVector<int, 5> RIGHT{1, 2, 4};
 
-        static_assert(left < right);
-        static_assert(left <= right);
-        static_assert(!(left > right));
-        static_assert(!(left >= right));
+        static_assert(LEFT < RIGHT);
+        static_assert(LEFT <= RIGHT);
+        static_assert(!(LEFT > RIGHT));
+        static_assert(!(LEFT >= RIGHT));
 
-        ASSERT_TRUE(left < right);
-        ASSERT_TRUE(left <= right);
-        ASSERT_TRUE(!(left > right));
-        ASSERT_TRUE(!(left >= right));
+        ASSERT_TRUE(LEFT < RIGHT);
+        ASSERT_TRUE(LEFT <= RIGHT);
+        ASSERT_TRUE(!(LEFT > RIGHT));
+        ASSERT_TRUE(!(LEFT >= RIGHT));
     }
 
     // Left has fewer elements, left > right
@@ -803,18 +803,18 @@ TEST(FixedVector, Comparison)
     }
 
     {
-        constexpr FixedVector<int, 5> left{1, 5};
-        constexpr FixedVector<int, 5> right{1, 2, 4};
+        constexpr FixedVector<int, 5> LEFT{1, 5};
+        constexpr FixedVector<int, 5> RIGHT{1, 2, 4};
 
-        static_assert(!(left < right));
-        static_assert(!(left <= right));
-        static_assert(left > right);
-        static_assert(left >= right);
+        static_assert(!(LEFT < RIGHT));
+        static_assert(!(LEFT <= RIGHT));
+        static_assert(LEFT > RIGHT);
+        static_assert(LEFT >= RIGHT);
 
-        ASSERT_TRUE(!(left < right));
-        ASSERT_TRUE(!(left <= right));
-        ASSERT_TRUE(left > right);
-        ASSERT_TRUE(left >= right);
+        ASSERT_TRUE(!(LEFT < RIGHT));
+        ASSERT_TRUE(!(LEFT <= RIGHT));
+        ASSERT_TRUE(LEFT > RIGHT);
+        ASSERT_TRUE(LEFT >= RIGHT);
     }
 
     // Right has fewer elements, left < right
@@ -829,18 +829,18 @@ TEST(FixedVector, Comparison)
     }
 
     {
-        constexpr FixedVector<int, 5> left{1, 2, 3};
-        constexpr FixedVector<int, 5> right{1, 5};
+        constexpr FixedVector<int, 5> LEFT{1, 2, 3};
+        constexpr FixedVector<int, 5> RIGHT{1, 5};
 
-        static_assert(left < right);
-        static_assert(left <= right);
-        static_assert(!(left > right));
-        static_assert(!(left >= right));
+        static_assert(LEFT < RIGHT);
+        static_assert(LEFT <= RIGHT);
+        static_assert(!(LEFT > RIGHT));
+        static_assert(!(LEFT >= RIGHT));
 
-        ASSERT_TRUE(left < right);
-        ASSERT_TRUE(left <= right);
-        ASSERT_TRUE(!(left > right));
-        ASSERT_TRUE(!(left >= right));
+        ASSERT_TRUE(LEFT < RIGHT);
+        ASSERT_TRUE(LEFT <= RIGHT);
+        ASSERT_TRUE(!(LEFT > RIGHT));
+        ASSERT_TRUE(!(LEFT >= RIGHT));
     }
 
     // Left has one additional element
@@ -855,18 +855,18 @@ TEST(FixedVector, Comparison)
     }
 
     {
-        constexpr FixedVector<int, 5> left{1, 2, 3};
-        constexpr FixedVector<int, 5> right{1, 2};
+        constexpr FixedVector<int, 5> LEFT{1, 2, 3};
+        constexpr FixedVector<int, 5> RIGHT{1, 2};
 
-        static_assert(!(left < right));
-        static_assert(!(left <= right));
-        static_assert(left > right);
-        static_assert(left >= right);
+        static_assert(!(LEFT < RIGHT));
+        static_assert(!(LEFT <= RIGHT));
+        static_assert(LEFT > RIGHT);
+        static_assert(LEFT >= RIGHT);
 
-        ASSERT_TRUE(!(left < right));
-        ASSERT_TRUE(!(left <= right));
-        ASSERT_TRUE(left > right);
-        ASSERT_TRUE(left >= right);
+        ASSERT_TRUE(!(LEFT < RIGHT));
+        ASSERT_TRUE(!(LEFT <= RIGHT));
+        ASSERT_TRUE(LEFT > RIGHT);
+        ASSERT_TRUE(LEFT >= RIGHT);
     }
 
     // Right has one additional element
@@ -881,18 +881,18 @@ TEST(FixedVector, Comparison)
     }
 
     {
-        constexpr FixedVector<int, 5> left{1, 2};
-        constexpr FixedVector<int, 5> right{1, 2, 3};
+        constexpr FixedVector<int, 5> LEFT{1, 2};
+        constexpr FixedVector<int, 5> RIGHT{1, 2, 3};
 
-        static_assert(left < right);
-        static_assert(left <= right);
-        static_assert(!(left > right));
-        static_assert(!(left >= right));
+        static_assert(LEFT < RIGHT);
+        static_assert(LEFT <= RIGHT);
+        static_assert(!(LEFT > RIGHT));
+        static_assert(!(LEFT >= RIGHT));
 
-        ASSERT_TRUE(left < right);
-        ASSERT_TRUE(left <= right);
-        ASSERT_TRUE(!(left > right));
-        ASSERT_TRUE(!(left >= right));
+        ASSERT_TRUE(LEFT < RIGHT);
+        ASSERT_TRUE(LEFT <= RIGHT);
+        ASSERT_TRUE(!(LEFT > RIGHT));
+        ASSERT_TRUE(!(LEFT >= RIGHT));
     }
 }
 
@@ -907,20 +907,20 @@ TEST(FixedVector, IteratorAssignment)
 TEST(FixedVector, TrivialIterators)
 {
     {
-        constexpr FixedVector<int, 3> v1{77, 88, 99};
+        constexpr FixedVector<int, 3> VAL1{77, 88, 99};
 
-        static_assert(std::distance(v1.cbegin(), v1.cend()) == 3);
+        static_assert(std::distance(VAL1.cbegin(), VAL1.cend()) == 3);
 
-        static_assert(*v1.begin() == 77);
-        static_assert(*std::next(v1.begin(), 1) == 88);
-        static_assert(*std::next(v1.begin(), 2) == 99);
+        static_assert(*VAL1.begin() == 77);
+        static_assert(*std::next(VAL1.begin(), 1) == 88);
+        static_assert(*std::next(VAL1.begin(), 2) == 99);
 
-        static_assert(*std::prev(v1.end(), 1) == 99);
-        static_assert(*std::prev(v1.end(), 2) == 88);
-        static_assert(*std::prev(v1.end(), 3) == 77);
+        static_assert(*std::prev(VAL1.end(), 1) == 99);
+        static_assert(*std::prev(VAL1.end(), 2) == 88);
+        static_assert(*std::prev(VAL1.end(), 3) == 77);
 
-        static_assert(*(1 + v1.begin()) == 88);
-        static_assert(*(2 + v1.begin()) == 99);
+        static_assert(*(1 + VAL1.begin()) == 88);
+        static_assert(*(2 + VAL1.begin()) == 99);
     }
 
     {
@@ -1023,20 +1023,20 @@ TEST(FixedVector, NonTrivialIterators)
 TEST(FixedVector, ReverseIterators)
 {
     {
-        constexpr FixedVector<int, 3> v1{77, 88, 99};
+        constexpr FixedVector<int, 3> VAL1{77, 88, 99};
 
-        static_assert(std::distance(v1.crbegin(), v1.crend()) == 3);
+        static_assert(std::distance(VAL1.crbegin(), VAL1.crend()) == 3);
 
-        static_assert(*v1.rbegin() == 99);
-        static_assert(*std::next(v1.rbegin(), 1) == 88);
-        static_assert(*std::next(v1.rbegin(), 2) == 77);
+        static_assert(*VAL1.rbegin() == 99);
+        static_assert(*std::next(VAL1.rbegin(), 1) == 88);
+        static_assert(*std::next(VAL1.rbegin(), 2) == 77);
 
-        static_assert(*std::prev(v1.rend(), 1) == 77);
-        static_assert(*std::prev(v1.rend(), 2) == 88);
-        static_assert(*std::prev(v1.rend(), 3) == 99);
+        static_assert(*std::prev(VAL1.rend(), 1) == 77);
+        static_assert(*std::prev(VAL1.rend(), 2) == 88);
+        static_assert(*std::prev(VAL1.rend(), 3) == 99);
 
-        static_assert(*(1 + v1.begin()) == 88);
-        static_assert(*(2 + v1.begin()) == 99);
+        static_assert(*(1 + VAL1.begin()) == 88);
+        static_assert(*(2 + VAL1.begin()) == 99);
     }
 
     {
@@ -1097,7 +1097,7 @@ TEST(FixedVector, ReverseIterators)
 
 TEST(FixedVector, ReverseIteratorBase)
 {
-    constexpr auto v1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedVector<int, 7> v{1, 2, 3};
         auto it = v.rbegin();  // points to 3
@@ -1107,7 +1107,7 @@ TEST(FixedVector, ReverseIteratorBase)
         return v;
     }();
 
-    static_assert(std::ranges::equal(v1, std::array<int, 2>{1, 3}));
+    static_assert(std::ranges::equal(VAL1, std::array<int, 2>{1, 3}));
 }
 
 TEST(FixedVector, IterationBasic)
@@ -1167,17 +1167,17 @@ TEST(FixedVector, IterationBasic)
 
 TEST(FixedVector, Resize)
 {
-    constexpr auto v1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedVector<int, 7> v{0, 1, 2};
         v.resize(6);
         return v;
     }();
 
-    static_assert(std::ranges::equal(v1, std::array{0, 1, 2, 0, 0, 0}));
-    static_assert(v1.max_size() == 7);
+    static_assert(std::ranges::equal(VAL1, std::array{0, 1, 2, 0, 0, 0}));
+    static_assert(VAL1.max_size() == 7);
 
-    constexpr auto v2 = []()
+    constexpr auto VAL2 = []()
     {
         FixedVector<int, 7> v{0, 1, 2};
         v.resize(7, 300);
@@ -1185,8 +1185,8 @@ TEST(FixedVector, Resize)
         return v;
     }();
 
-    static_assert(std::ranges::equal(v2, std::array{0, 1, 2, 300, 300}));
-    static_assert(v2.max_size() == 7);
+    static_assert(std::ranges::equal(VAL2, std::array{0, 1, 2, 300, 300}));
+    static_assert(VAL2.max_size() == 7);
 
     FixedVector<int, 8> v3{0, 1, 2, 3};
     v3.resize(6);
@@ -1219,53 +1219,53 @@ TEST(FixedVector, ResizeExceedsCapacity)
 TEST(FixedVector, Size)
 {
     {
-        constexpr auto v1 = []() { return FixedVector<int, 7>{}; }();
-        static_assert(v1.size() == 0);  // NOLINT(readability-container-size-empty)
-        static_assert(v1.max_size() == 7);
+        constexpr auto VAL1 = []() { return FixedVector<int, 7>{}; }();
+        static_assert(VAL1.size() == 0);  // NOLINT(readability-container-size-empty)
+        static_assert(VAL1.max_size() == 7);
     }
 
     {
-        constexpr auto v1 = []() { return FixedVector<int, 7>{1, 2, 3}; }();
-        static_assert(v1.size() == 3);
-        static_assert(v1.max_size() == 7);
+        constexpr auto VAL1 = []() { return FixedVector<int, 7>{1, 2, 3}; }();
+        static_assert(VAL1.size() == 3);
+        static_assert(VAL1.max_size() == 7);
     }
 }
 
 TEST(FixedVector, Empty)
 {
-    constexpr auto v1 = []() { return FixedVector<int, 7>{}; }();
+    constexpr auto VAL1 = []() { return FixedVector<int, 7>{}; }();
 
-    static_assert(v1.empty());
-    static_assert(v1.max_size() == 7);
+    static_assert(VAL1.empty());
+    static_assert(VAL1.max_size() == 7);
 }
 
 TEST(FixedVector, Full)
 {
-    constexpr auto v1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedVector<int, 4> v{};
         v.assign(4, 100);
         return v;
     }();
 
-    static_assert(std::ranges::equal(v1, std::array<int, 4>{100, 100, 100, 100}));
-    static_assert(is_full(v1));
-    static_assert(v1.size() == 4);
-    static_assert(v1.max_size() == 4);
+    static_assert(std::ranges::equal(VAL1, std::array<int, 4>{100, 100, 100, 100}));
+    static_assert(is_full(VAL1));
+    static_assert(VAL1.size() == 4);
+    static_assert(VAL1.max_size() == 4);
 
-    EXPECT_TRUE(is_full(v1));
+    EXPECT_TRUE(is_full(VAL1));
 }
 
 TEST(FixedVector, Span)
 {
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             FixedVector<int, 7> v{0, 1, 2};
             return v;
         }();
 
-        const std::span<const int> as_span{v1};
+        const std::span<const int> as_span{VAL1};
         ASSERT_EQ(3, as_span.size());
         ASSERT_EQ(0, as_span[0]);
         ASSERT_EQ(1, as_span[1]);
@@ -1300,7 +1300,7 @@ TEST(FixedVector, Span)
 
 TEST(FixedVector, Clear)
 {
-    constexpr auto v1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedVector<int, 7> v{0, 1, 2};
         v.assign(5, 100);
@@ -1308,15 +1308,15 @@ TEST(FixedVector, Clear)
         return v;
     }();
 
-    static_assert(v1.empty());
-    static_assert(v1.capacity() == 7);
-    static_assert(v1.max_size() == 7);
+    static_assert(VAL1.empty());
+    static_assert(VAL1.capacity() == 7);
+    static_assert(VAL1.max_size() == 7);
 }
 
 TEST(FixedVector, Emplace)
 {
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             FixedVector<int, 11> v{0, 1, 2};
             v.emplace(std::next(v.begin(), 1), 3);
@@ -1324,7 +1324,7 @@ TEST(FixedVector, Emplace)
             return v;
         }();
 
-        static_assert(std::ranges::equal(v1, std::array{0, 4, 3, 1, 2}));
+        static_assert(std::ranges::equal(VAL1, std::array{0, 4, 3, 1, 2}));
     }
     {
         auto v1 = []()
@@ -1358,19 +1358,19 @@ TEST(FixedVector, EmplaceExceedsCapacity)
 TEST(FixedVector, AssignValue)
 {
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             FixedVector<int, 7> v{0, 1, 2};
             v.assign(5, 100);
             return v;
         }();
 
-        static_assert(std::ranges::equal(v1, std::array<int, 5>{100, 100, 100, 100, 100}));
-        static_assert(v1.size() == 5);
+        static_assert(std::ranges::equal(VAL1, std::array<int, 5>{100, 100, 100, 100, 100}));
+        static_assert(VAL1.size() == 5);
     }
 
     {
-        constexpr auto v2 = []()
+        constexpr auto VAL2 = []()
         {
             FixedVector<int, 7> v{0, 1, 2};
             v.assign(5, 100);
@@ -1378,9 +1378,9 @@ TEST(FixedVector, AssignValue)
             return v;
         }();
 
-        static_assert(std::ranges::equal(v2, std::array<int, 2>{300, 300}));
-        static_assert(v2.size() == 2);
-        static_assert(v2.max_size() == 7);
+        static_assert(std::ranges::equal(VAL2, std::array<int, 2>{300, 300}));
+        static_assert(VAL2.size() == 2);
+        static_assert(VAL2.max_size() == 7);
     }
 
     {
@@ -1406,7 +1406,7 @@ TEST(FixedVector, AssignValueExceedsCapacity)
 TEST(FixedVector, AssignIterator)
 {
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             std::array<int, 2> a{300, 300};
             FixedVector<int, 7> v{0, 1, 2};
@@ -1414,9 +1414,9 @@ TEST(FixedVector, AssignIterator)
             return v;
         }();
 
-        static_assert(std::ranges::equal(v1, std::array<int, 2>{300, 300}));
-        static_assert(v1.size() == 2);
-        static_assert(v1.max_size() == 7);
+        static_assert(std::ranges::equal(VAL1, std::array<int, 2>{300, 300}));
+        static_assert(VAL1.size() == 2);
+        static_assert(VAL1.max_size() == 7);
     }
     {
         auto v2 = []()
@@ -1458,16 +1458,16 @@ TEST(FixedVector, AssignInputIteratorExceedsCapacity)
 TEST(FixedVector, AssignInitializerList)
 {
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             FixedVector<int, 7> v{0, 1, 2};
             v.assign({300, 300});
             return v;
         }();
 
-        static_assert(std::ranges::equal(v1, std::array<int, 2>{300, 300}));
-        static_assert(v1.size() == 2);
-        static_assert(v1.max_size() == 7);
+        static_assert(std::ranges::equal(VAL1, std::array<int, 2>{300, 300}));
+        static_assert(VAL1.size() == 2);
+        static_assert(VAL1.max_size() == 7);
     }
     {
         auto v2 = []()
@@ -1491,7 +1491,7 @@ TEST(FixedVector, AssignInitializerListExceedsCapacity)
 TEST(FixedVector, InsertValue)
 {
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             FixedVector<int, 7> v{0, 1, 2, 3};
             v.insert(v.begin(), 100);
@@ -1500,13 +1500,13 @@ TEST(FixedVector, InsertValue)
             return v;
         }();
 
-        static_assert(std::ranges::equal(v1, std::array<int, 6>{100, 0, 500, 1, 2, 3}));
-        static_assert(v1.size() == 6);
-        static_assert(v1.max_size() == 7);
+        static_assert(std::ranges::equal(VAL1, std::array<int, 6>{100, 0, 500, 1, 2, 3}));
+        static_assert(VAL1.size() == 6);
+        static_assert(VAL1.max_size() == 7);
     }
     {
         // For off-by-one issues, make the capacity just fit
-        constexpr auto v2 = []()
+        constexpr auto VAL2 = []()
         {
             FixedVector<int, 5> v{0, 1, 2};
             v.insert(v.begin(), 100);
@@ -1515,9 +1515,9 @@ TEST(FixedVector, InsertValue)
             return v;
         }();
 
-        static_assert(std::ranges::equal(v2, std::array<int, 5>{100, 0, 500, 1, 2}));
-        static_assert(v2.size() == 5);
-        static_assert(v2.max_size() == 5);
+        static_assert(std::ranges::equal(VAL2, std::array<int, 5>{100, 0, 500, 1, 2}));
+        static_assert(VAL2.size() == 5);
+        static_assert(VAL2.max_size() == 5);
     }
 
     // NonTriviallyCopyable<T>
@@ -1552,7 +1552,7 @@ TEST(FixedVector, InsertValueExceedsCapacity)
 TEST(FixedVector, InsertIterator)
 {
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             std::array<int, 2> a{100, 500};
             FixedVector<int, 7> v{0, 1, 2, 3};
@@ -1560,13 +1560,13 @@ TEST(FixedVector, InsertIterator)
             return v;
         }();
 
-        static_assert(std::ranges::equal(v1, std::array<int, 6>{0, 1, 100, 500, 2, 3}));
-        static_assert(v1.size() == 6);
-        static_assert(v1.max_size() == 7);
+        static_assert(std::ranges::equal(VAL1, std::array<int, 6>{0, 1, 100, 500, 2, 3}));
+        static_assert(VAL1.size() == 6);
+        static_assert(VAL1.max_size() == 7);
     }
     {
         // For off-by-one issues, make the capacity just fit
-        constexpr auto v2 = []()
+        constexpr auto VAL2 = []()
         {
             std::array<int, 2> a{100, 500};
             FixedVector<int, 5> v{0, 1, 2};
@@ -1574,9 +1574,9 @@ TEST(FixedVector, InsertIterator)
             return v;
         }();
 
-        static_assert(std::ranges::equal(v2, std::array<int, 5>{0, 1, 100, 500, 2}));
-        static_assert(v2.size() == 5);
-        static_assert(v2.max_size() == 5);
+        static_assert(std::ranges::equal(VAL2, std::array<int, 5>{0, 1, 100, 500, 2}));
+        static_assert(VAL2.size() == 5);
+        static_assert(VAL2.max_size() == 5);
     }
 
     {
@@ -1616,16 +1616,16 @@ TEST(FixedVector, InsertInitializerList)
 {
     {
         // For off-by-one issues, make the capacity just fit
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             FixedVector<int, 5> v{0, 1, 2};
             v.insert(std::next(v.begin(), 2), {100, 500});
             return v;
         }();
 
-        static_assert(std::ranges::equal(v1, std::array<int, 5>{0, 1, 100, 500, 2}));
-        static_assert(v1.size() == 5);
-        static_assert(v1.max_size() == 5);
+        static_assert(std::ranges::equal(VAL1, std::array<int, 5>{0, 1, 100, 500, 2}));
+        static_assert(VAL1.size() == 5);
+        static_assert(VAL1.max_size() == 5);
     }
 
     {
@@ -1644,16 +1644,16 @@ TEST(FixedVector, InsertInitializerListExceedsCapacity)
 
 TEST(FixedVector, EraseRange)
 {
-    constexpr auto v1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedVector<int, 8> v{0, 1, 2, 3, 4, 5};
         v.erase(std::next(v.cbegin(), 2), std::next(v.begin(), 4));
         return v;
     }();
 
-    static_assert(std::ranges::equal(v1, std::array<int, 4>{0, 1, 4, 5}));
-    static_assert(v1.size() == 4);
-    static_assert(v1.max_size() == 8);
+    static_assert(std::ranges::equal(VAL1, std::array<int, 4>{0, 1, 4, 5}));
+    static_assert(VAL1.size() == 4);
+    static_assert(VAL1.max_size() == 8);
     {
         FixedVector<int, 8> v2{2, 1, 4, 5, 0, 3};
         auto it = v2.erase(std::next(v2.begin(), 1), std::next(v2.cbegin(), 3));
@@ -1672,7 +1672,7 @@ TEST(FixedVector, EraseRange)
 
 TEST(FixedVector, EraseOne)
 {
-    constexpr auto v1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedVector<int, 8> v{0, 1, 2, 3, 4, 5};
         v.erase(v.cbegin());
@@ -1680,9 +1680,9 @@ TEST(FixedVector, EraseOne)
         return v;
     }();
 
-    static_assert(std::ranges::equal(v1, std::array<int, 4>{1, 2, 4, 5}));
-    static_assert(v1.size() == 4);
-    static_assert(v1.max_size() == 8);
+    static_assert(std::ranges::equal(VAL1, std::array<int, 4>{1, 2, 4, 5}));
+    static_assert(VAL1.size() == 4);
+    static_assert(VAL1.max_size() == 8);
 
     {
         FixedVector<int, 8> v2{2, 1, 4, 5, 0, 3};
@@ -1746,7 +1746,7 @@ TEST(FixedVector, EraseEmpty)
 TEST(FixedVector, EraseFreeFunction)
 {
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             FixedVector<int, 8> v{3, 0, 1, 2, 3, 4, 5, 3};
             const std::size_t removed_count = fixed_containers::erase(v, 3);
@@ -1754,7 +1754,7 @@ TEST(FixedVector, EraseFreeFunction)
             return v;
         }();
 
-        static_assert(std::ranges::equal(v1, std::array<int, 5>{0, 1, 2, 4, 5}));
+        static_assert(std::ranges::equal(VAL1, std::array<int, 5>{0, 1, 2, 4, 5}));
     }
 
     {
@@ -1767,7 +1767,7 @@ TEST(FixedVector, EraseFreeFunction)
 
 TEST(FixedVector, EraseIf)
 {
-    constexpr auto v1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedVector<int, 8> v{0, 1, 2, 3, 4, 5, 6};
         const std::size_t removed_count =
@@ -1776,20 +1776,20 @@ TEST(FixedVector, EraseIf)
         return v;
     }();
 
-    static_assert(std::ranges::equal(v1, std::array<int, 3>{1, 3, 5}));
+    static_assert(std::ranges::equal(VAL1, std::array<int, 3>{1, 3, 5}));
 }
 
 TEST(FixedVector, Front)
 {
-    constexpr auto v1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedVector<int, 8> v{99, 1, 2};
         return v;
     }();
 
-    static_assert(v1.front() == 99);
-    static_assert(std::ranges::equal(v1, std::array<int, 3>{99, 1, 2}));
-    static_assert(v1.size() == 3);
+    static_assert(VAL1.front() == 99);
+    static_assert(std::ranges::equal(VAL1, std::array<int, 3>{99, 1, 2}));
+    static_assert(VAL1.size() == 3);
 
     FixedVector<int, 8> v2{100, 101, 102};
     const auto& v2_const_ref = v2;
@@ -1813,15 +1813,15 @@ TEST(FixedVector, FrontEmptyContainer)
 
 TEST(FixedVector, Back)
 {
-    constexpr auto v1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedVector<int, 8> v{0, 1, 77};
         return v;
     }();
 
-    static_assert(v1.back() == 77);
-    static_assert(std::ranges::equal(v1, std::array<int, 3>{0, 1, 77}));
-    static_assert(v1.size() == 3);
+    static_assert(VAL1.back() == 77);
+    static_assert(std::ranges::equal(VAL1, std::array<int, 3>{0, 1, 77}));
+    static_assert(VAL1.size() == 3);
 
     FixedVector<int, 8> v2{100, 101, 102};
     const auto& v2_const_ref = v2;
@@ -1846,21 +1846,21 @@ TEST(FixedVector, BackEmptyContainer)
 TEST(FixedVector, Data)
 {
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             FixedVector<int, 8> v{0, 1, 2};
             return v;
         }();
 
-        static_assert(*std::next(v1.data(), 0) == 0);
-        static_assert(*std::next(v1.data(), 1) == 1);
-        static_assert(*std::next(v1.data(), 2) == 2);
+        static_assert(*std::next(VAL1.data(), 0) == 0);
+        static_assert(*std::next(VAL1.data(), 1) == 1);
+        static_assert(*std::next(VAL1.data(), 2) == 2);
 
-        EXPECT_EQ(*std::next(v1.data(), 0), 0);
-        EXPECT_EQ(*std::next(v1.data(), 1), 1);
-        EXPECT_EQ(*std::next(v1.data(), 2), 2);
+        EXPECT_EQ(*std::next(VAL1.data(), 0), 0);
+        EXPECT_EQ(*std::next(VAL1.data(), 1), 1);
+        EXPECT_EQ(*std::next(VAL1.data(), 2), 2);
 
-        static_assert(v1.size() == 3);
+        static_assert(VAL1.size() == 3);
     }
 
     {
@@ -1982,8 +1982,8 @@ TEST(FixedVector, OverloadedAddressOfOperator)
     }
 
     {
-        constexpr FixedVector<MockFailingAddressOfOperator, 15> v{5};
-        static_assert(!v.empty());
+        constexpr FixedVector<MockFailingAddressOfOperator, 15> VAL{5};
+        static_assert(!VAL.empty());
     }
 
     {
@@ -2004,9 +2004,9 @@ TEST(FixedVector, OverloadedAddressOfOperator)
     }
 
     {
-        constexpr FixedVector<MockFailingAddressOfOperator, 15> v{5};
-        static_assert(!v.empty());
-        auto it = v.cbegin();
+        constexpr FixedVector<MockFailingAddressOfOperator, 15> VAL{5};
+        static_assert(!VAL.empty());
+        auto it = VAL.cbegin();
         auto it_ref = *it;
         it_ref.do_nothing();
         it->do_nothing();

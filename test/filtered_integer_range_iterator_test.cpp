@@ -92,37 +92,37 @@ TEST(FilteredIntegerRangeIterator, ForwardAlwaysTruePredicateStartingConditions)
 {
     using ItType = FilteredIntegerRangeIterator<AlwaysTruePredicate, IteratorDirection::FORWARD>;
     {
-        constexpr ItType it{IntegerRange::closed_open(0, 3), 0ULL, AlwaysTruePredicate{}};
-        static_assert(0 == *it);
+        constexpr ItType IT1{IntegerRange::closed_open(0, 3), 0ULL, AlwaysTruePredicate{}};
+        static_assert(0 == *IT1);
     }
     {
-        constexpr ItType it{IntegerRange::closed_open(0, 3), 1ULL, AlwaysTruePredicate{}};
-        static_assert(1 == *it);
+        constexpr ItType IT1{IntegerRange::closed_open(0, 3), 1ULL, AlwaysTruePredicate{}};
+        static_assert(1 == *IT1);
     }
     {
-        constexpr ItType it{IntegerRange::closed_open(0, 3), 2ULL, AlwaysTruePredicate{}};
-        static_assert(2 == *it);
+        constexpr ItType IT1{IntegerRange::closed_open(0, 3), 2ULL, AlwaysTruePredicate{}};
+        static_assert(2 == *IT1);
     }
     {
-        constexpr ItType it{IntegerRange::closed_open(0, 3), 3ULL, AlwaysTruePredicate{}};
-        EXPECT_DEATH(*it, "");
+        constexpr ItType IT1{IntegerRange::closed_open(0, 3), 3ULL, AlwaysTruePredicate{}};
+        EXPECT_DEATH(*IT1, "");
     }
 
     {
-        constexpr ItType it{IntegerRange::closed_open(3, 6), 3ULL, AlwaysTruePredicate{}};
-        static_assert(3 == *it);
+        constexpr ItType IT1{IntegerRange::closed_open(3, 6), 3ULL, AlwaysTruePredicate{}};
+        static_assert(3 == *IT1);
     }
     {
-        constexpr ItType it{IntegerRange::closed_open(3, 6), 4ULL, AlwaysTruePredicate{}};
-        static_assert(4 == *it);
+        constexpr ItType IT1{IntegerRange::closed_open(3, 6), 4ULL, AlwaysTruePredicate{}};
+        static_assert(4 == *IT1);
     }
     {
-        constexpr ItType it{IntegerRange::closed_open(3, 6), 5ULL, AlwaysTruePredicate{}};
-        static_assert(5 == *it);
+        constexpr ItType IT1{IntegerRange::closed_open(3, 6), 5ULL, AlwaysTruePredicate{}};
+        static_assert(5 == *IT1);
     }
     {
-        constexpr ItType it{IntegerRange::closed_open(3, 6), 6ULL, AlwaysTruePredicate{}};
-        EXPECT_DEATH(*it, "");
+        constexpr ItType IT1{IntegerRange::closed_open(3, 6), 6ULL, AlwaysTruePredicate{}};
+        EXPECT_DEATH(*IT1, "");
     }
 }
 
@@ -130,37 +130,37 @@ TEST(FilteredIntegerRangeIterator, ForwardEvenValuesOnlyStartingConditions)
 {
     using ItType = FilteredIntegerRangeIterator<EvenValuesOnly, IteratorDirection::FORWARD>;
     {
-        constexpr ItType it{IntegerRange::closed_open(0, 3), 0ULL, EvenValuesOnly{}};
-        static_assert(0 == *it);
+        constexpr ItType IT1{IntegerRange::closed_open(0, 3), 0ULL, EvenValuesOnly{}};
+        static_assert(0 == *IT1);
     }
     {
-        constexpr ItType it{IntegerRange::closed_open(0, 3), 1ULL, EvenValuesOnly{}};
-        static_assert(2 == *it);
+        constexpr ItType IT1{IntegerRange::closed_open(0, 3), 1ULL, EvenValuesOnly{}};
+        static_assert(2 == *IT1);
     }
     {
-        constexpr ItType it{IntegerRange::closed_open(0, 3), 2ULL, EvenValuesOnly{}};
-        static_assert(2 == *it);
+        constexpr ItType IT1{IntegerRange::closed_open(0, 3), 2ULL, EvenValuesOnly{}};
+        static_assert(2 == *IT1);
     }
     {
-        constexpr ItType it{IntegerRange::closed_open(0, 3), 3ULL, EvenValuesOnly{}};
-        EXPECT_DEATH(*it, "");
+        constexpr ItType IT1{IntegerRange::closed_open(0, 3), 3ULL, EvenValuesOnly{}};
+        EXPECT_DEATH(*IT1, "");
     }
 
     {
-        constexpr ItType it{IntegerRange::closed_open(3, 6), 3ULL, EvenValuesOnly{}};
-        static_assert(4 == *it);
+        constexpr ItType IT1{IntegerRange::closed_open(3, 6), 3ULL, EvenValuesOnly{}};
+        static_assert(4 == *IT1);
     }
     {
-        constexpr ItType it{IntegerRange::closed_open(3, 6), 4ULL, EvenValuesOnly{}};
-        static_assert(4 == *it);
+        constexpr ItType IT1{IntegerRange::closed_open(3, 6), 4ULL, EvenValuesOnly{}};
+        static_assert(4 == *IT1);
     }
     {
-        constexpr ItType it{IntegerRange::closed_open(3, 6), 5ULL, EvenValuesOnly{}};
-        EXPECT_DEATH(*it, "");
+        constexpr ItType IT1{IntegerRange::closed_open(3, 6), 5ULL, EvenValuesOnly{}};
+        EXPECT_DEATH(*IT1, "");
     }
     {
-        constexpr ItType it{IntegerRange::closed_open(3, 6), 6ULL, EvenValuesOnly{}};
-        EXPECT_DEATH(*it, "");
+        constexpr ItType IT1{IntegerRange::closed_open(3, 6), 6ULL, EvenValuesOnly{}};
+        EXPECT_DEATH(*IT1, "");
     }
 }
 
@@ -168,12 +168,12 @@ TEST(FilteredIntegerRangeIterator, ForwardAlwaysFalsePredicateEmptyIterator)
 {
     using ItType = FilteredIntegerRangeIterator<AlwaysFalsePredicate, IteratorDirection::FORWARD>;
     {
-        constexpr ItType it{IntegerRange::closed_open(0, 3), 0ULL, AlwaysFalsePredicate{}};
-        EXPECT_DEATH(*it, "");
+        constexpr ItType IT1{IntegerRange::closed_open(0, 3), 0ULL, AlwaysFalsePredicate{}};
+        EXPECT_DEATH(*IT1, "");
     }
     {
-        constexpr ItType it{IntegerRange::closed_open(0, 3), 3ULL, AlwaysFalsePredicate{}};
-        EXPECT_DEATH(*it, "");
+        constexpr ItType IT1{IntegerRange::closed_open(0, 3), 3ULL, AlwaysFalsePredicate{}};
+        EXPECT_DEATH(*IT1, "");
     }
 }
 
@@ -181,12 +181,12 @@ TEST(FilteredIntegerRangeIterator, ReverseAlwaysFalsePredicateEmptyIterator)
 {
     using ItType = FilteredIntegerRangeIterator<AlwaysFalsePredicate, IteratorDirection::REVERSE>;
     {
-        constexpr ItType it{IntegerRange::closed_open(0, 3), 3ULL, AlwaysFalsePredicate{}};
-        EXPECT_DEATH(*it, "");
+        constexpr ItType IT1{IntegerRange::closed_open(0, 3), 3ULL, AlwaysFalsePredicate{}};
+        EXPECT_DEATH(*IT1, "");
     }
     {
-        constexpr ItType it{IntegerRange::closed_open(0, 3), 0ULL, AlwaysFalsePredicate{}};
-        EXPECT_DEATH(*it, "");
+        constexpr ItType IT1{IntegerRange::closed_open(0, 3), 0ULL, AlwaysFalsePredicate{}};
+        EXPECT_DEATH(*IT1, "");
     }
 }
 
@@ -194,37 +194,37 @@ TEST(FilteredIntegerRangeIterator, ReverseAlwaysTruePredicateStartingConditions)
 {
     using ItType = FilteredIntegerRangeIterator<AlwaysTruePredicate, IteratorDirection::REVERSE>;
     {
-        constexpr ItType it{IntegerRange::closed_open(0, 3), 3ULL, AlwaysTruePredicate{}};
-        static_assert(2 == *it);
+        constexpr ItType IT1{IntegerRange::closed_open(0, 3), 3ULL, AlwaysTruePredicate{}};
+        static_assert(2 == *IT1);
     }
     {
-        constexpr ItType it{IntegerRange::closed_open(0, 3), 2ULL, AlwaysTruePredicate{}};
-        static_assert(1 == *it);
+        constexpr ItType IT1{IntegerRange::closed_open(0, 3), 2ULL, AlwaysTruePredicate{}};
+        static_assert(1 == *IT1);
     }
     {
-        constexpr ItType it{IntegerRange::closed_open(0, 3), 1ULL, AlwaysTruePredicate{}};
-        static_assert(0 == *it);
+        constexpr ItType IT1{IntegerRange::closed_open(0, 3), 1ULL, AlwaysTruePredicate{}};
+        static_assert(0 == *IT1);
     }
     {
-        constexpr ItType it{IntegerRange::closed_open(0, 3), 0ULL, AlwaysTruePredicate{}};
-        EXPECT_DEATH(*it, "");
+        constexpr ItType IT1{IntegerRange::closed_open(0, 3), 0ULL, AlwaysTruePredicate{}};
+        EXPECT_DEATH(*IT1, "");
     }
 
     {
-        constexpr ItType it{IntegerRange::closed_open(3, 6), 6ULL, AlwaysTruePredicate{}};
-        static_assert(5 == *it);
+        constexpr ItType IT1{IntegerRange::closed_open(3, 6), 6ULL, AlwaysTruePredicate{}};
+        static_assert(5 == *IT1);
     }
     {
-        constexpr ItType it{IntegerRange::closed_open(3, 6), 5ULL, AlwaysTruePredicate{}};
-        static_assert(4 == *it);
+        constexpr ItType IT1{IntegerRange::closed_open(3, 6), 5ULL, AlwaysTruePredicate{}};
+        static_assert(4 == *IT1);
     }
     {
-        constexpr ItType it{IntegerRange::closed_open(3, 6), 4ULL, AlwaysTruePredicate{}};
-        static_assert(3 == *it);
+        constexpr ItType IT1{IntegerRange::closed_open(3, 6), 4ULL, AlwaysTruePredicate{}};
+        static_assert(3 == *IT1);
     }
     {
-        constexpr ItType it{IntegerRange::closed_open(3, 6), 3ULL, AlwaysTruePredicate{}};
-        EXPECT_DEATH(*it, "");
+        constexpr ItType IT1{IntegerRange::closed_open(3, 6), 3ULL, AlwaysTruePredicate{}};
+        EXPECT_DEATH(*IT1, "");
     }
 }
 
@@ -233,20 +233,20 @@ TEST(FilteredIntegerRangeIterator, ReverseEvenValuesOnlyStartingConditions)
     using ItType = FilteredIntegerRangeIterator<EvenValuesOnly, IteratorDirection::REVERSE>;
 
     {
-        constexpr ItType it{IntegerRange::closed_open(0, 3), 3ULL, EvenValuesOnly{}};
-        static_assert(2 == *it);
+        constexpr ItType IT1{IntegerRange::closed_open(0, 3), 3ULL, EvenValuesOnly{}};
+        static_assert(2 == *IT1);
     }
     {
-        constexpr ItType it{IntegerRange::closed_open(0, 3), 2ULL, EvenValuesOnly{}};
-        static_assert(0 == *it);
+        constexpr ItType IT1{IntegerRange::closed_open(0, 3), 2ULL, EvenValuesOnly{}};
+        static_assert(0 == *IT1);
     }
     {
-        constexpr ItType it{IntegerRange::closed_open(0, 3), 1ULL, EvenValuesOnly{}};
-        static_assert(0 == *it);
+        constexpr ItType IT1{IntegerRange::closed_open(0, 3), 1ULL, EvenValuesOnly{}};
+        static_assert(0 == *IT1);
     }
     {
-        constexpr ItType it{IntegerRange::closed_open(0, 3), 0ULL, EvenValuesOnly{}};
-        EXPECT_DEATH(*it, "");
+        constexpr ItType IT1{IntegerRange::closed_open(0, 3), 0ULL, EvenValuesOnly{}};
+        EXPECT_DEATH(*IT1, "");
     }
 }
 
@@ -258,7 +258,7 @@ TEST(FilteredIntegerRangeIterator, ForwardIncrement)
             std::distance(ItType{IntegerRange::closed_open(0, 3), 0ULL, AlwaysTruePredicate{}},
                           ItType{IntegerRange::closed_open(0, 3), 3ULL, AlwaysTruePredicate{}});
         static_assert(3 == DISTANCE);
-        constexpr std::array<std::size_t, DISTANCE> ret = []()
+        constexpr std::array<std::size_t, DISTANCE> RET = []()
         {
             const ItType end{IntegerRange::closed_open(0, 3), 3ULL, AlwaysTruePredicate{}};
             std::size_t counter = 0;
@@ -272,7 +272,7 @@ TEST(FilteredIntegerRangeIterator, ForwardIncrement)
 
             return output;
         }();
-        static_assert(ret == std::array<std::size_t, DISTANCE>{0, 1, 2});
+        static_assert(RET == std::array<std::size_t, DISTANCE>{0, 1, 2});
     }
 
     {
@@ -280,7 +280,7 @@ TEST(FilteredIntegerRangeIterator, ForwardIncrement)
             std::distance(ItType{IntegerRange::closed_open(3, 6), 3ULL, AlwaysTruePredicate{}},
                           ItType{IntegerRange::closed_open(3, 6), 6ULL, AlwaysTruePredicate{}});
         static_assert(3 == DISTANCE);
-        constexpr std::array<std::size_t, DISTANCE> ret = []()
+        constexpr std::array<std::size_t, DISTANCE> RET = []()
         {
             const ItType end{IntegerRange::closed_open(3, 6), 6ULL, AlwaysTruePredicate{}};
             std::size_t counter = 0;
@@ -294,7 +294,7 @@ TEST(FilteredIntegerRangeIterator, ForwardIncrement)
 
             return output;
         }();
-        static_assert(ret == std::array<std::size_t, DISTANCE>{3, 4, 5});
+        static_assert(RET == std::array<std::size_t, DISTANCE>{3, 4, 5});
     }
 }
 
@@ -306,7 +306,7 @@ TEST(FilteredIntegerRangeIterator, ForwardDecrement)
             std::distance(ItType{IntegerRange::closed_open(0, 3), 0ULL, AlwaysTruePredicate{}},
                           ItType{IntegerRange::closed_open(0, 3), 3ULL, AlwaysTruePredicate{}});
         static_assert(3 == DISTANCE);
-        constexpr std::array<std::size_t, DISTANCE> ret = []()
+        constexpr std::array<std::size_t, DISTANCE> RET = []()
         {
             const ItType start{IntegerRange::closed_open(0, 3), 0ULL, AlwaysTruePredicate{}};
             std::size_t counter = 0;
@@ -321,7 +321,7 @@ TEST(FilteredIntegerRangeIterator, ForwardDecrement)
 
             return output;
         }();
-        static_assert(ret == std::array<std::size_t, DISTANCE>{2, 1, 0});
+        static_assert(RET == std::array<std::size_t, DISTANCE>{2, 1, 0});
     }
 
     {
@@ -329,7 +329,7 @@ TEST(FilteredIntegerRangeIterator, ForwardDecrement)
             std::distance(ItType{IntegerRange::closed_open(3, 6), 3ULL, AlwaysTruePredicate{}},
                           ItType{IntegerRange::closed_open(3, 6), 6ULL, AlwaysTruePredicate{}});
         static_assert(3 == DISTANCE);
-        constexpr std::array<std::size_t, DISTANCE> ret = []()
+        constexpr std::array<std::size_t, DISTANCE> RET = []()
         {
             const ItType start{IntegerRange::closed_open(3, 6), 3ULL, AlwaysTruePredicate{}};
             std::size_t counter = 0;
@@ -344,7 +344,7 @@ TEST(FilteredIntegerRangeIterator, ForwardDecrement)
 
             return output;
         }();
-        static_assert(ret == std::array<std::size_t, DISTANCE>{5, 4, 3});
+        static_assert(RET == std::array<std::size_t, DISTANCE>{5, 4, 3});
     }
 }
 
@@ -357,7 +357,7 @@ TEST(FilteredIntegerRangeIterator, ReverseIncrement)
                           ItType{IntegerRange::closed_open(0, 3), 0ULL, AlwaysTruePredicate{}});
 
         static_assert(3 == DISTANCE);
-        constexpr std::array<std::size_t, DISTANCE> ret = []()
+        constexpr std::array<std::size_t, DISTANCE> RET = []()
         {
             const ItType end{IntegerRange::closed_open(0, 3), 0ULL, AlwaysTruePredicate{}};
             std::size_t counter = 0;
@@ -371,7 +371,7 @@ TEST(FilteredIntegerRangeIterator, ReverseIncrement)
 
             return output;
         }();
-        static_assert(ret == (std::array<std::size_t, DISTANCE>{2, 1, 0}));
+        static_assert(RET == (std::array<std::size_t, DISTANCE>{2, 1, 0}));
     }
 
     {
@@ -379,7 +379,7 @@ TEST(FilteredIntegerRangeIterator, ReverseIncrement)
             std::distance(ItType{IntegerRange::closed_open(3, 6), 6ULL, AlwaysTruePredicate{}},
                           ItType{IntegerRange::closed_open(3, 6), 3ULL, AlwaysTruePredicate{}});
         static_assert(3 == DISTANCE);
-        constexpr std::array<std::size_t, DISTANCE> ret = []()
+        constexpr std::array<std::size_t, DISTANCE> RET = []()
         {
             const ItType end{IntegerRange::closed_open(3, 6), 3ULL, AlwaysTruePredicate{}};
             std::size_t counter = 0;
@@ -393,7 +393,7 @@ TEST(FilteredIntegerRangeIterator, ReverseIncrement)
 
             return output;
         }();
-        static_assert(ret == std::array<std::size_t, DISTANCE>{5, 4, 3});
+        static_assert(RET == std::array<std::size_t, DISTANCE>{5, 4, 3});
     }
 }
 
@@ -405,7 +405,7 @@ TEST(FilteredIntegerRangeIterator, ReverseDecrement)
             std::distance(ItType{IntegerRange::closed_open(0, 3), 3ULL, AlwaysTruePredicate{}},
                           ItType{IntegerRange::closed_open(0, 3), 0ULL, AlwaysTruePredicate{}});
         static_assert(3 == DISTANCE);
-        constexpr std::array<std::size_t, DISTANCE> ret = []()
+        constexpr std::array<std::size_t, DISTANCE> RET = []()
         {
             const ItType end{IntegerRange::closed_open(0, 3), 3ULL, AlwaysTruePredicate{}};
             std::size_t counter = 0;
@@ -420,7 +420,7 @@ TEST(FilteredIntegerRangeIterator, ReverseDecrement)
 
             return output;
         }();
-        static_assert(ret == std::array<std::size_t, DISTANCE>{0, 1, 2});
+        static_assert(RET == std::array<std::size_t, DISTANCE>{0, 1, 2});
     }
 
     {
@@ -428,7 +428,7 @@ TEST(FilteredIntegerRangeIterator, ReverseDecrement)
             std::distance(ItType{IntegerRange::closed_open(3, 6), 6ULL, AlwaysTruePredicate{}},
                           ItType{IntegerRange::closed_open(3, 6), 3ULL, AlwaysTruePredicate{}});
         static_assert(3 == DISTANCE);
-        constexpr std::array<std::size_t, DISTANCE> ret = []()
+        constexpr std::array<std::size_t, DISTANCE> RET = []()
         {
             const ItType end{IntegerRange::closed_open(3, 6), 6ULL, AlwaysTruePredicate{}};
             std::size_t counter = 0;
@@ -443,7 +443,7 @@ TEST(FilteredIntegerRangeIterator, ReverseDecrement)
 
             return output;
         }();
-        static_assert(ret == std::array<std::size_t, DISTANCE>{3, 4, 5});
+        static_assert(RET == std::array<std::size_t, DISTANCE>{3, 4, 5});
     }
 }
 

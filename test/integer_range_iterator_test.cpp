@@ -52,26 +52,26 @@ TEST(IntegerRangeIterator, StartAndFinishAreTheSameAsRange)
 {
     {
         using ItType = IntegerRangeIterator<IteratorDirection::FORWARD>;
-        static constexpr ItType it{IntegerRange::closed_open(0, 3), 0ULL};
-        static constexpr ItType end{IntegerRange::closed_open(0, 3), 3ULL};
-        EXPECT_DEATH(*std::prev(it, 1), "");
-        static_assert(0 == *std::next(it, 0));
-        static_assert(1 == *std::next(it, 1));
-        static_assert(2 == *std::next(it, 2));
-        static_assert(end == std::next(it, 3));
-        EXPECT_DEATH(*std::next(it, 3), "");
+        static constexpr ItType IT1{IntegerRange::closed_open(0, 3), 0ULL};
+        static constexpr ItType IT_END{IntegerRange::closed_open(0, 3), 3ULL};
+        EXPECT_DEATH(*std::prev(IT1, 1), "");
+        static_assert(0 == *std::next(IT1, 0));
+        static_assert(1 == *std::next(IT1, 1));
+        static_assert(2 == *std::next(IT1, 2));
+        static_assert(IT_END == std::next(IT1, 3));
+        EXPECT_DEATH(*std::next(IT1, 3), "");
     }
 
     {
         using ItType = IntegerRangeIterator<IteratorDirection::FORWARD>;
-        static constexpr ItType it{IntegerRange::closed_open(3, 6), 3ULL};
-        static constexpr ItType end{IntegerRange::closed_open(3, 6), 6ULL};
-        EXPECT_DEATH(*std::prev(it, 1), "");
-        static_assert(3 == *std::next(it, 0));
-        static_assert(4 == *std::next(it, 1));
-        static_assert(5 == *std::next(it, 2));
-        static_assert(end == std::next(it, 3));
-        EXPECT_DEATH(*std::next(it, 3), "");
+        static constexpr ItType IT1{IntegerRange::closed_open(3, 6), 3ULL};
+        static constexpr ItType IT_END{IntegerRange::closed_open(3, 6), 6ULL};
+        EXPECT_DEATH(*std::prev(IT1, 1), "");
+        static_assert(3 == *std::next(IT1, 0));
+        static_assert(4 == *std::next(IT1, 1));
+        static_assert(5 == *std::next(IT1, 2));
+        static_assert(IT_END == std::next(IT1, 3));
+        EXPECT_DEATH(*std::next(IT1, 3), "");
     }
 }
 
@@ -79,26 +79,26 @@ TEST(IntegerRangeIterator, CurrentIndexNotAtStart)
 {
     {
         using ItType = IntegerRangeIterator<IteratorDirection::FORWARD>;
-        static constexpr ItType it{IntegerRange::closed_open(0, 3), 1ULL};
-        static constexpr ItType end{IntegerRange::closed_open(0, 3), 3ULL};
-        EXPECT_DEATH(*std::prev(it, 2), "");
-        static_assert(0 == *std::prev(it, 1));
-        static_assert(1 == *std::next(it, 0));
-        static_assert(2 == *std::next(it, 1));
-        static_assert(end == std::next(it, 2));
-        EXPECT_DEATH(*std::next(it, 2), "");
+        static constexpr ItType IT1{IntegerRange::closed_open(0, 3), 1ULL};
+        static constexpr ItType IT_END{IntegerRange::closed_open(0, 3), 3ULL};
+        EXPECT_DEATH(*std::prev(IT1, 2), "");
+        static_assert(0 == *std::prev(IT1, 1));
+        static_assert(1 == *std::next(IT1, 0));
+        static_assert(2 == *std::next(IT1, 1));
+        static_assert(IT_END == std::next(IT1, 2));
+        EXPECT_DEATH(*std::next(IT1, 2), "");
     }
 
     {
         using ItType = IntegerRangeIterator<IteratorDirection::FORWARD>;
-        static constexpr ItType it{IntegerRange::closed_open(3, 6), 5ULL};
-        static constexpr ItType end{IntegerRange::closed_open(3, 6), 6ULL};
-        EXPECT_DEATH(*std::prev(it, 3), "");
-        static_assert(3 == *std::prev(it, 2));
-        static_assert(4 == *std::prev(it, 1));
-        static_assert(5 == *std::next(it, 0));
-        static_assert(end == std::next(it, 1));
-        EXPECT_DEATH(*std::next(it, 1), "");
+        static constexpr ItType IT1{IntegerRange::closed_open(3, 6), 5ULL};
+        static constexpr ItType IT_END{IntegerRange::closed_open(3, 6), 6ULL};
+        EXPECT_DEATH(*std::prev(IT1, 3), "");
+        static_assert(3 == *std::prev(IT1, 2));
+        static_assert(4 == *std::prev(IT1, 1));
+        static_assert(5 == *std::next(IT1, 0));
+        static_assert(IT_END == std::next(IT1, 1));
+        EXPECT_DEATH(*std::next(IT1, 1), "");
     }
 }
 
@@ -106,14 +106,14 @@ TEST(IntegerRangeIterator, RandomAccess)
 {
     {
         using ItType = IntegerRangeIterator<IteratorDirection::FORWARD>;
-        static constexpr ItType it{IntegerRange::closed_open(0, 3), 1ULL};
-        static_assert(2 == it[1]);
+        static constexpr ItType IT1{IntegerRange::closed_open(0, 3), 1ULL};
+        static_assert(2 == IT1[1]);
     }
 
     {
         using ItType = IntegerRangeIterator<IteratorDirection::FORWARD>;
-        static constexpr ItType it{IntegerRange::closed_open(3, 6), 3ULL};
-        static_assert(5 == it[2]);
+        static constexpr ItType IT1{IntegerRange::closed_open(3, 6), 3ULL};
+        static_assert(5 == IT1[2]);
     }
 }
 
@@ -123,26 +123,26 @@ TEST(IntegerRangeIterator, Equality)
     {
         // Range
         static constexpr IntegerRange RANGE = IntegerRange::closed_open(0, 11);
-        static constexpr ItType it1{RANGE, 1ULL};
-        static constexpr ItType it2{RANGE, 1ULL};
-        static constexpr ItType it3{IntegerRange::closed_open(0, 999), 1ULL};
+        static constexpr ItType IT1{RANGE, 1ULL};
+        static constexpr ItType IT2{RANGE, 1ULL};
+        static constexpr ItType IT3{IntegerRange::closed_open(0, 999), 1ULL};
 
-        static_assert(it1 == it2);
-        EXPECT_DEATH(void(it1 != it3), "");  // Hard error if attempting to compare unrelated ranges
+        static_assert(IT1 == IT2);
+        EXPECT_DEATH(void(IT1 != IT3), "");  // Hard error if attempting to compare unrelated ranges
     }
     {
         // Index
         static constexpr IntegerRange RANGE = IntegerRange::closed_open(0, 11);
-        static constexpr ItType it1{RANGE, 1ULL};
-        static constexpr ItType it2{RANGE, 1ULL};
-        static constexpr ItType it3{RANGE, 3ULL};
+        static constexpr ItType IT1{RANGE, 1ULL};
+        static constexpr ItType IT2{RANGE, 1ULL};
+        static constexpr ItType IT3{RANGE, 3ULL};
 
-        static_assert(it1 == it2);
-        static_assert(it1 != it3);
+        static_assert(IT1 == IT2);
+        static_assert(IT1 != IT3);
 
-        static constexpr ItType end{RANGE, 11ULL};
-        static_assert(it1 != end);
-        static_assert(std::next(it1, 10) == end);
+        static constexpr ItType IT_END{RANGE, 11ULL};
+        static_assert(IT1 != IT_END);
+        static_assert(std::next(IT1, 10) == IT_END);
     }
 }
 
@@ -152,15 +152,15 @@ TEST(IntegerRangeIterator, Comparison)
         using ItType = IntegerRangeIterator<IteratorDirection::FORWARD>;
         {
             static constexpr IntegerRange RANGE = IntegerRange::closed_open(0, 11);
-            static constexpr ItType it1{RANGE, 1ULL};
-            static constexpr ItType it2{RANGE, 1ULL};
-            static constexpr ItType it3{RANGE, 3ULL};
+            static constexpr ItType IT1{RANGE, 1ULL};
+            static constexpr ItType IT2{RANGE, 1ULL};
+            static constexpr ItType IT3{RANGE, 3ULL};
 
-            static_assert(it1 == it2);
-            static_assert(it1 < it3);
-            static_assert(it1 <= it3);
-            static_assert(it3 > it1);
-            static_assert(it3 >= it1);
+            static_assert(IT1 == IT2);
+            static_assert(IT1 < IT3);
+            static_assert(IT1 <= IT3);
+            static_assert(IT3 > IT1);
+            static_assert(IT3 >= IT1);
         }
     }
 
@@ -168,15 +168,15 @@ TEST(IntegerRangeIterator, Comparison)
         using ItType = IntegerRangeIterator<IteratorDirection::REVERSE>;
         {
             static constexpr IntegerRange RANGE = IntegerRange::closed_open(0, 11);
-            static constexpr ItType it1{RANGE, 1ULL};
-            static constexpr ItType it2{RANGE, 1ULL};
-            static constexpr ItType it3{RANGE, 3ULL};
+            static constexpr ItType IT1{RANGE, 1ULL};
+            static constexpr ItType IT2{RANGE, 1ULL};
+            static constexpr ItType IT3{RANGE, 3ULL};
 
-            static_assert(it1 == it2);
-            static_assert(it1 > it3);
-            static_assert(it1 >= it3);
-            static_assert(it3 < it1);
-            static_assert(it3 <= it1);
+            static_assert(IT1 == IT2);
+            static_assert(IT1 > IT3);
+            static_assert(IT1 >= IT3);
+            static_assert(IT3 < IT1);
+            static_assert(IT3 <= IT1);
         }
     }
 }
@@ -187,17 +187,17 @@ TEST(IntegerRangeIterator, OperatorMinus)
         using ItType = IntegerRangeIterator<IteratorDirection::FORWARD>;
         {
             static constexpr IntegerRange RANGE = IntegerRange::closed_open(0, 11);
-            static constexpr ItType it1{RANGE, 1ULL};
-            static constexpr ItType it2{RANGE, 1ULL};
-            static constexpr ItType it3{RANGE, 3ULL};
+            static constexpr ItType IT1{RANGE, 1ULL};
+            static constexpr ItType IT2{RANGE, 1ULL};
+            static constexpr ItType IT3{RANGE, 3ULL};
 
-            static_assert(0 == it2 - it1);
-            static_assert(0 == it1 - it2);
-            static_assert(2 == it3 - it1);
-            static_assert(-2 == it1 - it3);
+            static_assert(0 == IT2 - IT1);
+            static_assert(0 == IT1 - IT2);
+            static_assert(2 == IT3 - IT1);
+            static_assert(-2 == IT1 - IT3);
 
-            static constexpr ItType end{IntegerRange::closed_open(0, 11), 11ULL};
-            static_assert(10 == end - it1);
+            static constexpr ItType IT_END{IntegerRange::closed_open(0, 11), 11ULL};
+            static_assert(10 == IT_END - IT1);
         }
     }
 
@@ -205,17 +205,17 @@ TEST(IntegerRangeIterator, OperatorMinus)
         using ItType = IntegerRangeIterator<IteratorDirection::REVERSE>;
         {
             static constexpr IntegerRange RANGE = IntegerRange::closed_open(0, 11);
-            static constexpr ItType it1{RANGE, 1ULL};
-            static constexpr ItType it2{RANGE, 1ULL};
-            static constexpr ItType it3{RANGE, 3ULL};
+            static constexpr ItType IT1{RANGE, 1ULL};
+            static constexpr ItType IT2{RANGE, 1ULL};
+            static constexpr ItType IT3{RANGE, 3ULL};
 
-            static_assert(0 == it2 - it1);
-            static_assert(0 == it1 - it2);
-            static_assert(-2 == it3 - it1);
-            static_assert(2 == it1 - it3);
+            static_assert(0 == IT2 - IT1);
+            static_assert(0 == IT1 - IT2);
+            static_assert(-2 == IT3 - IT1);
+            static_assert(2 == IT1 - IT3);
 
-            static constexpr ItType rend{IntegerRange::closed_open(0, 11), 0ULL};
-            static_assert(1 == rend - it1);
+            static constexpr ItType IT_REND{IntegerRange::closed_open(0, 11), 0ULL};
+            static_assert(1 == IT_REND - IT1);
         }
     }
 }

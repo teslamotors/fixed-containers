@@ -87,7 +87,7 @@ struct StructOfPrimitives
 
 TEST(Tuples, AsTupleView)
 {
-    constexpr auto result = []()
+    constexpr auto RESULT = []()
     {
         StructOfPrimitives instance{};
         std::tuple<int&, std::size_t&, double&, std::int64_t&, char&> tuple_view =
@@ -99,16 +99,16 @@ TEST(Tuples, AsTupleView)
         std::get<4>(tuple_view) = 'z';
         return instance;
     }();
-    static_assert(result.a1 == 11);
-    static_assert(result.a2 == 13);
-    static_assert(result.a3 == 2.0);
-    static_assert(result.a4 == 17);
-    static_assert(result.a5 == 'z');
+    static_assert(RESULT.a1 == 11);
+    static_assert(RESULT.a2 == 13);
+    static_assert(RESULT.a3 == 2.0);
+    static_assert(RESULT.a4 == 17);
+    static_assert(RESULT.a5 == 'z');
 }
 
 TEST(Tuples, ForEachEntryEmpty)
 {
-    constexpr auto result = []()
+    constexpr auto RESULT = []()
     {
         std::tuple<> a{};
         tuples::for_each_entry(a, []<typename T>(T& /*t*/) {});
@@ -116,12 +116,12 @@ TEST(Tuples, ForEachEntryEmpty)
         return a;
     }();
 
-    static_assert(std::tuple_size_v<decltype(result)> == 0);
+    static_assert(std::tuple_size_v<decltype(RESULT)> == 0);
 }
 
 TEST(Tuples, ForEachEntry)
 {
-    constexpr auto result = []()
+    constexpr auto RESULT = []()
     {
         std::tuple<int, double> a{1, 2};
         tuples::for_each_entry(a,
@@ -136,13 +136,13 @@ TEST(Tuples, ForEachEntry)
         return a;
     }();
 
-    static_assert(std::get<0>(result) == 9);
-    static_assert(std::get<1>(result) == 4.0);
+    static_assert(std::get<0>(RESULT) == 9);
+    static_assert(std::get<1>(RESULT) == 4.0);
 }
 
 TEST(Tuples, ForEachEntryWithIndex)
 {
-    constexpr auto result = []()
+    constexpr auto RESULT = []()
     {
         std::tuple<int, double> a{1, 2};
         tuples::for_each_entry(a,
@@ -165,8 +165,8 @@ TEST(Tuples, ForEachEntryWithIndex)
         return a;
     }();
 
-    static_assert(std::get<0>(result) == 9);
-    static_assert(std::get<1>(result) == 6.0);
+    static_assert(std::get<0>(RESULT) == 9);
+    static_assert(std::get<1>(RESULT) == 6.0);
 }
 
 }  // namespace fixed_containers

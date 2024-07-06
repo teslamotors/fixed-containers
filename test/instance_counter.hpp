@@ -12,44 +12,44 @@ template <class /*UniqueDifferentiator*/>
 class InstanceCounterNonTrivialAssignment
 {
 public:
-    static int counter;
+    static int counter;  // NOLINT(readability-identifier-naming)
     using Self = InstanceCounterNonTrivialAssignment;
 
 private:
-    int value;
+    int value_;
 
 public:
     InstanceCounterNonTrivialAssignment(int value_in_ctor = 0)
-      : value{value_in_ctor}
+      : value_{value_in_ctor}
     {
         counter++;
     }
     InstanceCounterNonTrivialAssignment(const Self& other)
-      : value{other.value}
+      : value_{other.value_}
     {
         counter++;
     }
     InstanceCounterNonTrivialAssignment(Self&& other) noexcept
-      : value{other.value}
+      : value_{other.value_}
     {
         counter++;
     }
     InstanceCounterNonTrivialAssignment& operator=(const Self& other)
     {
-        value = other.value;
+        value_ = other.value_;
         return *this;
     }
     InstanceCounterNonTrivialAssignment& operator=(Self&& other) noexcept
     {
-        value = other.value;
+        value_ = other.value_;
         return *this;
     }
     ~InstanceCounterNonTrivialAssignment() { counter--; }
 
-    [[nodiscard]] int get() const { return value; }
+    [[nodiscard]] int get() const { return value_; }
 
-    bool operator==(const Self& other) const { return value == other.value; }
-    std::strong_ordering operator<=>(const Self& other) const { return value <=> other.value; }
+    bool operator==(const Self& other) const { return value_ == other.value_; }
+    std::strong_ordering operator<=>(const Self& other) const { return value_ <=> other.value_; }
 };
 template <class UniqueDifferentiator>
 int InstanceCounterNonTrivialAssignment<UniqueDifferentiator>::counter = 0;
@@ -58,7 +58,7 @@ template <class /*UniqueDifferentiator*/>
 class InstanceCounterTrivialAssignment
 {
 public:
-    static int counter;
+    static int counter;  // NOLINT(readability-identifier-naming)
     using Self = InstanceCounterTrivialAssignment;
 
 private:

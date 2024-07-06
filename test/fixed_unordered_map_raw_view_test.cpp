@@ -68,10 +68,10 @@ void test_and_increment(auto& map_it, auto& view_it)
     ++view_it;
 }
 
-template <auto value>
+template <auto VALUE_TEMPLATE>
 struct TestSetArgument
 {
-    static constexpr auto VALUE = value;
+    static constexpr auto VALUE = VALUE_TEMPLATE;
 };
 
 template <typename T>

@@ -24,42 +24,42 @@ TEST(OptionalReference, FixedContainerProperties)
 
 TEST(OptionalReference, DefaultConstructor)
 {
-    constexpr OptionalReference<int> v1{};
-    (void)v1;
+    constexpr OptionalReference<int> VAL1{};
+    (void)VAL1;
 }
 
 TEST(OptionalReference, Size)
 {
-    constexpr OptionalReference<int> v1{};
-    static_assert(sizeof(v1) == sizeof(void*));
-    (void)v1;
+    constexpr OptionalReference<int> VAL1{};
+    static_assert(sizeof(VAL1) == sizeof(void*));
+    (void)VAL1;
 }
 
 TEST(OptionalReference, NullOptAssignment)
 {
-    constexpr bool success = []()
+    constexpr bool SUCCESS = []()
     {
         int a = 9;
         OptionalReference<int> v1(a);
         v1 = std::nullopt;
         return !v1.has_value();
     }();
-    static_assert(success);
+    static_assert(SUCCESS);
 }
 
 TEST(OptionalReference, HasValue)
 {
     {
         using T = OptionalReference<int>;
-        constexpr T v1{};
-        static_assert(!v1.has_value());
+        constexpr T VAL1{};
+        static_assert(!VAL1.has_value());
     }
     {
         static_assert(
             [&]()
             {
-                constexpr int val = 5;
-                const OptionalReference<const int> red(val);
+                constexpr int ENTRY_1 = 5;
+                const OptionalReference<const int> red(ENTRY_1);
                 return (red.has_value());
             }());
     }
@@ -69,15 +69,15 @@ TEST(OptionalReference, BoolOperator)
 {
     {
         using T = OptionalReference<int>;
-        constexpr T v1{};
-        static_assert(!v1);
+        constexpr T VAL1{};
+        static_assert(!VAL1);
     }
     {
         static_assert(
             [&]() -> bool
             {
-                constexpr int val = 5;
-                const OptionalReference<const int> red(val);
+                constexpr int ENTRY_1 = 5;
+                const OptionalReference<const int> red(ENTRY_1);
                 return static_cast<bool>(red);
             }());
     }
@@ -87,13 +87,13 @@ TEST(OptionalReference, Value)
 {
     {
         using T = OptionalReference<int>;
-        constexpr T v1{};
-        EXPECT_DEATH((void)v1.value(), "");
+        constexpr T VAL1{};
+        EXPECT_DEATH((void)VAL1.value(), "");
     }
     {
-        constexpr int val = 5;
-        OptionalReference<const int> ref(val);
-        EXPECT_TRUE(ref.value() == val);
+        constexpr int ENTRY_1 = 5;
+        OptionalReference<const int> ref(ENTRY_1);
+        EXPECT_TRUE(ref.value() == ENTRY_1);
     }
 }
 
@@ -101,13 +101,13 @@ TEST(OptionalReference, DereferenceOperator)
 {
     {
         using T = OptionalReference<int>;
-        constexpr T v1{};
-        EXPECT_DEATH(*v1, "");
+        constexpr T VAL1{};
+        EXPECT_DEATH(*VAL1, "");
     }
     {
-        constexpr int val = 5;
-        OptionalReference<const int> ref(val);
-        EXPECT_TRUE(*ref == val);
+        constexpr int ENTRY_1 = 5;
+        OptionalReference<const int> ref(ENTRY_1);
+        EXPECT_TRUE(*ref == ENTRY_1);
     }
 }
 
@@ -119,13 +119,13 @@ TEST(OptionalReference, ArrowOperator)
     };
     using T = OptionalReference<Data>;
     {
-        constexpr T v1{};
-        EXPECT_DEATH(void(v1->d), "");
+        constexpr T VAL1{};
+        EXPECT_DEATH(void(VAL1->d), "");
     }
     {
-        constexpr Data val{};
-        OptionalReference<const Data> ref(val);
-        EXPECT_TRUE(ref->d == val.d);
+        constexpr Data ENTRY_1{};
+        OptionalReference<const Data> ref(ENTRY_1);
+        EXPECT_TRUE(ref->d == ENTRY_1.d);
     }
 }
 
@@ -175,29 +175,29 @@ TEST(OptionalReference, Comparison)
     // Case 1: Both OptionalReference objects have values, and the values are equal
     int val1 = 5;
     int val2 = 5;
-    const OptionalReference<int> optRef1(val1);
-    const OptionalReference<int> optRef2(val2);
-    ASSERT_EQ(optRef1 <=> optRef2, std::strong_ordering::equal);
+    const OptionalReference<int> opt_ref_1(val1);
+    const OptionalReference<int> opt_ref_2(val2);
+    ASSERT_EQ(opt_ref_1 <=> opt_ref_2, std::strong_ordering::equal);
 
     // Case 2: Both OptionalReference objects have values, and the first value is less than the
     // second
     int val3 = 3;
-    const OptionalReference<int> optRef3(val3);
-    ASSERT_EQ(optRef3 <=> optRef1, std::strong_ordering::less);
+    const OptionalReference<int> opt_ref_3(val3);
+    ASSERT_EQ(opt_ref_3 <=> opt_ref_1, std::strong_ordering::less);
 
     // Case 3: Both OptionalReference objects have values, and the first value is greater than the
     // second
-    ASSERT_EQ(optRef1 <=> optRef3, std::strong_ordering::greater);
+    ASSERT_EQ(opt_ref_1 <=> opt_ref_3, std::strong_ordering::greater);
 
     // Case 4: One OptionalReference object has a value, and the other does not
-    const OptionalReference<int> optRef4;
-    ASSERT_EQ(optRef1 <=> optRef4, std::strong_ordering::greater);
-    ASSERT_EQ(optRef4 <=> optRef1, std::strong_ordering::less);
+    const OptionalReference<int> opt_ref_4;
+    ASSERT_EQ(opt_ref_1 <=> opt_ref_4, std::strong_ordering::greater);
+    ASSERT_EQ(opt_ref_4 <=> opt_ref_1, std::strong_ordering::less);
 
     // Case 5: Both OptionalReference objects do not have values
-    const OptionalReference<int> optRef5;
-    const OptionalReference<int> optRef6;
-    ASSERT_EQ(optRef5 <=> optRef6, std::strong_ordering::equal);
+    const OptionalReference<int> opt_ref_5;
+    const OptionalReference<int> opt_ref_6;
+    ASSERT_EQ(opt_ref_5 <=> opt_ref_6, std::strong_ordering::equal);
 }
 
 // Test group for OptionalReference equality comparison functions
@@ -206,23 +206,23 @@ TEST(OptionalReference, Equality)
     // Case 1: Both OptionalReference objects have values, and the values are equal
     int val1 = 5;
     int val2 = 5;
-    const OptionalReference<int> optRef1(val1);
-    const OptionalReference<int> optRef2(val2);
-    ASSERT_TRUE(optRef1 == optRef2);
+    const OptionalReference<int> opt_ref_1(val1);
+    const OptionalReference<int> opt_ref_2(val2);
+    ASSERT_TRUE(opt_ref_1 == opt_ref_2);
 
     // Case 2: Both OptionalReference objects have values, and the values are not equal
     int val3 = 3;
-    const OptionalReference<int> optRef3(val3);
-    ASSERT_FALSE(optRef1 == optRef3);
+    const OptionalReference<int> opt_ref_3(val3);
+    ASSERT_FALSE(opt_ref_1 == opt_ref_3);
 
     // Case 3: One OptionalReference object has a value, and the other does not
-    const OptionalReference<int> optRef4;
-    ASSERT_FALSE(optRef1 == optRef4);
+    const OptionalReference<int> opt_ref_4;
+    ASSERT_FALSE(opt_ref_1 == opt_ref_4);
 
     // Case 4: Both OptionalReference objects do not have values
-    const OptionalReference<int> optRef5;
-    const OptionalReference<int> optRef6;
-    ASSERT_TRUE(optRef5 == optRef6);
+    const OptionalReference<int> opt_ref_5;
+    const OptionalReference<int> opt_ref_6;
+    ASSERT_TRUE(opt_ref_5 == opt_ref_6);
 }
 
 // Test group for comparing OptionalReference with std::nullopt_t
@@ -230,12 +230,12 @@ TEST(OptionalReference, CompareWithNullopt)
 {
     // Case 1: OptionalReference has a value
     int val1 = 5;
-    const OptionalReference<int> optRef1(val1);
-    ASSERT_EQ(optRef1 <=> std::nullopt, std::strong_ordering::greater);
+    const OptionalReference<int> opt_ref_1(val1);
+    ASSERT_EQ(opt_ref_1 <=> std::nullopt, std::strong_ordering::greater);
 
     // Case 2: OptionalReference does not have a value
-    const OptionalReference<int> optRef2;
-    ASSERT_EQ(optRef2 <=> std::nullopt, std::strong_ordering::equal);
+    const OptionalReference<int> opt_ref_2;
+    ASSERT_EQ(opt_ref_2 <=> std::nullopt, std::strong_ordering::equal);
 }
 
 // Test group for equality comparison between OptionalReference and std::nullopt_t
@@ -243,12 +243,12 @@ TEST(OptionalReference, EqualWithNullopt)
 {
     // Case 1: OptionalReference has a value
     int val1 = 5;
-    const OptionalReference<int> optRef1(val1);
-    ASSERT_FALSE(optRef1 == std::nullopt);
+    const OptionalReference<int> opt_ref_1(val1);
+    ASSERT_FALSE(opt_ref_1 == std::nullopt);
 
     // Case 2: OptionalReference does not have a value
-    const OptionalReference<int> optRef2;
-    ASSERT_TRUE(optRef2 == std::nullopt);
+    const OptionalReference<int> opt_ref_2;
+    ASSERT_TRUE(opt_ref_2 == std::nullopt);
 }
 
 // Test group for comparing OptionalReference with a value
@@ -256,15 +256,15 @@ TEST(OptionalReference, CompareWithValue)
 {
     // Case 1: OptionalReference has a value, and the value is equal
     int val1 = 5;
-    const OptionalReference<int> optRef1(val1);
-    ASSERT_EQ(optRef1 <=> 5, std::strong_ordering::equal);
+    const OptionalReference<int> opt_ref_1(val1);
+    ASSERT_EQ(opt_ref_1 <=> 5, std::strong_ordering::equal);
 
     // Case 2: OptionalReference has a value, and the value is less
-    ASSERT_EQ(optRef1 <=> 10, std::strong_ordering::less);
+    ASSERT_EQ(opt_ref_1 <=> 10, std::strong_ordering::less);
 
     // Case 3: OptionalReference does not have a value
-    const OptionalReference<int> optRef2;
-    ASSERT_EQ(optRef2 <=> 5, std::strong_ordering::less);
+    const OptionalReference<int> opt_ref_2;
+    ASSERT_EQ(opt_ref_2 <=> 5, std::strong_ordering::less);
 }
 
 // Test group for equality comparison between OptionalReference and a value
@@ -272,15 +272,15 @@ TEST(OptionalReference, EqualWithValue)
 {
     // Case 1: OptionalReference has a value, and the value is equal
     int val1 = 5;
-    const OptionalReference<int> optRef1(val1);
-    ASSERT_TRUE(optRef1 == 5);
+    const OptionalReference<int> opt_ref_1(val1);
+    ASSERT_TRUE(opt_ref_1 == 5);
 
     // Case 2: OptionalReference has a value, and the value is not equal
-    ASSERT_FALSE(optRef1 == 10);
+    ASSERT_FALSE(opt_ref_1 == 10);
 
     // Case 3: OptionalReference does not have a value
-    const OptionalReference<int> optRef2;
-    ASSERT_FALSE(optRef2 == 5);
+    const OptionalReference<int> opt_ref_2;
+    ASSERT_FALSE(opt_ref_2 == 5);
 }
 
 // test taken from
@@ -307,17 +307,17 @@ TEST(OptionalReference, OpenStdAssignmentTests)
 TEST(OptionalReference, ConstexprCtor)
 {
     // a must be static so we can take its address at compile time
-    static constexpr int a = 5;
-    constexpr OptionalReference b(a);
-    static_assert(b);
+    static constexpr int ENTRY_A = 5;
+    constexpr OptionalReference VAL1(ENTRY_A);
+    static_assert(VAL1);
 }
 
 TEST(OptionalReference, FailingAddressOfOperator)
 {
     // a must be static so we can take its address at compile time
-    static constexpr MockFailingAddressOfOperator a{};
-    constexpr OptionalReference b(a);
-    static_assert(b);
+    static constexpr MockFailingAddressOfOperator ENTRY_A{};
+    constexpr OptionalReference VAL1(ENTRY_A);
+    static_assert(VAL1);
 }
 
 TEST(OptionalReference, RValueCtor)
@@ -327,8 +327,8 @@ TEST(OptionalReference, RValueCtor)
 
 TEST(OptionalReference, NulloptCtor)
 {
-    constexpr OptionalReference<int> rome(std::nullopt);
-    static_assert(!rome.has_value());
+    constexpr OptionalReference<int> VAL1(std::nullopt);
+    static_assert(!VAL1.has_value());
 }
 
 }  // namespace fixed_containers

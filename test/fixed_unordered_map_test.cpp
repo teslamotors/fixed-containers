@@ -78,36 +78,36 @@ static_assert(ranges::forward_iterator<STD_UNORDERED_MAP_INT_INT::const_iterator
 
 TEST(FixedUnorderedMap, DefaultConstructor)
 {
-    constexpr FixedUnorderedMap<int, int, 10> s1{};
-    static_assert(s1.empty());
+    constexpr FixedUnorderedMap<int, int, 10> VAL1{};
+    static_assert(VAL1.empty());
 }
 
 TEST(FixedUnorderedMap, IteratorConstructor)
 {
     constexpr std::array INPUT{std::pair{2, 20}, std::pair{4, 40}};
-    constexpr FixedUnorderedMap<int, int, 10> s2{INPUT.begin(), INPUT.end()};
-    static_assert(s2.size() == 2);
+    constexpr FixedUnorderedMap<int, int, 10> VAL2{INPUT.begin(), INPUT.end()};
+    static_assert(VAL2.size() == 2);
 
-    static_assert(s2.at(2) == 20);
-    static_assert(s2.at(4) == 40);
+    static_assert(VAL2.at(2) == 20);
+    static_assert(VAL2.at(4) == 40);
 }
 
 TEST(FixedUnorderedMap, Initializer)
 {
-    constexpr FixedUnorderedMap<int, int, 10> s1{{2, 20}, {4, 40}};
-    static_assert(s1.size() == 2);
+    constexpr FixedUnorderedMap<int, int, 10> VAL1{{2, 20}, {4, 40}};
+    static_assert(VAL1.size() == 2);
 
-    constexpr FixedUnorderedMap<int, int, 10> s2{{3, 30}};
-    static_assert(s2.size() == 1);
+    constexpr FixedUnorderedMap<int, int, 10> VAL2{{3, 30}};
+    static_assert(VAL2.size() == 1);
 }
 
 TEST(FixedUnorderedMap, MaxSize)
 {
-    constexpr FixedUnorderedMap<int, int, 10> s1{{2, 20}, {4, 40}};
-    static_assert(s1.max_size() == 10);
+    constexpr FixedUnorderedMap<int, int, 10> VAL1{{2, 20}, {4, 40}};
+    static_assert(VAL1.max_size() == 10);
 
-    constexpr FixedUnorderedMap<int, int, 4> s2{};
-    static_assert(s2.max_size() == 4);
+    constexpr FixedUnorderedMap<int, int, 4> VAL2{};
+    static_assert(VAL2.max_size() == 4);
 
     static_assert(FixedUnorderedMap<int, int, 4>::static_max_size() == 4);
     EXPECT_EQ(4, (FixedUnorderedMap<int, int, 4>::static_max_size()));
@@ -117,24 +117,24 @@ TEST(FixedUnorderedMap, MaxSize)
 
 TEST(FixedUnorderedMap, EmptySizeFull)
 {
-    constexpr FixedUnorderedMap<int, int, 10> s1{{2, 20}, {4, 40}};
-    static_assert(s1.size() == 2);
-    static_assert(!s1.empty());
+    constexpr FixedUnorderedMap<int, int, 10> VAL1{{2, 20}, {4, 40}};
+    static_assert(VAL1.size() == 2);
+    static_assert(!VAL1.empty());
 
-    constexpr FixedUnorderedMap<int, int, 10> s2{};
-    static_assert(s2.size() == 0);  // NOLINT(readability-container-size-empty)
-    static_assert(s2.empty());
+    constexpr FixedUnorderedMap<int, int, 10> VAL2{};
+    static_assert(VAL2.size() == 0);  // NOLINT(readability-container-size-empty)
+    static_assert(VAL2.empty());
 
-    constexpr FixedUnorderedMap<int, int, 2> s3{{2, 20}, {4, 40}};
-    static_assert(is_full(s3));
+    constexpr FixedUnorderedMap<int, int, 2> VAL3{{2, 20}, {4, 40}};
+    static_assert(is_full(VAL3));
 
-    constexpr FixedUnorderedMap<int, int, 5> s4{{2, 20}, {4, 40}};
-    static_assert(!is_full(s4));
+    constexpr FixedUnorderedMap<int, int, 5> VAL4{{2, 20}, {4, 40}};
+    static_assert(!is_full(VAL4));
 }
 
 TEST(FixedUnorderedMap, OperatorBracketConstexpr)
 {
-    constexpr auto s1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedUnorderedMap<int, int, 10> s{};
         s[2] = 20;
@@ -142,27 +142,27 @@ TEST(FixedUnorderedMap, OperatorBracketConstexpr)
         return s;
     }();
 
-    static_assert(s1.size() == 2);
-    static_assert(!s1.contains(1));
-    static_assert(s1.contains(2));
-    static_assert(!s1.contains(3));
-    static_assert(s1.contains(4));
+    static_assert(VAL1.size() == 2);
+    static_assert(!VAL1.contains(1));
+    static_assert(VAL1.contains(2));
+    static_assert(!VAL1.contains(3));
+    static_assert(VAL1.contains(4));
 }
 
 TEST(FixedUnorderedMap, MaxSizeDeduction)
 {
     {
-        constexpr auto s1 = make_fixed_unordered_map({std::pair{30, 30}, std::pair{31, 54}});
-        static_assert(s1.size() == 2);
-        static_assert(s1.max_size() == 2);
-        static_assert(s1.contains(30));
-        static_assert(s1.contains(31));
-        static_assert(!s1.contains(32));
+        constexpr auto VAL1 = make_fixed_unordered_map({std::pair{30, 30}, std::pair{31, 54}});
+        static_assert(VAL1.size() == 2);
+        static_assert(VAL1.max_size() == 2);
+        static_assert(VAL1.contains(30));
+        static_assert(VAL1.contains(31));
+        static_assert(!VAL1.contains(32));
     }
     {
-        constexpr auto s1 = make_fixed_unordered_map<int, int>({});
-        static_assert(s1.empty());
-        static_assert(s1.max_size() == 0);
+        constexpr auto VAL1 = make_fixed_unordered_map<int, int>({});
+        static_assert(VAL1.empty());
+        static_assert(VAL1.max_size() == 0);
     }
 }
 
@@ -203,7 +203,7 @@ namespace
 {
 struct ConstructionCounter
 {
-    static int counter;
+    static int counter_;
     using Self = ConstructionCounter;
 
     int value;
@@ -211,36 +211,36 @@ struct ConstructionCounter
     explicit ConstructionCounter(int value_in_ctor = 0)
       : value{value_in_ctor}
     {
-        counter++;
+        counter_++;
     }
     ConstructionCounter(const Self& other)
       : value{other.value}
     {
-        counter++;
+        counter_++;
     }
     ConstructionCounter& operator=(const Self& other) = default;
 };
-int ConstructionCounter::counter = 0;
+int ConstructionCounter::counter_ = 0;
 }  // namespace
 
 TEST(FixedUnorderedMap, OperatorBracketEnsureNoUnnecessaryTemporaries)
 {
     FixedUnorderedMap<int, ConstructionCounter, 10> s1{};
-    ASSERT_EQ(0, ConstructionCounter::counter);
+    ASSERT_EQ(0, ConstructionCounter::counter_);
     const ConstructionCounter instance1{25};
     const ConstructionCounter instance2{35};
-    ASSERT_EQ(2, ConstructionCounter::counter);
+    ASSERT_EQ(2, ConstructionCounter::counter_);
     s1[2] = instance1;
-    ASSERT_EQ(3, ConstructionCounter::counter);
+    ASSERT_EQ(3, ConstructionCounter::counter_);
     s1[4] = s1.at(2);
-    ASSERT_EQ(4, ConstructionCounter::counter);
+    ASSERT_EQ(4, ConstructionCounter::counter_);
     s1[4] = instance2;
-    ASSERT_EQ(4, ConstructionCounter::counter);
+    ASSERT_EQ(4, ConstructionCounter::counter_);
 }
 
 TEST(FixedUnorderedMap, Insert)
 {
-    constexpr auto s1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedUnorderedMap<int, int, 10> s{};
         s.insert({2, 20});
@@ -248,11 +248,11 @@ TEST(FixedUnorderedMap, Insert)
         return s;
     }();
 
-    static_assert(s1.size() == 2);
-    static_assert(!s1.contains(1));
-    static_assert(s1.contains(2));
-    static_assert(!s1.contains(3));
-    static_assert(s1.contains(4));
+    static_assert(VAL1.size() == 2);
+    static_assert(!VAL1.contains(1));
+    static_assert(VAL1.contains(2));
+    static_assert(!VAL1.contains(3));
+    static_assert(VAL1.contains(4));
 }
 
 TEST(FixedUnorderedMap, InsertExceedsCapacity)
@@ -278,7 +278,7 @@ TEST(FixedUnorderedMap, InsertExceedsCapacity)
 
 TEST(FixedUnorderedMap, InsertMultipleTimes)
 {
-    constexpr auto s1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedUnorderedMap<int, int, 10> s{};
         {
@@ -308,50 +308,50 @@ TEST(FixedUnorderedMap, InsertMultipleTimes)
         return s;
     }();
 
-    static_assert(s1.size() == 2);
-    static_assert(!s1.contains(1));
-    static_assert(s1.contains(2));
-    static_assert(!s1.contains(3));
-    static_assert(s1.contains(4));
+    static_assert(VAL1.size() == 2);
+    static_assert(!VAL1.contains(1));
+    static_assert(VAL1.contains(2));
+    static_assert(!VAL1.contains(3));
+    static_assert(VAL1.contains(4));
 }
 
 TEST(FixedUnorderedMap, InsertIterators)
 {
-    constexpr FixedUnorderedMap<int, int, 10> a{{2, 20}, {4, 40}};
+    constexpr FixedUnorderedMap<int, int, 10> ENTRY_A{{2, 20}, {4, 40}};
 
-    constexpr auto s1 = [&]()
+    constexpr auto VAL1 = [&]()
     {
         FixedUnorderedMap<int, int, 10> s{};
-        s.insert(a.begin(), a.end());
+        s.insert(ENTRY_A.begin(), ENTRY_A.end());
         return s;
     }();
 
-    static_assert(s1.size() == 2);
-    static_assert(!s1.contains(1));
-    static_assert(s1.contains(2));
-    static_assert(!s1.contains(3));
-    static_assert(s1.contains(4));
+    static_assert(VAL1.size() == 2);
+    static_assert(!VAL1.contains(1));
+    static_assert(VAL1.contains(2));
+    static_assert(!VAL1.contains(3));
+    static_assert(VAL1.contains(4));
 }
 
 TEST(FixedUnorderedMap, InsertInitializer)
 {
-    constexpr auto s1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedUnorderedMap<int, int, 10> s{};
         s.insert({{2, 20}, {4, 40}});
         return s;
     }();
 
-    static_assert(s1.size() == 2);
-    static_assert(!s1.contains(1));
-    static_assert(s1.contains(2));
-    static_assert(!s1.contains(3));
-    static_assert(s1.contains(4));
+    static_assert(VAL1.size() == 2);
+    static_assert(!VAL1.contains(1));
+    static_assert(VAL1.contains(2));
+    static_assert(!VAL1.contains(3));
+    static_assert(VAL1.contains(4));
 }
 
 TEST(FixedUnorderedMap, InsertOrAssign)
 {
-    constexpr auto s1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedUnorderedMap<int, int, 10> s{};
         {
@@ -383,11 +383,11 @@ TEST(FixedUnorderedMap, InsertOrAssign)
         return s;
     }();
 
-    static_assert(s1.size() == 2);
-    static_assert(!s1.contains(1));
-    static_assert(s1.contains(2));
-    static_assert(!s1.contains(3));
-    static_assert(s1.contains(4));
+    static_assert(VAL1.size() == 2);
+    static_assert(!VAL1.contains(1));
+    static_assert(VAL1.contains(2));
+    static_assert(!VAL1.contains(3));
+    static_assert(VAL1.contains(4));
 }
 
 TEST(FixedUnorderedMap, InsertOrAssignExceedsCapacity)
@@ -414,7 +414,7 @@ TEST(FixedUnorderedMap, InsertOrAssignExceedsCapacity)
 TEST(FixedUnorderedMap, TryEmplace)
 {
     {
-        constexpr FixedUnorderedMap<int, int, 10> s = []()
+        constexpr FixedUnorderedMap<int, int, 10> VAL = []()
         {
             FixedUnorderedMap<int, int, 10> s1{};
             s1.try_emplace(2, 20);
@@ -423,8 +423,8 @@ TEST(FixedUnorderedMap, TryEmplace)
             return s1;
         }();
 
-        static_assert(consteval_compare::equal<1, s.size()>);
-        static_assert(s.contains(2));
+        static_assert(consteval_compare::equal<1, VAL.size()>);
+        static_assert(VAL.contains(2));
     }
 
     {
@@ -506,7 +506,7 @@ TEST(FixedUnorderedMap, TryEmplaceTypeConversion)
 TEST(FixedUnorderedMap, Emplace)
 {
     {
-        constexpr FixedUnorderedMap<int, int, 10> s = []()
+        constexpr FixedUnorderedMap<int, int, 10> VAL = []()
         {
             FixedUnorderedMap<int, int, 10> s1{};
             s1.emplace(2, 20);
@@ -515,8 +515,8 @@ TEST(FixedUnorderedMap, Emplace)
             return s1;
         }();
 
-        static_assert(consteval_compare::equal<1, s.size()>);
-        static_assert(s.contains(2));
+        static_assert(consteval_compare::equal<1, VAL.size()>);
+        static_assert(VAL.contains(2));
     }
 
     {
@@ -602,19 +602,19 @@ TEST(FixedUnorderedMap, EmplaceExceedsCapacity)
 
 TEST(FixedUnorderedMap, Clear)
 {
-    constexpr auto s1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedUnorderedMap<int, int, 10> s{{2, 20}, {4, 40}};
         s.clear();
         return s;
     }();
 
-    static_assert(s1.empty());
+    static_assert(VAL1.empty());
 }
 
 TEST(FixedUnorderedMap, Erase)
 {
-    constexpr auto s1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedUnorderedMap<int, int, 10> s{{2, 20}, {4, 40}};
         auto removed_count = s.erase(2);
@@ -624,16 +624,16 @@ TEST(FixedUnorderedMap, Erase)
         return s;
     }();
 
-    static_assert(s1.size() == 1);
-    static_assert(!s1.contains(1));
-    static_assert(!s1.contains(2));
-    static_assert(!s1.contains(3));
-    static_assert(s1.contains(4));
+    static_assert(VAL1.size() == 1);
+    static_assert(!VAL1.contains(1));
+    static_assert(!VAL1.contains(2));
+    static_assert(!VAL1.contains(3));
+    static_assert(VAL1.contains(4));
 }
 
 TEST(FixedUnorderedMap, EraseIterator)
 {
-    constexpr auto s1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedUnorderedMap<int, int, 10> s{{2, 20}, {3, 30}, {4, 40}};
         {
@@ -652,11 +652,11 @@ TEST(FixedUnorderedMap, EraseIterator)
         return s;
     }();
 
-    static_assert(s1.size() == 1);
-    static_assert(!s1.contains(1));
-    static_assert(!s1.contains(2));
-    static_assert(!s1.contains(3));
-    static_assert(s1.contains(4));
+    static_assert(VAL1.size() == 1);
+    static_assert(!VAL1.contains(1));
+    static_assert(!VAL1.contains(2));
+    static_assert(!VAL1.contains(3));
+    static_assert(VAL1.contains(4));
 }
 
 TEST(FixedUnorderedMap, EraseIteratorAmbiguity)
@@ -680,7 +680,7 @@ TEST(FixedUnorderedMap, EraseIteratorInvalidIterator)
 TEST(FixedUnorderedMap, EraseRange)
 {
     {
-        constexpr auto s1 = []()
+        constexpr auto VAL1 = []()
         {
             FixedUnorderedMap<int, int, 10> s{{2, 20}, {3, 30}, {4, 40}};
             auto from = s.begin();
@@ -693,14 +693,14 @@ TEST(FixedUnorderedMap, EraseRange)
             return s;
         }();
 
-        static_assert(consteval_compare::equal<2, s1.size()>);
-        static_assert(!s1.contains(1));
-        static_assert(s1.contains(2));
-        static_assert(!s1.contains(3));
-        static_assert(s1.contains(4));
+        static_assert(consteval_compare::equal<2, VAL1.size()>);
+        static_assert(!VAL1.contains(1));
+        static_assert(VAL1.contains(2));
+        static_assert(!VAL1.contains(3));
+        static_assert(VAL1.contains(4));
     }
     {
-        constexpr auto s1 = []()
+        constexpr auto VAL1 = []()
         {
             FixedUnorderedMap<int, int, 10> s{{2, 20}, {4, 40}};
             auto from = s.begin();
@@ -711,14 +711,14 @@ TEST(FixedUnorderedMap, EraseRange)
             return s;
         }();
 
-        static_assert(consteval_compare::equal<2, s1.size()>);
-        static_assert(!s1.contains(1));
-        static_assert(s1.contains(2));
-        static_assert(!s1.contains(3));
-        static_assert(s1.contains(4));
+        static_assert(consteval_compare::equal<2, VAL1.size()>);
+        static_assert(!VAL1.contains(1));
+        static_assert(VAL1.contains(2));
+        static_assert(!VAL1.contains(3));
+        static_assert(VAL1.contains(4));
     }
     {
-        constexpr auto s1 = []()
+        constexpr auto VAL1 = []()
         {
             FixedUnorderedMap<int, int, 10> s{{1, 10}, {4, 40}};
             auto from = s.begin();
@@ -728,17 +728,17 @@ TEST(FixedUnorderedMap, EraseRange)
             return s;
         }();
 
-        static_assert(consteval_compare::equal<0, s1.size()>);
-        static_assert(!s1.contains(1));
-        static_assert(!s1.contains(2));
-        static_assert(!s1.contains(3));
-        static_assert(!s1.contains(4));
+        static_assert(consteval_compare::equal<0, VAL1.size()>);
+        static_assert(!VAL1.contains(1));
+        static_assert(!VAL1.contains(2));
+        static_assert(!VAL1.contains(3));
+        static_assert(!VAL1.contains(4));
     }
 }
 
 TEST(FixedUnorderedMap, EraseIf)
 {
-    constexpr auto s1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedUnorderedMap<int, int, 10> s{{2, 20}, {3, 30}, {4, 40}};
         const std::size_t removed_count =
@@ -752,18 +752,18 @@ TEST(FixedUnorderedMap, EraseIf)
         return s;
     }();
 
-    static_assert(consteval_compare::equal<1, s1.size()>);
-    static_assert(!s1.contains(1));
-    static_assert(!s1.contains(2));
-    static_assert(s1.contains(3));
-    static_assert(!s1.contains(4));
+    static_assert(consteval_compare::equal<1, VAL1.size()>);
+    static_assert(!VAL1.contains(1));
+    static_assert(!VAL1.contains(2));
+    static_assert(VAL1.contains(3));
+    static_assert(!VAL1.contains(4));
 
-    static_assert(s1.at(3) == 30);
+    static_assert(VAL1.at(3) == 30);
 }
 
 TEST(FixedUnorderedMap, IteratorStructuredBinding)
 {
-    constexpr auto s1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedUnorderedMap<int, int, 10> s{};
         s.insert({3, 30});
@@ -772,7 +772,7 @@ TEST(FixedUnorderedMap, IteratorStructuredBinding)
         return s;
     }();
 
-    for (auto&& [key, value] : s1)
+    for (auto&& [key, value] : VAL1)
     {
         static_assert(std::is_same_v<decltype(key), const int&>);
         static_assert(std::is_same_v<decltype(value), const int&>);
@@ -781,23 +781,23 @@ TEST(FixedUnorderedMap, IteratorStructuredBinding)
 
 TEST(FixedUnorderedMap, IteratorBasic)
 {
-    constexpr FixedUnorderedMap<int, int, 10> s1{{1, 10}, {2, 20}, {3, 30}, {4, 40}};
+    constexpr FixedUnorderedMap<int, int, 10> VAL1{{1, 10}, {2, 20}, {3, 30}, {4, 40}};
 
-    static_assert(std::distance(s1.cbegin(), s1.cend()) == 4);
+    static_assert(std::distance(VAL1.cbegin(), VAL1.cend()) == 4);
 
-    static_assert(s1.begin()->first == 1);
-    static_assert(s1.begin()->second == 10);
-    static_assert(std::next(s1.begin(), 1)->first == 2);
-    static_assert(std::next(s1.begin(), 1)->second == 20);
-    static_assert(std::next(s1.begin(), 2)->first == 3);
-    static_assert(std::next(s1.begin(), 2)->second == 30);
-    static_assert(std::next(s1.begin(), 3)->first == 4);
-    static_assert(std::next(s1.begin(), 3)->second == 40);
+    static_assert(VAL1.begin()->first == 1);
+    static_assert(VAL1.begin()->second == 10);
+    static_assert(std::next(VAL1.begin(), 1)->first == 2);
+    static_assert(std::next(VAL1.begin(), 1)->second == 20);
+    static_assert(std::next(VAL1.begin(), 2)->first == 3);
+    static_assert(std::next(VAL1.begin(), 2)->second == 30);
+    static_assert(std::next(VAL1.begin(), 3)->first == 4);
+    static_assert(std::next(VAL1.begin(), 3)->second == 40);
 }
 
 TEST(FixedUnorderedMap, IteratorTypes)
 {
-    constexpr auto s1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedUnorderedMap<int, int, 10> s{{2, 20}, {4, 40}};
 
@@ -851,22 +851,22 @@ TEST(FixedUnorderedMap, IteratorTypes)
         return s;
     }();
 
-    const auto lvalue_it = s1.begin();
+    const auto lvalue_it = VAL1.begin();
     static_assert(std::is_same_v<decltype(*lvalue_it), std::pair<const int&, const int&>>);
-    static_assert(std::is_same_v<decltype(*s1.begin()), std::pair<const int&, const int&>>);
+    static_assert(std::is_same_v<decltype(*VAL1.begin()), std::pair<const int&, const int&>>);
 
     FixedUnorderedMap<int, int, 10> s_non_const{};
     auto lvalue_it_of_non_const = s_non_const.begin();
     static_assert(std::is_same_v<decltype(*lvalue_it_of_non_const), std::pair<const int&, int&>>);
     static_assert(std::is_same_v<decltype(*s_non_const.begin()), std::pair<const int&, int&>>);
 
-    for (const auto& key_and_value : s1)
+    for (const auto& key_and_value : VAL1)
     {
         static_assert(
             std::is_same_v<decltype(key_and_value), const std::pair<const int&, const int&>&>);
     }
 
-    for (auto&& [key, value] : s1)
+    for (auto&& [key, value] : VAL1)
     {
         static_assert(std::is_same_v<decltype(key), const int&>);
         static_assert(std::is_same_v<decltype(value), const int&>);
@@ -916,7 +916,7 @@ TEST(FixedUnorderedMap, IteratorTypes)
 
 TEST(FixedUnorderedMap, IteratorMutableValue)
 {
-    constexpr auto s1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedUnorderedMap<int, int, 10> s{{2, 20}, {4, 40}};
 
@@ -928,32 +928,32 @@ TEST(FixedUnorderedMap, IteratorMutableValue)
         return s;
     }();
 
-    static_assert(std::distance(s1.cbegin(), s1.cend()) == 2);
+    static_assert(std::distance(VAL1.cbegin(), VAL1.cend()) == 2);
 
-    static_assert(s1.begin()->first == 2);
-    static_assert(s1.begin()->second == 40);
-    static_assert(std::next(s1.begin(), 1)->first == 4);
-    static_assert(std::next(s1.begin(), 1)->second == 80);
+    static_assert(VAL1.begin()->first == 2);
+    static_assert(VAL1.begin()->second == 40);
+    static_assert(std::next(VAL1.begin(), 1)->first == 4);
+    static_assert(std::next(VAL1.begin(), 1)->second == 80);
 }
 
 TEST(FixedUnorderedMap, IteratorComparisonOperator)
 {
-    constexpr FixedUnorderedMap<int, int, 10> s1{{{1, 10}, {4, 40}}};
+    constexpr FixedUnorderedMap<int, int, 10> VAL1{{{1, 10}, {4, 40}}};
 
     // All combinations of [==, !=]x[const, non-const]
-    static_assert(s1.cbegin() == s1.cbegin());
-    static_assert(s1.cbegin() == s1.begin());
-    static_assert(s1.begin() == s1.begin());
-    static_assert(s1.cbegin() != s1.cend());
-    static_assert(s1.cbegin() != s1.end());
-    static_assert(s1.begin() != s1.cend());
+    static_assert(VAL1.cbegin() == VAL1.cbegin());
+    static_assert(VAL1.cbegin() == VAL1.begin());
+    static_assert(VAL1.begin() == VAL1.begin());
+    static_assert(VAL1.cbegin() != VAL1.cend());
+    static_assert(VAL1.cbegin() != VAL1.end());
+    static_assert(VAL1.begin() != VAL1.cend());
 
-    static_assert(std::next(s1.begin(), 2) == s1.end());
+    static_assert(std::next(VAL1.begin(), 2) == VAL1.end());
 }
 
 TEST(FixedUnorderedMap, IteratorAssignment)
 {
-    constexpr auto s1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedUnorderedMap<int, int, 10> s{{2, 20}, {4, 40}};
 
@@ -1005,24 +1005,24 @@ TEST(FixedUnorderedMap, IteratorAssignment)
         return s;
     }();
 
-    static_assert(s1.size() == 2);
+    static_assert(VAL1.size() == 2);
 }
 
 TEST(FixedUnorderedMap, IteratorOffByOneIssues)
 {
-    constexpr FixedUnorderedMap<int, int, 10> s1{{{1, 10}, {4, 40}}};
+    constexpr FixedUnorderedMap<int, int, 10> VAL1{{{1, 10}, {4, 40}}};
 
-    static_assert(std::distance(s1.cbegin(), s1.cend()) == 2);
+    static_assert(std::distance(VAL1.cbegin(), VAL1.cend()) == 2);
 
-    static_assert(s1.begin()->first == 1);
-    static_assert(s1.begin()->second == 10);
-    static_assert(std::next(s1.begin(), 1)->first == 4);
-    static_assert(std::next(s1.begin(), 1)->second == 40);
+    static_assert(VAL1.begin()->first == 1);
+    static_assert(VAL1.begin()->second == 10);
+    static_assert(std::next(VAL1.begin(), 1)->first == 4);
+    static_assert(std::next(VAL1.begin(), 1)->second == 40);
 }
 
 TEST(FixedUnorderedMap, IteratorEnsureOrder)
 {
-    constexpr auto s1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedUnorderedMap<int, int, 10> s{};
         s.insert({1, 10});
@@ -1031,14 +1031,14 @@ TEST(FixedUnorderedMap, IteratorEnsureOrder)
         return s;
     }();
 
-    static_assert(std::distance(s1.cbegin(), s1.cend()) == 3);
+    static_assert(std::distance(VAL1.cbegin(), VAL1.cend()) == 3);
 
-    static_assert(s1.begin()->first == 1);
-    static_assert(s1.begin()->second == 10);
-    static_assert(std::next(s1.begin(), 1)->first == 3);
-    static_assert(std::next(s1.begin(), 1)->second == 30);
-    static_assert(std::next(s1.begin(), 2)->first == 4);
-    static_assert(std::next(s1.begin(), 2)->second == 40);
+    static_assert(VAL1.begin()->first == 1);
+    static_assert(VAL1.begin()->second == 10);
+    static_assert(std::next(VAL1.begin(), 1)->first == 3);
+    static_assert(std::next(VAL1.begin(), 1)->second == 30);
+    static_assert(std::next(VAL1.begin(), 2)->first == 4);
+    static_assert(std::next(VAL1.begin(), 2)->second == 40);
 }
 
 TEST(FixedUnorderedMap, DereferencedIteratorAssignability)
@@ -1068,9 +1068,9 @@ static constexpr FixedUnorderedMap<int, int, 7> LIVENESS_TEST_INSTANCE{{1, 100}}
 TEST(FixedUnorderedMap, IteratorDereferenceLiveness)
 {
     {
-        constexpr auto ref = []() { return *LIVENESS_TEST_INSTANCE.begin(); }();
-        static_assert(ref.first == 1);
-        static_assert(ref.second == 100);
+        constexpr auto REF = []() { return *LIVENESS_TEST_INSTANCE.begin(); }();
+        static_assert(REF.first == 1);
+        static_assert(REF.second == 100);
     }
 
     {
@@ -1155,16 +1155,16 @@ TEST(FixedUnorderedMap, IteratorInvalidation)
 
 TEST(FixedUnorderedMap, Find)
 {
-    constexpr FixedUnorderedMap<int, int, 10> s1{{2, 20}, {4, 40}};
-    static_assert(s1.size() == 2);
+    constexpr FixedUnorderedMap<int, int, 10> VAL1{{2, 20}, {4, 40}};
+    static_assert(VAL1.size() == 2);
 
-    static_assert(s1.find(1) == s1.cend());
-    static_assert(s1.find(2) != s1.cend());
-    static_assert(s1.find(3) == s1.cend());
-    static_assert(s1.find(4) != s1.cend());
+    static_assert(VAL1.find(1) == VAL1.cend());
+    static_assert(VAL1.find(2) != VAL1.cend());
+    static_assert(VAL1.find(3) == VAL1.cend());
+    static_assert(VAL1.find(4) != VAL1.cend());
 
-    static_assert(s1.at(2) == 20);
-    static_assert(s1.at(4) == 40);
+    static_assert(VAL1.at(2) == 20);
+    static_assert(VAL1.at(4) == 40);
 }
 
 // TEST(FixedUnorderedMap, Find_TransparentComparator)
@@ -1176,7 +1176,7 @@ TEST(FixedUnorderedMap, Find)
 
 TEST(FixedUnorderedMap, MutableFind)
 {
-    constexpr auto s1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedUnorderedMap<int, int, 10> s{{2, 20}, {4, 40}};
         auto it = s.find(2);
@@ -1186,22 +1186,22 @@ TEST(FixedUnorderedMap, MutableFind)
         return s;
     }();
 
-    static_assert(s1.at(2) == 25);
-    static_assert(s1.at(4) == 45);
+    static_assert(VAL1.at(2) == 25);
+    static_assert(VAL1.at(4) == 45);
 }
 
 TEST(FixedUnorderedMap, Contains)
 {
-    constexpr FixedUnorderedMap<int, int, 10> s1{{2, 20}, {4, 40}};
-    static_assert(s1.size() == 2);
+    constexpr FixedUnorderedMap<int, int, 10> VAL1{{2, 20}, {4, 40}};
+    static_assert(VAL1.size() == 2);
 
-    static_assert(!s1.contains(1));
-    static_assert(s1.contains(2));
-    static_assert(!s1.contains(3));
-    static_assert(s1.contains(4));
+    static_assert(!VAL1.contains(1));
+    static_assert(VAL1.contains(2));
+    static_assert(!VAL1.contains(3));
+    static_assert(VAL1.contains(4));
 
-    static_assert(s1.at(2) == 20);
-    static_assert(s1.at(4) == 40);
+    static_assert(VAL1.at(2) == 20);
+    static_assert(VAL1.at(4) == 40);
 }
 
 // TEST(FixedUnorderedMap, Contains_TransparentComparator)
@@ -1214,16 +1214,16 @@ TEST(FixedUnorderedMap, Contains)
 
 TEST(FixedUnorderedMap, Count)
 {
-    constexpr FixedUnorderedMap<int, int, 10> s1{{2, 20}, {4, 40}};
-    static_assert(s1.size() == 2);
+    constexpr FixedUnorderedMap<int, int, 10> VAL1{{2, 20}, {4, 40}};
+    static_assert(VAL1.size() == 2);
 
-    static_assert(s1.count(1) == 0);
-    static_assert(s1.count(2) == 1);
-    static_assert(s1.count(3) == 0);
-    static_assert(s1.count(4) == 1);
+    static_assert(VAL1.count(1) == 0);
+    static_assert(VAL1.count(2) == 1);
+    static_assert(VAL1.count(3) == 0);
+    static_assert(VAL1.count(4) == 1);
 
-    static_assert(s1.at(2) == 20);
-    static_assert(s1.at(4) == 40);
+    static_assert(VAL1.at(2) == 20);
+    static_assert(VAL1.at(4) == 40);
 }
 
 // TEST(FixedUnorderedMap, Count_TransparentComparator)
@@ -1237,29 +1237,29 @@ TEST(FixedUnorderedMap, Count)
 TEST(FixedUnorderedMap, Equality)
 {
     {
-        constexpr FixedUnorderedMap<int, int, 10> s1{{1, 10}, {4, 40}};
-        constexpr FixedUnorderedMap<int, int, 11> s2{{4, 40}, {1, 10}};
-        constexpr FixedUnorderedMap<int, int, 10> s3{{1, 10}, {3, 30}};
-        constexpr FixedUnorderedMap<int, int, 10> s4{{1, 10}};
+        constexpr FixedUnorderedMap<int, int, 10> VAL1{{1, 10}, {4, 40}};
+        constexpr FixedUnorderedMap<int, int, 11> VAL2{{4, 40}, {1, 10}};
+        constexpr FixedUnorderedMap<int, int, 10> VAL3{{1, 10}, {3, 30}};
+        constexpr FixedUnorderedMap<int, int, 10> VAL4{{1, 10}};
 
-        static_assert(s1 == s2);
-        static_assert(s2 == s1);
+        static_assert(VAL1 == VAL2);
+        static_assert(VAL2 == VAL1);
 
-        static_assert(s1 != s3);
-        static_assert(s3 != s1);
+        static_assert(VAL1 != VAL3);
+        static_assert(VAL3 != VAL1);
 
-        static_assert(s1 != s4);
-        static_assert(s4 != s1);
+        static_assert(VAL1 != VAL4);
+        static_assert(VAL4 != VAL1);
     }
 
     // Values
     {
-        constexpr FixedUnorderedMap<int, int, 10> s1{{1, 10}, {4, 40}};
-        constexpr FixedUnorderedMap<int, int, 10> s2{{1, 10}, {4, 44}};
-        constexpr FixedUnorderedMap<int, int, 10> s3{{1, 40}, {4, 10}};
+        constexpr FixedUnorderedMap<int, int, 10> VAL1{{1, 10}, {4, 40}};
+        constexpr FixedUnorderedMap<int, int, 10> VAL2{{1, 10}, {4, 44}};
+        constexpr FixedUnorderedMap<int, int, 10> VAL3{{1, 40}, {4, 10}};
 
-        static_assert(s1 != s2);
-        static_assert(s1 != s3);
+        static_assert(VAL1 != VAL2);
+        static_assert(VAL1 != VAL3);
     }
 }
 
@@ -1293,8 +1293,8 @@ TEST(FixedUnorderedMap, OverloadedAddressOfOperator)
 
     {
         constexpr FixedUnorderedMap<MockFailingAddressOfOperator, MockFailingAddressOfOperator, 15>
-            v{{2, {}}};
-        static_assert(!v.empty());
+            VAL{{2, {}}};
+        static_assert(!VAL.empty());
     }
 
     {
@@ -1313,13 +1313,13 @@ TEST(FixedUnorderedMap, OverloadedAddressOfOperator)
 
     {
         constexpr FixedUnorderedMap<MockFailingAddressOfOperator, MockFailingAddressOfOperator, 15>
-            v{
+            VAL{
                 {2, {}},
                 {3, {}},
                 {4, {}},
             };
-        static_assert(!v.empty());
-        auto it = v.cbegin();
+        static_assert(!VAL.empty());
+        auto it = VAL.cbegin();
         it->second.do_nothing();
         (void)it++;
         ++it;
@@ -1337,8 +1337,8 @@ TEST(FixedUnorderedMap, ClassTemplateArgumentDeduction)
 TEST(FixedUnorderedMap, NonDefaultConstructible)
 {
     {
-        constexpr FixedUnorderedMap<int, MockNonDefaultConstructible, 10> s1{};
-        static_assert(s1.empty());
+        constexpr FixedUnorderedMap<int, MockNonDefaultConstructible, 10> VAL1{};
+        static_assert(VAL1.empty());
     }
     {
         FixedUnorderedMap<int, MockNonDefaultConstructible, 10> s2{};
@@ -1411,7 +1411,7 @@ TEST(FixedUnorderedMap, ConstRef)
     }
 
     {
-        constexpr FixedUnorderedMap<double, const int&, 10> s1 = []()
+        constexpr FixedUnorderedMap<double, const int&, 10> VAL1 = []()
         {
             FixedUnorderedMap<double, const int&, 10> s{{1.0, INT_VALUE_10}};
             s.insert({2, INT_VALUE_20});
@@ -1425,12 +1425,12 @@ TEST(FixedUnorderedMap, ConstRef)
             return s;
         }();
 
-        static_assert(s1.contains(1));
-        static_assert(s1.contains(2));
-        static_assert(!s1.contains(3));
-        static_assert(!s1.contains(4));
+        static_assert(VAL1.contains(1));
+        static_assert(VAL1.contains(2));
+        static_assert(!VAL1.contains(3));
+        static_assert(!VAL1.contains(4));
 
-        static_assert(s1.at(1) == INT_VALUE_10);
+        static_assert(VAL1.at(1) == INT_VALUE_10);
     }
 
     static_assert(NotTriviallyCopyable<const int&>);

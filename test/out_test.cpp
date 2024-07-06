@@ -28,7 +28,7 @@ constexpr void set_struct(out<SomeStruct> s)
 TEST(Out, Usage1)
 {
     {
-        constexpr int result = []()
+        constexpr int RESULT = []()
         {
             const int input = 1;
             int output = 0;
@@ -36,7 +36,7 @@ TEST(Out, Usage1)
             return output;
         }();
 
-        static_assert(1 == result);
+        static_assert(1 == RESULT);
     }
 
     {
@@ -50,15 +50,15 @@ TEST(Out, Usage1)
 TEST(Out, Usage2)
 {
     {
-        constexpr SomeStruct result = []()
+        constexpr SomeStruct RESULT = []()
         {
             SomeStruct s{0, 0};
             set_struct(out{s});
             return s;
         }();
 
-        static_assert(1 == result.a);
-        static_assert(2 == result.b);
+        static_assert(1 == RESULT.a);
+        static_assert(2 == RESULT.b);
     }
 
     {

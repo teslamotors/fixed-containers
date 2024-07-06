@@ -39,7 +39,7 @@ namespace fixed_containers
  * @tparam T type of the reference
  */
 template <typename T>
-class out
+class out  // NOLINT(readability-identifier-naming)
 {
 public:
     constexpr explicit out(T& t) noexcept

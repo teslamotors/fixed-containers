@@ -41,9 +41,9 @@ private:
         TableIteratedIndex current_index_;
 
         constexpr PairProvider(ConstOrMutableTable* const table,
-                               const TableIteratedIndex& value_table_index_)
+                               const TableIteratedIndex& value_table_index)
           : table_(table)
-          , current_index_(value_table_index_)
+          , current_index_(value_table_index)
         {
         }
 

@@ -56,27 +56,27 @@ static_assert(std::is_same_v<typename std::iterator_traits<ES_1::const_iterator>
 
 TEST(FixedUnorderedSet, DefaultConstructor)
 {
-    constexpr FixedUnorderedSet<int, 10> s1{};
-    static_assert(s1.empty());
+    constexpr FixedUnorderedSet<int, 10> VAL1{};
+    static_assert(VAL1.empty());
 }
 
 TEST(FixedUnorderedSet, IteratorConstructor)
 {
     constexpr std::array INPUT{2, 4};
-    constexpr FixedUnorderedSet<int, 10> s2{INPUT.begin(), INPUT.end()};
+    constexpr FixedUnorderedSet<int, 10> VAL2{INPUT.begin(), INPUT.end()};
 
-    static_assert(s2.size() == 2);
-    static_assert(s2.contains(2));
-    static_assert(s2.contains(4));
+    static_assert(VAL2.size() == 2);
+    static_assert(VAL2.contains(2));
+    static_assert(VAL2.contains(4));
 }
 
 TEST(FixedUnorderedSet, Initializer)
 {
-    constexpr FixedUnorderedSet<int, 10> s1{2, 4};
-    static_assert(s1.size() == 2);
+    constexpr FixedUnorderedSet<int, 10> VAL1{2, 4};
+    static_assert(VAL1.size() == 2);
 
-    constexpr FixedUnorderedSet<int, 10> s2{3};
-    static_assert(s2.size() == 1);
+    constexpr FixedUnorderedSet<int, 10> VAL2{3};
+    static_assert(VAL2.size() == 1);
 }
 
 // TEST(FixedUnorderedSet, Find_TransparentComparator)
@@ -88,13 +88,13 @@ TEST(FixedUnorderedSet, Initializer)
 
 TEST(FixedUnorderedSet, Contains)
 {
-    constexpr FixedUnorderedSet<int, 10> s1{2, 4};
-    static_assert(s1.size() == 2);
+    constexpr FixedUnorderedSet<int, 10> VAL1{2, 4};
+    static_assert(VAL1.size() == 2);
 
-    static_assert(!s1.contains(1));
-    static_assert(s1.contains(2));
-    static_assert(!s1.contains(3));
-    static_assert(s1.contains(4));
+    static_assert(!VAL1.contains(1));
+    static_assert(VAL1.contains(2));
+    static_assert(!VAL1.contains(3));
+    static_assert(VAL1.contains(4));
 }
 
 // TEST(FixedUnorderedSet, Contains_TransparentComparator)
@@ -115,11 +115,11 @@ TEST(FixedUnorderedSet, Contains)
 
 TEST(FixedUnorderedSet, MaxSize)
 {
-    constexpr FixedUnorderedSet<int, 10> s1{2, 4};
-    static_assert(s1.max_size() == 10);
+    constexpr FixedUnorderedSet<int, 10> VAL1{2, 4};
+    static_assert(VAL1.max_size() == 10);
 
-    constexpr FixedUnorderedSet<int, 4> s2{};
-    static_assert(s2.max_size() == 4);
+    constexpr FixedUnorderedSet<int, 4> VAL2{};
+    static_assert(VAL2.max_size() == 4);
 
     static_assert(FixedUnorderedSet<int, 4>::static_max_size() == 4);
     EXPECT_EQ(4, (FixedUnorderedSet<int, 4>::static_max_size()));
@@ -129,43 +129,43 @@ TEST(FixedUnorderedSet, MaxSize)
 
 TEST(FixedUnorderedSet, EmptySizeFull)
 {
-    constexpr FixedUnorderedSet<int, 10> s1{2, 4};
-    static_assert(s1.size() == 2);
-    static_assert(!s1.empty());
+    constexpr FixedUnorderedSet<int, 10> VAL1{2, 4};
+    static_assert(VAL1.size() == 2);
+    static_assert(!VAL1.empty());
 
-    constexpr FixedUnorderedSet<int, 10> s2{};
-    static_assert(s2.size() == 0);  // NOLINT(readability-container-size-empty)
-    static_assert(s2.empty());
+    constexpr FixedUnorderedSet<int, 10> VAL2{};
+    static_assert(VAL2.size() == 0);  // NOLINT(readability-container-size-empty)
+    static_assert(VAL2.empty());
 
-    constexpr FixedUnorderedSet<int, 2> s3{2, 4};
-    static_assert(s3.size() == 2);
-    static_assert(is_full(s3));
+    constexpr FixedUnorderedSet<int, 2> VAL3{2, 4};
+    static_assert(VAL3.size() == 2);
+    static_assert(is_full(VAL3));
 
-    constexpr FixedUnorderedSet<int, 5> s4{2, 4};
-    static_assert(s4.size() == 2);
-    static_assert(!is_full(s4));
+    constexpr FixedUnorderedSet<int, 5> VAL4{2, 4};
+    static_assert(VAL4.size() == 2);
+    static_assert(!is_full(VAL4));
 }
 
 TEST(FixedUnorderedSet, MaxSizeDeduction)
 {
     {
-        constexpr auto s1 = make_fixed_unordered_set({30, 31});
-        static_assert(s1.size() == 2);
-        static_assert(s1.max_size() == 2);
-        static_assert(s1.contains(30));
-        static_assert(s1.contains(31));
-        static_assert(!s1.contains(32));
+        constexpr auto VAL1 = make_fixed_unordered_set({30, 31});
+        static_assert(VAL1.size() == 2);
+        static_assert(VAL1.max_size() == 2);
+        static_assert(VAL1.contains(30));
+        static_assert(VAL1.contains(31));
+        static_assert(!VAL1.contains(32));
     }
     {
-        constexpr auto s1 = make_fixed_unordered_set<int>({});
-        static_assert(s1.empty());
-        static_assert(s1.max_size() == 0);
+        constexpr auto VAL1 = make_fixed_unordered_set<int>({});
+        static_assert(VAL1.empty());
+        static_assert(VAL1.max_size() == 0);
     }
 }
 
 TEST(FixedUnorderedSet, Insert)
 {
-    constexpr auto s1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedUnorderedSet<int, 10> s{};
         s.insert(2);
@@ -173,11 +173,11 @@ TEST(FixedUnorderedSet, Insert)
         return s;
     }();
 
-    static_assert(s1.size() == 2);
-    static_assert(!s1.contains(1));
-    static_assert(s1.contains(2));
-    static_assert(!s1.contains(3));
-    static_assert(s1.contains(4));
+    static_assert(VAL1.size() == 2);
+    static_assert(!VAL1.contains(1));
+    static_assert(VAL1.contains(2));
+    static_assert(!VAL1.contains(3));
+    static_assert(VAL1.contains(4));
 }
 
 TEST(FixedUnorderedSet, InsertExceedsCapacity)
@@ -203,7 +203,7 @@ TEST(FixedUnorderedSet, InsertExceedsCapacity)
 
 TEST(FixedUnorderedSet, InsertMultipleTimes)
 {
-    constexpr auto s1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedUnorderedSet<int, 10> s{};
         {
@@ -229,32 +229,32 @@ TEST(FixedUnorderedSet, InsertMultipleTimes)
         return s;
     }();
 
-    static_assert(s1.size() == 2);
-    static_assert(!s1.contains(1));
-    static_assert(s1.contains(2));
-    static_assert(!s1.contains(3));
-    static_assert(s1.contains(4));
+    static_assert(VAL1.size() == 2);
+    static_assert(!VAL1.contains(1));
+    static_assert(VAL1.contains(2));
+    static_assert(!VAL1.contains(3));
+    static_assert(VAL1.contains(4));
 }
 
 TEST(FixedUnorderedSet, InsertInitializer)
 {
-    constexpr auto s1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedUnorderedSet<int, 10> s{};
         s.insert({2, 4});
         return s;
     }();
 
-    static_assert(s1.size() == 2);
-    static_assert(!s1.contains(1));
-    static_assert(s1.contains(2));
-    static_assert(!s1.contains(3));
-    static_assert(s1.contains(4));
+    static_assert(VAL1.size() == 2);
+    static_assert(!VAL1.contains(1));
+    static_assert(VAL1.contains(2));
+    static_assert(!VAL1.contains(3));
+    static_assert(VAL1.contains(4));
 }
 
 TEST(FixedUnorderedSet, InsertIterators)
 {
-    constexpr auto s1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedUnorderedSet<int, 10> s{};
         std::array<int, 2> a{2, 4};
@@ -262,13 +262,13 @@ TEST(FixedUnorderedSet, InsertIterators)
         return s;
     }();
 
-    static_assert(s1.size() == 2);
-    static_assert(!s1.contains(1));
-    static_assert(s1.contains(2));
-    static_assert(!s1.contains(3));
-    static_assert(s1.contains(4));
+    static_assert(VAL1.size() == 2);
+    static_assert(!VAL1.contains(1));
+    static_assert(VAL1.contains(2));
+    static_assert(!VAL1.contains(3));
+    static_assert(VAL1.contains(4));
 
-    static_assert(std::is_same_v<decltype(*s1.begin()), const int&>);
+    static_assert(std::is_same_v<decltype(*VAL1.begin()), const int&>);
 
     const FixedUnorderedSet<int, 10> s_non_const{};
     static_assert(std::is_same_v<decltype(*s_non_const.begin()), const int&>);
@@ -277,7 +277,7 @@ TEST(FixedUnorderedSet, InsertIterators)
 TEST(FixedUnorderedSet, Emplace)
 {
     {
-        constexpr FixedUnorderedSet<int, 10> s = []()
+        constexpr FixedUnorderedSet<int, 10> VAL = []()
         {
             FixedUnorderedSet<int, 10> s1{};
             s1.emplace(2);
@@ -286,8 +286,8 @@ TEST(FixedUnorderedSet, Emplace)
             return s1;
         }();
 
-        static_assert(consteval_compare::equal<1, s.size()>);
-        static_assert(s.contains(2));
+        static_assert(consteval_compare::equal<1, VAL.size()>);
+        static_assert(VAL.contains(2));
     }
 
     {
@@ -343,19 +343,19 @@ TEST(FixedUnorderedSet, EmplaceExceedsCapacity)
 
 TEST(FixedUnorderedSet, Clear)
 {
-    constexpr auto s1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedUnorderedSet<int, 10> s{2, 4};
         s.clear();
         return s;
     }();
 
-    static_assert(s1.empty());
+    static_assert(VAL1.empty());
 }
 
 TEST(FixedUnorderedSet, Erase)
 {
-    constexpr auto s1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedUnorderedSet<int, 10> s{2, 4};
         auto removed_count = s.erase(2);
@@ -365,16 +365,16 @@ TEST(FixedUnorderedSet, Erase)
         return s;
     }();
 
-    static_assert(s1.size() == 1);
-    static_assert(!s1.contains(1));
-    static_assert(!s1.contains(2));
-    static_assert(!s1.contains(3));
-    static_assert(s1.contains(4));
+    static_assert(VAL1.size() == 1);
+    static_assert(!VAL1.contains(1));
+    static_assert(!VAL1.contains(2));
+    static_assert(!VAL1.contains(3));
+    static_assert(VAL1.contains(4));
 }
 
 TEST(FixedUnorderedSet, EraseIterator)
 {
-    constexpr auto s1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedUnorderedSet<int, 10> s{2, 3, 4};
         {
@@ -391,11 +391,11 @@ TEST(FixedUnorderedSet, EraseIterator)
         return s;
     }();
 
-    static_assert(s1.size() == 1);
-    static_assert(!s1.contains(1));
-    static_assert(!s1.contains(2));
-    static_assert(!s1.contains(3));
-    static_assert(s1.contains(4));
+    static_assert(VAL1.size() == 1);
+    static_assert(!VAL1.contains(1));
+    static_assert(!VAL1.contains(2));
+    static_assert(!VAL1.contains(3));
+    static_assert(VAL1.contains(4));
 }
 
 TEST(FixedUnorderedSet, EraseIteratorAmbiguity)
@@ -419,7 +419,7 @@ TEST(FixedUnorderedSet, EraseIteratorInvalidIterator)
 TEST(FixedUnorderedSet, EraseRange)
 {
     {
-        constexpr auto s1 = []()
+        constexpr auto VAL1 = []()
         {
             FixedUnorderedSet<int, 10> s{2, 3, 4};
             auto from = s.begin();
@@ -431,14 +431,14 @@ TEST(FixedUnorderedSet, EraseRange)
             return s;
         }();
 
-        static_assert(consteval_compare::equal<2, s1.size()>);
-        static_assert(!s1.contains(1));
-        static_assert(s1.contains(2));
-        static_assert(!s1.contains(3));
-        static_assert(s1.contains(4));
+        static_assert(consteval_compare::equal<2, VAL1.size()>);
+        static_assert(!VAL1.contains(1));
+        static_assert(VAL1.contains(2));
+        static_assert(!VAL1.contains(3));
+        static_assert(VAL1.contains(4));
     }
     {
-        constexpr auto s1 = []()
+        constexpr auto VAL1 = []()
         {
             FixedUnorderedSet<int, 10> s{2, 4};
             auto from = s.begin();
@@ -448,14 +448,14 @@ TEST(FixedUnorderedSet, EraseRange)
             return s;
         }();
 
-        static_assert(consteval_compare::equal<2, s1.size()>);
-        static_assert(!s1.contains(1));
-        static_assert(s1.contains(2));
-        static_assert(!s1.contains(3));
-        static_assert(s1.contains(4));
+        static_assert(consteval_compare::equal<2, VAL1.size()>);
+        static_assert(!VAL1.contains(1));
+        static_assert(VAL1.contains(2));
+        static_assert(!VAL1.contains(3));
+        static_assert(VAL1.contains(4));
     }
     {
-        constexpr auto s1 = []()
+        constexpr auto VAL1 = []()
         {
             FixedUnorderedSet<int, 10> s{1, 4};
             auto from = s.begin();
@@ -465,17 +465,17 @@ TEST(FixedUnorderedSet, EraseRange)
             return s;
         }();
 
-        static_assert(consteval_compare::equal<0, s1.size()>);
-        static_assert(!s1.contains(1));
-        static_assert(!s1.contains(2));
-        static_assert(!s1.contains(3));
-        static_assert(!s1.contains(4));
+        static_assert(consteval_compare::equal<0, VAL1.size()>);
+        static_assert(!VAL1.contains(1));
+        static_assert(!VAL1.contains(2));
+        static_assert(!VAL1.contains(3));
+        static_assert(!VAL1.contains(4));
     }
 }
 
 TEST(FixedUnorderedSet, EraseIf)
 {
-    constexpr auto s1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedUnorderedSet<int, 10> s{2, 3, 4};
         const std::size_t removed_count =
@@ -484,38 +484,38 @@ TEST(FixedUnorderedSet, EraseIf)
         return s;
     }();
 
-    static_assert(consteval_compare::equal<1, s1.size()>);
-    static_assert(!s1.contains(1));
-    static_assert(!s1.contains(2));
-    static_assert(s1.contains(3));
-    static_assert(!s1.contains(4));
+    static_assert(consteval_compare::equal<1, VAL1.size()>);
+    static_assert(!VAL1.contains(1));
+    static_assert(!VAL1.contains(2));
+    static_assert(VAL1.contains(3));
+    static_assert(!VAL1.contains(4));
 }
 
 TEST(FixedUnorderedSet, IteratorBasic)
 {
-    constexpr FixedUnorderedSet<int, 10> s1{1, 2, 3, 4};
+    constexpr FixedUnorderedSet<int, 10> VAL1{1, 2, 3, 4};
 
-    static_assert(std::distance(s1.cbegin(), s1.cend()) == 4);
+    static_assert(std::distance(VAL1.cbegin(), VAL1.cend()) == 4);
 
-    static_assert(*s1.begin() == 1);
-    static_assert(*std::next(s1.begin(), 1) == 2);
-    static_assert(*std::next(s1.begin(), 2) == 3);
-    static_assert(*std::next(s1.begin(), 3) == 4);
+    static_assert(*VAL1.begin() == 1);
+    static_assert(*std::next(VAL1.begin(), 1) == 2);
+    static_assert(*std::next(VAL1.begin(), 2) == 3);
+    static_assert(*std::next(VAL1.begin(), 3) == 4);
 }
 
 TEST(FixedUnorderedSet, IteratorOffByOneIssues)
 {
-    constexpr FixedUnorderedSet<int, 10> s1{{1, 4}};
+    constexpr FixedUnorderedSet<int, 10> VAL1{{1, 4}};
 
-    static_assert(std::distance(s1.cbegin(), s1.cend()) == 2);
+    static_assert(std::distance(VAL1.cbegin(), VAL1.cend()) == 2);
 
-    static_assert(*s1.begin() == 1);
-    static_assert(*std::next(s1.begin(), 1) == 4);
+    static_assert(*VAL1.begin() == 1);
+    static_assert(*std::next(VAL1.begin(), 1) == 4);
 }
 
 TEST(FixedUnorderedSet, IteratorEnsureOrder)
 {
-    constexpr auto s1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedUnorderedSet<int, 10> s{};
         s.insert(3);
@@ -524,11 +524,11 @@ TEST(FixedUnorderedSet, IteratorEnsureOrder)
         return s;
     }();
 
-    static_assert(std::distance(s1.cbegin(), s1.cend()) == 3);
+    static_assert(std::distance(VAL1.cbegin(), VAL1.cend()) == 3);
 
-    static_assert(*s1.begin() == 3);
-    static_assert(*std::next(s1.begin(), 1) == 4);
-    static_assert(*std::next(s1.begin(), 2) == 1);
+    static_assert(*VAL1.begin() == 3);
+    static_assert(*std::next(VAL1.begin(), 1) == 4);
+    static_assert(*std::next(VAL1.begin(), 2) == 1);
 }
 
 TEST(FixedUnorderedSet, IteratorInvalidation)
@@ -578,19 +578,19 @@ TEST(FixedUnorderedSet, IteratorInvalidation)
 
 TEST(FixedUnorderedSet, Equality)
 {
-    constexpr FixedUnorderedSet<int, 10> s1{{1, 4}};
-    constexpr FixedUnorderedSet<int, 10> s2{{4, 1}};
-    constexpr FixedUnorderedSet<int, 10> s3{{1, 3}};
-    constexpr FixedUnorderedSet<int, 10> s4{1};
+    constexpr FixedUnorderedSet<int, 10> VAL1{{1, 4}};
+    constexpr FixedUnorderedSet<int, 10> VAL2{{4, 1}};
+    constexpr FixedUnorderedSet<int, 10> VAL3{{1, 3}};
+    constexpr FixedUnorderedSet<int, 10> VAL4{1};
 
-    static_assert(s1 == s2);
-    static_assert(s2 == s1);
+    static_assert(VAL1 == VAL2);
+    static_assert(VAL2 == VAL1);
 
-    static_assert(s1 != s3);
-    static_assert(s3 != s1);
+    static_assert(VAL1 != VAL3);
+    static_assert(VAL3 != VAL1);
 
-    static_assert(s1 != s4);
-    static_assert(s4 != s1);
+    static_assert(VAL1 != VAL4);
+    static_assert(VAL4 != VAL1);
 }
 
 TEST(FixedUnorderedSet, Ranges)
@@ -614,8 +614,8 @@ TEST(FixedUnorderedSet, OverloadedAddressOfOperator)
     }
 
     {
-        constexpr FixedUnorderedSet<MockFailingAddressOfOperator, 15> v{{2, {}}};
-        static_assert(!v.empty());
+        constexpr FixedUnorderedSet<MockFailingAddressOfOperator, 15> VAL{{2, {}}};
+        static_assert(!VAL.empty());
     }
 
     {
@@ -629,9 +629,9 @@ TEST(FixedUnorderedSet, OverloadedAddressOfOperator)
     }
 
     {
-        constexpr FixedUnorderedSet<MockFailingAddressOfOperator, 15> v{{2, 3, 4}};
-        static_assert(!v.empty());
-        auto it = v.cbegin();
+        constexpr FixedUnorderedSet<MockFailingAddressOfOperator, 15> VAL{{2, 3, 4}};
+        static_assert(!VAL.empty());
+        auto it = VAL.cbegin();
         it->do_nothing();
         (void)it++;
         ++it;
@@ -648,7 +648,7 @@ TEST(FixedUnorderedSet, ClassTemplateArgumentDeduction)
 
 TEST(FixedUnorderedSet, SetIntersection)
 {
-    constexpr FixedUnorderedSet<int, 10> s1 = []()
+    constexpr FixedUnorderedSet<int, 10> VAL1 = []()
     {
         const FixedUnorderedSet<int, 10> v1{1, 4};
         const FixedUnorderedSet<int, 10> v2{1};
@@ -662,9 +662,9 @@ TEST(FixedUnorderedSet, SetIntersection)
         return v_intersection;
     }();
 
-    static_assert(consteval_compare::equal<1, s1.size()>);
-    static_assert(s1.contains(1));
-    static_assert(!s1.contains(4));
+    static_assert(consteval_compare::equal<1, VAL1.size()>);
+    static_assert(VAL1.contains(1));
+    static_assert(!VAL1.contains(4));
 }
 
 namespace

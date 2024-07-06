@@ -25,8 +25,8 @@ static_assert(ConstexprDefaultConstructible<QueueType>);
 
 TEST(StackAdapter, DefaultConstructor)
 {
-    constexpr QueueAdapter<FixedDeque<int, 5>> v1{};
-    static_assert(v1.empty());
+    constexpr QueueAdapter<FixedDeque<int, 5>> VAL1{};
+    static_assert(VAL1.empty());
 }
 
 }  // namespace fixed_containers

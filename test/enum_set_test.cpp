@@ -74,109 +74,110 @@ static_assert(std::is_same_v<typename std::iterator_traits<ES_1::const_iterator>
 
 TEST(EnumSet, All)
 {
-    constexpr auto s1 = EnumSet<TestEnum1>::all();
+    constexpr auto VAL1 = EnumSet<TestEnum1>::all();
 
-    static_assert(s1.size() == 4);
-    static_assert(s1.contains(TestEnum1::ONE));
-    static_assert(s1.contains(TestEnum1::TWO));
-    static_assert(s1.contains(TestEnum1::THREE));
-    static_assert(s1.contains(TestEnum1::FOUR));
+    static_assert(VAL1.size() == 4);
+    static_assert(VAL1.contains(TestEnum1::ONE));
+    static_assert(VAL1.contains(TestEnum1::TWO));
+    static_assert(VAL1.contains(TestEnum1::THREE));
+    static_assert(VAL1.contains(TestEnum1::FOUR));
 }
 
 TEST(EnumSet, None)
 {
-    constexpr auto s1 = EnumSet<TestEnum1>::none();
+    constexpr auto VAL1 = EnumSet<TestEnum1>::none();
 
-    static_assert(s1.empty());
-    static_assert(!s1.contains(TestEnum1::ONE));
-    static_assert(!s1.contains(TestEnum1::TWO));
-    static_assert(!s1.contains(TestEnum1::THREE));
-    static_assert(!s1.contains(TestEnum1::FOUR));
+    static_assert(VAL1.empty());
+    static_assert(!VAL1.contains(TestEnum1::ONE));
+    static_assert(!VAL1.contains(TestEnum1::TWO));
+    static_assert(!VAL1.contains(TestEnum1::THREE));
+    static_assert(!VAL1.contains(TestEnum1::FOUR));
 }
 
 TEST(EnumSet, ComplementOf)
 {
-    constexpr EnumSet<TestEnum1> a{TestEnum1::TWO, TestEnum1::FOUR};
-    constexpr auto s1 = EnumSet<TestEnum1>::complement_of(a);
+    constexpr EnumSet<TestEnum1> INPUT_A{TestEnum1::TWO, TestEnum1::FOUR};
+    constexpr auto VAL1 = EnumSet<TestEnum1>::complement_of(INPUT_A);
 
-    static_assert(s1.size() == 2);
-    static_assert(s1.contains(TestEnum1::ONE));
-    static_assert(!s1.contains(TestEnum1::TWO));
-    static_assert(s1.contains(TestEnum1::THREE));
-    static_assert(!s1.contains(TestEnum1::FOUR));
+    static_assert(VAL1.size() == 2);
+    static_assert(VAL1.contains(TestEnum1::ONE));
+    static_assert(!VAL1.contains(TestEnum1::TWO));
+    static_assert(VAL1.contains(TestEnum1::THREE));
+    static_assert(!VAL1.contains(TestEnum1::FOUR));
 }
 
 TEST(EnumSet, CopyOf)
 {
-    constexpr std::array<TestEnum1, 2> a{TestEnum1::TWO, TestEnum1::FOUR};
-    constexpr auto s1 = EnumSet<TestEnum1>::copy_of(a);
-    static_assert(s1.size() == 2);
+    constexpr std::array<TestEnum1, 2> INPUT_A{TestEnum1::TWO, TestEnum1::FOUR};
+    constexpr auto VAL1 = EnumSet<TestEnum1>::copy_of(INPUT_A);
+    static_assert(VAL1.size() == 2);
 }
 
 TEST(EnumSet, BuilderInsert)
 {
-    constexpr EnumSet<TestEnum1> a{TestEnum1::TWO, TestEnum1::FOUR};
-    constexpr TestEnum1 b = TestEnum1 ::TWO;
+    constexpr EnumSet<TestEnum1> ENTRY_A{TestEnum1::TWO, TestEnum1::FOUR};
+    constexpr TestEnum1 ENTRY_B = TestEnum1 ::TWO;
 
-    constexpr auto s1 = EnumSet<TestEnum1>::Builder{}
-                            .insert(a.begin(), a.end())
-                            .insert(b)
-                            .insert(a)
-                            .insert(b)
-                            .insert({TestEnum1::TWO, TestEnum1::FOUR})
-                            .build();
+    constexpr auto VAL1 = EnumSet<TestEnum1>::Builder{}
+                              .insert(ENTRY_A.begin(), ENTRY_A.end())
+                              .insert(ENTRY_B)
+                              .insert(ENTRY_A)
+                              .insert(ENTRY_B)
+                              .insert({TestEnum1::TWO, TestEnum1::FOUR})
+                              .build();
 
-    static_assert(s1.size() == 2);
+    static_assert(VAL1.size() == 2);
 
-    static_assert(!s1.contains(TestEnum1::ONE));
-    static_assert(s1.contains(TestEnum1::TWO));
-    static_assert(!s1.contains(TestEnum1::THREE));
-    static_assert(s1.contains(TestEnum1::FOUR));
+    static_assert(!VAL1.contains(TestEnum1::ONE));
+    static_assert(VAL1.contains(TestEnum1::TWO));
+    static_assert(!VAL1.contains(TestEnum1::THREE));
+    static_assert(VAL1.contains(TestEnum1::FOUR));
 }
 
 TEST(EnumSet, BuilderFluentSyntaxWithNoCopies)
 {
     // Constructing like this to bypass the imposed non-copyability of this enum
-    constexpr std::array<NonCopyableRichEnum, 2> a{
+    constexpr std::array<NonCopyableRichEnum, 2> ENTRY_A{
         NonCopyableRichEnum{NonCopyableRichEnum::BackingEnum::C_TWO},
         NonCopyableRichEnum{NonCopyableRichEnum::BackingEnum::C_FOUR},
     };
-    constexpr const NonCopyableRichEnum& b = NonCopyableRichEnum::C_TWO();
+    constexpr const NonCopyableRichEnum& ENTRY_B = NonCopyableRichEnum::C_TWO();
 
-    constexpr auto s1 = EnumSet<NonCopyableRichEnum>::Builder{}
-                            .insert(a.begin(), a.end())
-                            .insert(b)
-                            .insert(a)
-                            .insert(b)
-                            .insert({NonCopyableRichEnum{NonCopyableRichEnum::BackingEnum::C_TWO},
-                                     NonCopyableRichEnum{NonCopyableRichEnum::BackingEnum::C_FOUR}})
-                            .build();
+    constexpr auto VAL1 =
+        EnumSet<NonCopyableRichEnum>::Builder{}
+            .insert(ENTRY_A.begin(), ENTRY_A.end())
+            .insert(ENTRY_B)
+            .insert(ENTRY_A)
+            .insert(ENTRY_B)
+            .insert({NonCopyableRichEnum{NonCopyableRichEnum::BackingEnum::C_TWO},
+                     NonCopyableRichEnum{NonCopyableRichEnum::BackingEnum::C_FOUR}})
+            .build();
 
-    static_assert(s1.size() == 2);
+    static_assert(VAL1.size() == 2);
 
-    static_assert(!s1.contains(NonCopyableRichEnum::C_ONE()));
-    static_assert(s1.contains(NonCopyableRichEnum::C_TWO()));
-    static_assert(!s1.contains(NonCopyableRichEnum::C_THREE()));
-    static_assert(s1.contains(NonCopyableRichEnum::C_FOUR()));
+    static_assert(!VAL1.contains(NonCopyableRichEnum::C_ONE()));
+    static_assert(VAL1.contains(NonCopyableRichEnum::C_TWO()));
+    static_assert(!VAL1.contains(NonCopyableRichEnum::C_THREE()));
+    static_assert(VAL1.contains(NonCopyableRichEnum::C_FOUR()));
 }
 
 TEST(EnumSet, BuilderMultipleOuts)
 {
-    constexpr std::array<TestEnum1, 2> a{TestEnum1::TWO, TestEnum1::FOUR};
-    constexpr TestEnum1 b = TestEnum1::TWO;
+    constexpr std::array<TestEnum1, 2> ENTRY_A{TestEnum1::TWO, TestEnum1::FOUR};
+    constexpr TestEnum1 ENTRY_B = TestEnum1::TWO;
 
-    constexpr std::array<EnumSet<TestEnum1>, 2> s_all = [&]()
+    constexpr std::array<EnumSet<TestEnum1>, 2> VAL_ALL = [&]()
     {
         EnumSet<TestEnum1>::Builder builder{};
 
-        builder.insert(b);
+        builder.insert(ENTRY_B);
         auto out1 = builder.build();
 
         // l-value overloads
-        builder.insert(a.begin(), a.end());
-        builder.insert(b);
-        builder.insert(a);
-        builder.insert(b);
+        builder.insert(ENTRY_A.begin(), ENTRY_A.end());
+        builder.insert(ENTRY_B);
+        builder.insert(ENTRY_A);
+        builder.insert(ENTRY_B);
         builder.insert({TestEnum1::TWO, TestEnum1::FOUR});
         auto out2 = builder.build();
 
@@ -185,78 +186,78 @@ TEST(EnumSet, BuilderMultipleOuts)
 
     {
         // out1 should be unaffected by out2's addition of extra elements
-        constexpr EnumSet<TestEnum1> s1 = s_all[0];
-        static_assert(s1.size() == 1);
+        constexpr EnumSet<TestEnum1> VAL1 = VAL_ALL[0];
+        static_assert(VAL1.size() == 1);
 
-        static_assert(!s1.contains(TestEnum1::ONE));
-        static_assert(s1.contains(TestEnum1::TWO));
-        static_assert(!s1.contains(TestEnum1::THREE));
-        static_assert(!s1.contains(TestEnum1::FOUR));
+        static_assert(!VAL1.contains(TestEnum1::ONE));
+        static_assert(VAL1.contains(TestEnum1::TWO));
+        static_assert(!VAL1.contains(TestEnum1::THREE));
+        static_assert(!VAL1.contains(TestEnum1::FOUR));
     }
 
     {
-        constexpr EnumSet<TestEnum1> s2 = s_all[1];
-        static_assert(s2.size() == 2);
+        constexpr EnumSet<TestEnum1> VAL2 = VAL_ALL[1];
+        static_assert(VAL2.size() == 2);
 
-        static_assert(!s2.contains(TestEnum1::ONE));
-        static_assert(s2.contains(TestEnum1::TWO));
-        static_assert(!s2.contains(TestEnum1::THREE));
-        static_assert(s2.contains(TestEnum1::FOUR));
+        static_assert(!VAL2.contains(TestEnum1::ONE));
+        static_assert(VAL2.contains(TestEnum1::TWO));
+        static_assert(!VAL2.contains(TestEnum1::THREE));
+        static_assert(VAL2.contains(TestEnum1::FOUR));
     }
 }
 
 TEST(EnumSet, DefaultConstructor)
 {
-    constexpr EnumSet<TestEnum1> s1{};
-    static_assert(s1.empty());
+    constexpr EnumSet<TestEnum1> VAL1{};
+    static_assert(VAL1.empty());
 }
 
 TEST(EnumSet, IteratorConstructor)
 {
     constexpr std::array INPUT{TestEnum1::TWO, TestEnum1::FOUR};
-    constexpr EnumSet<TestEnum1> s1{INPUT.begin(), INPUT.end()};
-    static_assert(s1.size() == 2);
+    constexpr EnumSet<TestEnum1> VAL1{INPUT.begin(), INPUT.end()};
+    static_assert(VAL1.size() == 2);
 
-    static_assert(!s1.contains(TestEnum1::ONE));
-    static_assert(s1.contains(TestEnum1::TWO));
-    static_assert(!s1.contains(TestEnum1::THREE));
-    static_assert(s1.contains(TestEnum1::FOUR));
+    static_assert(!VAL1.contains(TestEnum1::ONE));
+    static_assert(VAL1.contains(TestEnum1::TWO));
+    static_assert(!VAL1.contains(TestEnum1::THREE));
+    static_assert(VAL1.contains(TestEnum1::FOUR));
 }
 
 TEST(EnumSet, DeducedIteratorConstructor)
 {
     constexpr std::array INPUT{TestEnum1::TWO, TestEnum1::FOUR};
-    constexpr EnumSet s1(INPUT.begin(), INPUT.end());
-    (void)s1;
+    constexpr EnumSet VAL1(INPUT.begin(), INPUT.end());
+    (void)VAL1;
 }
 
 TEST(EnumSet, InitializerConstructor)
 {
-    constexpr EnumSet<TestEnum1> s1{TestEnum1::TWO, TestEnum1::FOUR};
-    static_assert(s1.size() == 2);
+    constexpr EnumSet<TestEnum1> VAL1{TestEnum1::TWO, TestEnum1::FOUR};
+    static_assert(VAL1.size() == 2);
 
-    constexpr EnumSet<TestEnum1> s2{TestEnum1::THREE};
-    static_assert(s2.size() == 1);
+    constexpr EnumSet<TestEnum1> VAL2{TestEnum1::THREE};
+    static_assert(VAL2.size() == 1);
 }
 
 TEST(EnumSet, Contains)
 {
-    constexpr EnumSet<TestEnum1> s1{TestEnum1::TWO, TestEnum1::FOUR};
-    static_assert(s1.size() == 2);
+    constexpr EnumSet<TestEnum1> VAL1{TestEnum1::TWO, TestEnum1::FOUR};
+    static_assert(VAL1.size() == 2);
 
-    static_assert(!s1.contains(TestEnum1::ONE));
-    static_assert(s1.contains(TestEnum1::TWO));
-    static_assert(!s1.contains(TestEnum1::THREE));
-    static_assert(s1.contains(TestEnum1::FOUR));
+    static_assert(!VAL1.contains(TestEnum1::ONE));
+    static_assert(VAL1.contains(TestEnum1::TWO));
+    static_assert(!VAL1.contains(TestEnum1::THREE));
+    static_assert(VAL1.contains(TestEnum1::FOUR));
 }
 
 TEST(EnumSet, MaxSize)
 {
-    constexpr EnumSet<TestEnum1> s1{TestEnum1::TWO, TestEnum1::FOUR};
-    static_assert(s1.max_size() == 4);
+    constexpr EnumSet<TestEnum1> VAL1{TestEnum1::TWO, TestEnum1::FOUR};
+    static_assert(VAL1.max_size() == 4);
 
-    constexpr EnumSet<TestEnum1> s2{};
-    static_assert(s2.max_size() == 4);
+    constexpr EnumSet<TestEnum1> VAL2{};
+    static_assert(VAL2.max_size() == 4);
 
     static_assert(EnumSet<TestEnum1>::static_max_size() == 4);
     EXPECT_EQ(4, (EnumSet<TestEnum1>::static_max_size()));
@@ -266,25 +267,25 @@ TEST(EnumSet, MaxSize)
 
 TEST(EnumSet, EmptySizeFull)
 {
-    constexpr EnumSet<TestEnum1> s1{TestEnum1::TWO, TestEnum1::FOUR};
-    static_assert(s1.size() == 2);
-    static_assert(!s1.empty());
+    constexpr EnumSet<TestEnum1> VAL1{TestEnum1::TWO, TestEnum1::FOUR};
+    static_assert(VAL1.size() == 2);
+    static_assert(!VAL1.empty());
 
-    constexpr EnumSet<TestEnum1> s2{};
-    static_assert(s2.size() == 0);  // NOLINT(readability-container-size-empty)
-    static_assert(s2.empty());
+    constexpr EnumSet<TestEnum1> VAL2{};
+    static_assert(VAL2.size() == 0);  // NOLINT(readability-container-size-empty)
+    static_assert(VAL2.empty());
 
-    constexpr EnumSet<TestEnum1> s3{
+    constexpr EnumSet<TestEnum1> VAL3{
         TestEnum1::ONE, TestEnum1::TWO, TestEnum1::THREE, TestEnum1::FOUR};
-    static_assert(is_full(s3));
+    static_assert(is_full(VAL3));
 
-    constexpr EnumSet<TestEnum1> s4{TestEnum1::TWO, TestEnum1::FOUR};
-    static_assert(!is_full(s4));
+    constexpr EnumSet<TestEnum1> VAL4{TestEnum1::TWO, TestEnum1::FOUR};
+    static_assert(!is_full(VAL4));
 }
 
 TEST(EnumSet, Insert)
 {
-    constexpr auto s1 = []()
+    constexpr auto VAL1 = []()
     {
         EnumSet<TestEnum1> s{};
         s.insert(TestEnum1::TWO);
@@ -292,16 +293,16 @@ TEST(EnumSet, Insert)
         return s;
     }();
 
-    static_assert(s1.size() == 2);
-    static_assert(!s1.contains(TestEnum1::ONE));
-    static_assert(s1.contains(TestEnum1::TWO));
-    static_assert(!s1.contains(TestEnum1::THREE));
-    static_assert(s1.contains(TestEnum1::FOUR));
+    static_assert(VAL1.size() == 2);
+    static_assert(!VAL1.contains(TestEnum1::ONE));
+    static_assert(VAL1.contains(TestEnum1::TWO));
+    static_assert(!VAL1.contains(TestEnum1::THREE));
+    static_assert(VAL1.contains(TestEnum1::FOUR));
 }
 
 TEST(EnumSet, InsertMultipleTimes)
 {
-    constexpr auto s1 = []()
+    constexpr auto VAL1 = []()
     {
         EnumSet<TestEnum1> s{};
         {
@@ -327,32 +328,32 @@ TEST(EnumSet, InsertMultipleTimes)
         return s;
     }();
 
-    static_assert(s1.size() == 2);
-    static_assert(!s1.contains(TestEnum1::ONE));
-    static_assert(s1.contains(TestEnum1::TWO));
-    static_assert(!s1.contains(TestEnum1::THREE));
-    static_assert(s1.contains(TestEnum1::FOUR));
+    static_assert(VAL1.size() == 2);
+    static_assert(!VAL1.contains(TestEnum1::ONE));
+    static_assert(VAL1.contains(TestEnum1::TWO));
+    static_assert(!VAL1.contains(TestEnum1::THREE));
+    static_assert(VAL1.contains(TestEnum1::FOUR));
 }
 
 TEST(EnumSet, InsertInitializer)
 {
-    constexpr auto s1 = []()
+    constexpr auto VAL1 = []()
     {
         EnumSet<TestEnum1> s{};
         s.insert({TestEnum1::TWO, TestEnum1::FOUR});
         return s;
     }();
 
-    static_assert(s1.size() == 2);
-    static_assert(!s1.contains(TestEnum1::ONE));
-    static_assert(s1.contains(TestEnum1::TWO));
-    static_assert(!s1.contains(TestEnum1::THREE));
-    static_assert(s1.contains(TestEnum1::FOUR));
+    static_assert(VAL1.size() == 2);
+    static_assert(!VAL1.contains(TestEnum1::ONE));
+    static_assert(VAL1.contains(TestEnum1::TWO));
+    static_assert(!VAL1.contains(TestEnum1::THREE));
+    static_assert(VAL1.contains(TestEnum1::FOUR));
 }
 
 TEST(EnumSet, InsertIterators)
 {
-    constexpr auto s1 = []()
+    constexpr auto VAL1 = []()
     {
         EnumSet<TestEnum1> s{};
         std::array<TestEnum1, 2> a{TestEnum1::TWO, TestEnum1::FOUR};
@@ -360,13 +361,13 @@ TEST(EnumSet, InsertIterators)
         return s;
     }();
 
-    static_assert(s1.size() == 2);
-    static_assert(!s1.contains(TestEnum1::ONE));
-    static_assert(s1.contains(TestEnum1::TWO));
-    static_assert(!s1.contains(TestEnum1::THREE));
-    static_assert(s1.contains(TestEnum1::FOUR));
+    static_assert(VAL1.size() == 2);
+    static_assert(!VAL1.contains(TestEnum1::ONE));
+    static_assert(VAL1.contains(TestEnum1::TWO));
+    static_assert(!VAL1.contains(TestEnum1::THREE));
+    static_assert(VAL1.contains(TestEnum1::FOUR));
 
-    static_assert(std::is_same_v<decltype(*s1.begin()), const TestEnum1&>);
+    static_assert(std::is_same_v<decltype(*VAL1.begin()), const TestEnum1&>);
 
     const EnumSet<TestEnum1> s_non_const{};
     static_assert(std::is_same_v<decltype(*s_non_const.begin()), const TestEnum1&>);
@@ -375,7 +376,7 @@ TEST(EnumSet, InsertIterators)
 TEST(EnumSet, Emplace)
 {
     {
-        constexpr EnumSet<TestEnum1> s = []()
+        constexpr EnumSet<TestEnum1> VAL = []()
         {
             EnumSet<TestEnum1> s1{};
             s1.emplace(TestEnum1::TWO);
@@ -384,8 +385,8 @@ TEST(EnumSet, Emplace)
             return s1;
         }();
 
-        static_assert(consteval_compare::equal<1, s.size()>);
-        static_assert(s.contains(TestEnum1::TWO));
+        static_assert(consteval_compare::equal<1, VAL.size()>);
+        static_assert(VAL.contains(TestEnum1::TWO));
     }
 
     {
@@ -432,19 +433,19 @@ TEST(EnumSet, Emplace)
 
 TEST(EnumSet, Clear)
 {
-    constexpr auto s1 = []()
+    constexpr auto VAL1 = []()
     {
         EnumSet<TestEnum1> s{TestEnum1::TWO, TestEnum1::FOUR};
         s.clear();
         return s;
     }();
 
-    static_assert(s1.empty());
+    static_assert(VAL1.empty());
 }
 
 TEST(EnumSet, Erase)
 {
-    constexpr auto s1 = []()
+    constexpr auto VAL1 = []()
     {
         EnumSet<TestEnum1> s{TestEnum1::TWO, TestEnum1::FOUR};
         auto removed_count = s.erase(TestEnum1::TWO);
@@ -454,16 +455,16 @@ TEST(EnumSet, Erase)
         return s;
     }();
 
-    static_assert(s1.size() == 1);
-    static_assert(!s1.contains(TestEnum1::ONE));
-    static_assert(!s1.contains(TestEnum1::TWO));
-    static_assert(!s1.contains(TestEnum1::THREE));
-    static_assert(s1.contains(TestEnum1::FOUR));
+    static_assert(VAL1.size() == 1);
+    static_assert(!VAL1.contains(TestEnum1::ONE));
+    static_assert(!VAL1.contains(TestEnum1::TWO));
+    static_assert(!VAL1.contains(TestEnum1::THREE));
+    static_assert(VAL1.contains(TestEnum1::FOUR));
 }
 
 TEST(EnumSet, EraseIterator)
 {
-    constexpr auto s1 = []()
+    constexpr auto VAL1 = []()
     {
         EnumSet<TestEnum1> s{TestEnum1::TWO, TestEnum1::THREE, TestEnum1::FOUR};
         {
@@ -480,11 +481,11 @@ TEST(EnumSet, EraseIterator)
         return s;
     }();
 
-    static_assert(s1.size() == 1);
-    static_assert(!s1.contains(TestEnum1::ONE));
-    static_assert(!s1.contains(TestEnum1::TWO));
-    static_assert(!s1.contains(TestEnum1::THREE));
-    static_assert(s1.contains(TestEnum1::FOUR));
+    static_assert(VAL1.size() == 1);
+    static_assert(!VAL1.contains(TestEnum1::ONE));
+    static_assert(!VAL1.contains(TestEnum1::TWO));
+    static_assert(!VAL1.contains(TestEnum1::THREE));
+    static_assert(VAL1.contains(TestEnum1::FOUR));
 }
 
 TEST(EnumSet, EraseIteratorInvalidIterator)
@@ -500,7 +501,7 @@ TEST(EnumSet, EraseIteratorInvalidIterator)
 TEST(EnumSet, EraseRange)
 {
     {
-        constexpr auto s1 = []()
+        constexpr auto VAL1 = []()
         {
             EnumSet<TestEnum1> s{TestEnum1::TWO, TestEnum1::THREE, TestEnum1::FOUR};
             auto from = s.begin();
@@ -512,14 +513,14 @@ TEST(EnumSet, EraseRange)
             return s;
         }();
 
-        static_assert(consteval_compare::equal<2, s1.size()>);
-        static_assert(!s1.contains(TestEnum1::ONE));
-        static_assert(s1.contains(TestEnum1::TWO));
-        static_assert(!s1.contains(TestEnum1::THREE));
-        static_assert(s1.contains(TestEnum1::FOUR));
+        static_assert(consteval_compare::equal<2, VAL1.size()>);
+        static_assert(!VAL1.contains(TestEnum1::ONE));
+        static_assert(VAL1.contains(TestEnum1::TWO));
+        static_assert(!VAL1.contains(TestEnum1::THREE));
+        static_assert(VAL1.contains(TestEnum1::FOUR));
     }
     {
-        constexpr auto s1 = []()
+        constexpr auto VAL1 = []()
         {
             EnumSet<TestEnum1> s{TestEnum1::TWO, TestEnum1::FOUR};
             auto from = s.begin();
@@ -529,14 +530,14 @@ TEST(EnumSet, EraseRange)
             return s;
         }();
 
-        static_assert(consteval_compare::equal<2, s1.size()>);
-        static_assert(!s1.contains(TestEnum1::ONE));
-        static_assert(s1.contains(TestEnum1::TWO));
-        static_assert(!s1.contains(TestEnum1::THREE));
-        static_assert(s1.contains(TestEnum1::FOUR));
+        static_assert(consteval_compare::equal<2, VAL1.size()>);
+        static_assert(!VAL1.contains(TestEnum1::ONE));
+        static_assert(VAL1.contains(TestEnum1::TWO));
+        static_assert(!VAL1.contains(TestEnum1::THREE));
+        static_assert(VAL1.contains(TestEnum1::FOUR));
     }
     {
-        constexpr auto s1 = []()
+        constexpr auto VAL1 = []()
         {
             EnumSet<TestEnum1> s{TestEnum1::ONE, TestEnum1::FOUR};
             auto from = s.begin();
@@ -546,17 +547,17 @@ TEST(EnumSet, EraseRange)
             return s;
         }();
 
-        static_assert(consteval_compare::equal<0, s1.size()>);
-        static_assert(!s1.contains(TestEnum1::ONE));
-        static_assert(!s1.contains(TestEnum1::TWO));
-        static_assert(!s1.contains(TestEnum1::THREE));
-        static_assert(!s1.contains(TestEnum1::FOUR));
+        static_assert(consteval_compare::equal<0, VAL1.size()>);
+        static_assert(!VAL1.contains(TestEnum1::ONE));
+        static_assert(!VAL1.contains(TestEnum1::TWO));
+        static_assert(!VAL1.contains(TestEnum1::THREE));
+        static_assert(!VAL1.contains(TestEnum1::FOUR));
     }
 }
 
 TEST(EnumSet, EraseIf)
 {
-    constexpr auto s1 = []()
+    constexpr auto VAL1 = []()
     {
         EnumSet<TestEnum1> s{TestEnum1::TWO, TestEnum1::THREE, TestEnum1::FOUR};
         const std::size_t removed_count = fixed_containers::erase_if(
@@ -565,47 +566,47 @@ TEST(EnumSet, EraseIf)
         return s;
     }();
 
-    static_assert(consteval_compare::equal<1, s1.size()>);
-    static_assert(!s1.contains(TestEnum1::ONE));
-    static_assert(!s1.contains(TestEnum1::TWO));
-    static_assert(s1.contains(TestEnum1::THREE));
-    static_assert(!s1.contains(TestEnum1::FOUR));
+    static_assert(consteval_compare::equal<1, VAL1.size()>);
+    static_assert(!VAL1.contains(TestEnum1::ONE));
+    static_assert(!VAL1.contains(TestEnum1::TWO));
+    static_assert(VAL1.contains(TestEnum1::THREE));
+    static_assert(!VAL1.contains(TestEnum1::FOUR));
 }
 
 TEST(EnumSet, IteratorBasic)
 {
-    constexpr EnumSet<TestEnum1> s1{
+    constexpr EnumSet<TestEnum1> VAL1{
         TestEnum1::ONE, TestEnum1::TWO, TestEnum1::THREE, TestEnum1::FOUR};
 
-    static_assert(std::distance(s1.cbegin(), s1.cend()) == 4);
+    static_assert(std::distance(VAL1.cbegin(), VAL1.cend()) == 4);
 
-    static_assert(*s1.begin() == TestEnum1::ONE);
-    static_assert(*std::next(s1.begin(), 1) == TestEnum1::TWO);
-    static_assert(*std::next(s1.begin(), 2) == TestEnum1::THREE);
-    static_assert(*std::next(s1.begin(), 3) == TestEnum1::FOUR);
+    static_assert(*VAL1.begin() == TestEnum1::ONE);
+    static_assert(*std::next(VAL1.begin(), 1) == TestEnum1::TWO);
+    static_assert(*std::next(VAL1.begin(), 2) == TestEnum1::THREE);
+    static_assert(*std::next(VAL1.begin(), 3) == TestEnum1::FOUR);
 
-    static_assert(*std::prev(s1.end(), 1) == TestEnum1::FOUR);
-    static_assert(*std::prev(s1.end(), 2) == TestEnum1::THREE);
-    static_assert(*std::prev(s1.end(), 3) == TestEnum1::TWO);
-    static_assert(*std::prev(s1.end(), 4) == TestEnum1::ONE);
+    static_assert(*std::prev(VAL1.end(), 1) == TestEnum1::FOUR);
+    static_assert(*std::prev(VAL1.end(), 2) == TestEnum1::THREE);
+    static_assert(*std::prev(VAL1.end(), 3) == TestEnum1::TWO);
+    static_assert(*std::prev(VAL1.end(), 4) == TestEnum1::ONE);
 }
 
 TEST(EnumSet, IteratorOffByOneIssues)
 {
-    constexpr EnumSet<TestEnum1> s1{{TestEnum1::ONE, TestEnum1::FOUR}};
+    constexpr EnumSet<TestEnum1> VAL1{{TestEnum1::ONE, TestEnum1::FOUR}};
 
-    static_assert(std::distance(s1.cbegin(), s1.cend()) == 2);
+    static_assert(std::distance(VAL1.cbegin(), VAL1.cend()) == 2);
 
-    static_assert(*s1.begin() == TestEnum1::ONE);
-    static_assert(*std::next(s1.begin(), 1) == TestEnum1::FOUR);
+    static_assert(*VAL1.begin() == TestEnum1::ONE);
+    static_assert(*std::next(VAL1.begin(), 1) == TestEnum1::FOUR);
 
-    static_assert(*std::prev(s1.end(), 1) == TestEnum1::FOUR);
-    static_assert(*std::prev(s1.end(), 2) == TestEnum1::ONE);
+    static_assert(*std::prev(VAL1.end(), 1) == TestEnum1::FOUR);
+    static_assert(*std::prev(VAL1.end(), 2) == TestEnum1::ONE);
 }
 
 TEST(EnumSet, IteratorEnsureOrder)
 {
-    constexpr auto s1 = []()
+    constexpr auto VAL1 = []()
     {
         EnumSet<TestEnum1> s{};
         s.insert(TestEnum1::THREE);
@@ -614,38 +615,38 @@ TEST(EnumSet, IteratorEnsureOrder)
         return s;
     }();
 
-    static_assert(std::distance(s1.cbegin(), s1.cend()) == 3);
+    static_assert(std::distance(VAL1.cbegin(), VAL1.cend()) == 3);
 
-    static_assert(*s1.begin() == TestEnum1::ONE);
-    static_assert(*std::next(s1.begin(), 1) == TestEnum1::THREE);
-    static_assert(*std::next(s1.begin(), 2) == TestEnum1::FOUR);
+    static_assert(*VAL1.begin() == TestEnum1::ONE);
+    static_assert(*std::next(VAL1.begin(), 1) == TestEnum1::THREE);
+    static_assert(*std::next(VAL1.begin(), 2) == TestEnum1::FOUR);
 
-    static_assert(*std::prev(s1.end(), 1) == TestEnum1::FOUR);
-    static_assert(*std::prev(s1.end(), 2) == TestEnum1::THREE);
-    static_assert(*std::prev(s1.end(), 3) == TestEnum1::ONE);
+    static_assert(*std::prev(VAL1.end(), 1) == TestEnum1::FOUR);
+    static_assert(*std::prev(VAL1.end(), 2) == TestEnum1::THREE);
+    static_assert(*std::prev(VAL1.end(), 3) == TestEnum1::ONE);
 }
 
 TEST(EnumSet, ReverseIteratorBasic)
 {
-    constexpr EnumSet<TestEnum1> s1{
+    constexpr EnumSet<TestEnum1> VAL1{
         TestEnum1::ONE, TestEnum1::TWO, TestEnum1::THREE, TestEnum1::FOUR};
 
-    static_assert(std::distance(s1.crbegin(), s1.crend()) == 4);
+    static_assert(std::distance(VAL1.crbegin(), VAL1.crend()) == 4);
 
-    static_assert(*s1.rbegin() == TestEnum1::FOUR);
-    static_assert(*std::next(s1.rbegin(), 1) == TestEnum1::THREE);
-    static_assert(*std::next(s1.crbegin(), 2) == TestEnum1::TWO);
-    static_assert(*std::next(s1.rbegin(), 3) == TestEnum1::ONE);
+    static_assert(*VAL1.rbegin() == TestEnum1::FOUR);
+    static_assert(*std::next(VAL1.rbegin(), 1) == TestEnum1::THREE);
+    static_assert(*std::next(VAL1.crbegin(), 2) == TestEnum1::TWO);
+    static_assert(*std::next(VAL1.rbegin(), 3) == TestEnum1::ONE);
 
-    static_assert(*std::prev(s1.rend(), 1) == TestEnum1::ONE);
-    static_assert(*std::prev(s1.crend(), 2) == TestEnum1::TWO);
-    static_assert(*std::prev(s1.rend(), 3) == TestEnum1::THREE);
-    static_assert(*std::prev(s1.rend(), 4) == TestEnum1::FOUR);
+    static_assert(*std::prev(VAL1.rend(), 1) == TestEnum1::ONE);
+    static_assert(*std::prev(VAL1.crend(), 2) == TestEnum1::TWO);
+    static_assert(*std::prev(VAL1.rend(), 3) == TestEnum1::THREE);
+    static_assert(*std::prev(VAL1.rend(), 4) == TestEnum1::FOUR);
 }
 
 TEST(EnumSet, ReverseIteratorBase)
 {
-    constexpr auto s1 = []()
+    constexpr auto VAL1 = []()
     {
         EnumSet<TestEnum1> s{TestEnum1::ONE, TestEnum1::TWO, TestEnum1::THREE};
         auto it = s.rbegin();  // points to 3
@@ -655,54 +656,54 @@ TEST(EnumSet, ReverseIteratorBase)
         return s;
     }();
 
-    static_assert(s1.size() == 2);
-    static_assert(s1.contains(TestEnum1::ONE));
-    static_assert(s1.contains(TestEnum1::THREE));
+    static_assert(VAL1.size() == 2);
+    static_assert(VAL1.contains(TestEnum1::ONE));
+    static_assert(VAL1.contains(TestEnum1::THREE));
 }
 
 TEST(EnumSet, RichEnum)
 {
-    constexpr auto s1 = []()
+    constexpr auto VAL1 = []()
     {
         EnumSet<TestRichEnum1> s{};
         s.insert(TestRichEnum1::C_ONE());
         return s;
     }();
 
-    static_assert(s1.size() == 1);
-    static_assert(s1.contains(TestRichEnum1::C_ONE()));
-    static_assert(!s1.contains(TestRichEnum1::C_TWO()));
+    static_assert(VAL1.size() == 1);
+    static_assert(VAL1.contains(TestRichEnum1::C_ONE()));
+    static_assert(!VAL1.contains(TestRichEnum1::C_TWO()));
 }
 
 TEST(EnumSet, NonConformingRichEnum)
 {
-    constexpr auto s1 = []()
+    constexpr auto VAL1 = []()
     {
         EnumSet<NonConformingTestRichEnum1> s{};
         s.insert(NonConformingTestRichEnum1::NC_ONE());
         return s;
     }();
 
-    static_assert(s1.size() == 1);
-    static_assert(s1.contains(NonConformingTestRichEnum1::NC_ONE()));
-    static_assert(!s1.contains(NonConformingTestRichEnum1::NC_TWO()));
+    static_assert(VAL1.size() == 1);
+    static_assert(VAL1.contains(NonConformingTestRichEnum1::NC_ONE()));
+    static_assert(!VAL1.contains(NonConformingTestRichEnum1::NC_TWO()));
 }
 
 TEST(EnumSet, Equality)
 {
-    constexpr EnumSet<TestEnum1> s1{{TestEnum1::ONE, TestEnum1::FOUR}};
-    constexpr EnumSet<TestEnum1> s2{{TestEnum1::FOUR, TestEnum1::ONE}};
-    constexpr EnumSet<TestEnum1> s3{{TestEnum1::ONE, TestEnum1::THREE}};
-    constexpr EnumSet<TestEnum1> s4{TestEnum1::ONE};
+    constexpr EnumSet<TestEnum1> VAL1{{TestEnum1::ONE, TestEnum1::FOUR}};
+    constexpr EnumSet<TestEnum1> VAL2{{TestEnum1::FOUR, TestEnum1::ONE}};
+    constexpr EnumSet<TestEnum1> VAL3{{TestEnum1::ONE, TestEnum1::THREE}};
+    constexpr EnumSet<TestEnum1> VAL4{TestEnum1::ONE};
 
-    static_assert(s1 == s2);
-    static_assert(s2 == s1);
+    static_assert(VAL1 == VAL2);
+    static_assert(VAL2 == VAL1);
 
-    static_assert(s1 != s3);
-    static_assert(s3 != s1);
+    static_assert(VAL1 != VAL3);
+    static_assert(VAL3 != VAL1);
 
-    static_assert(s1 != s4);
-    static_assert(s4 != s1);
+    static_assert(VAL1 != VAL4);
+    static_assert(VAL4 != VAL1);
 }
 
 TEST(EnumSet, Ranges)
@@ -724,7 +725,7 @@ TEST(EnumSet, ClassTemplateArgumentDeduction)
 
 TEST(EnumSet, SetIntersection)
 {
-    constexpr EnumSet<TestEnum1> s1 = []()
+    constexpr EnumSet<TestEnum1> VAL1 = []()
     {
         const EnumSet<TestEnum1> v1{TestEnum1::ONE, TestEnum1::FOUR};
         const EnumSet<TestEnum1> v2{TestEnum1::ONE};
@@ -738,11 +739,11 @@ TEST(EnumSet, SetIntersection)
         return v_intersection;
     }();
 
-    static_assert(consteval_compare::equal<1, s1.size()>);
-    static_assert(s1.contains(TestEnum1::ONE));
-    static_assert(!s1.contains(TestEnum1::TWO));
-    static_assert(!s1.contains(TestEnum1::THREE));
-    static_assert(!s1.contains(TestEnum1::FOUR));
+    static_assert(consteval_compare::equal<1, VAL1.size()>);
+    static_assert(VAL1.contains(TestEnum1::ONE));
+    static_assert(!VAL1.contains(TestEnum1::TWO));
+    static_assert(!VAL1.contains(TestEnum1::THREE));
+    static_assert(!VAL1.contains(TestEnum1::FOUR));
 }
 
 namespace

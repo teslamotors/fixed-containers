@@ -35,14 +35,14 @@ struct MockStructuralType
 struct MockNonStructuralType
 {
     constexpr MockNonStructuralType()
-      : a()
+      : value_a_()
     {
     }
 
-    [[nodiscard]] int getter_so_field_a_is_used() const { return a; }
+    [[nodiscard]] int getter_so_field_a_is_used() const { return value_a_; }
 
 private:
-    int a;
+    int value_a_;
 };
 
 static_assert(ConstexprDefaultConstructible<MockStructuralType>);

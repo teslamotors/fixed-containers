@@ -46,11 +46,11 @@ private:
     };
 
 private:
-    template <std::size_t M, std::size_t... Is>
+    template <std::size_t M, std::size_t... IS>
     [[nodiscard]] static constexpr ValueArrayType initializer_pair_list_to_value_array_impl(
-        const std::pair<const L, T> (&list)[M], std::index_sequence<Is...>)
+        const std::pair<const L, T> (&list)[M], std::index_sequence<IS...>)
     {
-        return ValueArrayType{std::next(list, static_cast<difference_type>(Is))->second...};
+        return ValueArrayType{std::next(list, static_cast<difference_type>(IS))->second...};
     }
 
     template <std::size_t M>

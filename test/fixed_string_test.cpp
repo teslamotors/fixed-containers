@@ -38,18 +38,18 @@ void const_span_of_const_ref(const std::span<const char>&) {}
 
 TEST(FixedString, DefaultConstructor)
 {
-    constexpr FixedString<8> v1{};
-    static_assert(v1.empty());
-    static_assert(v1.max_size() == 8);
+    constexpr FixedString<8> VAL1{};
+    static_assert(VAL1.empty());
+    static_assert(VAL1.max_size() == 8);
 }
 
 TEST(FixedString, CountConstructor)
 {
     {
-        constexpr FixedString<8> v2(5, '3');
-        static_assert(v2.size() == 5);
-        static_assert(v2.max_size() == 8);
-        static_assert(v2 == "33333");
+        constexpr FixedString<8> VAL2(5, '3');
+        static_assert(VAL2.size() == 5);
+        static_assert(VAL2.max_size() == 8);
+        static_assert(VAL2 == "33333");
     }
 }
 
@@ -61,51 +61,51 @@ TEST(FixedString, CountConstructorExceedsCapacity)
 TEST(FixedString, ConstCharPointerConstructor)
 {
     {
-        constexpr FixedString<8> v2("12345");
-        static_assert(v2.size() == 5);
-        static_assert(v2.max_size() == 8);
-        static_assert(v2 == "12345");
+        constexpr FixedString<8> VAL2("12345");
+        static_assert(VAL2.size() == 5);
+        static_assert(VAL2.max_size() == 8);
+        static_assert(VAL2 == "12345");
     }
 }
 
 TEST(FixedString, InitializerConstructor)
 {
-    constexpr FixedString<3> v1{'7', '9'};
-    static_assert(std::ranges::equal(v1, std::array{'7', '9'}));
+    constexpr FixedString<3> VAL1{'7', '9'};
+    static_assert(std::ranges::equal(VAL1, std::array{'7', '9'}));
 
-    constexpr FixedString<3> v2{{'6', '5'}};
-    static_assert(std::ranges::equal(v2, std::array{'6', '5'}));
+    constexpr FixedString<3> VAL2{{'6', '5'}};
+    static_assert(std::ranges::equal(VAL2, std::array{'6', '5'}));
 
-    EXPECT_EQ(v1, "79");
-    EXPECT_EQ(v2, "65");
+    EXPECT_EQ(VAL1, "79");
+    EXPECT_EQ(VAL2, "65");
 }
 
 TEST(FixedString, StringViewConstructor)
 {
     constexpr std::string_view STRING_VIEW{"123456789"};
 
-    constexpr FixedString<17> v1{STRING_VIEW};
-    static_assert(!v1.empty());
-    static_assert(v1.size() == 9);
-    static_assert(v1.max_size() == 17);
+    constexpr FixedString<17> VAL1{STRING_VIEW};
+    static_assert(!VAL1.empty());
+    static_assert(VAL1.size() == 9);
+    static_assert(VAL1.max_size() == 17);
 }
 
 TEST(FixedString, AssignValue)
 {
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             FixedString<7> v{"012"};
             v.assign(5, '3');
             return v;
         }();
 
-        static_assert(v1 == "33333");
-        static_assert(v1.size() == 5);
+        static_assert(VAL1 == "33333");
+        static_assert(VAL1.size() == 5);
     }
 
     {
-        constexpr auto v2 = []()
+        constexpr auto VAL2 = []()
         {
             FixedString<7> v{"012"};
             v.assign(5, '5');
@@ -113,9 +113,9 @@ TEST(FixedString, AssignValue)
             return v;
         }();
 
-        static_assert(v2 == "99");
-        static_assert(v2.size() == 2);
-        static_assert(v2.max_size() == 7);
+        static_assert(VAL2 == "99");
+        static_assert(VAL2.size() == 2);
+        static_assert(VAL2.max_size() == 7);
     }
 
     {
@@ -141,7 +141,7 @@ TEST(FixedString, AssignValueExceedsCapacity)
 TEST(FixedString, AssignIterator)
 {
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             std::array<char, 2> a{'9', '9'};
             FixedString<7> v{"012"};
@@ -149,9 +149,9 @@ TEST(FixedString, AssignIterator)
             return v;
         }();
 
-        static_assert(v1 == "99");
-        static_assert(v1.size() == 2);
-        static_assert(v1.max_size() == 7);
+        static_assert(VAL1 == "99");
+        static_assert(VAL1.size() == 2);
+        static_assert(VAL1.max_size() == 7);
     }
     {
         auto v2 = []()
@@ -194,16 +194,16 @@ TEST(FixedString, AssignInputIteratorExceedsCapacity)
 TEST(FixedString, AssignInitializerList)
 {
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             FixedString<7> v{"012"};
             v.assign({'9', '9'});
             return v;
         }();
 
-        static_assert(v1 == "99");
-        static_assert(v1.size() == 2);
-        static_assert(v1.max_size() == 7);
+        static_assert(VAL1 == "99");
+        static_assert(VAL1.size() == 2);
+        static_assert(VAL1.max_size() == 7);
     }
     {
         auto v2 = []()
@@ -227,7 +227,7 @@ TEST(FixedString, AssignInitializerListExceedsCapacity)
 TEST(FixedString, AssignStringView)
 {
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             FixedString<7> v{"012"};
             const std::string_view s{"99"};
@@ -235,9 +235,9 @@ TEST(FixedString, AssignStringView)
             return v;
         }();
 
-        static_assert(v1 == "99");
-        static_assert(v1.size() == 2);
-        static_assert(v1.max_size() == 7);
+        static_assert(VAL1 == "99");
+        static_assert(VAL1.size() == 2);
+        static_assert(VAL1.max_size() == 7);
     }
     {
         auto v2 = []()
@@ -255,7 +255,7 @@ TEST(FixedString, AssignStringView)
 
 TEST(FixedString, BracketOperator)
 {
-    constexpr auto v1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedString<11> v{"aaa"};
         // v.resize(3);
@@ -267,10 +267,10 @@ TEST(FixedString, BracketOperator)
         return v;
     }();
 
-    static_assert(v1[0] == '0');
-    static_assert(v1[1] == 'b');
-    static_assert(v1[2] == '2');
-    static_assert(v1.size() == 3);
+    static_assert(VAL1[0] == '0');
+    static_assert(VAL1[1] == 'b');
+    static_assert(VAL1[2] == '2');
+    static_assert(VAL1.size() == 3);
 
     auto v2 = FixedString<11>{"012"};
     v2[1] = 'b';
@@ -286,7 +286,7 @@ TEST(FixedString, BracketOperator)
 
 TEST(FixedString, At)
 {
-    constexpr auto v1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedString<11> v{"012"};
         // v.resize(3);
@@ -298,10 +298,10 @@ TEST(FixedString, At)
         return v;
     }();
 
-    static_assert(v1.at(0) == '0');
-    static_assert(v1.at(1) == 'b');
-    static_assert(v1.at(2) == '2');
-    static_assert(v1.size() == 3);
+    static_assert(VAL1.at(0) == '0');
+    static_assert(VAL1.at(1) == 'b');
+    static_assert(VAL1.at(2) == '2');
+    static_assert(VAL1.size() == 3);
 
     auto v2 = FixedString<11>{"012"};
     v2.at(1) = 'b';
@@ -328,15 +328,15 @@ TEST(FixedString, AtOutOfBounds)
 
 TEST(FixedString, Front)
 {
-    constexpr auto v1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedString<8> v{"z12"};
         return v;
     }();
 
-    static_assert(v1.front() == 'z');
-    static_assert(v1 == "z12");
-    static_assert(v1.size() == 3);
+    static_assert(VAL1.front() == 'z');
+    static_assert(VAL1 == "z12");
+    static_assert(VAL1.size() == 3);
 
     FixedString<8> v2{"abc"};
     const auto& v2_const_ref = v2;
@@ -360,15 +360,15 @@ TEST(FixedString, FrontEmptyContainer)
 
 TEST(FixedString, Back)
 {
-    constexpr auto v1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedString<8> v{"01w"};
         return v;
     }();
 
-    static_assert(v1.back() == 'w');
-    static_assert(v1 == "01w");
-    static_assert(v1.size() == 3);
+    static_assert(VAL1.back() == 'w');
+    static_assert(VAL1 == "01w");
+    static_assert(VAL1.size() == 3);
 
     FixedString<8> v2{"abc"};
     const auto& v2_const_ref = v2;
@@ -393,25 +393,25 @@ TEST(FixedString, BackEmptyContainer)
 TEST(FixedString, Data)
 {
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             FixedString<8> v{"012"};
             return v;
         }();
 
-        static_assert(*std::next(v1.data(), 0) == '0');
-        static_assert(*std::next(v1.data(), 1) == '1');
-        static_assert(*std::next(v1.data(), 2) == '2');
-        static_assert(*std::next(v1.data(), 3) == '\0');
-        static_assert(*std::next(v1.data(), 8) == '\0');
+        static_assert(*std::next(VAL1.data(), 0) == '0');
+        static_assert(*std::next(VAL1.data(), 1) == '1');
+        static_assert(*std::next(VAL1.data(), 2) == '2');
+        static_assert(*std::next(VAL1.data(), 3) == '\0');
+        static_assert(*std::next(VAL1.data(), 8) == '\0');
 
-        EXPECT_EQ(*std::next(v1.data(), 0), '0');
-        EXPECT_EQ(*std::next(v1.data(), 1), '1');
-        EXPECT_EQ(*std::next(v1.data(), 2), '2');
-        EXPECT_EQ(*std::next(v1.data(), 3), '\0');
-        EXPECT_EQ(*std::next(v1.data(), 8), '\0');
+        EXPECT_EQ(*std::next(VAL1.data(), 0), '0');
+        EXPECT_EQ(*std::next(VAL1.data(), 1), '1');
+        EXPECT_EQ(*std::next(VAL1.data(), 2), '2');
+        EXPECT_EQ(*std::next(VAL1.data(), 3), '\0');
+        EXPECT_EQ(*std::next(VAL1.data(), 8), '\0');
 
-        static_assert(v1.size() == 3);
+        static_assert(VAL1.size() == 3);
     }
 
     {
@@ -430,25 +430,25 @@ TEST(FixedString, Data)
 TEST(FixedString, CStr)
 {
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             FixedString<8> v{"012"};
             return v;
         }();
 
-        static_assert(*std::next(v1.c_str(), 0) == '0');
-        static_assert(*std::next(v1.c_str(), 1) == '1');
-        static_assert(*std::next(v1.c_str(), 2) == '2');
-        static_assert(*std::next(v1.c_str(), 3) == '\0');
-        static_assert(*std::next(v1.c_str(), 8) == '\0');
+        static_assert(*std::next(VAL1.c_str(), 0) == '0');
+        static_assert(*std::next(VAL1.c_str(), 1) == '1');
+        static_assert(*std::next(VAL1.c_str(), 2) == '2');
+        static_assert(*std::next(VAL1.c_str(), 3) == '\0');
+        static_assert(*std::next(VAL1.c_str(), 8) == '\0');
 
-        EXPECT_EQ(*std::next(v1.c_str(), 0), '0');
-        EXPECT_EQ(*std::next(v1.c_str(), 1), '1');
-        EXPECT_EQ(*std::next(v1.c_str(), 2), '2');
-        EXPECT_EQ(*std::next(v1.c_str(), 3), '\0');
-        EXPECT_EQ(*std::next(v1.c_str(), 8), '\0');
+        EXPECT_EQ(*std::next(VAL1.c_str(), 0), '0');
+        EXPECT_EQ(*std::next(VAL1.c_str(), 1), '1');
+        EXPECT_EQ(*std::next(VAL1.c_str(), 2), '2');
+        EXPECT_EQ(*std::next(VAL1.c_str(), 3), '\0');
+        EXPECT_EQ(*std::next(VAL1.c_str(), 8), '\0');
 
-        static_assert(v1.size() == 3);
+        static_assert(VAL1.size() == 3);
     }
 }
 
@@ -456,12 +456,12 @@ TEST(FixedString, StringViewConversion)
 {
     auto function_that_takes_string_view = [](const std::string_view&) {};
 
-    static constexpr FixedString<7> v1{"12345"};
-    function_that_takes_string_view(v1);
-    constexpr std::string_view as_view = v1;
+    static constexpr FixedString<7> VAL1{"12345"};
+    function_that_takes_string_view(VAL1);
+    constexpr std::string_view AS_VIEW = VAL1;
 
-    static_assert(consteval_compare::equal<5, as_view.size()>);
-    static_assert(as_view == std::string_view{"12345"});
+    static_assert(consteval_compare::equal<5, AS_VIEW.size()>);
+    static_assert(AS_VIEW == std::string_view{"12345"});
 }
 
 TEST(FixedString, IteratorAssignment)
@@ -475,20 +475,20 @@ TEST(FixedString, IteratorAssignment)
 TEST(FixedString, TrivialIterators)
 {
     {
-        constexpr FixedString<3> v1{{'7', '8', '9'}};
+        constexpr FixedString<3> VAL1{{'7', '8', '9'}};
 
-        static_assert(std::distance(v1.cbegin(), v1.cend()) == 3);
+        static_assert(std::distance(VAL1.cbegin(), VAL1.cend()) == 3);
 
-        static_assert(*v1.begin() == '7');
-        static_assert(*std::next(v1.begin(), 1) == '8');
-        static_assert(*std::next(v1.begin(), 2) == '9');
+        static_assert(*VAL1.begin() == '7');
+        static_assert(*std::next(VAL1.begin(), 1) == '8');
+        static_assert(*std::next(VAL1.begin(), 2) == '9');
 
-        static_assert(*std::prev(v1.end(), 1) == '9');
-        static_assert(*std::prev(v1.end(), 2) == '8');
-        static_assert(*std::prev(v1.end(), 3) == '7');
+        static_assert(*std::prev(VAL1.end(), 1) == '9');
+        static_assert(*std::prev(VAL1.end(), 2) == '8');
+        static_assert(*std::prev(VAL1.end(), 3) == '7');
 
-        static_assert(*(1 + v1.begin()) == '8');
-        static_assert(*(2 + v1.begin()) == '9');
+        static_assert(*(1 + VAL1.begin()) == '8');
+        static_assert(*(2 + VAL1.begin()) == '9');
     }
 
     {
@@ -550,20 +550,20 @@ TEST(FixedString, TrivialIterators)
 TEST(FixedString, ReverseIterators)
 {
     {
-        constexpr FixedString<3> v1{{'7', '8', '9'}};
+        constexpr FixedString<3> VAL1{{'7', '8', '9'}};
 
-        static_assert(std::distance(v1.crbegin(), v1.crend()) == 3);
+        static_assert(std::distance(VAL1.crbegin(), VAL1.crend()) == 3);
 
-        static_assert(*v1.rbegin() == '9');
-        static_assert(*std::next(v1.rbegin(), 1) == '8');
-        static_assert(*std::next(v1.rbegin(), 2) == '7');
+        static_assert(*VAL1.rbegin() == '9');
+        static_assert(*std::next(VAL1.rbegin(), 1) == '8');
+        static_assert(*std::next(VAL1.rbegin(), 2) == '7');
 
-        static_assert(*std::prev(v1.rend(), 1) == '7');
-        static_assert(*std::prev(v1.rend(), 2) == '8');
-        static_assert(*std::prev(v1.rend(), 3) == '9');
+        static_assert(*std::prev(VAL1.rend(), 1) == '7');
+        static_assert(*std::prev(VAL1.rend(), 2) == '8');
+        static_assert(*std::prev(VAL1.rend(), 3) == '9');
 
-        static_assert(*(1 + v1.begin()) == '8');
-        static_assert(*(2 + v1.begin()) == '9');
+        static_assert(*(1 + VAL1.begin()) == '8');
+        static_assert(*(2 + VAL1.begin()) == '9');
     }
 
     {
@@ -624,7 +624,7 @@ TEST(FixedString, ReverseIterators)
 
 TEST(FixedString, ReverseIteratorBase)
 {
-    constexpr auto v1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedString<7> v{"123"};
         auto it = v.rbegin();  // points to 3
@@ -634,7 +634,7 @@ TEST(FixedString, ReverseIteratorBase)
         return v;
     }();
 
-    static_assert(v1 == "13");
+    static_assert(VAL1 == "13");
 }
 
 TEST(FixedString, IterationBasic)
@@ -694,35 +694,35 @@ TEST(FixedString, IterationBasic)
 
 TEST(FixedString, Empty)
 {
-    constexpr auto v1 = []() { return FixedString<7>{}; }();
+    constexpr auto VAL1 = []() { return FixedString<7>{}; }();
 
-    static_assert(v1.empty());
-    static_assert(v1.max_size() == 7);
+    static_assert(VAL1.empty());
+    static_assert(VAL1.max_size() == 7);
 }
 
 TEST(FixedString, LengthAndSize)
 {
     {
-        constexpr auto v1 = []() { return FixedString<7>{}; }();
-        static_assert(v1.length() == 0);  // NOLINT(readability-container-size-empty)
-        static_assert(v1.size() == 0);    // NOLINT(readability-container-size-empty)
-        static_assert(v1.max_size() == 7);
+        constexpr auto VAL1 = []() { return FixedString<7>{}; }();
+        static_assert(VAL1.length() == 0);  // NOLINT(readability-container-size-empty)
+        static_assert(VAL1.size() == 0);    // NOLINT(readability-container-size-empty)
+        static_assert(VAL1.max_size() == 7);
     }
 
     {
-        constexpr auto v1 = []() { return FixedString<7>{"123"}; }();
-        static_assert(v1.length() == 3);
-        static_assert(v1.size() == 3);
-        static_assert(v1.max_size() == 7);
+        constexpr auto VAL1 = []() { return FixedString<7>{"123"}; }();
+        static_assert(VAL1.length() == 3);
+        static_assert(VAL1.size() == 3);
+        static_assert(VAL1.max_size() == 7);
     }
 }
 
 TEST(FixedString, CapacityAndMaxSize)
 {
     {
-        constexpr FixedString<3> v1{};
-        static_assert(v1.capacity() == 3);
-        static_assert(v1.max_size() == 3);
+        constexpr FixedString<3> VAL1{};
+        static_assert(VAL1.capacity() == 3);
+        static_assert(VAL1.max_size() == 3);
     }
 
     {
@@ -741,15 +741,15 @@ TEST(FixedString, CapacityAndMaxSize)
 
 TEST(FixedString, Reserve)
 {
-    constexpr auto v1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedString<11> v{};
         v.reserve(5);
         return v;
     }();
 
-    static_assert(v1.capacity() == 11);
-    static_assert(v1.max_size() == 11);
+    static_assert(VAL1.capacity() == 11);
+    static_assert(VAL1.max_size() == 11);
 
     FixedString<7> v2{};
     v2.reserve(5);
@@ -758,7 +758,7 @@ TEST(FixedString, Reserve)
 
 TEST(FixedString, Clear)
 {
-    constexpr auto v1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedString<7> v{"012"};
         v.assign(5, 'a');
@@ -766,15 +766,15 @@ TEST(FixedString, Clear)
         return v;
     }();
 
-    static_assert(v1.empty());
-    static_assert(v1.capacity() == 7);
-    static_assert(v1.max_size() == 7);
+    static_assert(VAL1.empty());
+    static_assert(VAL1.capacity() == 7);
+    static_assert(VAL1.max_size() == 7);
 }
 
 TEST(FixedString, InsertValue)
 {
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             FixedString<7> v{"0123"};
             v.insert(v.begin(), 'a');
@@ -783,13 +783,13 @@ TEST(FixedString, InsertValue)
             return v;
         }();
 
-        static_assert(v1 == "a0e123");
-        static_assert(v1.size() == 6);
-        static_assert(v1.max_size() == 7);
+        static_assert(VAL1 == "a0e123");
+        static_assert(VAL1.size() == 6);
+        static_assert(VAL1.max_size() == 7);
     }
     {
         // For off-by-one issues, make the capacity just fit
-        constexpr auto v2 = []()
+        constexpr auto VAL2 = []()
         {
             FixedString<5> v{"012"};
             v.insert(v.begin(), 'a');
@@ -798,9 +798,9 @@ TEST(FixedString, InsertValue)
             return v;
         }();
 
-        static_assert(v2 == "a0e12");
-        static_assert(v2.size() == 5);
-        static_assert(v2.max_size() == 5);
+        static_assert(VAL2 == "a0e12");
+        static_assert(VAL2.size() == 5);
+        static_assert(VAL2.max_size() == 5);
     }
 }
 
@@ -813,7 +813,7 @@ TEST(FixedString, InsertValueExceedsCapacity)
 TEST(FixedString, InsertIterator)
 {
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             std::array<char, 2> a{'a', 'e'};
             FixedString<7> v{"0123"};
@@ -821,13 +821,13 @@ TEST(FixedString, InsertIterator)
             return v;
         }();
 
-        static_assert(v1 == "01ae23");
-        static_assert(v1.size() == 6);
-        static_assert(v1.max_size() == 7);
+        static_assert(VAL1 == "01ae23");
+        static_assert(VAL1.size() == 6);
+        static_assert(VAL1.max_size() == 7);
     }
     {
         // For off-by-one issues, make the capacity just fit
-        constexpr auto v2 = []()
+        constexpr auto VAL2 = []()
         {
             std::array<char, 2> a{'a', 'e'};
             FixedString<5> v{"012"};
@@ -835,9 +835,9 @@ TEST(FixedString, InsertIterator)
             return v;
         }();
 
-        static_assert(v2 == "01ae2");
-        static_assert(v2.size() == 5);
-        static_assert(v2.max_size() == 5);
+        static_assert(VAL2 == "01ae2");
+        static_assert(VAL2.size() == 5);
+        static_assert(VAL2.max_size() == 5);
     }
 
     {
@@ -880,16 +880,16 @@ TEST(FixedString, InsertInitializerList)
 {
     {
         // For off-by-one issues, make the capacity just fit
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             FixedString<5> v{"012"};
             v.insert(std::next(v.begin(), 2), {'a', 'e'});
             return v;
         }();
 
-        static_assert(v1 == "01ae2");
-        static_assert(v1.size() == 5);
-        static_assert(v1.max_size() == 5);
+        static_assert(VAL1 == "01ae2");
+        static_assert(VAL1.size() == 5);
+        static_assert(VAL1.max_size() == 5);
     }
 
     {
@@ -910,7 +910,7 @@ TEST(FixedString, InsertStringView)
 {
     {
         // For off-by-one issues, make the capacity just fit
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             FixedString<5> v{"012"};
             const std::string_view s = "ae";
@@ -918,9 +918,9 @@ TEST(FixedString, InsertStringView)
             return v;
         }();
 
-        static_assert(v1 == "01ae2");
-        static_assert(v1.size() == 5);
-        static_assert(v1.max_size() == 5);
+        static_assert(VAL1 == "01ae2");
+        static_assert(VAL1.size() == 5);
+        static_assert(VAL1.max_size() == 5);
     }
 
     {
@@ -934,16 +934,16 @@ TEST(FixedString, InsertStringView)
 
 TEST(FixedString, EraseRange)
 {
-    constexpr auto v1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedString<8> v{"012345"};
         v.erase(std::next(v.cbegin(), 2), std::next(v.begin(), 4));
         return v;
     }();
 
-    static_assert(v1 == "0145");
-    static_assert(v1.size() == 4);
-    static_assert(v1.max_size() == 8);
+    static_assert(VAL1 == "0145");
+    static_assert(VAL1.size() == 4);
+    static_assert(VAL1.max_size() == 8);
 
     FixedString<8> v2{"214503"};
 
@@ -955,7 +955,7 @@ TEST(FixedString, EraseRange)
 
 TEST(FixedString, EraseOne)
 {
-    constexpr auto v1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedString<8> v{"012345"};
         v.erase(v.cbegin());
@@ -963,9 +963,9 @@ TEST(FixedString, EraseOne)
         return v;
     }();
 
-    static_assert(v1 == "1245");
-    static_assert(v1.size() == 4);
-    static_assert(v1.max_size() == 8);
+    static_assert(VAL1 == "1245");
+    static_assert(VAL1.size() == 4);
+    static_assert(VAL1.max_size() == 8);
 
     FixedString<8> v2{"214503"};
 
@@ -1014,7 +1014,7 @@ TEST(FixedString, EraseEmpty)
 
 TEST(FixedString, PushBack)
 {
-    constexpr auto v1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedString<11> v{};
         v.push_back('0');
@@ -1024,7 +1024,7 @@ TEST(FixedString, PushBack)
         return v;
     }();
 
-    static_assert(std::ranges::equal(v1, std::array{'0', '1', '2'}));
+    static_assert(std::ranges::equal(VAL1, std::array{'0', '1', '2'}));
 }
 
 TEST(FixedString, PushBackExceedsCapacity)
@@ -1038,14 +1038,14 @@ TEST(FixedString, PushBackExceedsCapacity)
 
 TEST(FixedString, PopBack)
 {
-    constexpr auto v1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedString<11> v{"012"};
         v.pop_back();
         return v;
     }();
 
-    static_assert(std::ranges::equal(v1, std::array{'0', '1'}));
+    static_assert(std::ranges::equal(VAL1, std::array{'0', '1'}));
 
     FixedString<17> v2{"abc"};
     v2.pop_back();
@@ -1061,7 +1061,7 @@ TEST(FixedString, PopBackEmpty)
 TEST(FixedString, AppendIterator)
 {
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             std::array<char, 2> a{'a', 'e'};
             FixedString<7> v{"0123"};
@@ -1069,13 +1069,13 @@ TEST(FixedString, AppendIterator)
             return v;
         }();
 
-        static_assert(v1 == "0123ae");
-        static_assert(v1.size() == 6);
-        static_assert(v1.max_size() == 7);
+        static_assert(VAL1 == "0123ae");
+        static_assert(VAL1.size() == 6);
+        static_assert(VAL1.max_size() == 7);
     }
     {
         // For off-by-one issues, make the capacity just fit
-        constexpr auto v2 = []()
+        constexpr auto VAL2 = []()
         {
             std::array<char, 2> a{'a', 'e'};
             FixedString<5> v{"012"};
@@ -1083,9 +1083,9 @@ TEST(FixedString, AppendIterator)
             return v;
         }();
 
-        static_assert(v2 == "012ae");
-        static_assert(v2.size() == 5);
-        static_assert(v2.max_size() == 5);
+        static_assert(VAL2 == "012ae");
+        static_assert(VAL2.size() == 5);
+        static_assert(VAL2.max_size() == 5);
     }
 
     {
@@ -1134,16 +1134,16 @@ TEST(FixedString, AppendInitializerList)
 {
     {
         // For off-by-one issues, make the capacity just fit
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             FixedString<5> v{"012"};
             v.append({'a', 'e'});
             return v;
         }();
 
-        static_assert(v1 == "012ae");
-        static_assert(v1.size() == 5);
-        static_assert(v1.max_size() == 5);
+        static_assert(VAL1 == "012ae");
+        static_assert(VAL1.size() == 5);
+        static_assert(VAL1.max_size() == 5);
     }
 
     {
@@ -1158,7 +1158,7 @@ TEST(FixedString, AppendStringView)
 {
     {
         // For off-by-one issues, make the capacity just fit
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             FixedString<5> v{"012"};
             const std::string_view s = "ae";
@@ -1166,9 +1166,9 @@ TEST(FixedString, AppendStringView)
             return v;
         }();
 
-        static_assert(v1 == "012ae");
-        static_assert(v1.size() == 5);
-        static_assert(v1.max_size() == 5);
+        static_assert(VAL1 == "012ae");
+        static_assert(VAL1.size() == 5);
+        static_assert(VAL1.max_size() == 5);
     }
 
     {
@@ -1182,7 +1182,7 @@ TEST(FixedString, AppendStringView)
 
 TEST(FixedString, OperatorPlusEqual)
 {
-    constexpr auto v1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedString<17> v{"012"};
         v.append("abc");
@@ -1192,30 +1192,30 @@ TEST(FixedString, OperatorPlusEqual)
         return v;
     }();
 
-    static_assert(v1 == "012abcdefg");
-    static_assert(v1.size() == 10);
-    static_assert(v1.max_size() == 17);
+    static_assert(VAL1 == "012abcdefg");
+    static_assert(VAL1.size() == 10);
+    static_assert(VAL1.max_size() == 17);
 }
 
 TEST(FixedString, Equality)
 {
-    constexpr auto v1 = FixedString<12>{"012"};
+    constexpr auto VAL1 = FixedString<12>{"012"};
     // Capacity difference should not affect equality
-    constexpr auto v2 = FixedString<11>{"012"};
-    constexpr auto v3 = FixedString<12>{"092"};
-    constexpr auto v4 = FixedString<12>{"01"};
-    constexpr auto v5 = FixedString<12>{"012345"};
+    constexpr auto VAL2 = FixedString<11>{"012"};
+    constexpr auto VAL3 = FixedString<12>{"092"};
+    constexpr auto VAL4 = FixedString<12>{"01"};
+    constexpr auto VAL5 = FixedString<12>{"012345"};
 
-    static_assert(v1 == v2);
-    static_assert(v1 != v3);
-    static_assert(v1 != v4);
-    static_assert(v1 != v5);
+    static_assert(VAL1 == VAL2);
+    static_assert(VAL1 != VAL3);
+    static_assert(VAL1 != VAL4);
+    static_assert(VAL1 != VAL5);
 
-    EXPECT_EQ(v1, v1);
-    EXPECT_EQ(v1, v2);
-    EXPECT_NE(v1, v3);
-    EXPECT_NE(v1, v4);
-    EXPECT_NE(v1, v5);
+    EXPECT_EQ(VAL1, VAL1);
+    EXPECT_EQ(VAL1, VAL2);
+    EXPECT_NE(VAL1, VAL3);
+    EXPECT_NE(VAL1, VAL4);
+    EXPECT_NE(VAL1, VAL5);
 }
 
 TEST(FixedString, EqualityNonFixedString)
@@ -1265,20 +1265,20 @@ TEST(FixedString, Comparison)
     }
 
     {
-        constexpr FixedString<5> left{"123"};
-        constexpr FixedString<5> right{"124"};
+        constexpr FixedString<5> LEFT{"123"};
+        constexpr FixedString<5> RIGHT{"124"};
 
-        static_assert(left < right);
-        static_assert(left <= right);
-        static_assert(!(left > right));
-        static_assert(!(left >= right));
+        static_assert(LEFT < RIGHT);
+        static_assert(LEFT <= RIGHT);
+        static_assert(!(LEFT > RIGHT));
+        static_assert(!(LEFT >= RIGHT));
 
-        ASSERT_TRUE(left < right);
-        ASSERT_TRUE(left <= right);
-        ASSERT_TRUE(!(left > right));
-        ASSERT_TRUE(!(left >= right));
+        ASSERT_TRUE(LEFT < RIGHT);
+        ASSERT_TRUE(LEFT <= RIGHT);
+        ASSERT_TRUE(!(LEFT > RIGHT));
+        ASSERT_TRUE(!(LEFT >= RIGHT));
 
-        ASSERT_TRUE(left.compare(right) < 0);
+        ASSERT_TRUE(LEFT.compare(RIGHT) < 0);
     }
 
     // Left has fewer elements, left > right
@@ -1295,20 +1295,20 @@ TEST(FixedString, Comparison)
     }
 
     {
-        constexpr FixedString<5> left{"15"};
-        constexpr FixedString<5> right{"124"};
+        constexpr FixedString<5> LEFT{"15"};
+        constexpr FixedString<5> RIGHT{"124"};
 
-        static_assert(!(left < right));
-        static_assert(!(left <= right));
-        static_assert(left > right);
-        static_assert(left >= right);
+        static_assert(!(LEFT < RIGHT));
+        static_assert(!(LEFT <= RIGHT));
+        static_assert(LEFT > RIGHT);
+        static_assert(LEFT >= RIGHT);
 
-        ASSERT_TRUE(!(left < right));
-        ASSERT_TRUE(!(left <= right));
-        ASSERT_TRUE(left > right);
-        ASSERT_TRUE(left >= right);
+        ASSERT_TRUE(!(LEFT < RIGHT));
+        ASSERT_TRUE(!(LEFT <= RIGHT));
+        ASSERT_TRUE(LEFT > RIGHT);
+        ASSERT_TRUE(LEFT >= RIGHT);
 
-        ASSERT_TRUE(left.compare(right) > 0);
+        ASSERT_TRUE(LEFT.compare(RIGHT) > 0);
     }
 
     // Right has fewer elements, left < right
@@ -1325,20 +1325,20 @@ TEST(FixedString, Comparison)
     }
 
     {
-        constexpr FixedString<5> left{"123"};
-        constexpr FixedString<5> right{"15"};
+        constexpr FixedString<5> LEFT{"123"};
+        constexpr FixedString<5> RIGHT{"15"};
 
-        static_assert(left < right);
-        static_assert(left <= right);
-        static_assert(!(left > right));
-        static_assert(!(left >= right));
+        static_assert(LEFT < RIGHT);
+        static_assert(LEFT <= RIGHT);
+        static_assert(!(LEFT > RIGHT));
+        static_assert(!(LEFT >= RIGHT));
 
-        ASSERT_TRUE(left < right);
-        ASSERT_TRUE(left <= right);
-        ASSERT_TRUE(!(left > right));
-        ASSERT_TRUE(!(left >= right));
+        ASSERT_TRUE(LEFT < RIGHT);
+        ASSERT_TRUE(LEFT <= RIGHT);
+        ASSERT_TRUE(!(LEFT > RIGHT));
+        ASSERT_TRUE(!(LEFT >= RIGHT));
 
-        ASSERT_TRUE(left.compare(right) < 0);
+        ASSERT_TRUE(LEFT.compare(RIGHT) < 0);
     }
 
     // Left has one additional element
@@ -1355,20 +1355,20 @@ TEST(FixedString, Comparison)
     }
 
     {
-        constexpr FixedString<5> left{"123"};
-        constexpr FixedString<5> right{"12"};
+        constexpr FixedString<5> LEFT{"123"};
+        constexpr FixedString<5> RIGHT{"12"};
 
-        static_assert(!(left < right));
-        static_assert(!(left <= right));
-        static_assert(left > right);
-        static_assert(left >= right);
+        static_assert(!(LEFT < RIGHT));
+        static_assert(!(LEFT <= RIGHT));
+        static_assert(LEFT > RIGHT);
+        static_assert(LEFT >= RIGHT);
 
-        ASSERT_TRUE(!(left < right));
-        ASSERT_TRUE(!(left <= right));
-        ASSERT_TRUE(left > right);
-        ASSERT_TRUE(left >= right);
+        ASSERT_TRUE(!(LEFT < RIGHT));
+        ASSERT_TRUE(!(LEFT <= RIGHT));
+        ASSERT_TRUE(LEFT > RIGHT);
+        ASSERT_TRUE(LEFT >= RIGHT);
 
-        ASSERT_TRUE(left.compare(right) > 0);
+        ASSERT_TRUE(LEFT.compare(RIGHT) > 0);
     }
 
     // Right has one additional element
@@ -1385,85 +1385,85 @@ TEST(FixedString, Comparison)
     }
 
     {
-        constexpr FixedString<5> left{"12"};
-        constexpr FixedString<5> right{"123"};
+        constexpr FixedString<5> LEFT{"12"};
+        constexpr FixedString<5> RIGHT{"123"};
 
-        static_assert(left < right);
-        static_assert(left <= right);
-        static_assert(!(left > right));
-        static_assert(!(left >= right));
+        static_assert(LEFT < RIGHT);
+        static_assert(LEFT <= RIGHT);
+        static_assert(!(LEFT > RIGHT));
+        static_assert(!(LEFT >= RIGHT));
 
-        ASSERT_TRUE(left < right);
-        ASSERT_TRUE(left <= right);
-        ASSERT_TRUE(!(left > right));
-        ASSERT_TRUE(!(left >= right));
+        ASSERT_TRUE(LEFT < RIGHT);
+        ASSERT_TRUE(LEFT <= RIGHT);
+        ASSERT_TRUE(!(LEFT > RIGHT));
+        ASSERT_TRUE(!(LEFT >= RIGHT));
 
-        ASSERT_TRUE(left.compare(right) < 0);
+        ASSERT_TRUE(LEFT.compare(RIGHT) < 0);
     }
 }
 
 TEST(FixedString, StartsWith)
 {
-    constexpr auto v1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedString<7> v{"0123"};
         return v;
     }();
 
-    static_assert(v1.starts_with('0'));
-    static_assert(v1.starts_with("01"));
-    static_assert(v1.starts_with(std::string_view{"012"}));
+    static_assert(VAL1.starts_with('0'));
+    static_assert(VAL1.starts_with("01"));
+    static_assert(VAL1.starts_with(std::string_view{"012"}));
 
-    static_assert(!v1.starts_with('1'));
-    static_assert(!v1.starts_with("1"));
-    static_assert(!v1.starts_with(std::string_view{"12"}));
+    static_assert(!VAL1.starts_with('1'));
+    static_assert(!VAL1.starts_with("1"));
+    static_assert(!VAL1.starts_with(std::string_view{"12"}));
 }
 
 TEST(FixedString, EndsWith)
 {
-    constexpr auto v1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedString<7> v{"0123"};
         return v;
     }();
 
-    static_assert(v1.ends_with('3'));
-    static_assert(v1.ends_with("23"));
-    static_assert(v1.ends_with(std::string_view{"123"}));
+    static_assert(VAL1.ends_with('3'));
+    static_assert(VAL1.ends_with("23"));
+    static_assert(VAL1.ends_with(std::string_view{"123"}));
 
-    static_assert(!v1.ends_with('2'));
-    static_assert(!v1.ends_with("2"));
-    static_assert(!v1.ends_with(std::string_view{"12"}));
+    static_assert(!VAL1.ends_with('2'));
+    static_assert(!VAL1.ends_with("2"));
+    static_assert(!VAL1.ends_with(std::string_view{"12"}));
 }
 
 TEST(FixedString, Substring)
 {
-    constexpr auto v1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedString<7> v{"0123"};
         return v;
     }();
 
-    static_assert(v1.substr(0, 3) == "012");
-    static_assert(v1.substr(1, 2) == "12");
-    static_assert(v1.substr(2, 2) == "23");
+    static_assert(VAL1.substr(0, 3) == "012");
+    static_assert(VAL1.substr(1, 2) == "12");
+    static_assert(VAL1.substr(2, 2) == "23");
 
-    EXPECT_DEATH((void)v1.substr(5, 1), "");
+    EXPECT_DEATH((void)VAL1.substr(5, 1), "");
 }
 
 TEST(FixedString, Resize)
 {
-    constexpr auto v1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedString<7> v{"012"};
         v.resize(6);
         return v;
     }();
 
-    static_assert(std::ranges::equal(v1, std::array{'0', '1', '2', '\0', '\0', '\0'}));
-    static_assert(v1.max_size() == 7);
+    static_assert(std::ranges::equal(VAL1, std::array{'0', '1', '2', '\0', '\0', '\0'}));
+    static_assert(VAL1.max_size() == 7);
 
-    constexpr auto v2 = []()
+    constexpr auto VAL2 = []()
     {
         FixedString<7> v{"012"};
         v.resize(7, 'c');
@@ -1471,8 +1471,8 @@ TEST(FixedString, Resize)
         return v;
     }();
 
-    static_assert(std::ranges::equal(v2, std::array{'0', '1', '2', 'c', 'c'}));
-    static_assert(v2.max_size() == 7);
+    static_assert(std::ranges::equal(VAL2, std::array{'0', '1', '2', 'c', 'c'}));
+    static_assert(VAL2.max_size() == 7);
 
     FixedString<8> v3{"0123"};
     v3.resize(6);
@@ -1498,7 +1498,7 @@ TEST(FixedString, ResizeExceedsCapacity)
 
 TEST(FixedString, Full)
 {
-    constexpr auto v1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedString<4> v{};
         v.push_back('0');
@@ -1508,24 +1508,24 @@ TEST(FixedString, Full)
         return v;
     }();
 
-    static_assert(v1 == "0123");
-    static_assert(is_full(v1));
-    static_assert(v1.size() == 4);
-    static_assert(v1.max_size() == 4);
+    static_assert(VAL1 == "0123");
+    static_assert(is_full(VAL1));
+    static_assert(VAL1.size() == 4);
+    static_assert(VAL1.max_size() == 4);
 
-    EXPECT_TRUE(is_full(v1));
+    EXPECT_TRUE(is_full(VAL1));
 }
 
 TEST(FixedString, Span)
 {
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             FixedString<7> v{'0', '1', '2'};
             return v;
         }();
 
-        const std::span<const char> as_span{v1};
+        const std::span<const char> as_span{VAL1};
         ASSERT_EQ(3, as_span.size());
         ASSERT_EQ('0', as_span[0]);
         ASSERT_EQ('1', as_span[1]);
@@ -1560,9 +1560,9 @@ TEST(FixedString, Span)
 
 TEST(FixedString, MaxSizeDeduction)
 {
-    constexpr auto v1 = make_fixed_string("abcde");
-    static_assert(v1.max_size() == 5);
-    static_assert(std::ranges::equal(v1, std::array{'a', 'b', 'c', 'd', 'e'}));
+    constexpr auto VAL1 = make_fixed_string("abcde");
+    static_assert(VAL1.max_size() == 5);
+    static_assert(std::ranges::equal(VAL1, std::array{'a', 'b', 'c', 'd', 'e'}));
 }
 
 TEST(FixedString, ClassTemplateArgumentDeduction)

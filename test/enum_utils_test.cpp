@@ -336,7 +336,7 @@ TEST(RichEnum, UsageAsTemplateParameter)
 
 TEST(RichEnum, UsageInSwitchCase)
 {
-    constexpr int result = [](const TestRichEnum1& val)
+    constexpr int RESULT = [](const TestRichEnum1& val)
     {
         switch (val)
         {
@@ -351,7 +351,7 @@ TEST(RichEnum, UsageInSwitchCase)
         }
     }(TestRichEnum1::C_TWO());
 
-    static_assert(22 == result);
+    static_assert(22 == RESULT);
 }
 
 }  // namespace fixed_containers::rich_enums

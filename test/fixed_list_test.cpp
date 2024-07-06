@@ -125,30 +125,30 @@ struct ComplexStruct
 
 TEST(FixedList, DefaultConstructor)
 {
-    constexpr FixedList<int, 8> v1{};
-    static_assert(v1.empty());
-    static_assert(v1.max_size() == 8);
+    constexpr FixedList<int, 8> VAL1{};
+    static_assert(VAL1.empty());
+    static_assert(VAL1.max_size() == 8);
 
-    constexpr FixedList<std::pair<int, int>, 5> v2{};
-    static_assert(v2.empty());
+    constexpr FixedList<std::pair<int, int>, 5> VAL2{};
+    static_assert(VAL2.empty());
 }
 
 TEST(FixedList, DefaultConstructorNonDefaultConstructible)
 {
     {
-        constexpr FixedList<MockNonDefaultConstructible, 8> v1{};
-        static_assert(v1.empty());
-        static_assert(v1.max_size() == 8);
+        constexpr FixedList<MockNonDefaultConstructible, 8> VAL1{};
+        static_assert(VAL1.empty());
+        static_assert(VAL1.max_size() == 8);
     }
     {
-        constexpr auto v2 = []()
+        constexpr auto VAL2 = []()
         {
             FixedList<MockNonDefaultConstructible, 11> v{};
             v.push_back({0});
             return v;
         }();
 
-        static_assert(v2.size() == 1);
+        static_assert(VAL2.size() == 1);
     }
 }
 
@@ -292,13 +292,13 @@ TEST(FixedList, MockTriviallyCopyableButNotCopyableOrMoveable)
 TEST(FixedList, MaxSizeDeduction)
 {
     {
-        constexpr auto v1 = make_fixed_list({10, 11, 12, 13, 14});
-        static_assert(v1.max_size() == 5);
-        static_assert(std::ranges::equal(v1, std::array{10, 11, 12, 13, 14}));
+        constexpr auto VAL1 = make_fixed_list({10, 11, 12, 13, 14});
+        static_assert(VAL1.max_size() == 5);
+        static_assert(std::ranges::equal(VAL1, std::array{10, 11, 12, 13, 14}));
     }
     {
-        constexpr auto v1 = make_fixed_list<int>({});
-        static_assert(v1.max_size() == 0);
+        constexpr auto VAL1 = make_fixed_list<int>({});
+        static_assert(VAL1.max_size() == 0);
     }
 }
 
@@ -306,23 +306,23 @@ TEST(FixedList, CountConstructor)
 {
     // Caution: Using braces calls initializer list ctor!
     {
-        constexpr FixedList<int, 8> v{5};
-        static_assert(v.size() == 1);
+        constexpr FixedList<int, 8> VAL{5};
+        static_assert(VAL.size() == 1);
     }
 
     // Use parens to get the count ctor!
     {
-        constexpr FixedList<int, 8> v1(5);
-        static_assert(v1.size() == 5);
-        static_assert(v1.max_size() == 8);
-        static_assert(std::ranges::equal(v1, std::array{0, 0, 0, 0, 0}));
+        constexpr FixedList<int, 8> VAL1(5);
+        static_assert(VAL1.size() == 5);
+        static_assert(VAL1.max_size() == 8);
+        static_assert(std::ranges::equal(VAL1, std::array{0, 0, 0, 0, 0}));
     }
 
     {
-        constexpr FixedList<int, 8> v2(5, 3);
-        static_assert(v2.size() == 5);
-        static_assert(v2.max_size() == 8);
-        static_assert(std::ranges::equal(v2, std::array{3, 3, 3, 3, 3}));
+        constexpr FixedList<int, 8> VAL2(5, 3);
+        static_assert(VAL2.size() == 5);
+        static_assert(VAL2.max_size() == 8);
+        static_assert(std::ranges::equal(VAL2, std::array{3, 3, 3, 3, 3}));
     }
 
     // NonAssignable<T>
@@ -336,17 +336,17 @@ TEST(FixedList, CountConstructorExceedsCapacity) { EXPECT_DEATH((FixedList<int, 
 
 TEST(FixedList, IteratorConstructor)
 {
-    constexpr std::array<int, 2> v1{77, 99};
+    constexpr std::array<int, 2> VAL1{77, 99};
 
-    constexpr FixedList<int, 15> v2{v1.begin(), v1.end()};
-    static_assert(std::ranges::equal(v2, std::array{77, 99}));
+    constexpr FixedList<int, 15> VAL2{VAL1.begin(), VAL1.end()};
+    static_assert(std::ranges::equal(VAL2, std::array{77, 99}));
 }
 
 TEST(FixedList, IteratorConstructorExceedsCapacity)
 {
-    constexpr std::array<int, 5> v1{1, 2, 3, 4, 5};
+    constexpr std::array<int, 5> VAL1{1, 2, 3, 4, 5};
 
-    EXPECT_DEATH((FixedList<int, 3>(v1.begin(), v1.end())), "");
+    EXPECT_DEATH((FixedList<int, 3>(VAL1.begin(), VAL1.end())), "");
 }
 
 TEST(FixedList, InputIteratorConstructor)
@@ -365,14 +365,14 @@ TEST(FixedList, InputIteratorConstructorExceedsCapacity)
 
 TEST(FixedList, InitializerConstructor)
 {
-    constexpr FixedList<int, 3> v1{77, 99};
-    static_assert(std::ranges::equal(v1, std::array{77, 99}));
+    constexpr FixedList<int, 3> VAL1{77, 99};
+    static_assert(std::ranges::equal(VAL1, std::array{77, 99}));
 
-    constexpr FixedList<int, 3> v2{{66, 55}};
-    static_assert(std::ranges::equal(v2, std::array{66, 55}));
+    constexpr FixedList<int, 3> VAL2{{66, 55}};
+    static_assert(std::ranges::equal(VAL2, std::array{66, 55}));
 
-    EXPECT_TRUE(std::ranges::equal(v1, std::array{77, 99}));
-    EXPECT_TRUE(std::ranges::equal(v2, std::array{66, 55}));
+    EXPECT_TRUE(std::ranges::equal(VAL1, std::array{77, 99}));
+    EXPECT_TRUE(std::ranges::equal(VAL2, std::array{66, 55}));
 }
 
 TEST(FixedList, InitializerConstructorExceedsCapacity)
@@ -382,7 +382,7 @@ TEST(FixedList, InitializerConstructorExceedsCapacity)
 
 TEST(FixedList, PushBack)
 {
-    constexpr auto v1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedList<int, 11> v{};
         v.push_back(0);
@@ -392,15 +392,15 @@ TEST(FixedList, PushBack)
         return v;
     }();
 
-    static_assert(std::ranges::equal(v1, std::array{0, 1, 2}));
+    static_assert(std::ranges::equal(VAL1, std::array{0, 1, 2}));
 
-    constexpr auto v2 = []()
+    constexpr auto VAL2 = []()
     {
         FixedList<MockNonTrivialCopyConstructible, 5> aaa{};
         aaa.push_back(MockNonTrivialCopyConstructible{});
         return aaa;
     }();
-    static_assert(v2.size() == 1);
+    static_assert(VAL2.size() == 1);
 }
 
 TEST(FixedList, PushBackExceedsCapacity)
@@ -415,7 +415,7 @@ TEST(FixedList, PushBackExceedsCapacity)
 TEST(FixedList, EmplaceBack)
 {
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             FixedList<int, 11> v{0, 1, 2};
             v.emplace_back(3);
@@ -423,7 +423,7 @@ TEST(FixedList, EmplaceBack)
             return v;
         }();
 
-        static_assert(std::ranges::equal(v1, std::array{0, 1, 2, 3, 4}));
+        static_assert(std::ranges::equal(VAL1, std::array{0, 1, 2, 3, 4}));
     }
     {
         auto v1 = []()
@@ -462,8 +462,8 @@ TEST(FixedList, EmplaceBackExceedsCapacity)
 TEST(FixedList, MaxSize)
 {
     {
-        constexpr FixedList<int, 3> v1{};
-        static_assert(v1.max_size() == 3);
+        constexpr FixedList<int, 3> VAL1{};
+        static_assert(VAL1.max_size() == 3);
     }
 
     {
@@ -489,14 +489,14 @@ TEST(FixedList, ExceedsCapacity)
 
 TEST(FixedList, PopBack)
 {
-    constexpr auto v1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedList<int, 11> v{0, 1, 2};
         v.pop_back();
         return v;
     }();
 
-    static_assert(std::ranges::equal(v1, std::array{0, 1}));
+    static_assert(std::ranges::equal(VAL1, std::array{0, 1}));
 
     FixedList<int, 17> v2{10, 11, 12};
     v2.pop_back();
@@ -511,7 +511,7 @@ TEST(FixedList, PopBackEmpty)
 
 TEST(FixedList, PushFront)
 {
-    constexpr auto v1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedList<int, 11> v{};
         v.push_front(0);
@@ -521,15 +521,15 @@ TEST(FixedList, PushFront)
         return v;
     }();
 
-    static_assert(std::ranges::equal(v1, std::array{2, 1, 0}));
+    static_assert(std::ranges::equal(VAL1, std::array{2, 1, 0}));
 
-    constexpr auto v2 = []()
+    constexpr auto VAL2 = []()
     {
         FixedList<MockNonTrivialCopyConstructible, 5> aaa{};
         aaa.push_front(MockNonTrivialCopyConstructible{});
         return aaa;
     }();
-    static_assert(v2.size() == 1);
+    static_assert(VAL2.size() == 1);
 }
 
 TEST(FixedList, PushFrontExceedsCapacity)
@@ -544,7 +544,7 @@ TEST(FixedList, PushFrontExceedsCapacity)
 TEST(FixedList, EmplaceFront)
 {
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             FixedList<int, 11> v{0, 1, 2};
             v.emplace_front(3);
@@ -552,7 +552,7 @@ TEST(FixedList, EmplaceFront)
             return v;
         }();
 
-        static_assert(std::ranges::equal(v1, std::array{4, 3, 0, 1, 2}));
+        static_assert(std::ranges::equal(VAL1, std::array{4, 3, 0, 1, 2}));
     }
     {
         auto v1 = []()
@@ -590,14 +590,14 @@ TEST(FixedList, EmplaceFrontExceedsCapacity)
 
 TEST(FixedList, PopFront)
 {
-    constexpr auto v1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedList<int, 11> v{0, 1, 2};
         v.pop_front();
         return v;
     }();
 
-    static_assert(std::ranges::equal(v1, std::array{1, 2}));
+    static_assert(std::ranges::equal(VAL1, std::array{1, 2}));
 
     FixedList<int, 17> v2{10, 11, 12};
     v2.pop_front();
@@ -612,23 +612,23 @@ TEST(FixedList, PopFrontEmpty)
 
 TEST(FixedList, Equality)
 {
-    constexpr auto v1 = FixedList<int, 12>{0, 1, 2};
+    constexpr auto VAL1 = FixedList<int, 12>{0, 1, 2};
     // Capacity difference should not affect equality
-    constexpr auto v2 = FixedList<int, 11>{0, 1, 2};
-    constexpr auto v3 = FixedList<int, 12>{0, 101, 2};
-    constexpr auto v4 = FixedList<int, 12>{0, 1};
-    constexpr auto v5 = FixedList<int, 12>{0, 1, 2, 3, 4, 5};
+    constexpr auto VAL2 = FixedList<int, 11>{0, 1, 2};
+    constexpr auto VAL3 = FixedList<int, 12>{0, 101, 2};
+    constexpr auto VAL4 = FixedList<int, 12>{0, 1};
+    constexpr auto VAL5 = FixedList<int, 12>{0, 1, 2, 3, 4, 5};
 
-    static_assert(v1 == v2);
-    static_assert(v1 != v3);
-    static_assert(v1 != v4);
-    static_assert(v1 != v5);
+    static_assert(VAL1 == VAL2);
+    static_assert(VAL1 != VAL3);
+    static_assert(VAL1 != VAL4);
+    static_assert(VAL1 != VAL5);
 
-    EXPECT_EQ(v1, v1);
-    EXPECT_EQ(v1, v2);
-    EXPECT_NE(v1, v3);
-    EXPECT_NE(v1, v4);
-    EXPECT_NE(v1, v5);
+    EXPECT_EQ(VAL1, VAL1);
+    EXPECT_EQ(VAL1, VAL2);
+    EXPECT_NE(VAL1, VAL3);
+    EXPECT_NE(VAL1, VAL4);
+    EXPECT_NE(VAL1, VAL5);
 }
 
 TEST(FixedList, Comparison)
@@ -647,18 +647,18 @@ TEST(FixedList, Comparison)
     }
 
     {
-        constexpr FixedList<int, 5> left{1, 2, 3};
-        constexpr FixedList<int, 5> right{1, 2, 4};
+        constexpr FixedList<int, 5> LEFT{1, 2, 3};
+        constexpr FixedList<int, 5> RIGHT{1, 2, 4};
 
-        static_assert(left < right);
-        static_assert(left <= right);
-        static_assert(!(left > right));
-        static_assert(!(left >= right));
+        static_assert(LEFT < RIGHT);
+        static_assert(LEFT <= RIGHT);
+        static_assert(!(LEFT > RIGHT));
+        static_assert(!(LEFT >= RIGHT));
 
-        ASSERT_TRUE(left < right);
-        ASSERT_TRUE(left <= right);
-        ASSERT_TRUE(!(left > right));
-        ASSERT_TRUE(!(left >= right));
+        ASSERT_TRUE(LEFT < RIGHT);
+        ASSERT_TRUE(LEFT <= RIGHT);
+        ASSERT_TRUE(!(LEFT > RIGHT));
+        ASSERT_TRUE(!(LEFT >= RIGHT));
     }
 
     // Left has fewer elements, left > right
@@ -673,18 +673,18 @@ TEST(FixedList, Comparison)
     }
 
     {
-        constexpr FixedList<int, 5> left{1, 5};
-        constexpr FixedList<int, 5> right{1, 2, 4};
+        constexpr FixedList<int, 5> LEFT{1, 5};
+        constexpr FixedList<int, 5> RIGHT{1, 2, 4};
 
-        static_assert(!(left < right));
-        static_assert(!(left <= right));
-        static_assert(left > right);
-        static_assert(left >= right);
+        static_assert(!(LEFT < RIGHT));
+        static_assert(!(LEFT <= RIGHT));
+        static_assert(LEFT > RIGHT);
+        static_assert(LEFT >= RIGHT);
 
-        ASSERT_TRUE(!(left < right));
-        ASSERT_TRUE(!(left <= right));
-        ASSERT_TRUE(left > right);
-        ASSERT_TRUE(left >= right);
+        ASSERT_TRUE(!(LEFT < RIGHT));
+        ASSERT_TRUE(!(LEFT <= RIGHT));
+        ASSERT_TRUE(LEFT > RIGHT);
+        ASSERT_TRUE(LEFT >= RIGHT);
     }
 
     // Right has fewer elements, left < right
@@ -699,18 +699,18 @@ TEST(FixedList, Comparison)
     }
 
     {
-        constexpr FixedList<int, 5> left{1, 2, 3};
-        constexpr FixedList<int, 5> right{1, 5};
+        constexpr FixedList<int, 5> LEFT{1, 2, 3};
+        constexpr FixedList<int, 5> RIGHT{1, 5};
 
-        static_assert(left < right);
-        static_assert(left <= right);
-        static_assert(!(left > right));
-        static_assert(!(left >= right));
+        static_assert(LEFT < RIGHT);
+        static_assert(LEFT <= RIGHT);
+        static_assert(!(LEFT > RIGHT));
+        static_assert(!(LEFT >= RIGHT));
 
-        ASSERT_TRUE(left < right);
-        ASSERT_TRUE(left <= right);
-        ASSERT_TRUE(!(left > right));
-        ASSERT_TRUE(!(left >= right));
+        ASSERT_TRUE(LEFT < RIGHT);
+        ASSERT_TRUE(LEFT <= RIGHT);
+        ASSERT_TRUE(!(LEFT > RIGHT));
+        ASSERT_TRUE(!(LEFT >= RIGHT));
     }
 
     // Left has one additional element
@@ -725,18 +725,18 @@ TEST(FixedList, Comparison)
     }
 
     {
-        constexpr FixedList<int, 5> left{1, 2, 3};
-        constexpr FixedList<int, 5> right{1, 2};
+        constexpr FixedList<int, 5> LEFT{1, 2, 3};
+        constexpr FixedList<int, 5> RIGHT{1, 2};
 
-        static_assert(!(left < right));
-        static_assert(!(left <= right));
-        static_assert(left > right);
-        static_assert(left >= right);
+        static_assert(!(LEFT < RIGHT));
+        static_assert(!(LEFT <= RIGHT));
+        static_assert(LEFT > RIGHT);
+        static_assert(LEFT >= RIGHT);
 
-        ASSERT_TRUE(!(left < right));
-        ASSERT_TRUE(!(left <= right));
-        ASSERT_TRUE(left > right);
-        ASSERT_TRUE(left >= right);
+        ASSERT_TRUE(!(LEFT < RIGHT));
+        ASSERT_TRUE(!(LEFT <= RIGHT));
+        ASSERT_TRUE(LEFT > RIGHT);
+        ASSERT_TRUE(LEFT >= RIGHT);
     }
 
     // Right has one additional element
@@ -751,18 +751,18 @@ TEST(FixedList, Comparison)
     }
 
     {
-        constexpr FixedList<int, 5> left{1, 2};
-        constexpr FixedList<int, 5> right{1, 2, 3};
+        constexpr FixedList<int, 5> LEFT{1, 2};
+        constexpr FixedList<int, 5> RIGHT{1, 2, 3};
 
-        static_assert(left < right);
-        static_assert(left <= right);
-        static_assert(!(left > right));
-        static_assert(!(left >= right));
+        static_assert(LEFT < RIGHT);
+        static_assert(LEFT <= RIGHT);
+        static_assert(!(LEFT > RIGHT));
+        static_assert(!(LEFT >= RIGHT));
 
-        ASSERT_TRUE(left < right);
-        ASSERT_TRUE(left <= right);
-        ASSERT_TRUE(!(left > right));
-        ASSERT_TRUE(!(left >= right));
+        ASSERT_TRUE(LEFT < RIGHT);
+        ASSERT_TRUE(LEFT <= RIGHT);
+        ASSERT_TRUE(!(LEFT > RIGHT));
+        ASSERT_TRUE(!(LEFT >= RIGHT));
     }
 }
 
@@ -777,17 +777,17 @@ TEST(FixedList, IteratorAssignment)
 TEST(FixedList, TrivialIterators)
 {
     {
-        constexpr FixedList<int, 3> v1{77, 88, 99};
+        constexpr FixedList<int, 3> VAL1{77, 88, 99};
 
-        static_assert(std::distance(v1.cbegin(), v1.cend()) == 3);
+        static_assert(std::distance(VAL1.cbegin(), VAL1.cend()) == 3);
 
-        static_assert(*v1.begin() == 77);
-        static_assert(*std::next(v1.begin(), 1) == 88);
-        static_assert(*std::next(v1.begin(), 2) == 99);
+        static_assert(*VAL1.begin() == 77);
+        static_assert(*std::next(VAL1.begin(), 1) == 88);
+        static_assert(*std::next(VAL1.begin(), 2) == 99);
 
-        static_assert(*std::prev(v1.end(), 1) == 99);
-        static_assert(*std::prev(v1.end(), 2) == 88);
-        static_assert(*std::prev(v1.end(), 3) == 77);
+        static_assert(*std::prev(VAL1.end(), 1) == 99);
+        static_assert(*std::prev(VAL1.end(), 2) == 88);
+        static_assert(*std::prev(VAL1.end(), 3) == 77);
     }
 
     {
@@ -890,17 +890,17 @@ TEST(FixedList, NonTrivialIterators)
 TEST(FixedList, ReverseIterators)
 {
     {
-        constexpr FixedList<int, 3> v1{77, 88, 99};
+        constexpr FixedList<int, 3> VAL1{77, 88, 99};
 
-        static_assert(std::distance(v1.crbegin(), v1.crend()) == 3);
+        static_assert(std::distance(VAL1.crbegin(), VAL1.crend()) == 3);
 
-        static_assert(*v1.rbegin() == 99);
-        static_assert(*std::next(v1.rbegin(), 1) == 88);
-        static_assert(*std::next(v1.rbegin(), 2) == 77);
+        static_assert(*VAL1.rbegin() == 99);
+        static_assert(*std::next(VAL1.rbegin(), 1) == 88);
+        static_assert(*std::next(VAL1.rbegin(), 2) == 77);
 
-        static_assert(*std::prev(v1.rend(), 1) == 77);
-        static_assert(*std::prev(v1.rend(), 2) == 88);
-        static_assert(*std::prev(v1.rend(), 3) == 99);
+        static_assert(*std::prev(VAL1.rend(), 1) == 77);
+        static_assert(*std::prev(VAL1.rend(), 2) == 88);
+        static_assert(*std::prev(VAL1.rend(), 3) == 99);
     }
 
     {
@@ -961,7 +961,7 @@ TEST(FixedList, ReverseIterators)
 
 TEST(FixedList, ReverseIteratorBase)
 {
-    constexpr auto v1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedList<int, 7> v{1, 2, 3};
         auto it = v.rbegin();  // points to 3
@@ -971,7 +971,7 @@ TEST(FixedList, ReverseIteratorBase)
         return v;
     }();
 
-    static_assert(std::ranges::equal(v1, std::array<int, 2>{1, 3}));
+    static_assert(std::ranges::equal(VAL1, std::array<int, 2>{1, 3}));
 }
 
 TEST(FixedList, IterationBasic)
@@ -1031,17 +1031,17 @@ TEST(FixedList, IterationBasic)
 
 TEST(FixedList, Resize)
 {
-    constexpr auto v1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedList<int, 7> v{0, 1, 2};
         v.resize(6);
         return v;
     }();
 
-    static_assert(std::ranges::equal(v1, std::array{0, 1, 2, 0, 0, 0}));
-    static_assert(v1.max_size() == 7);
+    static_assert(std::ranges::equal(VAL1, std::array{0, 1, 2, 0, 0, 0}));
+    static_assert(VAL1.max_size() == 7);
 
-    constexpr auto v2 = []()
+    constexpr auto VAL2 = []()
     {
         FixedList<int, 7> v{0, 1, 2};
         v.resize(7, 300);
@@ -1049,8 +1049,8 @@ TEST(FixedList, Resize)
         return v;
     }();
 
-    static_assert(std::ranges::equal(v2, std::array{0, 1, 2, 300, 300}));
-    static_assert(v2.max_size() == 7);
+    static_assert(std::ranges::equal(VAL2, std::array{0, 1, 2, 300, 300}));
+    static_assert(VAL2.max_size() == 7);
 
     FixedList<int, 8> v3{0, 1, 2, 3};
     v3.resize(6);
@@ -1083,46 +1083,46 @@ TEST(FixedList, ResizeExceedsCapacity)
 TEST(FixedList, Size)
 {
     {
-        constexpr auto v1 = []() { return FixedList<int, 7>{}; }();
-        static_assert(v1.size() == 0);  // NOLINT(readability-container-size-empty)
-        static_assert(v1.max_size() == 7);
+        constexpr auto VAL1 = []() { return FixedList<int, 7>{}; }();
+        static_assert(VAL1.size() == 0);  // NOLINT(readability-container-size-empty)
+        static_assert(VAL1.max_size() == 7);
     }
 
     {
-        constexpr auto v1 = []() { return FixedList<int, 7>{1, 2, 3}; }();
-        static_assert(v1.size() == 3);
-        static_assert(v1.max_size() == 7);
+        constexpr auto VAL1 = []() { return FixedList<int, 7>{1, 2, 3}; }();
+        static_assert(VAL1.size() == 3);
+        static_assert(VAL1.max_size() == 7);
     }
 }
 
 TEST(FixedList, Empty)
 {
-    constexpr auto v1 = []() { return FixedList<int, 7>{}; }();
+    constexpr auto VAL1 = []() { return FixedList<int, 7>{}; }();
 
-    static_assert(v1.empty());
-    static_assert(v1.max_size() == 7);
+    static_assert(VAL1.empty());
+    static_assert(VAL1.max_size() == 7);
 }
 
 TEST(FixedList, Full)
 {
-    constexpr auto v1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedList<int, 4> v{};
         v.assign(4, 100);
         return v;
     }();
 
-    static_assert(std::ranges::equal(v1, std::array<int, 4>{100, 100, 100, 100}));
-    static_assert(is_full(v1));
-    static_assert(v1.size() == 4);
-    static_assert(v1.max_size() == 4);
+    static_assert(std::ranges::equal(VAL1, std::array<int, 4>{100, 100, 100, 100}));
+    static_assert(is_full(VAL1));
+    static_assert(VAL1.size() == 4);
+    static_assert(VAL1.max_size() == 4);
 
-    EXPECT_TRUE(is_full(v1));
+    EXPECT_TRUE(is_full(VAL1));
 }
 
 TEST(FixedList, Clear)
 {
-    constexpr auto v1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedList<int, 7> v{0, 1, 2};
         v.assign(5, 100);
@@ -1130,14 +1130,14 @@ TEST(FixedList, Clear)
         return v;
     }();
 
-    static_assert(v1.empty());
-    static_assert(v1.max_size() == 7);
+    static_assert(VAL1.empty());
+    static_assert(VAL1.max_size() == 7);
 }
 
 TEST(FixedList, Emplace)
 {
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             FixedList<int, 11> v{0, 1, 2};
             v.emplace(std::next(v.begin(), 1), 3);
@@ -1145,7 +1145,7 @@ TEST(FixedList, Emplace)
             return v;
         }();
 
-        static_assert(std::ranges::equal(v1, std::array{0, 4, 3, 1, 2}));
+        static_assert(std::ranges::equal(VAL1, std::array{0, 4, 3, 1, 2}));
     }
     {
         auto v1 = []()
@@ -1179,19 +1179,19 @@ TEST(FixedList, EmplaceExceedsCapacity)
 TEST(FixedList, AssignValue)
 {
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             FixedList<int, 7> v{0, 1, 2};
             v.assign(5, 100);
             return v;
         }();
 
-        static_assert(std::ranges::equal(v1, std::array<int, 5>{100, 100, 100, 100, 100}));
-        static_assert(v1.size() == 5);
+        static_assert(std::ranges::equal(VAL1, std::array<int, 5>{100, 100, 100, 100, 100}));
+        static_assert(VAL1.size() == 5);
     }
 
     {
-        constexpr auto v2 = []()
+        constexpr auto VAL2 = []()
         {
             FixedList<int, 7> v{0, 1, 2};
             v.assign(5, 100);
@@ -1199,9 +1199,9 @@ TEST(FixedList, AssignValue)
             return v;
         }();
 
-        static_assert(std::ranges::equal(v2, std::array<int, 2>{300, 300}));
-        static_assert(v2.size() == 2);
-        static_assert(v2.max_size() == 7);
+        static_assert(std::ranges::equal(VAL2, std::array<int, 2>{300, 300}));
+        static_assert(VAL2.size() == 2);
+        static_assert(VAL2.max_size() == 7);
     }
 
     {
@@ -1227,7 +1227,7 @@ TEST(FixedList, AssignValueExceedsCapacity)
 TEST(FixedList, AssignIterator)
 {
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             std::array<int, 2> a{300, 300};
             FixedList<int, 7> v{0, 1, 2};
@@ -1235,9 +1235,9 @@ TEST(FixedList, AssignIterator)
             return v;
         }();
 
-        static_assert(std::ranges::equal(v1, std::array<int, 2>{300, 300}));
-        static_assert(v1.size() == 2);
-        static_assert(v1.max_size() == 7);
+        static_assert(std::ranges::equal(VAL1, std::array<int, 2>{300, 300}));
+        static_assert(VAL1.size() == 2);
+        static_assert(VAL1.max_size() == 7);
     }
     {
         auto v2 = []()
@@ -1279,16 +1279,16 @@ TEST(FixedList, AssignInputIteratorExceedsCapacity)
 TEST(FixedList, AssignInitializerList)
 {
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             FixedList<int, 7> v{0, 1, 2};
             v.assign({300, 300});
             return v;
         }();
 
-        static_assert(std::ranges::equal(v1, std::array<int, 2>{300, 300}));
-        static_assert(v1.size() == 2);
-        static_assert(v1.max_size() == 7);
+        static_assert(std::ranges::equal(VAL1, std::array<int, 2>{300, 300}));
+        static_assert(VAL1.size() == 2);
+        static_assert(VAL1.max_size() == 7);
     }
     {
         auto v2 = []()
@@ -1312,7 +1312,7 @@ TEST(FixedList, AssignInitializerListExceedsCapacity)
 TEST(FixedList, InsertValue)
 {
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             FixedList<int, 7> v{0, 1, 2, 3};
             v.insert(v.begin(), 100);
@@ -1321,13 +1321,13 @@ TEST(FixedList, InsertValue)
             return v;
         }();
 
-        static_assert(std::ranges::equal(v1, std::array<int, 6>{100, 0, 500, 1, 2, 3}));
-        static_assert(v1.size() == 6);
-        static_assert(v1.max_size() == 7);
+        static_assert(std::ranges::equal(VAL1, std::array<int, 6>{100, 0, 500, 1, 2, 3}));
+        static_assert(VAL1.size() == 6);
+        static_assert(VAL1.max_size() == 7);
     }
     {
         // For off-by-one issues, make the capacity just fit
-        constexpr auto v2 = []()
+        constexpr auto VAL2 = []()
         {
             FixedList<int, 5> v{0, 1, 2};
             v.insert(v.begin(), 100);
@@ -1336,9 +1336,9 @@ TEST(FixedList, InsertValue)
             return v;
         }();
 
-        static_assert(std::ranges::equal(v2, std::array<int, 5>{100, 0, 500, 1, 2}));
-        static_assert(v2.size() == 5);
-        static_assert(v2.max_size() == 5);
+        static_assert(std::ranges::equal(VAL2, std::array<int, 5>{100, 0, 500, 1, 2}));
+        static_assert(VAL2.size() == 5);
+        static_assert(VAL2.max_size() == 5);
     }
 
     // NonTriviallyCopyable<T>
@@ -1373,7 +1373,7 @@ TEST(FixedList, InsertValueExceedsCapacity)
 TEST(FixedList, InsertIterator)
 {
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             std::array<int, 2> a{100, 500};
             FixedList<int, 7> v{0, 1, 2, 3};
@@ -1381,13 +1381,13 @@ TEST(FixedList, InsertIterator)
             return v;
         }();
 
-        static_assert(std::ranges::equal(v1, std::array<int, 6>{0, 1, 100, 500, 2, 3}));
-        static_assert(v1.size() == 6);
-        static_assert(v1.max_size() == 7);
+        static_assert(std::ranges::equal(VAL1, std::array<int, 6>{0, 1, 100, 500, 2, 3}));
+        static_assert(VAL1.size() == 6);
+        static_assert(VAL1.max_size() == 7);
     }
     {
         // For off-by-one issues, make the capacity just fit
-        constexpr auto v2 = []()
+        constexpr auto VAL2 = []()
         {
             std::array<int, 2> a{100, 500};
             FixedList<int, 5> v{0, 1, 2};
@@ -1395,9 +1395,9 @@ TEST(FixedList, InsertIterator)
             return v;
         }();
 
-        static_assert(std::ranges::equal(v2, std::array<int, 5>{0, 1, 100, 500, 2}));
-        static_assert(v2.size() == 5);
-        static_assert(v2.max_size() == 5);
+        static_assert(std::ranges::equal(VAL2, std::array<int, 5>{0, 1, 100, 500, 2}));
+        static_assert(VAL2.size() == 5);
+        static_assert(VAL2.max_size() == 5);
     }
 
     {
@@ -1437,16 +1437,16 @@ TEST(FixedList, InsertInitializerList)
 {
     {
         // For off-by-one issues, make the capacity just fit
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             FixedList<int, 5> v{0, 1, 2};
             v.insert(std::next(v.begin(), 2), {100, 500});
             return v;
         }();
 
-        static_assert(std::ranges::equal(v1, std::array<int, 5>{0, 1, 100, 500, 2}));
-        static_assert(v1.size() == 5);
-        static_assert(v1.max_size() == 5);
+        static_assert(std::ranges::equal(VAL1, std::array<int, 5>{0, 1, 100, 500, 2}));
+        static_assert(VAL1.size() == 5);
+        static_assert(VAL1.max_size() == 5);
     }
 
     {
@@ -1465,7 +1465,7 @@ TEST(FixedList, InsertInitializerListExceedsCapacity)
 
 TEST(FixedList, Remove)
 {
-    constexpr auto v1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedList<int, 8> v{3, 0, 1, 2, 3, 4, 5, 3};
         const std::size_t removed_count = v.remove(3);
@@ -1473,7 +1473,7 @@ TEST(FixedList, Remove)
         return v;
     }();
 
-    static_assert(std::ranges::equal(v1, std::array<int, 5>{0, 1, 2, 4, 5}));
+    static_assert(std::ranges::equal(VAL1, std::array<int, 5>{0, 1, 2, 4, 5}));
 }
 
 TEST(FixedList, RemoveInvalidation)
@@ -1510,7 +1510,7 @@ TEST(FixedList, RemoveInvalidation)
 
 TEST(FixedList, RemoveIf)
 {
-    constexpr auto v1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedList<int, 8> v{0, 1, 2, 3, 4, 5};
         const std::size_t removed_count = v.remove_if([](const int& a) { return (a % 2) == 0; });
@@ -1518,7 +1518,7 @@ TEST(FixedList, RemoveIf)
         return v;
     }();
 
-    static_assert(std::ranges::equal(v1, std::array<int, 3>{1, 3, 5}));
+    static_assert(std::ranges::equal(VAL1, std::array<int, 3>{1, 3, 5}));
 }
 
 TEST(FixedList, RemoveIfInvalidation)
@@ -1555,16 +1555,16 @@ TEST(FixedList, RemoveIfInvalidation)
 
 TEST(FixedList, EraseRange)
 {
-    constexpr auto v1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedList<int, 8> v{0, 1, 2, 3, 4, 5};
         v.erase(std::next(v.cbegin(), 2), std::next(v.begin(), 4));
         return v;
     }();
 
-    static_assert(std::ranges::equal(v1, std::array<int, 4>{0, 1, 4, 5}));
-    static_assert(v1.size() == 4);
-    static_assert(v1.max_size() == 8);
+    static_assert(std::ranges::equal(VAL1, std::array<int, 4>{0, 1, 4, 5}));
+    static_assert(VAL1.size() == 4);
+    static_assert(VAL1.max_size() == 8);
 
     {
         FixedList<int, 8> v2{2, 1, 4, 5, 0, 3};
@@ -1614,7 +1614,7 @@ TEST(FixedList, EraseRangeInvalidation)
 
 TEST(FixedList, EraseOne)
 {
-    constexpr auto v1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedList<int, 8> v{0, 1, 2, 3, 4, 5};
         v.erase(v.cbegin());
@@ -1622,9 +1622,9 @@ TEST(FixedList, EraseOne)
         return v;
     }();
 
-    static_assert(std::ranges::equal(v1, std::array<int, 4>{1, 2, 4, 5}));
-    static_assert(v1.size() == 4);
-    static_assert(v1.max_size() == 8);
+    static_assert(std::ranges::equal(VAL1, std::array<int, 4>{1, 2, 4, 5}));
+    static_assert(VAL1.size() == 4);
+    static_assert(VAL1.max_size() == 8);
 
     {
         FixedList<int, 8> v2{2, 1, 4, 5, 0, 3};
@@ -1722,7 +1722,7 @@ TEST(FixedList, EraseEmpty)
 TEST(FixedList, EraseFreeFunction)
 {
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             FixedList<int, 8> v{3, 0, 1, 2, 3, 4, 5, 3};
             const std::size_t removed_count = fixed_containers::erase(v, 3);
@@ -1730,7 +1730,7 @@ TEST(FixedList, EraseFreeFunction)
             return v;
         }();
 
-        static_assert(std::ranges::equal(v1, std::array<int, 5>{0, 1, 2, 4, 5}));
+        static_assert(std::ranges::equal(VAL1, std::array<int, 5>{0, 1, 2, 4, 5}));
     }
 
     {
@@ -1775,7 +1775,7 @@ TEST(FixedList, EraseFreeFunctionInvalidation)
 
 TEST(FixedList, EraseIf)
 {
-    constexpr auto v1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedList<int, 8> v{0, 1, 2, 3, 4, 5, 6};
         const std::size_t removed_count =
@@ -1784,7 +1784,7 @@ TEST(FixedList, EraseIf)
         return v;
     }();
 
-    static_assert(std::ranges::equal(v1, std::array<int, 3>{1, 3, 5}));
+    static_assert(std::ranges::equal(VAL1, std::array<int, 3>{1, 3, 5}));
 }
 
 TEST(FixedList, EraseIfInvalidation)
@@ -1821,15 +1821,15 @@ TEST(FixedList, EraseIfInvalidation)
 
 TEST(FixedList, Front)
 {
-    constexpr auto v1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedList<int, 8> v{99, 1, 2};
         return v;
     }();
 
-    static_assert(v1.front() == 99);
-    static_assert(std::ranges::equal(v1, std::array<int, 3>{99, 1, 2}));
-    static_assert(v1.size() == 3);
+    static_assert(VAL1.front() == 99);
+    static_assert(std::ranges::equal(VAL1, std::array<int, 3>{99, 1, 2}));
+    static_assert(VAL1.size() == 3);
 
     FixedList<int, 8> v2{100, 101, 102};
     const auto& v2_const_ref = v2;
@@ -1853,15 +1853,15 @@ TEST(FixedList, FrontEmptyContainer)
 
 TEST(FixedList, Back)
 {
-    constexpr auto v1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedList<int, 8> v{0, 1, 77};
         return v;
     }();
 
-    static_assert(v1.back() == 77);
-    static_assert(std::ranges::equal(v1, std::array<int, 3>{0, 1, 77}));
-    static_assert(v1.size() == 3);
+    static_assert(VAL1.back() == 77);
+    static_assert(std::ranges::equal(VAL1, std::array<int, 3>{0, 1, 77}));
+    static_assert(VAL1.size() == 3);
 
     FixedList<int, 8> v2{100, 101, 102};
     const auto& v2_const_ref = v2;
@@ -1992,8 +1992,8 @@ TEST(FixedList, OverloadedAddressOfOperator)
     }
 
     {
-        constexpr FixedList<MockFailingAddressOfOperator, 15> v{5};
-        static_assert(!v.empty());
+        constexpr FixedList<MockFailingAddressOfOperator, 15> VAL{5};
+        static_assert(!VAL.empty());
     }
 
     {
@@ -2013,9 +2013,9 @@ TEST(FixedList, OverloadedAddressOfOperator)
     }
 
     {
-        constexpr FixedList<MockFailingAddressOfOperator, 15> v{5};
-        static_assert(!v.empty());
-        auto it = v.cbegin();
+        constexpr FixedList<MockFailingAddressOfOperator, 15> VAL{5};
+        static_assert(!VAL.empty());
+        auto it = VAL.cbegin();
         auto it_ref = *it;
         it_ref.do_nothing();
         it->do_nothing();

@@ -102,31 +102,31 @@ concept IsFixedCircularDequeFactory = requires() {
 
 TEST(FixedCircularDeque, DefaultConstructor)
 {
-    constexpr FixedCircularDeque<int, 8> v1{};
-    (void)v1;
+    constexpr FixedCircularDeque<int, 8> VAL1{};
+    (void)VAL1;
 }
 
 TEST(FixedCircularDeque, CountConstructor)
 {
     // Caution: Using braces calls initializer list ctor!
     {
-        constexpr FixedCircularDeque<int, 8> v{5};
-        static_assert(v.size() == 1);
+        constexpr FixedCircularDeque<int, 8> VAL{5};
+        static_assert(VAL.size() == 1);
     }
 
     // Use parens to get the count ctor!
     {
-        constexpr FixedCircularDeque<int, 8> v1(5);
-        static_assert(v1.size() == 5);
-        static_assert(v1.max_size() == 8);
-        static_assert(std::ranges::equal(v1, std::array{0, 0, 0, 0, 0}));
+        constexpr FixedCircularDeque<int, 8> VAL1(5);
+        static_assert(VAL1.size() == 5);
+        static_assert(VAL1.max_size() == 8);
+        static_assert(std::ranges::equal(VAL1, std::array{0, 0, 0, 0, 0}));
     }
 
     {
-        constexpr FixedCircularDeque<int, 8> v2(5, 3);
-        static_assert(v2.size() == 5);
-        static_assert(v2.max_size() == 8);
-        static_assert(std::ranges::equal(v2, std::array{3, 3, 3, 3, 3}));
+        constexpr FixedCircularDeque<int, 8> VAL2(5, 3);
+        static_assert(VAL2.size() == 5);
+        static_assert(VAL2.max_size() == 8);
+        static_assert(std::ranges::equal(VAL2, std::array{3, 3, 3, 3, 3}));
     }
 
     // NonAssignable<T>
@@ -138,42 +138,42 @@ TEST(FixedCircularDeque, CountConstructor)
 
 TEST(FixedCircularDeque, CountConstructorExceedsCapacity)
 {
-    constexpr FixedCircularDeque<int, 8> v2(1000, 3);
-    static_assert(v2.size() == 8);
-    static_assert(v2.max_size() == 8);
-    static_assert(std::ranges::equal(v2, std::array{3, 3, 3, 3, 3, 3, 3, 3}));
+    constexpr FixedCircularDeque<int, 8> VAL2(1000, 3);
+    static_assert(VAL2.size() == 8);
+    static_assert(VAL2.max_size() == 8);
+    static_assert(std::ranges::equal(VAL2, std::array{3, 3, 3, 3, 3, 3, 3, 3}));
 }
 
 TEST(FixedCircularDeque, MaxSizeDeduction)
 {
     {
-        constexpr auto v1 = make_fixed_circular_deque({10, 11, 12, 13, 14});
-        static_assert(v1.max_size() == 5);
-        static_assert(std::ranges::equal(v1, std::array{10, 11, 12, 13, 14}));
+        constexpr auto VAL1 = make_fixed_circular_deque({10, 11, 12, 13, 14});
+        static_assert(VAL1.max_size() == 5);
+        static_assert(std::ranges::equal(VAL1, std::array{10, 11, 12, 13, 14}));
     }
     {
-        constexpr auto v1 = make_fixed_circular_deque<int>({});
-        static_assert(v1.max_size() == 0);
+        constexpr auto VAL1 = make_fixed_circular_deque<int>({});
+        static_assert(VAL1.max_size() == 0);
     }
 }
 
 TEST(FixedCircularDeque, IteratorConstructor)
 {
-    constexpr std::array<int, 2> v1{77, 99};
+    constexpr std::array<int, 2> VAL1{77, 99};
 
-    constexpr FixedCircularDeque<int, 15> v2{v1.begin(), v1.end()};
-    static_assert(std::ranges::equal(v2, std::array{77, 99}));
+    constexpr FixedCircularDeque<int, 15> VAL2{VAL1.begin(), VAL1.end()};
+    static_assert(std::ranges::equal(VAL2, std::array{77, 99}));
 }
 
 TEST(FixedCircularDeque, IteratorConstructorExceedsCapacity)
 {
-    constexpr std::array<int, 7> v1{7, 6, 5, 4, 3, 2, 1};
+    constexpr std::array<int, 7> VAL1{7, 6, 5, 4, 3, 2, 1};
 
-    constexpr FixedCircularDeque<int, 3> v2{v1.begin(), v1.end()};
-    static_assert(v2.size() == 3);
-    static_assert(v2.at(0) == 3);
-    static_assert(v2.at(1) == 2);
-    static_assert(v2.at(2) == 1);
+    constexpr FixedCircularDeque<int, 3> VAL2{VAL1.begin(), VAL1.end()};
+    static_assert(VAL2.size() == 3);
+    static_assert(VAL2.at(0) == 3);
+    static_assert(VAL2.at(1) == 2);
+    static_assert(VAL2.at(2) == 1);
 }
 
 TEST(FixedCircularDeque, InputIteratorConstructor)
@@ -194,30 +194,30 @@ TEST(FixedCircularDeque, InputIteratorConstructorExceedsCapacity)
 
 TEST(FixedCircularDeque, InitializerConstructor)
 {
-    constexpr FixedCircularDeque<int, 3> v1{77, 99};
-    static_assert(std::ranges::equal(v1, std::array{77, 99}));
+    constexpr FixedCircularDeque<int, 3> VAL1{77, 99};
+    static_assert(std::ranges::equal(VAL1, std::array{77, 99}));
 
-    constexpr FixedCircularDeque<int, 3> v2{{66, 55}};
-    static_assert(std::ranges::equal(v2, std::array{66, 55}));
+    constexpr FixedCircularDeque<int, 3> VAL2{{66, 55}};
+    static_assert(std::ranges::equal(VAL2, std::array{66, 55}));
 
-    EXPECT_TRUE(std::ranges::equal(v1, std::array{77, 99}));
-    EXPECT_TRUE(std::ranges::equal(v2, std::array{66, 55}));
+    EXPECT_TRUE(std::ranges::equal(VAL1, std::array{77, 99}));
+    EXPECT_TRUE(std::ranges::equal(VAL2, std::array{66, 55}));
 }
 
 TEST(FixedCircularDeque, InitializerConstructorExceedsCapacity)
 {
-    constexpr FixedCircularDeque<int, 3> v2{1, 2, 3, 4, 5};
-    static_assert(v2.size() == 3);
-    static_assert(v2.at(0) == 3);
-    static_assert(v2.at(1) == 4);
-    static_assert(v2.at(2) == 5);
+    constexpr FixedCircularDeque<int, 3> VAL2{1, 2, 3, 4, 5};
+    static_assert(VAL2.size() == 3);
+    static_assert(VAL2.at(0) == 3);
+    static_assert(VAL2.at(1) == 4);
+    static_assert(VAL2.at(2) == 5);
 }
 
 TEST(FixedCircularDeque, PushBack)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             auto v = Factory::template create<int, 11>();
             v.push_back(0);
@@ -227,15 +227,15 @@ TEST(FixedCircularDeque, PushBack)
             return v;
         }();
 
-        static_assert(std::ranges::equal(v1, std::array{0, 1, 2}));
+        static_assert(std::ranges::equal(VAL1, std::array{0, 1, 2}));
 
-        constexpr auto v2 = []()
+        constexpr auto VAL2 = []()
         {
             auto aaa = Factory::template create<MockNonTrivialCopyConstructible, 5>();
             aaa.push_back(MockNonTrivialCopyConstructible{});
             return aaa;
         }();
-        static_assert(v2.size() == 1);
+        static_assert(VAL2.size() == 1);
     };
 
     run_test(FixedCircularDequeInitialStateFirstIndex{});
@@ -246,7 +246,7 @@ TEST(FixedCircularDeque, PushBackExceedsCapacity)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             auto v = Factory::template create<int, 3>({1, 2});
             v.push_back(3);
@@ -255,10 +255,10 @@ TEST(FixedCircularDeque, PushBackExceedsCapacity)
             return v;
         }();
 
-        static_assert(v1.size() == 3);
-        static_assert(v1.at(0) == 2);
-        static_assert(v1.at(1) == 3);
-        static_assert(v1.at(2) == 4);
+        static_assert(VAL1.size() == 3);
+        static_assert(VAL1.at(0) == 2);
+        static_assert(VAL1.at(1) == 3);
+        static_assert(VAL1.at(2) == 4);
     };
 
     run_test(FixedCircularDequeInitialStateFirstIndex{});
@@ -270,7 +270,7 @@ TEST(FixedCircularDeque, EmplaceBack)
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
         {
-            constexpr auto v1 = []()
+            constexpr auto VAL1 = []()
             {
                 auto v = Factory::template create<int, 11>({0, 1, 2});
                 v.emplace_back(3);
@@ -278,7 +278,7 @@ TEST(FixedCircularDeque, EmplaceBack)
                 return v;
             }();
 
-            static_assert(std::ranges::equal(v1, std::array{0, 1, 2, 3, 4}));
+            static_assert(std::ranges::equal(VAL1, std::array{0, 1, 2, 3, 4}));
         }
         {
             auto v1 = []()
@@ -314,7 +314,7 @@ TEST(FixedCircularDeque, EmplaceBackExceedsCapacity)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             auto v = Factory::template create<int, 3>({1, 2});
             v.emplace_back(3);
@@ -322,10 +322,10 @@ TEST(FixedCircularDeque, EmplaceBackExceedsCapacity)
             return v;
         }();
 
-        static_assert(v1.size() == 3);
-        static_assert(v1.at(0) == 2);
-        static_assert(v1.at(1) == 3);
-        static_assert(v1.at(2) == 4);
+        static_assert(VAL1.size() == 3);
+        static_assert(VAL1.at(0) == 2);
+        static_assert(VAL1.at(1) == 3);
+        static_assert(VAL1.at(2) == 4);
     };
 
     run_test(FixedCircularDequeInitialStateFirstIndex{});
@@ -337,8 +337,8 @@ TEST(FixedCircularDeque, MaxSize)
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
         {
-            constexpr auto v1 = Factory::template create<int, 3>();
-            static_assert(v1.max_size() == 3);
+            constexpr auto VAL1 = Factory::template create<int, 3>();
+            static_assert(VAL1.max_size() == 3);
         }
 
         {
@@ -364,15 +364,15 @@ TEST(FixedCircularDeque, Size)
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
         {
-            constexpr auto v1 = Factory::template create<int, 7>();
-            static_assert(v1.size() == 0);
-            static_assert(v1.max_size() == 7);
+            constexpr auto VAL1 = Factory::template create<int, 7>();
+            static_assert(VAL1.size() == 0);
+            static_assert(VAL1.max_size() == 7);
         }
 
         {
-            constexpr auto v1 = Factory::template create<int, 7>({1, 2, 3});
-            static_assert(v1.size() == 3);
-            static_assert(v1.max_size() == 7);
+            constexpr auto VAL1 = Factory::template create<int, 7>({1, 2, 3});
+            static_assert(VAL1.size() == 3);
+            static_assert(VAL1.max_size() == 7);
         }
     };
 
@@ -384,10 +384,10 @@ TEST(FixedCircularDeque, Empty)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
-        constexpr auto v1 = Factory::template create<int, 7>();
+        constexpr auto VAL1 = Factory::template create<int, 7>();
 
-        static_assert(v1.empty());
-        static_assert(v1.max_size() == 7);
+        static_assert(VAL1.empty());
+        static_assert(VAL1.max_size() == 7);
     };
 
     run_test(FixedCircularDequeInitialStateFirstIndex{});
@@ -398,19 +398,19 @@ TEST(FixedCircularDeque, Full)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             auto v = Factory::template create<int, 4>();
             v.assign(4, 100);
             return v;
         }();
 
-        static_assert(std::ranges::equal(v1, std::array<int, 4>{100, 100, 100, 100}));
-        static_assert(is_full(v1));
-        static_assert(v1.size() == 4);
-        static_assert(v1.max_size() == 4);
+        static_assert(std::ranges::equal(VAL1, std::array<int, 4>{100, 100, 100, 100}));
+        static_assert(is_full(VAL1));
+        static_assert(VAL1.size() == 4);
+        static_assert(VAL1.max_size() == 4);
 
-        EXPECT_TRUE(is_full(v1));
+        EXPECT_TRUE(is_full(VAL1));
     };
 
     run_test(FixedCircularDequeInitialStateFirstIndex{});
@@ -421,7 +421,7 @@ TEST(FixedCircularDeque, Clear)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             auto v = Factory::template create<int, 7>({0, 1, 2});
             v.assign(5, 100);
@@ -429,8 +429,8 @@ TEST(FixedCircularDeque, Clear)
             return v;
         }();
 
-        static_assert(v1.empty());
-        static_assert(v1.max_size() == 7);
+        static_assert(VAL1.empty());
+        static_assert(VAL1.max_size() == 7);
     };
 
     run_test(FixedCircularDequeInitialStateFirstIndex{});
@@ -441,14 +441,14 @@ TEST(FixedCircularDeque, PopBack)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             auto v = Factory::template create<int, 11>({0, 1, 2});
             v.pop_back();
             return v;
         }();
 
-        static_assert(std::ranges::equal(v1, std::array{0, 1}));
+        static_assert(std::ranges::equal(VAL1, std::array{0, 1}));
 
         auto v2 = Factory::template create<int, 17>({10, 11, 12});
         v2.pop_back();
@@ -475,7 +475,7 @@ TEST(FixedCircularDeque, PushFront)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             auto v = Factory::template create<int, 11>();
             v.push_front(0);
@@ -485,15 +485,15 @@ TEST(FixedCircularDeque, PushFront)
             return v;
         }();
 
-        static_assert(std::ranges::equal(v1, std::array{2, 1, 0}));
+        static_assert(std::ranges::equal(VAL1, std::array{2, 1, 0}));
 
-        constexpr auto v2 = []()
+        constexpr auto VAL2 = []()
         {
             auto aaa = Factory::template create<MockNonTrivialCopyConstructible, 5>();
             aaa.push_front(MockNonTrivialCopyConstructible{});
             return aaa;
         }();
-        static_assert(v2.size() == 1);
+        static_assert(VAL2.size() == 1);
     };
 
     run_test(FixedCircularDequeInitialStateFirstIndex{});
@@ -504,7 +504,7 @@ TEST(FixedCircularDeque, PushFrontExceedsCapacity)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             auto v = Factory::template create<int, 3>({1, 2});
             v.push_front(3);
@@ -513,10 +513,10 @@ TEST(FixedCircularDeque, PushFrontExceedsCapacity)
             return v;
         }();
 
-        static_assert(v1.size() == 3);
-        static_assert(v1.at(0) == 4);
-        static_assert(v1.at(1) == 3);
-        static_assert(v1.at(2) == 1);
+        static_assert(VAL1.size() == 3);
+        static_assert(VAL1.at(0) == 4);
+        static_assert(VAL1.at(1) == 3);
+        static_assert(VAL1.at(2) == 1);
     };
 
     run_test(FixedCircularDequeInitialStateFirstIndex{});
@@ -528,7 +528,7 @@ TEST(FixedCircularDeque, EmplaceFront)
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
         {
-            constexpr auto v1 = []()
+            constexpr auto VAL1 = []()
             {
                 auto v = Factory::template create<int, 11>({0, 1, 2});
                 v.emplace_front(3);
@@ -536,7 +536,7 @@ TEST(FixedCircularDeque, EmplaceFront)
                 return v;
             }();
 
-            static_assert(std::ranges::equal(v1, std::array{4, 3, 0, 1, 2}));
+            static_assert(std::ranges::equal(VAL1, std::array{4, 3, 0, 1, 2}));
         }
         {
             auto v1 = []()
@@ -572,7 +572,7 @@ TEST(FixedCircularDeque, EmplaceFrontExceedsCapacity)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             auto v = Factory::template create<int, 3>({1, 2});
             v.emplace_front(3);
@@ -580,10 +580,10 @@ TEST(FixedCircularDeque, EmplaceFrontExceedsCapacity)
             return v;
         }();
 
-        static_assert(v1.size() == 3);
-        static_assert(v1.at(0) == 4);
-        static_assert(v1.at(1) == 3);
-        static_assert(v1.at(2) == 1);
+        static_assert(VAL1.size() == 3);
+        static_assert(VAL1.at(0) == 4);
+        static_assert(VAL1.at(1) == 3);
+        static_assert(VAL1.at(2) == 1);
     };
 
     run_test(FixedCircularDequeInitialStateFirstIndex{});
@@ -594,14 +594,14 @@ TEST(FixedCircularDeque, PopFront)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             auto v = Factory::template create<int, 11>({0, 1, 2});
             v.pop_front();
             return v;
         }();
 
-        static_assert(std::ranges::equal(v1, std::array{1, 2}));
+        static_assert(std::ranges::equal(VAL1, std::array{1, 2}));
 
         auto v2 = Factory::template create<int, 17>({10, 11, 12});
         v2.pop_front();
@@ -628,7 +628,7 @@ TEST(FixedCircularDeque, BracketOperator)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             auto v = Factory::template create<int, 11>();
             v.resize(3);
@@ -640,10 +640,10 @@ TEST(FixedCircularDeque, BracketOperator)
             return v;
         }();
 
-        static_assert(v1[0] == 100);
-        static_assert(v1[1] == 201);
-        static_assert(v1[2] == 102);
-        static_assert(v1.size() == 3);
+        static_assert(VAL1[0] == 100);
+        static_assert(VAL1[1] == 201);
+        static_assert(VAL1[2] == 102);
+        static_assert(VAL1.size() == 3);
 
         auto v2 = Factory::template create<int, 11>({0, 1, 2});
         v2[1] = 901;
@@ -665,7 +665,7 @@ TEST(FixedCircularDeque, At)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             auto v = Factory::template create<int, 11>();
             v.resize(3);
@@ -677,10 +677,10 @@ TEST(FixedCircularDeque, At)
             return v;
         }();
 
-        static_assert(v1.at(0) == 100);
-        static_assert(v1.at(1) == 201);
-        static_assert(v1.at(2) == 102);
-        static_assert(v1.size() == 3);
+        static_assert(VAL1.at(0) == 100);
+        static_assert(VAL1.at(1) == 201);
+        static_assert(VAL1.at(2) == 102);
+        static_assert(VAL1.size() == 3);
 
         auto v2 = Factory::template create<int, 11>({0, 1, 2});
         v2.at(1) = 901;
@@ -719,23 +719,23 @@ TEST(FixedCircularDeque, Equality)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
-        constexpr auto v1 = Factory::template create<int, 12>({0, 1, 2});
+        constexpr auto VAL1 = Factory::template create<int, 12>({0, 1, 2});
         // Capacity difference should not affect equality
-        constexpr auto v2 = Factory::template create<int, 11>({0, 1, 2});
-        constexpr auto v3 = Factory::template create<int, 12>({0, 101, 2});
-        constexpr auto v4 = Factory::template create<int, 12>({0, 1});
-        constexpr auto v5 = Factory::template create<int, 12>({0, 1, 2, 3, 4, 5});
+        constexpr auto VAL2 = Factory::template create<int, 11>({0, 1, 2});
+        constexpr auto VAL3 = Factory::template create<int, 12>({0, 101, 2});
+        constexpr auto VAL4 = Factory::template create<int, 12>({0, 1});
+        constexpr auto VAL5 = Factory::template create<int, 12>({0, 1, 2, 3, 4, 5});
 
-        static_assert(v1 == v2);
-        static_assert(v1 != v3);
-        static_assert(v1 != v4);
-        static_assert(v1 != v5);
+        static_assert(VAL1 == VAL2);
+        static_assert(VAL1 != VAL3);
+        static_assert(VAL1 != VAL4);
+        static_assert(VAL1 != VAL5);
 
-        EXPECT_EQ(v1, v1);
-        EXPECT_EQ(v1, v2);
-        EXPECT_NE(v1, v3);
-        EXPECT_NE(v1, v4);
-        EXPECT_NE(v1, v5);
+        EXPECT_EQ(VAL1, VAL1);
+        EXPECT_EQ(VAL1, VAL2);
+        EXPECT_NE(VAL1, VAL3);
+        EXPECT_NE(VAL1, VAL4);
+        EXPECT_NE(VAL1, VAL5);
     };
 
     run_test(FixedCircularDequeInitialStateFirstIndex{});
@@ -770,18 +770,18 @@ TEST(FixedCircularDeque, Comparison)
         }
 
         {
-            constexpr auto left = Factory::template create<int, 5>({1, 2, 3});
-            constexpr auto right = Factory::template create<int, 5>({1, 2, 4});
+            constexpr auto LEFT = Factory::template create<int, 5>({1, 2, 3});
+            constexpr auto RIGHT = Factory::template create<int, 5>({1, 2, 4});
 
-            static_assert(left < right);
-            static_assert(left <= right);
-            static_assert(!(left > right));
-            static_assert(!(left >= right));
+            static_assert(LEFT < RIGHT);
+            static_assert(LEFT <= RIGHT);
+            static_assert(!(LEFT > RIGHT));
+            static_assert(!(LEFT >= RIGHT));
 
-            ASSERT_TRUE(left < right);
-            ASSERT_TRUE(left <= right);
-            ASSERT_TRUE(!(left > right));
-            ASSERT_TRUE(!(left >= right));
+            ASSERT_TRUE(LEFT < RIGHT);
+            ASSERT_TRUE(LEFT <= RIGHT);
+            ASSERT_TRUE(!(LEFT > RIGHT));
+            ASSERT_TRUE(!(LEFT >= RIGHT));
         }
 
         // Left has fewer elements, left > right
@@ -796,18 +796,18 @@ TEST(FixedCircularDeque, Comparison)
         }
 
         {
-            constexpr auto left = Factory::template create<int, 5>({1, 5});
-            constexpr auto right = Factory::template create<int, 5>({1, 2, 4});
+            constexpr auto LEFT = Factory::template create<int, 5>({1, 5});
+            constexpr auto RIGHT = Factory::template create<int, 5>({1, 2, 4});
 
-            static_assert(!(left < right));
-            static_assert(!(left <= right));
-            static_assert(left > right);
-            static_assert(left >= right);
+            static_assert(!(LEFT < RIGHT));
+            static_assert(!(LEFT <= RIGHT));
+            static_assert(LEFT > RIGHT);
+            static_assert(LEFT >= RIGHT);
 
-            ASSERT_TRUE(!(left < right));
-            ASSERT_TRUE(!(left <= right));
-            ASSERT_TRUE(left > right);
-            ASSERT_TRUE(left >= right);
+            ASSERT_TRUE(!(LEFT < RIGHT));
+            ASSERT_TRUE(!(LEFT <= RIGHT));
+            ASSERT_TRUE(LEFT > RIGHT);
+            ASSERT_TRUE(LEFT >= RIGHT);
         }
 
         // Right has fewer elements, left < right
@@ -822,18 +822,18 @@ TEST(FixedCircularDeque, Comparison)
         }
 
         {
-            constexpr auto left = Factory::template create<int, 5>({1, 2, 3});
-            constexpr auto right = Factory::template create<int, 5>({1, 5});
+            constexpr auto LEFT = Factory::template create<int, 5>({1, 2, 3});
+            constexpr auto RIGHT = Factory::template create<int, 5>({1, 5});
 
-            static_assert(left < right);
-            static_assert(left <= right);
-            static_assert(!(left > right));
-            static_assert(!(left >= right));
+            static_assert(LEFT < RIGHT);
+            static_assert(LEFT <= RIGHT);
+            static_assert(!(LEFT > RIGHT));
+            static_assert(!(LEFT >= RIGHT));
 
-            ASSERT_TRUE(left < right);
-            ASSERT_TRUE(left <= right);
-            ASSERT_TRUE(!(left > right));
-            ASSERT_TRUE(!(left >= right));
+            ASSERT_TRUE(LEFT < RIGHT);
+            ASSERT_TRUE(LEFT <= RIGHT);
+            ASSERT_TRUE(!(LEFT > RIGHT));
+            ASSERT_TRUE(!(LEFT >= RIGHT));
         }
 
         // Left has one additional element
@@ -848,18 +848,18 @@ TEST(FixedCircularDeque, Comparison)
         }
 
         {
-            constexpr auto left = Factory::template create<int, 5>({1, 2, 3});
-            constexpr auto right = Factory::template create<int, 5>({1, 2});
+            constexpr auto LEFT = Factory::template create<int, 5>({1, 2, 3});
+            constexpr auto RIGHT = Factory::template create<int, 5>({1, 2});
 
-            static_assert(!(left < right));
-            static_assert(!(left <= right));
-            static_assert(left > right);
-            static_assert(left >= right);
+            static_assert(!(LEFT < RIGHT));
+            static_assert(!(LEFT <= RIGHT));
+            static_assert(LEFT > RIGHT);
+            static_assert(LEFT >= RIGHT);
 
-            ASSERT_TRUE(!(left < right));
-            ASSERT_TRUE(!(left <= right));
-            ASSERT_TRUE(left > right);
-            ASSERT_TRUE(left >= right);
+            ASSERT_TRUE(!(LEFT < RIGHT));
+            ASSERT_TRUE(!(LEFT <= RIGHT));
+            ASSERT_TRUE(LEFT > RIGHT);
+            ASSERT_TRUE(LEFT >= RIGHT);
         }
 
         // Right has one additional element
@@ -874,18 +874,18 @@ TEST(FixedCircularDeque, Comparison)
         }
 
         {
-            constexpr auto left = Factory::template create<int, 5>({1, 2});
-            constexpr auto right = Factory::template create<int, 5>({1, 2, 3});
+            constexpr auto LEFT = Factory::template create<int, 5>({1, 2});
+            constexpr auto RIGHT = Factory::template create<int, 5>({1, 2, 3});
 
-            static_assert(left < right);
-            static_assert(left <= right);
-            static_assert(!(left > right));
-            static_assert(!(left >= right));
+            static_assert(LEFT < RIGHT);
+            static_assert(LEFT <= RIGHT);
+            static_assert(!(LEFT > RIGHT));
+            static_assert(!(LEFT >= RIGHT));
 
-            ASSERT_TRUE(left < right);
-            ASSERT_TRUE(left <= right);
-            ASSERT_TRUE(!(left > right));
-            ASSERT_TRUE(!(left >= right));
+            ASSERT_TRUE(LEFT < RIGHT);
+            ASSERT_TRUE(LEFT <= RIGHT);
+            ASSERT_TRUE(!(LEFT > RIGHT));
+            ASSERT_TRUE(!(LEFT >= RIGHT));
         }
     };
 
@@ -906,20 +906,20 @@ TEST(FixedCircularDeque, TrivialIterators)
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
         {
-            constexpr auto v1 = Factory::template create<int, 3>({77, 88, 99});
+            constexpr auto VAL1 = Factory::template create<int, 3>({77, 88, 99});
 
-            static_assert(std::distance(v1.cbegin(), v1.cend()) == 3);
+            static_assert(std::distance(VAL1.cbegin(), VAL1.cend()) == 3);
 
-            static_assert(*v1.begin() == 77);
-            static_assert(*std::next(v1.begin(), 1) == 88);
-            static_assert(*std::next(v1.begin(), 2) == 99);
+            static_assert(*VAL1.begin() == 77);
+            static_assert(*std::next(VAL1.begin(), 1) == 88);
+            static_assert(*std::next(VAL1.begin(), 2) == 99);
 
-            static_assert(*std::prev(v1.end(), 1) == 99);
-            static_assert(*std::prev(v1.end(), 2) == 88);
-            static_assert(*std::prev(v1.end(), 3) == 77);
+            static_assert(*std::prev(VAL1.end(), 1) == 99);
+            static_assert(*std::prev(VAL1.end(), 2) == 88);
+            static_assert(*std::prev(VAL1.end(), 3) == 77);
 
-            static_assert(*(1 + v1.begin()) == 88);
-            static_assert(*(2 + v1.begin()) == 99);
+            static_assert(*(1 + VAL1.begin()) == 88);
+            static_assert(*(2 + VAL1.begin()) == 99);
         }
 
         {
@@ -1029,20 +1029,20 @@ TEST(FixedCircularDeque, ReverseIterators)
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
         {
-            constexpr auto v1 = Factory::template create<int, 3>({77, 88, 99});
+            constexpr auto VAL1 = Factory::template create<int, 3>({77, 88, 99});
 
-            static_assert(std::distance(v1.crbegin(), v1.crend()) == 3);
+            static_assert(std::distance(VAL1.crbegin(), VAL1.crend()) == 3);
 
-            static_assert(*v1.rbegin() == 99);
-            static_assert(*std::next(v1.rbegin(), 1) == 88);
-            static_assert(*std::next(v1.rbegin(), 2) == 77);
+            static_assert(*VAL1.rbegin() == 99);
+            static_assert(*std::next(VAL1.rbegin(), 1) == 88);
+            static_assert(*std::next(VAL1.rbegin(), 2) == 77);
 
-            static_assert(*std::prev(v1.rend(), 1) == 77);
-            static_assert(*std::prev(v1.rend(), 2) == 88);
-            static_assert(*std::prev(v1.rend(), 3) == 99);
+            static_assert(*std::prev(VAL1.rend(), 1) == 77);
+            static_assert(*std::prev(VAL1.rend(), 2) == 88);
+            static_assert(*std::prev(VAL1.rend(), 3) == 99);
 
-            static_assert(*(1 + v1.begin()) == 88);
-            static_assert(*(2 + v1.begin()) == 99);
+            static_assert(*(1 + VAL1.begin()) == 88);
+            static_assert(*(2 + VAL1.begin()) == 99);
         }
 
         {
@@ -1105,7 +1105,7 @@ TEST(FixedCircularDeque, ReverseIteratorBase)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             auto v = Factory::template create<int, 7>({1, 2, 3});
             auto it = v.rbegin();  // points to 3
@@ -1115,7 +1115,7 @@ TEST(FixedCircularDeque, ReverseIteratorBase)
             return v;
         }();
 
-        static_assert(std::ranges::equal(v1, std::array<int, 2>{1, 3}));
+        static_assert(std::ranges::equal(VAL1, std::array<int, 2>{1, 3}));
     };
 
     run_test(FixedCircularDequeInitialStateFirstIndex{});
@@ -1222,17 +1222,17 @@ TEST(FixedCircularDeque, Resize)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             auto v = Factory::template create<int, 7>({0, 1, 2});
             v.resize(6);
             return v;
         }();
 
-        static_assert(std::ranges::equal(v1, std::array{0, 1, 2, 0, 0, 0}));
-        static_assert(v1.max_size() == 7);
+        static_assert(std::ranges::equal(VAL1, std::array{0, 1, 2, 0, 0, 0}));
+        static_assert(VAL1.max_size() == 7);
 
-        constexpr auto v2 = []()
+        constexpr auto VAL2 = []()
         {
             auto v = Factory::template create<int, 7>({0, 1, 2});
             v.resize(7, 300);
@@ -1240,8 +1240,8 @@ TEST(FixedCircularDeque, Resize)
             return v;
         }();
 
-        static_assert(std::ranges::equal(v2, std::array{0, 1, 2, 300, 300}));
-        static_assert(v2.max_size() == 7);
+        static_assert(std::ranges::equal(VAL2, std::array{0, 1, 2, 300, 300}));
+        static_assert(VAL2.max_size() == 7);
 
         auto v3 = Factory::template create<int, 8>({0, 1, 2, 3});
         v3.resize(6);
@@ -1347,7 +1347,7 @@ TEST(FixedCircularDeque, Emplace)
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
         {
-            constexpr auto v1 = []()
+            constexpr auto VAL1 = []()
             {
                 auto v = Factory::template create<int, 11>({0, 1, 2});
                 v.emplace(std::next(v.begin(), 1), 3);
@@ -1355,7 +1355,7 @@ TEST(FixedCircularDeque, Emplace)
                 return v;
             }();
 
-            static_assert(std::ranges::equal(v1, std::array{0, 4, 3, 1, 2}));
+            static_assert(std::ranges::equal(VAL1, std::array{0, 4, 3, 1, 2}));
         }
         {
             auto v1 = []()
@@ -1386,7 +1386,7 @@ TEST(FixedCircularDeque, EmplaceExceedsCapacity)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             auto v = Factory::template create<int, 3>({1, 2});
             v.emplace(std::next(v.begin(), 1), 3);
@@ -1394,10 +1394,10 @@ TEST(FixedCircularDeque, EmplaceExceedsCapacity)
             return v;
         }();
 
-        static_assert(v1.size() == 3);
-        static_assert(v1.at(0) == 4);
-        static_assert(v1.at(1) == 3);
-        static_assert(v1.at(2) == 2);
+        static_assert(VAL1.size() == 3);
+        static_assert(VAL1.at(0) == 4);
+        static_assert(VAL1.at(1) == 3);
+        static_assert(VAL1.at(2) == 2);
     };
 
     run_test(FixedCircularDequeInitialStateFirstIndex{});
@@ -1409,19 +1409,19 @@ TEST(FixedCircularDeque, AssignValue)
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
         {
-            constexpr auto v1 = []()
+            constexpr auto VAL1 = []()
             {
                 auto v = Factory::template create<int, 7>({0, 1, 2});
                 v.assign(5, 100);
                 return v;
             }();
 
-            static_assert(std::ranges::equal(v1, std::array<int, 5>{100, 100, 100, 100, 100}));
-            static_assert(v1.size() == 5);
+            static_assert(std::ranges::equal(VAL1, std::array<int, 5>{100, 100, 100, 100, 100}));
+            static_assert(VAL1.size() == 5);
         }
 
         {
-            constexpr auto v2 = []()
+            constexpr auto VAL2 = []()
             {
                 auto v = Factory::template create<int, 7>({0, 1, 2});
                 v.assign(5, 100);
@@ -1429,9 +1429,9 @@ TEST(FixedCircularDeque, AssignValue)
                 return v;
             }();
 
-            static_assert(std::ranges::equal(v2, std::array<int, 2>{300, 300}));
-            static_assert(v2.size() == 2);
-            static_assert(v2.max_size() == 7);
+            static_assert(std::ranges::equal(VAL2, std::array<int, 2>{300, 300}));
+            static_assert(VAL2.size() == 2);
+            static_assert(VAL2.max_size() == 7);
         }
 
         {
@@ -1456,17 +1456,17 @@ TEST(FixedCircularDeque, AssignValueExceedsCapacity)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             auto v = Factory::template create<int, 3>({0, 1, 2});
             v.assign(5, 100);
             return v;
         }();
 
-        static_assert(v1.size() == 3);
-        static_assert(v1.at(0) == 100);
-        static_assert(v1.at(1) == 100);
-        static_assert(v1.at(2) == 100);
+        static_assert(VAL1.size() == 3);
+        static_assert(VAL1.at(0) == 100);
+        static_assert(VAL1.at(1) == 100);
+        static_assert(VAL1.at(2) == 100);
     };
 
     run_test(FixedCircularDequeInitialStateFirstIndex{});
@@ -1478,7 +1478,7 @@ TEST(FixedCircularDeque, AssignIterator)
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
         {
-            constexpr auto v1 = []()
+            constexpr auto VAL1 = []()
             {
                 std::array<int, 2> a{300, 300};
                 auto v = Factory::template create<int, 7>({0, 1, 2});
@@ -1486,9 +1486,9 @@ TEST(FixedCircularDeque, AssignIterator)
                 return v;
             }();
 
-            static_assert(std::ranges::equal(v1, std::array<int, 2>{300, 300}));
-            static_assert(v1.size() == 2);
-            static_assert(v1.max_size() == 7);
+            static_assert(std::ranges::equal(VAL1, std::array<int, 2>{300, 300}));
+            static_assert(VAL1.size() == 2);
+            static_assert(VAL1.max_size() == 7);
         }
         {
             auto v2 = []()
@@ -1512,7 +1512,7 @@ TEST(FixedCircularDeque, AssignIteratorExceedsCapacity)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             auto v = Factory::template create<int, 3>({0, 1, 2});
             std::array<int, 5> a{300, 400, 500, 600, 700};
@@ -1520,10 +1520,10 @@ TEST(FixedCircularDeque, AssignIteratorExceedsCapacity)
             return v;
         }();
 
-        static_assert(v1.size() == 3);
-        static_assert(v1.at(0) == 500);
-        static_assert(v1.at(1) == 600);
-        static_assert(v1.at(2) == 700);
+        static_assert(VAL1.size() == 3);
+        static_assert(VAL1.at(0) == 500);
+        static_assert(VAL1.at(1) == 600);
+        static_assert(VAL1.at(2) == 700);
     };
 
     run_test(FixedCircularDequeInitialStateFirstIndex{});
@@ -1565,16 +1565,16 @@ TEST(FixedCircularDeque, AssignInitializerList)
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
         {
-            constexpr auto v1 = []()
+            constexpr auto VAL1 = []()
             {
                 auto v = Factory::template create<int, 7>({0, 1, 2});
                 v.assign({300, 300});
                 return v;
             }();
 
-            static_assert(std::ranges::equal(v1, std::array<int, 2>{300, 300}));
-            static_assert(v1.size() == 2);
-            static_assert(v1.max_size() == 7);
+            static_assert(std::ranges::equal(VAL1, std::array<int, 2>{300, 300}));
+            static_assert(VAL1.size() == 2);
+            static_assert(VAL1.max_size() == 7);
         }
         {
             auto v2 = []()
@@ -1597,17 +1597,17 @@ TEST(FixedCircularDeque, AssignInitializerListExceedsCapacity)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             auto v = Factory::template create<int, 3>({0, 1, 2});
             v.assign({300, 300, 300, 300, 300});
             return v;
         }();
 
-        static_assert(v1.size() == 3);
-        static_assert(v1.at(0) == 300);
-        static_assert(v1.at(1) == 300);
-        static_assert(v1.at(2) == 300);
+        static_assert(VAL1.size() == 3);
+        static_assert(VAL1.at(0) == 300);
+        static_assert(VAL1.at(1) == 300);
+        static_assert(VAL1.at(2) == 300);
     };
 
     run_test(FixedCircularDequeInitialStateFirstIndex{});
@@ -1619,7 +1619,7 @@ TEST(FixedCircularDeque, InsertValue)
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
         {
-            constexpr auto v1 = []()
+            constexpr auto VAL1 = []()
             {
                 auto v = Factory::template create<int, 7>({0, 1, 2, 3});
                 v.insert(v.begin(), 100);
@@ -1628,13 +1628,13 @@ TEST(FixedCircularDeque, InsertValue)
                 return v;
             }();
 
-            static_assert(std::ranges::equal(v1, std::array<int, 6>{100, 0, 500, 1, 2, 3}));
-            static_assert(v1.size() == 6);
-            static_assert(v1.max_size() == 7);
+            static_assert(std::ranges::equal(VAL1, std::array<int, 6>{100, 0, 500, 1, 2, 3}));
+            static_assert(VAL1.size() == 6);
+            static_assert(VAL1.max_size() == 7);
         }
         {
             // For off-by-one issues, make the capacity just fit
-            constexpr auto v2 = []()
+            constexpr auto VAL2 = []()
             {
                 auto v = Factory::template create<int, 5>({0, 1, 2});
                 v.insert(v.begin(), 100);
@@ -1643,9 +1643,9 @@ TEST(FixedCircularDeque, InsertValue)
                 return v;
             }();
 
-            static_assert(std::ranges::equal(v2, std::array<int, 5>{100, 0, 500, 1, 2}));
-            static_assert(v2.size() == 5);
-            static_assert(v2.max_size() == 5);
+            static_assert(std::ranges::equal(VAL2, std::array<int, 5>{100, 0, 500, 1, 2}));
+            static_assert(VAL2.size() == 5);
+            static_assert(VAL2.max_size() == 5);
         }
 
         // NonTriviallyCopyable<T>
@@ -1681,14 +1681,14 @@ TEST(FixedCircularDeque, InsertValueExceedsCapacity)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             auto v = Factory::template create<int, 4>({0, 1, 2, 3});
             v.insert(std::next(v.begin(), 1), 5);
             return v;
         }();
-        static_assert(std::ranges::equal(v1, std::array<int, 4>{5, 1, 2, 3}));
-        static_assert(v1.size() == 4);
+        static_assert(std::ranges::equal(VAL1, std::array<int, 4>{5, 1, 2, 3}));
+        static_assert(VAL1.size() == 4);
     };
 
     run_test(FixedCircularDequeInitialStateFirstIndex{});
@@ -1700,7 +1700,7 @@ TEST(FixedCircularDeque, InsertIterator)
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
         {
-            constexpr auto v1 = []()
+            constexpr auto VAL1 = []()
             {
                 std::array<int, 2> a{100, 500};
                 auto v = Factory::template create<int, 7>({0, 1, 2, 3});
@@ -1708,13 +1708,13 @@ TEST(FixedCircularDeque, InsertIterator)
                 return v;
             }();
 
-            static_assert(std::ranges::equal(v1, std::array<int, 6>{0, 1, 100, 500, 2, 3}));
-            static_assert(v1.size() == 6);
-            static_assert(v1.max_size() == 7);
+            static_assert(std::ranges::equal(VAL1, std::array<int, 6>{0, 1, 100, 500, 2, 3}));
+            static_assert(VAL1.size() == 6);
+            static_assert(VAL1.max_size() == 7);
         }
         {
             // For off-by-one issues, make the capacity just fit
-            constexpr auto v2 = []()
+            constexpr auto VAL2 = []()
             {
                 std::array<int, 2> a{100, 500};
                 auto v = Factory::template create<int, 5>({0, 1, 2});
@@ -1722,9 +1722,9 @@ TEST(FixedCircularDeque, InsertIterator)
                 return v;
             }();
 
-            static_assert(std::ranges::equal(v2, std::array<int, 5>{0, 1, 100, 500, 2}));
-            static_assert(v2.size() == 5);
-            static_assert(v2.max_size() == 5);
+            static_assert(std::ranges::equal(VAL2, std::array<int, 5>{0, 1, 100, 500, 2}));
+            static_assert(VAL2.size() == 5);
+            static_assert(VAL2.max_size() == 5);
         }
 
         {
@@ -1744,15 +1744,15 @@ TEST(FixedCircularDeque, InsertIteratorExceedsCapacity)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             auto v = Factory::template create<int, 4>({0, 1, 2});
             std::array<int, 2> a{3, 4};
             v.insert(std::next(v.begin(), 1), a.begin(), a.end());
             return v;
         }();
-        static_assert(v1.size() == 4);
-        static_assert(std::ranges::equal(v1, std::array<int, 4>{3, 4, 1, 2}));
+        static_assert(VAL1.size() == 4);
+        static_assert(std::ranges::equal(VAL1, std::array<int, 4>{3, 4, 1, 2}));
     };
 
     run_test(FixedCircularDequeInitialStateFirstIndex{});
@@ -1764,7 +1764,7 @@ TEST(FixedCircularDeque, InsertIteratorExceedsCapacityAndMeetsInsertingLocation)
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
         {
-            constexpr auto v1 = []()
+            constexpr auto VAL1 = []()
             {
                 auto v = Factory::template create<int, 4>({10, 20, 30, 40});
                 std::array<int, 2> a{2, 1};
@@ -1774,11 +1774,11 @@ TEST(FixedCircularDeque, InsertIteratorExceedsCapacityAndMeetsInsertingLocation)
             }();
             // Result should be same as if we had infinite size, and trimming to size.
             // [10, 2, 1, 20, 30, 40] -> [1, 20, 30, 40]
-            static_assert(v1.size() == 4);
-            static_assert(std::ranges::equal(v1, std::array<int, 4>{1, 20, 30, 40}));
+            static_assert(VAL1.size() == 4);
+            static_assert(std::ranges::equal(VAL1, std::array<int, 4>{1, 20, 30, 40}));
         }
         {
-            constexpr auto v1 = []()
+            constexpr auto VAL1 = []()
             {
                 auto v = Factory::template create<int, 4>({10, 20, 30, 40});
                 std::array<int, 7> a{7, 6, 5, 4, 3, 2, 1};
@@ -1788,11 +1788,11 @@ TEST(FixedCircularDeque, InsertIteratorExceedsCapacityAndMeetsInsertingLocation)
             }();
             // Result should be same as if we had infinite size, and trimming to size.
             // [10, 7, 6, 5, 4, 3, 2, 1, 20, 30, 40] -> [1, 20, 30, 40]
-            static_assert(v1.size() == 4);
-            static_assert(std::ranges::equal(v1, std::array<int, 4>{1, 20, 30, 40}));
+            static_assert(VAL1.size() == 4);
+            static_assert(std::ranges::equal(VAL1, std::array<int, 4>{1, 20, 30, 40}));
         }
         {
-            constexpr auto v1 = []()
+            constexpr auto VAL1 = []()
             {
                 auto v = Factory::template create<int, 4>({10, 20, 30, 40});
                 std::array<int, 7> a{7, 6, 5, 4, 3, 2, 1};
@@ -1802,11 +1802,11 @@ TEST(FixedCircularDeque, InsertIteratorExceedsCapacityAndMeetsInsertingLocation)
             }();
             // Result should be same as if we had infinite size, and trimming to size.
             // [10, 20, 7, 6, 5, 4, 3, 2, 1, 30, 40] -> [2, 1, 30, 40]
-            static_assert(v1.size() == 4);
-            static_assert(std::ranges::equal(v1, std::array<int, 4>{2, 1, 30, 40}));
+            static_assert(VAL1.size() == 4);
+            static_assert(std::ranges::equal(VAL1, std::array<int, 4>{2, 1, 30, 40}));
         }
         {
-            constexpr auto v1 = []()
+            constexpr auto VAL1 = []()
             {
                 auto v = Factory::template create<int, 5>({11, 21, 31, 41});
                 std::array<int, 7> a{7, 6, 5, 4, 3, 2, 1};
@@ -1816,8 +1816,8 @@ TEST(FixedCircularDeque, InsertIteratorExceedsCapacityAndMeetsInsertingLocation)
             }();
             // Result should be same as if we had infinite size, and trimming to size.
             // [11, 21, 7, 6, 5, 4, 3, 2, 1, 31, 41] -> [3, 2, 1, 31, 41]
-            static_assert(v1.size() == 5);
-            static_assert(std::ranges::equal(v1, std::array<int, 5>{3, 2, 1, 31, 41}));
+            static_assert(VAL1.size() == 5);
+            static_assert(std::ranges::equal(VAL1, std::array<int, 5>{3, 2, 1, 31, 41}));
         }
     };
 
@@ -1830,7 +1830,7 @@ TEST(FixedCircularDeque, InsertIteratorExceedsCapacityAndIsEndIterator)
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
         {
-            constexpr auto v1 = []()
+            constexpr auto VAL1 = []()
             {
                 auto v = Factory::template create<int, 4>({10, 20, 30, 40});
                 std::array<int, 2> a{2, 1};
@@ -1840,11 +1840,11 @@ TEST(FixedCircularDeque, InsertIteratorExceedsCapacityAndIsEndIterator)
             }();
             // Result should be same as if we had infinite size, and trimming to size.
             // [10, 20, 30, 40, 2, 1] -> [30, 40, 2, 1]
-            static_assert(v1.size() == 4);
-            static_assert(std::ranges::equal(v1, std::array<int, 4>{30, 40, 2, 1}));
+            static_assert(VAL1.size() == 4);
+            static_assert(std::ranges::equal(VAL1, std::array<int, 4>{30, 40, 2, 1}));
         }
         {
-            constexpr auto v1 = []()
+            constexpr auto VAL1 = []()
             {
                 auto v = Factory::template create<int, 4>({11, 21, 31});
                 std::array<int, 7> a{7, 6, 5, 4, 3, 2, 1};
@@ -1854,11 +1854,11 @@ TEST(FixedCircularDeque, InsertIteratorExceedsCapacityAndIsEndIterator)
             }();
             // Result should be same as if we had infinite size, and trimming to size.
             // [11, 21, 31, 7, 6, 5, 4, 3, 2, 1] -> [4, 3, 2, 1]
-            static_assert(v1.size() == 4);
-            static_assert(std::ranges::equal(v1, std::array<int, 4>{4, 3, 2, 1}));
+            static_assert(VAL1.size() == 4);
+            static_assert(std::ranges::equal(VAL1, std::array<int, 4>{4, 3, 2, 1}));
         }
         {
-            constexpr auto v1 = []()
+            constexpr auto VAL1 = []()
             {
                 auto v = Factory::template create<int, 4>();
                 std::array<int, 7> a{7, 6, 5, 4, 3, 2, 1};
@@ -1868,8 +1868,8 @@ TEST(FixedCircularDeque, InsertIteratorExceedsCapacityAndIsEndIterator)
             }();
             // Result should be same as if we had infinite size, and trimming to size.
             // [7, 6, 5, 4, 3, 2, 1] -> [4, 3, 2, 1]
-            static_assert(v1.size() == 4);
-            static_assert(std::ranges::equal(v1, std::array<int, 4>{4, 3, 2, 1}));
+            static_assert(VAL1.size() == 4);
+            static_assert(std::ranges::equal(VAL1, std::array<int, 4>{4, 3, 2, 1}));
         }
     };
 
@@ -2005,16 +2005,16 @@ TEST(FixedCircularDeque, InsertInitializerList)
     {
         {
             // For off-by-one issues, make the capacity just fit
-            constexpr auto v1 = []()
+            constexpr auto VAL1 = []()
             {
                 auto v = Factory::template create<int, 5>({0, 1, 2});
                 v.insert(std::next(v.begin(), 2), {100, 500});
                 return v;
             }();
 
-            static_assert(std::ranges::equal(v1, std::array<int, 5>{0, 1, 100, 500, 2}));
-            static_assert(v1.size() == 5);
-            static_assert(v1.max_size() == 5);
+            static_assert(std::ranges::equal(VAL1, std::array<int, 5>{0, 1, 100, 500, 2}));
+            static_assert(VAL1.size() == 5);
+            static_assert(VAL1.max_size() == 5);
         }
 
         {
@@ -2033,14 +2033,14 @@ TEST(FixedCircularDeque, InsertInitializerListExceedsCapacity)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             auto v = Factory::template create<int, 4>({0, 1, 2});
             v.insert(std::next(v.begin(), 1), {3, 4});
             return v;
         }();
-        static_assert(v1.size() == 4);
-        static_assert(std::ranges::equal(v1, std::array<int, 4>{3, 4, 1, 2}));
+        static_assert(VAL1.size() == 4);
+        static_assert(std::ranges::equal(VAL1, std::array<int, 4>{3, 4, 1, 2}));
     };
 
     run_test(FixedCircularDequeInitialStateFirstIndex{});
@@ -2051,16 +2051,16 @@ TEST(FixedCircularDeque, EraseRange)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             auto v = Factory::template create<int, 8>({0, 1, 2, 3, 4, 5});
             v.erase(std::next(v.cbegin(), 2), std::next(v.begin(), 4));
             return v;
         }();
 
-        static_assert(std::ranges::equal(v1, std::array<int, 4>{0, 1, 4, 5}));
-        static_assert(v1.size() == 4);
-        static_assert(v1.max_size() == 8);
+        static_assert(std::ranges::equal(VAL1, std::array<int, 4>{0, 1, 4, 5}));
+        static_assert(VAL1.size() == 4);
+        static_assert(VAL1.max_size() == 8);
 
         {
             auto v2 = Factory::template create<int, 8>({2, 1, 4, 5, 0, 3});
@@ -2088,7 +2088,7 @@ TEST(FixedCircularDeque, EraseOne)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             auto v = Factory::template create<int, 8>({0, 1, 2, 3, 4, 5});
             v.erase(v.cbegin());
@@ -2096,9 +2096,9 @@ TEST(FixedCircularDeque, EraseOne)
             return v;
         }();
 
-        static_assert(std::ranges::equal(v1, std::array<int, 4>{1, 2, 4, 5}));
-        static_assert(v1.size() == 4);
-        static_assert(v1.max_size() == 8);
+        static_assert(std::ranges::equal(VAL1, std::array<int, 4>{1, 2, 4, 5}));
+        static_assert(VAL1.size() == 4);
+        static_assert(VAL1.max_size() == 8);
 
         {
             auto v2 = Factory::template create<int, 8>({2, 1, 4, 5, 0, 3});
@@ -2180,7 +2180,7 @@ TEST(FixedCircularDeque, EraseFreeFunction)
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
         {
-            constexpr auto v1 = []()
+            constexpr auto VAL1 = []()
             {
                 auto v = Factory::template create<int, 8>({3, 0, 1, 2, 3, 4, 5, 3});
                 const std::size_t removed_count = fixed_containers::erase(v, 3);
@@ -2188,7 +2188,7 @@ TEST(FixedCircularDeque, EraseFreeFunction)
                 return v;
             }();
 
-            static_assert(std::ranges::equal(v1, std::array<int, 5>{0, 1, 2, 4, 5}));
+            static_assert(std::ranges::equal(VAL1, std::array<int, 5>{0, 1, 2, 4, 5}));
         }
 
         {
@@ -2207,7 +2207,7 @@ TEST(FixedCircularDeque, EraseIf)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             auto v = Factory::template create<int, 8>({0, 1, 2, 3, 4, 5, 6});
             const std::size_t removed_count =
@@ -2216,7 +2216,7 @@ TEST(FixedCircularDeque, EraseIf)
             return v;
         }();
 
-        static_assert(std::ranges::equal(v1, std::array<int, 3>{1, 3, 5}));
+        static_assert(std::ranges::equal(VAL1, std::array<int, 3>{1, 3, 5}));
     };
 
     run_test(FixedCircularDequeInitialStateFirstIndex{});
@@ -2227,15 +2227,15 @@ TEST(FixedCircularDeque, Front)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             auto v = Factory::template create<int, 8>({99, 1, 2});
             return v;
         }();
 
-        static_assert(v1.front() == 99);
-        static_assert(std::ranges::equal(v1, std::array<int, 3>{99, 1, 2}));
-        static_assert(v1.size() == 3);
+        static_assert(VAL1.front() == 99);
+        static_assert(std::ranges::equal(VAL1, std::array<int, 3>{99, 1, 2}));
+        static_assert(VAL1.size() == 3);
 
         auto v2 = Factory::template create<int, 8>({100, 101, 102});
         const auto& v2_const_ref = v2;
@@ -2271,15 +2271,15 @@ TEST(FixedCircularDeque, Back)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
     {
-        constexpr auto v1 = []()
+        constexpr auto VAL1 = []()
         {
             auto v = Factory::template create<int, 8>({0, 1, 77});
             return v;
         }();
 
-        static_assert(v1.back() == 77);
-        static_assert(std::ranges::equal(v1, std::array<int, 3>{0, 1, 77}));
-        static_assert(v1.size() == 3);
+        static_assert(VAL1.back() == 77);
+        static_assert(std::ranges::equal(VAL1, std::array<int, 3>{0, 1, 77}));
+        static_assert(VAL1.size() == 3);
 
         auto v2 = Factory::template create<int, 8>({100, 101, 102});
         const auto& v2_const_ref = v2;
@@ -2330,8 +2330,8 @@ TEST(FixedCircularDeque, OverloadedAddressOfOperator)
     }
 
     {
-        constexpr FixedCircularDeque<MockFailingAddressOfOperator, 15> v{5};
-        static_assert(!v.empty());
+        constexpr FixedCircularDeque<MockFailingAddressOfOperator, 15> VAL{5};
+        static_assert(!VAL.empty());
     }
 
     {
@@ -2352,9 +2352,9 @@ TEST(FixedCircularDeque, OverloadedAddressOfOperator)
     }
 
     {
-        constexpr FixedCircularDeque<MockFailingAddressOfOperator, 15> v{5};
-        static_assert(!v.empty());
-        auto it = v.cbegin();
+        constexpr FixedCircularDeque<MockFailingAddressOfOperator, 15> VAL{5};
+        static_assert(!VAL.empty());
+        auto it = VAL.cbegin();
         auto it_ref = *it;
         it_ref.do_nothing();
         it->do_nothing();

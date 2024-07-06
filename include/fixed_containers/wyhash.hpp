@@ -85,13 +85,13 @@ constexpr void mum(std::uint64_t* a, std::uint64_t* b)
 
 [[maybe_unused]] [[nodiscard]] inline auto hash(void const* key, std::int64_t len) -> std::uint64_t
 {
-    constexpr auto secret = std::array{UINT64_C(0xa0761d6478bd642f),
+    constexpr auto SECRET = std::array{UINT64_C(0xa0761d6478bd642f),
                                        UINT64_C(0xe7037ed1a0b428db),
                                        UINT64_C(0x8ebc6af09c88c6e3),
                                        UINT64_C(0x589965cc75374cc3)};
 
     auto const* p = static_cast<std::uint8_t const*>(key);
-    std::uint64_t seed = secret[0];
+    std::uint64_t seed = SECRET[0];
     std::uint64_t a{};
     std::uint64_t b{};
     if (len <= 16)
@@ -122,9 +122,9 @@ constexpr void mum(std::uint64_t* a, std::uint64_t* b)
             std::uint64_t see2 = seed;
             do
             {
-                seed = mix(r8(p) ^ secret[1], r8(std::next(p, 8)) ^ seed);
-                see1 = mix(r8(std::next(p, 16)) ^ secret[2], r8(std::next(p, 24)) ^ see1);
-                see2 = mix(r8(std::next(p, 32)) ^ secret[3], r8(std::next(p, 40)) ^ see2);
+                seed = mix(r8(p) ^ SECRET[1], r8(std::next(p, 8)) ^ seed);
+                see1 = mix(r8(std::next(p, 16)) ^ SECRET[2], r8(std::next(p, 24)) ^ see1);
+                see2 = mix(r8(std::next(p, 32)) ^ SECRET[3], r8(std::next(p, 40)) ^ see2);
                 std::advance(p, 48);
                 i -= 48;
             } while (i > 48);
@@ -132,7 +132,7 @@ constexpr void mum(std::uint64_t* a, std::uint64_t* b)
         }
         while (i > 16)
         {
-            seed = mix(r8(p) ^ secret[1], r8(std::next(p, 8)) ^ seed);
+            seed = mix(r8(p) ^ SECRET[1], r8(std::next(p, 8)) ^ seed);
             i -= 16;
             std::advance(p, 16);
         }
@@ -140,7 +140,7 @@ constexpr void mum(std::uint64_t* a, std::uint64_t* b)
         b = r8(std::next(p, i - 8));
     }
 
-    return mix(secret[1] ^ static_cast<std::uint64_t>(len), mix(a ^ secret[1], b ^ seed));
+    return mix(SECRET[1] ^ static_cast<std::uint64_t>(len), mix(a ^ SECRET[1], b ^ seed));
 }
 
 [[nodiscard]] constexpr std::uint64_t hash(std::uint64_t x)
@@ -154,7 +154,7 @@ namespace fixed_containers::wyhash
 {
 
 template <typename T>
-struct hash
+struct hash  // NOLINT(readability-identifier-naming)
 {
     constexpr std::uint64_t operator()(T const& obj) const
         noexcept(noexcept(std::declval<std::hash<T>>().operator()(std::declval<T const&>())))

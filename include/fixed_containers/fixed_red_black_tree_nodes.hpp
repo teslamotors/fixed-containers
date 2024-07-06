@@ -326,59 +326,68 @@ public:
     static constexpr bool IS_MUTABLE = !std::is_const_v<S>;
 
 private:
-    S* storage;
-    NodeIndex i;
+    S* storage_;
+    NodeIndex node_index_;
 
 public:
-    constexpr RedBlackTreeNodeView(S* storage_in_ctor, const NodeIndex i_in_ctor)
-      : storage{storage_in_ctor}
-      , i(i_in_ctor)
+    constexpr RedBlackTreeNodeView(S* storage, const NodeIndex node_index)
+      : storage_{storage}
+      , node_index_(node_index)
     {
     }
 
-    [[nodiscard]] constexpr const K& key() const { return storage->key(i); }
+    [[nodiscard]] constexpr const K& key() const { return storage_->key(node_index_); }
     constexpr K& key()
         requires IS_MUTABLE
     {
-        return storage->key(i);
+        return storage_->key(node_index_);
     }
     [[nodiscard]] constexpr const V& value() const
         requires HAS_ASSOCIATED_VALUE
     {
-        return storage->value(i);
+        return storage_->value(node_index_);
     }
     constexpr V& value()
         requires IS_MUTABLE && HAS_ASSOCIATED_VALUE
     {
-        return storage->value(i);
+        return storage_->value(node_index_);
     }
 
-    [[nodiscard]] constexpr NodeIndex left_index() const { return storage->left_index(i); }
+    [[nodiscard]] constexpr NodeIndex left_index() const
+    {
+        return storage_->left_index(node_index_);
+    }
     constexpr void set_left_index(const NodeIndex& s)
         requires IS_MUTABLE
     {
-        storage->set_left_index(i, s);
+        storage_->set_left_index(node_index_, s);
     }
 
-    [[nodiscard]] constexpr NodeIndex right_index() const { return storage->right_index(i); }
+    [[nodiscard]] constexpr NodeIndex right_index() const
+    {
+        return storage_->right_index(node_index_);
+    }
     constexpr void set_right_index(const NodeIndex& s)
         requires IS_MUTABLE
     {
-        storage->set_right_index(i, s);
+        storage_->set_right_index(node_index_, s);
     }
 
-    [[nodiscard]] constexpr NodeIndex parent_index() const { return storage->parent_index(i); }
+    [[nodiscard]] constexpr NodeIndex parent_index() const
+    {
+        return storage_->parent_index(node_index_);
+    }
     constexpr void set_parent_index(const NodeIndex& s)
         requires IS_MUTABLE
     {
-        return storage->set_parent_index(i, s);
+        return storage_->set_parent_index(node_index_, s);
     }
 
-    [[nodiscard]] constexpr NodeColor color() const { return storage->color(i); }
+    [[nodiscard]] constexpr NodeColor color() const { return storage_->color(node_index_); }
     constexpr void set_color(const NodeColor& c)
         requires IS_MUTABLE
     {
-        return storage->set_color(i, c);
+        return storage_->set_color(node_index_, c);
     }
 };
 

@@ -32,7 +32,7 @@ struct SimpleTitleForParameterizedTest
 struct NameProviderForTypeParameterizedTest
 {
     template <class ParamType>
-    static std::string GetName(const int i)
+    static std::string GetName(const int i)  // NOLINT(readability-identifier-naming)
     {
         return std::string{type_name<ParamType>()} + "_" + std::to_string(i);
     }

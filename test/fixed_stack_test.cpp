@@ -19,27 +19,27 @@ static_assert(ConstexprDefaultConstructible<StackType>);
 
 TEST(FixedStack, DefaultConstructor)
 {
-    constexpr FixedStack<int, 8> v1{};
-    (void)v1;
+    constexpr FixedStack<int, 8> VAL1{};
+    (void)VAL1;
 }
 
 TEST(FixedStack, IteratorConstructor)
 {
-    constexpr FixedStack<int, 3> s1 = []()
+    constexpr FixedStack<int, 3> VAL1 = []()
     {
         FixedVector<int, 3> v1{77, 99};
         return FixedStack<int, 3>{v1.begin(), v1.end()};
     }();
 
-    static_assert(s1.top() == 99);
-    static_assert(s1.size() == 2);
+    static_assert(VAL1.top() == 99);
+    static_assert(VAL1.size() == 2);
 }
 
 TEST(FixedStack, MaxSize)
 {
     {
-        constexpr FixedStack<int, 3> v1{};
-        static_assert(v1.max_size() == 3);
+        constexpr FixedStack<int, 3> VAL1{};
+        static_assert(VAL1.max_size() == 3);
     }
 
     {
@@ -57,23 +57,23 @@ TEST(FixedStack, MaxSize)
 
 TEST(FixedStack, Empty)
 {
-    constexpr auto v1 = []() { return FixedStack<int, 7>{}; }();
+    constexpr auto VAL1 = []() { return FixedStack<int, 7>{}; }();
 
-    static_assert(v1.empty());
-    static_assert(v1.max_size() == 7);
+    static_assert(VAL1.empty());
+    static_assert(VAL1.max_size() == 7);
 }
 
 TEST(FixedStack, Top)
 {
     {
-        constexpr FixedStack<int, 3> s1 = []()
+        constexpr FixedStack<int, 3> VAL1 = []()
         {
             FixedVector<int, 3> v1{77, 99};
             return FixedStack<int, 3>{v1.begin(), v1.end()};
         }();
 
-        static_assert(s1.top() == 99);
-        static_assert(s1.size() == 2);
+        static_assert(VAL1.top() == 99);
+        static_assert(VAL1.size() == 2);
     }
 
     {
@@ -90,7 +90,7 @@ TEST(FixedStack, Top)
 
 TEST(FixedStack, Push)
 {
-    constexpr FixedStack<int, 3> s1 = []()
+    constexpr FixedStack<int, 3> VAL1 = []()
     {
         FixedStack<int, 3> v1{};
         const int my_int = 77;
@@ -99,13 +99,13 @@ TEST(FixedStack, Push)
         return v1;
     }();
 
-    static_assert(s1.top() == 99);
-    static_assert(s1.size() == 2);
+    static_assert(VAL1.top() == 99);
+    static_assert(VAL1.size() == 2);
 }
 
 TEST(FixedStack, Emplace)
 {
-    constexpr FixedStack<int, 3> s1 = []()
+    constexpr FixedStack<int, 3> VAL1 = []()
     {
         FixedStack<int, 3> v1{};
         const int my_int = 77;
@@ -114,13 +114,13 @@ TEST(FixedStack, Emplace)
         return v1;
     }();
 
-    static_assert(s1.top() == 99);
-    static_assert(s1.size() == 2);
+    static_assert(VAL1.top() == 99);
+    static_assert(VAL1.size() == 2);
 }
 
 TEST(FixedStack, Pop)
 {
-    constexpr FixedStack<int, 3> s1 = []()
+    constexpr FixedStack<int, 3> VAL1 = []()
     {
         FixedVector<int, 3> v1{77, 99};
         FixedStack<int, 3> out{v1.begin(), v1.end()};
@@ -128,40 +128,40 @@ TEST(FixedStack, Pop)
         return out;
     }();
 
-    static_assert(s1.top() == 77);
-    static_assert(s1.size() == 1);
+    static_assert(VAL1.top() == 77);
+    static_assert(VAL1.size() == 1);
 }
 
 TEST(FixedStack, Equality)
 {
-    static constexpr std::array<int, 2> a1{1, 2};
-    static constexpr std::array<int, 3> a2{1, 2, 3};
+    static constexpr std::array<int, 2> ENTRY_A1{1, 2};
+    static constexpr std::array<int, 3> ENTRY_A2{1, 2, 3};
 
-    constexpr FixedStack<int, 4> s1{a1.begin(), a1.end()};
-    constexpr FixedStack<int, 4> s2{a1.begin(), a1.end()};
-    constexpr FixedStack<int, 4> s3{a2.begin(), a2.end()};
+    constexpr FixedStack<int, 4> VAL1{ENTRY_A1.begin(), ENTRY_A1.end()};
+    constexpr FixedStack<int, 4> VAL2{ENTRY_A1.begin(), ENTRY_A1.end()};
+    constexpr FixedStack<int, 4> VAL3{ENTRY_A2.begin(), ENTRY_A2.end()};
 
-    static_assert(s1 == s2);
-    static_assert(s1 != s3);
+    static_assert(VAL1 == VAL2);
+    static_assert(VAL1 != VAL3);
 }
 
 TEST(FixedStack, Comparison)
 {
-    static constexpr std::array<int, 2> a1{1, 2};
-    static constexpr std::array<int, 3> a2{1, 3};
+    static constexpr std::array<int, 2> ENTRY_A1{1, 2};
+    static constexpr std::array<int, 3> ENTRY_A2{1, 3};
 
-    constexpr FixedStack<int, 4> s1{a1.begin(), a1.end()};
-    constexpr FixedStack<int, 4> s2{a2.begin(), a2.end()};
+    constexpr FixedStack<int, 4> VAL1{ENTRY_A1.begin(), ENTRY_A1.end()};
+    constexpr FixedStack<int, 4> VAL2{ENTRY_A2.begin(), ENTRY_A2.end()};
 
-    static_assert(s1 < s2);
-    static_assert(s1 <= s2);
-    static_assert(s2 > s1);
-    static_assert(s2 >= s1);
+    static_assert(VAL1 < VAL2);
+    static_assert(VAL1 <= VAL2);
+    static_assert(VAL2 > VAL1);
+    static_assert(VAL2 >= VAL1);
 }
 
 TEST(FixedStack, Full)
 {
-    constexpr auto v1 = []()
+    constexpr auto VAL1 = []()
     {
         FixedStack<int, 4> v{};
         v.push(100);
@@ -171,11 +171,11 @@ TEST(FixedStack, Full)
         return v;
     }();
 
-    static_assert(is_full(v1));
-    static_assert(v1.size() == 4);
-    static_assert(v1.max_size() == 4);
+    static_assert(is_full(VAL1));
+    static_assert(VAL1.size() == 4);
+    static_assert(VAL1.max_size() == 4);
 
-    EXPECT_TRUE(is_full(v1));
+    EXPECT_TRUE(is_full(VAL1));
 }
 
 TEST(FixedStack, ClassTemplateArgumentDeduction)

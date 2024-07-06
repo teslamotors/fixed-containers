@@ -68,10 +68,10 @@ TEST(ComparisonChain, SimpleTest)
 }
 TEST(ComparisonChain, ComparatorUsage)
 {
-    constexpr MyCompoundStruct struct1{1, 2, 3, 4};
-    constexpr MyCompoundStruct struct2{1, 2, 5, 4};
+    constexpr MyCompoundStruct STRUCT1{1, 2, 3, 4};
+    constexpr MyCompoundStruct STRUCT2{1, 2, 5, 4};
 
-    static_assert(struct1 < struct2);
+    static_assert(STRUCT1 < STRUCT2);
 }
 
 }  // namespace fixed_containers

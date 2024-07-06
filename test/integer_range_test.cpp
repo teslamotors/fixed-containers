@@ -43,11 +43,11 @@ TEST(IntegerRange, CompileTimeIntegerRange)
 
 TEST(StartingIntegerAndDistance, Simple)
 {
-    static constexpr StartingIntegerAndDistance s{3, 7};
-    static_assert(3 == s.start);
-    static_assert(7 == s.distance);
-    static_assert(3 == s.to_range().start_inclusive());
-    static_assert(10 == s.to_range().end_exclusive());
+    static constexpr StartingIntegerAndDistance VAL{3, 7};
+    static_assert(3 == VAL.start);
+    static_assert(7 == VAL.distance);
+    static_assert(3 == VAL.to_range().start_inclusive());
+    static_assert(10 == VAL.to_range().end_exclusive());
 }
 
 }  // namespace fixed_containers

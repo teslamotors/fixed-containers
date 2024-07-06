@@ -12,7 +12,8 @@ template <typename T>
 struct max_size;
 
 template <typename T>
-inline constexpr std::size_t max_size_v = max_size<T>::value;
+inline constexpr std::size_t max_size_v =  // NOLINT(readability-identifier-naming)
+    max_size<T>::value;
 
 template <typename T>
 concept has_static_sizet_static_max_size_void = requires() {

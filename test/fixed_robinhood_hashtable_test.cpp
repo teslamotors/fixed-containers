@@ -75,21 +75,21 @@ TEST(BucketOperations, DistAndFingerprint)
     static_assert(TriviallyCopyAssignable<Bucket>);
     static_assert(TriviallyMoveAssignable<Bucket>);
 
-    constexpr uint32_t dist_and_fingerprint = Bucket::dist_and_fingerprint_from_hash(0x1234UL);
-    static_assert((dist_and_fingerprint & Bucket::FINGERPRINT_MASK) == 0x34);
-    static_assert((dist_and_fingerprint >> Bucket::FINGERPRINT_BITS) == 1);
+    constexpr uint32_t DIST_AND_FINGERPRINT = Bucket::dist_and_fingerprint_from_hash(0x1234UL);
+    static_assert((DIST_AND_FINGERPRINT & Bucket::FINGERPRINT_MASK) == 0x34);
+    static_assert((DIST_AND_FINGERPRINT >> Bucket::FINGERPRINT_BITS) == 1);
 
-    constexpr uint32_t up_one = Bucket::increment_dist(dist_and_fingerprint);
-    static_assert(up_one > dist_and_fingerprint);
-    constexpr uint32_t up_two = Bucket::increment_dist(up_one);
-    static_assert(up_two > dist_and_fingerprint);
+    constexpr uint32_t UP_ONE = Bucket::increment_dist(DIST_AND_FINGERPRINT);
+    static_assert(UP_ONE > DIST_AND_FINGERPRINT);
+    constexpr uint32_t UP_TWO = Bucket::increment_dist(UP_ONE);
+    static_assert(UP_TWO > DIST_AND_FINGERPRINT);
 
-    constexpr uint32_t down_one = Bucket::decrement_dist(up_one);
-    static_assert(down_one == dist_and_fingerprint);
-    constexpr uint32_t down_two = Bucket::decrement_dist(dist_and_fingerprint);
-    static_assert(down_two < dist_and_fingerprint);
-    static_assert(down_two < up_one);
-    static_assert(down_two < up_two);
+    constexpr uint32_t DOWN_ONE = Bucket::decrement_dist(UP_ONE);
+    static_assert(DOWN_ONE == DIST_AND_FINGERPRINT);
+    constexpr uint32_t DOWN_TWO = Bucket::decrement_dist(DIST_AND_FINGERPRINT);
+    static_assert(DOWN_TWO < DIST_AND_FINGERPRINT);
+    static_assert(DOWN_TWO < UP_ONE);
+    static_assert(DOWN_TWO < UP_TWO);
 }
 
 TEST(BucketOperations, BucketArray)
