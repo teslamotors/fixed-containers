@@ -5,9 +5,9 @@
 namespace fixed_containers
 {
 // In contrast to assert(), works in Release mode
-constexpr void assert_or_abort(bool b)
+constexpr void assert_or_abort(bool condition)
 {
-    if (!b)
+    if (!condition)
     {
         std::abort();
     }

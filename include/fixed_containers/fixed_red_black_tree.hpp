@@ -90,86 +90,87 @@ public:
 
     constexpr void insert_node(const K& key) noexcept
     {
-        NodeIndexAndParentIndex np = index_of_node_with_parent(key);
-        insert_if_not_present_at(np, key);
+        NodeIndexAndParentIndex np_idxs = index_of_node_with_parent(key);
+        insert_if_not_present_at(np_idxs, key);
     }
     constexpr void insert_node(K&& key) noexcept
     {
-        NodeIndexAndParentIndex np = index_of_node_with_parent(key);
-        insert_if_not_present_at(np, std::move(key));
+        NodeIndexAndParentIndex np_idxs = index_of_node_with_parent(key);
+        insert_if_not_present_at(np_idxs, std::move(key));
     }
 
     constexpr V& operator[](const K& key) noexcept
         requires HAS_ASSOCIATED_VALUE
     {
-        NodeIndexAndParentIndex np = index_of_node_with_parent(key);
-        insert_if_not_present_at(np, key);
-        return tree_storage().value(np.i);
+        NodeIndexAndParentIndex np_idxs = index_of_node_with_parent(key);
+        insert_if_not_present_at(np_idxs, key);
+        return tree_storage().value(np_idxs.i);
     }
     constexpr V& operator[](K&& key) noexcept
         requires HAS_ASSOCIATED_VALUE
     {
-        NodeIndexAndParentIndex np = index_of_node_with_parent(key);
-        insert_if_not_present_at(np, std::move(key));
-        return tree_storage().value(np.i);
+        NodeIndexAndParentIndex np_idxs = index_of_node_with_parent(key);
+        insert_if_not_present_at(np_idxs, std::move(key));
+        return tree_storage().value(np_idxs.i);
     }
 
     template <class... Args>
-    constexpr void insert_if_not_present_at(NodeIndexAndParentIndex& np, Args&&... args) noexcept
+    constexpr void insert_if_not_present_at(NodeIndexAndParentIndex& np_idxs,
+                                            Args&&... args) noexcept
     {
-        if (contains_at(np.i))
+        if (contains_at(np_idxs.i))
         {
             return;
         }
-        insert_new_at(np, std::forward<Args>(args)...);
+        insert_new_at(np_idxs, std::forward<Args>(args)...);
     }
 
     template <class... Args>
-    constexpr void insert_new_at(NodeIndexAndParentIndex& np, Args&&... args) noexcept
+    constexpr void insert_new_at(NodeIndexAndParentIndex& np_idxs, Args&&... args) noexcept
     {
-        assert_or_abort(!contains_at(np.i));
+        assert_or_abort(!contains_at(np_idxs.i));
         increment_size();
-        np.i = tree_storage().emplace_and_return_index(std::forward<Args>(args)...);
+        np_idxs.i = tree_storage().emplace_and_return_index(std::forward<Args>(args)...);
 
-        RedBlackTreeNodeView node_i = tree_storage_at(np.i);
-        node_i.set_parent_index(np.parent);
+        RedBlackTreeNodeView node_i = tree_storage_at(np_idxs.i);
+        node_i.set_parent_index(np_idxs.parent);
 
         // No parent. Corner case for root node
-        if (np.parent == NULL_INDEX)
+        if (np_idxs.parent == NULL_INDEX)
         {
-            set_root_index(np.i);
+            set_root_index(np_idxs.i);
             fix_after_insertion(root_index());
             return;
         }
 
-        RedBlackTreeNodeView parent = tree_storage_at(np.parent);
-        if (np.is_left_child)
+        RedBlackTreeNodeView parent = tree_storage_at(np_idxs.parent);
+        if (np_idxs.is_left_child)
         {
-            parent.set_left_index(np.i);
+            parent.set_left_index(np_idxs.i);
         }
         else
         {
-            parent.set_right_index(np.i);
+            parent.set_right_index(np_idxs.i);
         }
 
-        fix_after_insertion(np.i);
+        fix_after_insertion(np_idxs.i);
     }
 
     constexpr size_type delete_node(const K& key) noexcept
     {
-        const NodeIndex i = index_of_node_or_null(key);
-        if (!contains_at(i))
+        const NodeIndex index = index_of_node_or_null(key);
+        if (!contains_at(index))
         {
             return 0;
         }
 
-        delete_at_and_return_successor(i);
+        delete_at_and_return_successor(index);
         return 1;
     }
 
-    constexpr NodeIndex delete_at_and_return_successor(const NodeIndex& i) noexcept
+    constexpr NodeIndex delete_at_and_return_successor(const NodeIndex& index) noexcept
     {
-        return delete_at_and_return_successor_and_repositioned(i).successor;
+        return delete_at_and_return_successor_and_repositioned(index).successor;
     }
 
     constexpr NodeIndex delete_range_and_return_successor(const NodeIndex& from_index,
@@ -181,24 +182,24 @@ public:
                             0);
         }
 
-        NodeIndex i = from_index;
-        NodeIndex to = to_index;
+        NodeIndex index = from_index;
+        NodeIndex to_idx = to_index;
 
-        while (i != to)
+        while (index != to_idx)
         {
-            const SuccessorIndexAndRepositionedIndex d =
-                delete_at_and_return_successor_and_repositioned(i);
+            const SuccessorIndexAndRepositionedIndex sp_idxs =
+                delete_at_and_return_successor_and_repositioned(index);
             if (empty())
             {
                 break;
             }
 
-            fixup_repositioned_index(to, d.repositioned, i);
+            fixup_repositioned_index(to_idx, sp_idxs.repositioned, index);
 
-            i = d.successor;
+            index = sp_idxs.successor;
         }
 
-        return to;
+        return to_idx;
     }
 
     [[nodiscard]] constexpr const NodeIndex& root_index() const
@@ -206,43 +207,44 @@ public:
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_root_index_;
     }
     [[nodiscard]] constexpr RedBlackTreeNodeView<const TreeStorage> node_at(
-        const NodeIndex& i) const
+        const NodeIndex& index) const
     {
-        return tree_storage_at(i);
+        return tree_storage_at(index);
     }
-    constexpr RedBlackTreeNodeView<TreeStorage> node_at(const NodeIndex& i)
+    constexpr RedBlackTreeNodeView<TreeStorage> node_at(const NodeIndex& index)
     {
-        return tree_storage_at(i);
+        return tree_storage_at(index);
     }
 
     template <class K0>
     [[nodiscard]] constexpr NodeIndexAndParentIndex index_of_node_with_parent(const K0& key) const
     {
-        NodeIndexAndParentIndex np{.i = root_index(), .parent = NULL_INDEX, .is_left_child = true};
-        while (np.i != NULL_INDEX)
+        NodeIndexAndParentIndex np_idxs{
+            .i = root_index(), .parent = NULL_INDEX, .is_left_child = true};
+        while (np_idxs.i != NULL_INDEX)
         {
-            const RedBlackTreeNodeView current_node = tree_storage_at(np.i);
+            const RedBlackTreeNodeView current_node = tree_storage_at(np_idxs.i);
             const int cmp = compare(key, current_node.key());
             if (cmp < 0)
             {
-                np.parent = np.i;
-                np.is_left_child = true;
-                np.i = current_node.left_index();
+                np_idxs.parent = np_idxs.i;
+                np_idxs.is_left_child = true;
+                np_idxs.i = current_node.left_index();
                 continue;
             }
             if (cmp > 0)
             {
-                np.parent = np.i;
-                np.is_left_child = false;
-                np.i = current_node.right_index();
+                np_idxs.parent = np_idxs.i;
+                np_idxs.is_left_child = false;
+                np_idxs.i = current_node.right_index();
                 continue;
             }
 
             // cmp == 0, found existing entry
-            return np;
+            return np_idxs;
         }
 
-        return np;
+        return np_idxs;
     }
 
     template <class K0>
@@ -252,72 +254,72 @@ public:
     }
 
     [[nodiscard]] constexpr NodeIndex index_of_node_lower(
-        const NodeIndexAndParentIndex& np) const noexcept
+        const NodeIndexAndParentIndex& np_idxs) const noexcept
     {
         // If they key is present, find the predecessor
-        if (contains_at(np.i))
+        if (contains_at(np_idxs.i))
         {
-            return index_of_predecessor_at(np.i);
+            return index_of_predecessor_at(np_idxs.i);
         }
 
         // If it would have been the right child, the parent is the closest lesser value
-        if (!np.is_left_child)
+        if (!np_idxs.is_left_child)
         {
-            return np.parent;
+            return np_idxs.parent;
         }
 
         // If it would have been the left child, the parent is the closest greater value
-        return index_of_predecessor_at(np.parent);
+        return index_of_predecessor_at(np_idxs.parent);
     }
     [[nodiscard]] constexpr NodeIndex index_of_node_lower(const Strict<K> auto& key) const noexcept
     {
         return index_of_node_lower(index_of_node_with_parent(key));
     }
     [[nodiscard]] constexpr NodeIndex index_of_node_higher(
-        const NodeIndexAndParentIndex& np) const noexcept
+        const NodeIndexAndParentIndex& np_idxs) const noexcept
     {
         // If they key is present, find the successor
-        if (contains_at(np.i))
+        if (contains_at(np_idxs.i))
         {
-            return index_of_successor_at(np.i);
+            return index_of_successor_at(np_idxs.i);
         }
 
         // If it would have been the left child, the parent is the closest greater value
-        if (np.is_left_child)
+        if (np_idxs.is_left_child)
         {
-            return np.parent;
+            return np_idxs.parent;
         }
 
         // If it would have been the right child, the parent is the closest lesser value
-        return index_of_successor_at(np.parent);
+        return index_of_successor_at(np_idxs.parent);
     }
     [[nodiscard]] constexpr NodeIndex index_of_node_higher(const Strict<K> auto& key) const noexcept
     {
         return index_of_node_higher(index_of_node_with_parent(key));
     }
     [[nodiscard]] constexpr NodeIndex index_of_node_floor(
-        const NodeIndexAndParentIndex& np) const noexcept
+        const NodeIndexAndParentIndex& np_idxs) const noexcept
     {
-        if (contains_at(np.i))
+        if (contains_at(np_idxs.i))
         {
-            return np.i;
+            return np_idxs.i;
         }
 
-        return index_of_node_lower(np);
+        return index_of_node_lower(np_idxs);
     }
     [[nodiscard]] constexpr NodeIndex index_of_node_floor(const Strict<K> auto& key) const noexcept
     {
         return index_of_node_floor(index_of_node_with_parent(key));
     }
     [[nodiscard]] constexpr NodeIndex index_of_node_ceiling(
-        const NodeIndexAndParentIndex& np) const noexcept
+        const NodeIndexAndParentIndex& np_idxs) const noexcept
     {
-        if (contains_at(np.i))
+        if (contains_at(np_idxs.i))
         {
-            return np.i;
+            return np_idxs.i;
         }
 
-        return index_of_node_higher(np);
+        return index_of_node_higher(np_idxs);
     }
     [[nodiscard]] constexpr NodeIndex index_of_node_ceiling(
         const Strict<K> auto& key) const noexcept
@@ -328,13 +330,13 @@ public:
     template <class K0>
     [[nodiscard]] constexpr bool contains_node(const K0& key) const noexcept
     {
-        const NodeIndex i = index_of_node_or_null(key);
-        return contains_at(i);
+        const NodeIndex index = index_of_node_or_null(key);
+        return contains_at(index);
     }
 
-    [[nodiscard]] constexpr bool contains_at(const NodeIndex& i) const noexcept
+    [[nodiscard]] constexpr bool contains_at(const NodeIndex& index) const noexcept
     {
-        return i != NULL_INDEX;
+        return index != NULL_INDEX;
     }
 
     [[nodiscard]] constexpr NodeIndex index_of_min_at(const NodeIndex& root_index) const noexcept
@@ -378,59 +380,59 @@ public:
         return index_of_max_at(this->root_index());
     }
 
-    [[nodiscard]] constexpr NodeIndex index_of_successor_at(const NodeIndex& i) const
+    [[nodiscard]] constexpr NodeIndex index_of_successor_at(const NodeIndex& index) const
     {
-        if (i == NULL_INDEX)
+        if (index == NULL_INDEX)
         {
             return NULL_INDEX;
         }
         const auto& tree = this->tree_storage();
-        if (const RedBlackTreeNodeView node = tree.at(i); node.right_index() != NULL_INDEX)
+        if (const RedBlackTreeNodeView node = tree.at(index); node.right_index() != NULL_INDEX)
         {
-            NodeIndex s = node.right_index();
-            while (tree.left_index(s) != NULL_INDEX)
+            NodeIndex successor = node.right_index();
+            while (tree.left_index(successor) != NULL_INDEX)
             {
-                s = tree.left_index(s);
+                successor = tree.left_index(successor);
             }
-            return s;
+            return successor;
         }
 
-        NodeIndex s = tree.parent_index(i);
-        NodeIndex ch = i;
-        while (s != NULL_INDEX && ch == tree.right_index(s))
+        NodeIndex successor = tree.parent_index(index);
+        NodeIndex ch0 = index;
+        while (successor != NULL_INDEX && ch0 == tree.right_index(successor))
         {
-            ch = s;
-            s = tree.parent_index(s);
+            ch0 = successor;
+            successor = tree.parent_index(successor);
         }
 
-        return s;
+        return successor;
     }
-    [[nodiscard]] constexpr NodeIndex index_of_predecessor_at(const NodeIndex& i) const
+    [[nodiscard]] constexpr NodeIndex index_of_predecessor_at(const NodeIndex& index) const
     {
-        if (i == NULL_INDEX)
+        if (index == NULL_INDEX)
         {
             return NULL_INDEX;
         }
         const auto& tree = this->tree_storage();
-        if (const RedBlackTreeNodeView node = tree.at(i); node.left_index() != NULL_INDEX)
+        if (const RedBlackTreeNodeView node = tree.at(index); node.left_index() != NULL_INDEX)
         {
-            NodeIndex s = node.left_index();
-            while (tree.right_index(s) != NULL_INDEX)
+            NodeIndex predecessor = node.left_index();
+            while (tree.right_index(predecessor) != NULL_INDEX)
             {
-                s = tree.right_index(s);
+                predecessor = tree.right_index(predecessor);
             }
-            return s;
+            return predecessor;
         }
 
-        NodeIndex s = tree.parent_index(i);
-        NodeIndex ch = i;
-        while (s != NULL_INDEX && ch == tree.left_index(s))
+        NodeIndex predecessor = tree.parent_index(index);
+        NodeIndex ch0 = index;
+        while (predecessor != NULL_INDEX && ch0 == tree.left_index(predecessor))
         {
-            ch = s;
-            s = tree.parent_index(s);
+            ch0 = predecessor;
+            predecessor = tree.parent_index(predecessor);
         }
 
-        return s;
+        return predecessor;
     }
 
 private:
@@ -461,163 +463,163 @@ private:
         return 0;
     }
 
-    [[nodiscard]] constexpr bool has_two_children(const NodeIndex& i) const
+    [[nodiscard]] constexpr bool has_two_children(const NodeIndex& index) const
     {
-        const RedBlackTreeNodeView node = tree_storage_at(i);
+        const RedBlackTreeNodeView node = tree_storage_at(index);
         return node.left_index() != NULL_INDEX && node.right_index() != NULL_INDEX;
     }
 
     // Accessors that automatically handle NULL_INDEX
-    [[nodiscard]] constexpr NodeIndex parent_index_of(const NodeIndex& i) const
+    [[nodiscard]] constexpr NodeIndex parent_index_of(const NodeIndex& index) const
     {
-        return i == NULL_INDEX ? NULL_INDEX : tree_storage().parent_index(i);
+        return index == NULL_INDEX ? NULL_INDEX : tree_storage().parent_index(index);
     }
-    [[nodiscard]] constexpr NodeIndex left_index_of(const NodeIndex& i) const
+    [[nodiscard]] constexpr NodeIndex left_index_of(const NodeIndex& index) const
     {
-        return i == NULL_INDEX ? NULL_INDEX : tree_storage().left_index(i);
+        return index == NULL_INDEX ? NULL_INDEX : tree_storage().left_index(index);
     }
-    [[nodiscard]] constexpr NodeIndex right_index_of(const NodeIndex& i) const
+    [[nodiscard]] constexpr NodeIndex right_index_of(const NodeIndex& index) const
     {
-        return i == NULL_INDEX ? NULL_INDEX : tree_storage().right_index(i);
+        return index == NULL_INDEX ? NULL_INDEX : tree_storage().right_index(index);
     }
-    [[nodiscard]] constexpr NodeColor color_of(const NodeIndex& i) const
+    [[nodiscard]] constexpr NodeColor color_of(const NodeIndex& index) const
     {
         // null nodes are treated as COLOR_BLACK
-        if (i == NULL_INDEX)
+        if (index == NULL_INDEX)
         {
             return COLOR_BLACK;
         }
-        return tree_storage().color(i);
+        return tree_storage().color(index);
     }
-    constexpr void set_color(const NodeIndex& i, const NodeColor& color)
+    constexpr void set_color(const NodeIndex& index, const NodeColor& new_color)
     {
-        if (i == NULL_INDEX)
+        if (index == NULL_INDEX)
         {
             return;
         }
-        tree_storage().set_color(i, color);
+        tree_storage().set_color(index, new_color);
     }
 
-    constexpr void rotate_left(const NodeIndex& i)
+    constexpr void rotate_left(const NodeIndex& index)
     {
-        if (i == NULL_INDEX)
+        if (index == NULL_INDEX)
         {
             return;
         }
 
-        RedBlackTreeNodeView node = tree_storage_at(i);
-        const NodeIndex r = node.right_index();
-        RedBlackTreeNodeView right = tree_storage_at(r);
+        RedBlackTreeNodeView node = tree_storage_at(index);
+        const NodeIndex r_idx = node.right_index();
+        RedBlackTreeNodeView right = tree_storage_at(r_idx);
         node.set_right_index(right.left_index());
         if (right.left_index() != NULL_INDEX)
         {
-            tree_storage_at(right.left_index()).set_parent_index(i);
+            tree_storage_at(right.left_index()).set_parent_index(index);
         }
         right.set_parent_index(node.parent_index());
 
         if (node.parent_index() == NULL_INDEX)
         {
-            set_root_index(r);
+            set_root_index(r_idx);
         }
         else if (RedBlackTreeNodeView parent = tree_storage_at(node.parent_index());
-                 parent.left_index() == i)
+                 parent.left_index() == index)
         {
-            parent.set_left_index(r);
+            parent.set_left_index(r_idx);
         }
         else
         {
-            parent.set_right_index(r);
+            parent.set_right_index(r_idx);
         }
 
-        right.set_left_index(i);
-        node.set_parent_index(r);
+        right.set_left_index(index);
+        node.set_parent_index(r_idx);
     }
 
-    constexpr void rotate_right(const NodeIndex& i)
+    constexpr void rotate_right(const NodeIndex& index)
     {
-        if (i == NULL_INDEX)
+        if (index == NULL_INDEX)
         {
             return;
         }
 
-        RedBlackTreeNodeView node = tree_storage_at(i);
-        const NodeIndex l = node.left_index();
-        RedBlackTreeNodeView left = tree_storage_at(l);
+        RedBlackTreeNodeView node = tree_storage_at(index);
+        const NodeIndex l_idx = node.left_index();
+        RedBlackTreeNodeView left = tree_storage_at(l_idx);
         node.set_left_index(left.right_index());
         if (left.right_index() != NULL_INDEX)
         {
-            tree_storage_at(left.right_index()).set_parent_index(i);
+            tree_storage_at(left.right_index()).set_parent_index(index);
         }
         left.set_parent_index(node.parent_index());
 
         if (node.parent_index() == NULL_INDEX)
         {
-            set_root_index(l);
+            set_root_index(l_idx);
         }
         else if (RedBlackTreeNodeView parent = tree_storage_at(node.parent_index());
-                 parent.right_index() == i)
+                 parent.right_index() == index)
         {
-            parent.set_right_index(l);
+            parent.set_right_index(l_idx);
         }
         else
         {
-            parent.set_left_index(l);
+            parent.set_left_index(l_idx);
         }
 
-        left.set_right_index(i);
-        node.set_parent_index(l);
+        left.set_right_index(index);
+        node.set_parent_index(l_idx);
     }
 
     constexpr void fix_after_insertion(const NodeIndex& index_of_newly_added)
     {
-        NodeIndex i = index_of_newly_added;
-        tree_storage().set_color(i, COLOR_RED);
+        NodeIndex idx = index_of_newly_added;
+        tree_storage().set_color(idx, COLOR_RED);
 
-        while (i != NULL_INDEX && i != root_index() &&
-               tree_storage_at(tree_storage_at(i).parent_index()).color() == COLOR_RED)
+        while (idx != NULL_INDEX && idx != root_index() &&
+               tree_storage_at(tree_storage_at(idx).parent_index()).color() == COLOR_RED)
         {
-            if (parent_index_of(i) == left_index_of(parent_index_of(parent_index_of(i))))
+            if (parent_index_of(idx) == left_index_of(parent_index_of(parent_index_of(idx))))
             {
-                const NodeIndex uncle_index = right_index_of(parent_index_of(parent_index_of(i)));
+                const NodeIndex uncle_index = right_index_of(parent_index_of(parent_index_of(idx)));
                 if (color_of(uncle_index) == COLOR_RED)
                 {
-                    set_color(parent_index_of(i), COLOR_BLACK);
+                    set_color(parent_index_of(idx), COLOR_BLACK);
                     set_color(uncle_index, COLOR_BLACK);
-                    set_color(parent_index_of(parent_index_of(i)), COLOR_RED);
-                    i = parent_index_of(parent_index_of(i));
+                    set_color(parent_index_of(parent_index_of(idx)), COLOR_RED);
+                    idx = parent_index_of(parent_index_of(idx));
                 }
                 else
                 {
-                    if (i == right_index_of(parent_index_of(i)))
+                    if (idx == right_index_of(parent_index_of(idx)))
                     {
-                        i = parent_index_of(i);
-                        rotate_left(i);
+                        idx = parent_index_of(idx);
+                        rotate_left(idx);
                     }
-                    set_color(parent_index_of(i), COLOR_BLACK);
-                    set_color(parent_index_of(parent_index_of(i)), COLOR_RED);
-                    rotate_right(parent_index_of(parent_index_of(i)));
+                    set_color(parent_index_of(idx), COLOR_BLACK);
+                    set_color(parent_index_of(parent_index_of(idx)), COLOR_RED);
+                    rotate_right(parent_index_of(parent_index_of(idx)));
                 }
             }
             else
             {
-                const NodeIndex uncle_index = left_index_of(parent_index_of(parent_index_of(i)));
+                const NodeIndex uncle_index = left_index_of(parent_index_of(parent_index_of(idx)));
                 if (color_of(uncle_index) == COLOR_RED)
                 {
-                    set_color(parent_index_of(i), COLOR_BLACK);
+                    set_color(parent_index_of(idx), COLOR_BLACK);
                     set_color(uncle_index, COLOR_BLACK);
-                    set_color(parent_index_of(parent_index_of(i)), COLOR_RED);
-                    i = parent_index_of(parent_index_of(i));
+                    set_color(parent_index_of(parent_index_of(idx)), COLOR_RED);
+                    idx = parent_index_of(parent_index_of(idx));
                 }
                 else
                 {
-                    if (i == left_index_of(parent_index_of(i)))
+                    if (idx == left_index_of(parent_index_of(idx)))
                     {
-                        i = parent_index_of(i);
-                        rotate_right(i);
+                        idx = parent_index_of(idx);
+                        rotate_right(idx);
                     }
-                    set_color(parent_index_of(i), COLOR_BLACK);
-                    set_color(parent_index_of(parent_index_of(i)), COLOR_RED);
-                    rotate_left(parent_index_of(parent_index_of(i)));
+                    set_color(parent_index_of(idx), COLOR_BLACK);
+                    set_color(parent_index_of(parent_index_of(idx)), COLOR_RED);
+                    rotate_left(parent_index_of(parent_index_of(idx)));
                 }
             }
         }
@@ -626,21 +628,21 @@ private:
     }
 
     constexpr SuccessorIndexAndRepositionedIndex delete_at_and_return_successor_and_repositioned(
-        const NodeIndex& i) noexcept
+        const NodeIndex& index) noexcept
     {
-        assert_or_abort(contains_at(i));
+        assert_or_abort(contains_at(index));
 
         // If there is only one node
         if (size() == 1)
         {
-            tree_storage().delete_at_and_return_repositioned_index(i);
+            tree_storage().delete_at_and_return_repositioned_index(index);
             set_root_index(NULL_INDEX);
             set_size(0);
             return {NULL_INDEX, NULL_INDEX};
         }
 
         decrement_size();
-        const NodeIndex index_to_delete = i;
+        const NodeIndex index_to_delete = index;
         const NodeIndex successor_index = index_of_successor_at(index_to_delete);
 
         // The canonical way to handle the case where the node_for_deletion has two children is to
@@ -744,27 +746,27 @@ private:
 
     constexpr void fix_after_deletion(const NodeIndex& index_of_deleted)
     {
-        NodeIndex i = index_of_deleted;
+        NodeIndex idx = index_of_deleted;
 
-        while (i != root_index() && color_of(i) == COLOR_BLACK)
+        while (idx != root_index() && color_of(idx) == COLOR_BLACK)
         {
-            if (i == left_index_of(parent_index_of(i)))
+            if (idx == left_index_of(parent_index_of(idx)))
             {
-                NodeIndex sibling_index = right_index_of(parent_index_of(i));
+                NodeIndex sibling_index = right_index_of(parent_index_of(idx));
 
                 if (color_of(sibling_index) == COLOR_RED)
                 {
                     set_color(sibling_index, COLOR_BLACK);
-                    set_color(parent_index_of(i), COLOR_RED);
-                    rotate_left(parent_index_of(i));
-                    sibling_index = right_index_of(parent_index_of(i));
+                    set_color(parent_index_of(idx), COLOR_RED);
+                    rotate_left(parent_index_of(idx));
+                    sibling_index = right_index_of(parent_index_of(idx));
                 }
 
                 if (color_of(left_index_of(sibling_index)) == COLOR_BLACK &&
                     color_of(right_index_of(sibling_index)) == COLOR_BLACK)
                 {
                     set_color(sibling_index, COLOR_RED);
-                    i = parent_index_of(i);
+                    idx = parent_index_of(idx);
                 }
                 else
                 {
@@ -773,32 +775,32 @@ private:
                         set_color(left_index_of(sibling_index), COLOR_BLACK);
                         set_color(sibling_index, COLOR_RED);
                         rotate_right(sibling_index);
-                        sibling_index = right_index_of(parent_index_of(i));
+                        sibling_index = right_index_of(parent_index_of(idx));
                     }
-                    set_color(sibling_index, color_of(parent_index_of(i)));
-                    set_color(parent_index_of(i), COLOR_BLACK);
+                    set_color(sibling_index, color_of(parent_index_of(idx)));
+                    set_color(parent_index_of(idx), COLOR_BLACK);
                     set_color(right_index_of(sibling_index), COLOR_BLACK);
-                    rotate_left(parent_index_of(i));
-                    i = root_index();
+                    rotate_left(parent_index_of(idx));
+                    idx = root_index();
                 }
             }
             else
             {
-                NodeIndex sibling_index = left_index_of(parent_index_of(i));
+                NodeIndex sibling_index = left_index_of(parent_index_of(idx));
 
                 if (color_of(sibling_index) == COLOR_RED)
                 {
                     set_color(sibling_index, COLOR_BLACK);
-                    set_color(parent_index_of(i), COLOR_RED);
-                    rotate_right(parent_index_of(i));
-                    sibling_index = left_index_of(parent_index_of(i));
+                    set_color(parent_index_of(idx), COLOR_RED);
+                    rotate_right(parent_index_of(idx));
+                    sibling_index = left_index_of(parent_index_of(idx));
                 }
 
                 if (color_of(right_index_of(sibling_index)) == COLOR_BLACK &&
                     color_of(left_index_of(sibling_index)) == COLOR_BLACK)
                 {
                     set_color(sibling_index, COLOR_RED);
-                    i = parent_index_of(i);
+                    idx = parent_index_of(idx);
                 }
                 else
                 {
@@ -807,27 +809,27 @@ private:
                         set_color(right_index_of(sibling_index), COLOR_BLACK);
                         set_color(sibling_index, COLOR_RED);
                         rotate_left(sibling_index);
-                        sibling_index = left_index_of(parent_index_of(i));
+                        sibling_index = left_index_of(parent_index_of(idx));
                     }
-                    set_color(sibling_index, color_of(parent_index_of(i)));
-                    set_color(parent_index_of(i), COLOR_BLACK);
+                    set_color(sibling_index, color_of(parent_index_of(idx)));
+                    set_color(parent_index_of(idx), COLOR_BLACK);
                     set_color(left_index_of(sibling_index), COLOR_BLACK);
-                    rotate_right(parent_index_of(i));
-                    i = root_index();
+                    rotate_right(parent_index_of(idx));
+                    idx = root_index();
                 }
             }
         }
 
-        set_color(i, COLOR_BLACK);
+        set_color(idx, COLOR_BLACK);
     }
 
-    constexpr void fixup_repositioned_index(NodeIndex& i,
+    constexpr void fixup_repositioned_index(NodeIndex& index,
                                             const NodeIndex old_index,
                                             const NodeIndex new_index) const noexcept
     {
-        if (i == old_index)
+        if (index == old_index)
         {
-            i = new_index;
+            index = new_index;
         }
     }
 
@@ -837,14 +839,14 @@ protected:  // [WORKAROUND-1]
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_tree_storage_;
     }
     constexpr TreeStorage& tree_storage() { return IMPLEMENTATION_DETAIL_DO_NOT_USE_tree_storage_; }
-    [[nodiscard]] constexpr auto tree_storage_at(const NodeIndex& i) const
+    [[nodiscard]] constexpr auto tree_storage_at(const NodeIndex& index) const
     {
-        return tree_storage().at(i);
+        return tree_storage().at(index);
     }
-    constexpr auto tree_storage_at(const NodeIndex& i) { return tree_storage().at(i); }
-    constexpr void set_root_index(const std::size_t r)
+    constexpr auto tree_storage_at(const NodeIndex& index) { return tree_storage().at(index); }
+    constexpr void set_root_index(const std::size_t new_root_index)
     {
-        IMPLEMENTATION_DETAIL_DO_NOT_USE_root_index_ = r;
+        IMPLEMENTATION_DETAIL_DO_NOT_USE_root_index_ = new_root_index;
     }
 };
 
@@ -899,14 +901,14 @@ public:
              i = other.index_of_successor_at(i))
         {
             const auto node = other.tree_storage_at(i);
-            NodeIndexAndParentIndex np = this->index_of_node_with_parent(node.key());
+            NodeIndexAndParentIndex np_idxs = this->index_of_node_with_parent(node.key());
             if constexpr (Base::HAS_ASSOCIATED_VALUE)
             {
-                this->insert_if_not_present_at(np, node.key(), node.value());
+                this->insert_if_not_present_at(np_idxs, node.key(), node.value());
             }
             else
             {
-                this->insert_if_not_present_at(np, node.key());
+                this->insert_if_not_present_at(np_idxs, node.key());
             }
         }
     }
@@ -917,14 +919,15 @@ public:
              i = other.index_of_successor_at(i))
         {
             auto node = other.tree_storage_at(i);
-            NodeIndexAndParentIndex np = this->index_of_node_with_parent(node.key());
+            NodeIndexAndParentIndex np_idxs = this->index_of_node_with_parent(node.key());
             if constexpr (Base::HAS_ASSOCIATED_VALUE)
             {
-                this->insert_if_not_present_at(np, std::move(node.key()), std::move(node.value()));
+                this->insert_if_not_present_at(
+                    np_idxs, std::move(node.key()), std::move(node.value()));
             }
             else
             {
-                this->insert_if_not_present_at(np, std::move(node.key()));
+                this->insert_if_not_present_at(np_idxs, std::move(node.key()));
             }
         }
         // Clear the moved-out-of-map. This is consistent with both std::map
@@ -943,14 +946,14 @@ public:
              i = other.index_of_successor_at(i))
         {
             const auto node = other.tree_storage_at(i);
-            NodeIndexAndParentIndex np = this->index_of_node_with_parent(node.key());
+            NodeIndexAndParentIndex np_idxs = this->index_of_node_with_parent(node.key());
             if constexpr (Base::HAS_ASSOCIATED_VALUE)
             {
-                this->insert_if_not_present_at(np, node.key(), node.value());
+                this->insert_if_not_present_at(np_idxs, node.key(), node.value());
             }
             else
             {
-                this->insert_if_not_present_at(np, node.key());
+                this->insert_if_not_present_at(np_idxs, node.key());
             }
         }
         return *this;
@@ -967,14 +970,15 @@ public:
              i = other.index_of_successor_at(i))
         {
             auto node = other.tree_storage_at(i);
-            NodeIndexAndParentIndex np = this->index_of_node_with_parent(node.key());
+            NodeIndexAndParentIndex np_idxs = this->index_of_node_with_parent(node.key());
             if constexpr (Base::HAS_ASSOCIATED_VALUE)
             {
-                this->insert_if_not_present_at(np, std::move(node.key()), std::move(node.value()));
+                this->insert_if_not_present_at(
+                    np_idxs, std::move(node.key()), std::move(node.value()));
             }
             else
             {
-                this->insert_if_not_present_at(np, std::move(node.key()));
+                this->insert_if_not_present_at(np_idxs, std::move(node.key()));
             }
         }
         // The trivial assignment operator does not `other.clear()`, so don't do it here either for

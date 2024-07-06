@@ -41,9 +41,9 @@ TEST(EnumArray, DefaultConstructorDefaultInitialization)
     }
 
     {
-        EnumArray<TestEnum1, std::unique_ptr<int>> s2{};
-        EXPECT_EQ(4, s2.max_size());
-        EXPECT_EQ(nullptr, s2.at(TestEnum1::ONE));
+        EnumArray<TestEnum1, std::unique_ptr<int>> var2{};
+        EXPECT_EQ(4, var2.max_size());
+        EXPECT_EQ(nullptr, var2.at(TestEnum1::ONE));
     }
 }
 
@@ -59,9 +59,9 @@ TEST(EnumArray, DefaultConstructorValueInitialization)
     }
 
     {
-        EnumArray<TestEnum1, std::unique_ptr<int>> s2{};
-        EXPECT_EQ(4, s2.max_size());
-        EXPECT_EQ(nullptr, s2.at(TestEnum1::ONE));
+        EnumArray<TestEnum1, std::unique_ptr<int>> var2{};
+        EXPECT_EQ(4, var2.max_size());
+        EXPECT_EQ(nullptr, var2.at(TestEnum1::ONE));
     }
 }
 
@@ -116,9 +116,9 @@ TEST(EnumArray, At)
     }
 
     {
-        EnumArray<TestEnum1, std::unique_ptr<int>> s2{};
-        s2.at(TestEnum1::ONE) = std::make_unique<int>(5);
-        EXPECT_EQ(5, *s2.at(TestEnum1::ONE));
+        EnumArray<TestEnum1, std::unique_ptr<int>> var2{};
+        var2.at(TestEnum1::ONE) = std::make_unique<int>(5);
+        EXPECT_EQ(5, *var2.at(TestEnum1::ONE));
     }
 }
 
@@ -160,31 +160,31 @@ TEST(EnumArray, IteratorUsage)
     // Traditional std::array
     {
         // Untyped access
-        std::array<int, magic_enum::enum_count<TestEnum1>()> s1{};
-        for (std::size_t i = 0; i < s1.max_size(); i++)
+        std::array<int, magic_enum::enum_count<TestEnum1>()> var1{};
+        for (std::size_t i = 0; i < var1.max_size(); i++)
         {
-            s1[i] += 1;
+            var1[i] += 1;
         }
 
         // Typed access
         for (const TestEnum1& label : magic_enum::enum_values<TestEnum1>())
         {
-            s1[magic_enum::enum_index(label).value()] += 1;
+            var1[magic_enum::enum_index(label).value()] += 1;
         }
 
         // Typed access that relies on the enum constant values!
         for (const TestEnum1& label : magic_enum::enum_values<TestEnum1>())
         {
-            s1[static_cast<std::size_t>(label)] += 1;
+            var1[static_cast<std::size_t>(label)] += 1;
         }
     }
 
     // EnumArray
     {
-        EnumArray<TestEnum1, int> s1{};
-        for (const TestEnum1& label : s1.labels())
+        EnumArray<TestEnum1, int> var1{};
+        for (const TestEnum1& label : var1.labels())
         {
-            s1[label] += 1;
+            var1[label] += 1;
         }
     }
 }
@@ -194,17 +194,17 @@ TEST(EnumArray, IteratorBasic)
     {
         constexpr EnumArray<TestEnum1, int> VAL1 = []()
         {
-            EnumArray<TestEnum1, int> s{{TestEnum1::ONE, 10},
-                                        {TestEnum1::TWO, 20},
-                                        {TestEnum1::THREE, 30},
-                                        {TestEnum1::FOUR, 40}};
+            EnumArray<TestEnum1, int> var{{TestEnum1::ONE, 10},
+                                          {TestEnum1::TWO, 20},
+                                          {TestEnum1::THREE, 30},
+                                          {TestEnum1::FOUR, 40}};
 
-            for (const TestEnum1& label : s.labels())
+            for (const TestEnum1& label : var.labels())
             {
-                s[label] += 1;
+                var[label] += 1;
             }
 
-            return s;
+            return var;
         }();
 
         static_assert(consteval_compare::equal<4, VAL1.max_size()>);
@@ -289,9 +289,9 @@ TEST(EnumArray, Fill)
 {
     constexpr EnumArray<TestEnum1, int> VAL1 = []()
     {
-        EnumArray<TestEnum1, int> s{};
-        s.fill(5);
-        return s;
+        EnumArray<TestEnum1, int> var{};
+        var.fill(5);
+        return var;
     }();
 
     static_assert(consteval_compare::equal<4, VAL1.max_size()>);
@@ -305,18 +305,18 @@ TEST(EnumArray, Swap)
 {
     constexpr EnumArray<TestEnum1, int> VAL1 = []()
     {
-        EnumArray<TestEnum1, int> s{{TestEnum1::ONE, 10},
-                                    {TestEnum1::TWO, 20},
-                                    {TestEnum1::THREE, 30},
-                                    {TestEnum1::FOUR, 40}};
+        EnumArray<TestEnum1, int> instance{{TestEnum1::ONE, 10},
+                                           {TestEnum1::TWO, 20},
+                                           {TestEnum1::THREE, 30},
+                                           {TestEnum1::FOUR, 40}};
 
-        EnumArray<TestEnum1, int> s_other{{TestEnum1::ONE, 101},
-                                          {TestEnum1::TWO, 201},
-                                          {TestEnum1::THREE, 301},
-                                          {TestEnum1::FOUR, 401}};
+        EnumArray<TestEnum1, int> other{{TestEnum1::ONE, 101},
+                                        {TestEnum1::TWO, 201},
+                                        {TestEnum1::THREE, 301},
+                                        {TestEnum1::FOUR, 401}};
 
-        s.swap(s_other);
-        return s;
+        instance.swap(other);
+        return instance;
     }();
 
     static_assert(consteval_compare::equal<4, VAL1.max_size()>);
@@ -381,37 +381,37 @@ TEST(EnumArray, NonDefaultConstructible)
     }
 
     {
-        EnumArray<TestEnum1, MockNonDefaultConstructible> s2{{
+        EnumArray<TestEnum1, MockNonDefaultConstructible> var2{{
             {TestEnum1::ONE, 10},
             {TestEnum1::TWO, 20},
             {TestEnum1::THREE, 30},
             {TestEnum1::FOUR, 40},
         }};
-        s2[TestEnum1::ONE] = 31;
+        var2[TestEnum1::ONE] = 31;
     }
 }
 
 TEST(EnumArray, MoveableButNotCopyable)
 {
     {
-        EnumArray<TestEnum1, MockMoveableButNotCopyable> s{};
-        s[TestEnum1::TWO] = MockMoveableButNotCopyable{};
+        EnumArray<TestEnum1, MockMoveableButNotCopyable> var{};
+        var[TestEnum1::TWO] = MockMoveableButNotCopyable{};
     }
 }
 
 TEST(EnumArray, NonAssignable)
 {
     {
-        EnumArray<TestEnum1, MockNonAssignable> s{};
-        s[TestEnum1::TWO];
+        EnumArray<TestEnum1, MockNonAssignable> var{};
+        var[TestEnum1::TWO];
     }
 }
 
 TEST(EnumArray, ClassTemplateArgumentDeduction)
 {
     // Compile-only test
-    const EnumArray a = EnumArray<TestEnum1, int>{};
-    (void)a;
+    const EnumArray var1 = EnumArray<TestEnum1, int>{};
+    (void)var1;
 }
 
 namespace

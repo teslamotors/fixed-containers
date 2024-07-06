@@ -95,9 +95,9 @@ TEST(FixedString, AssignValue)
     {
         constexpr auto VAL1 = []()
         {
-            FixedString<7> v{"012"};
-            v.assign(5, '3');
-            return v;
+            FixedString<7> var{"012"};
+            var.assign(5, '3');
+            return var;
         }();
 
         static_assert(VAL1 == "33333");
@@ -107,10 +107,10 @@ TEST(FixedString, AssignValue)
     {
         constexpr auto VAL2 = []()
         {
-            FixedString<7> v{"012"};
-            v.assign(5, '5');
-            v.assign(2, '9');
-            return v;
+            FixedString<7> var{"012"};
+            var.assign(5, '5');
+            var.assign(2, '9');
+            return var;
         }();
 
         static_assert(VAL2 == "99");
@@ -119,23 +119,23 @@ TEST(FixedString, AssignValue)
     }
 
     {
-        auto v3 = []()
+        auto var3 = []()
         {
-            FixedString<7> v{"012"};
-            v.assign(5, '5');
-            v.assign(2, '9');
-            return v;
+            FixedString<7> var{"012"};
+            var.assign(5, '5');
+            var.assign(2, '9');
+            return var;
         }();
 
-        EXPECT_EQ(2, v3.size());
-        EXPECT_EQ(v3, "99");
+        EXPECT_EQ(2, var3.size());
+        EXPECT_EQ(var3, "99");
     }
 }
 
 TEST(FixedString, AssignValueExceedsCapacity)
 {
-    FixedString<3> v1{"012"};
-    EXPECT_DEATH(v1.assign(5, '9'), "");
+    FixedString<3> var1{"012"};
+    EXPECT_DEATH(var1.assign(5, '9'), "");
 }
 
 TEST(FixedString, AssignIterator)
@@ -143,10 +143,10 @@ TEST(FixedString, AssignIterator)
     {
         constexpr auto VAL1 = []()
         {
-            std::array<char, 2> a{'9', '9'};
-            FixedString<7> v{"012"};
-            v.assign(a.begin(), a.end());
-            return v;
+            std::array<char, 2> entry_a{'9', '9'};
+            FixedString<7> var{"012"};
+            var.assign(entry_a.begin(), entry_a.end());
+            return var;
         }();
 
         static_assert(VAL1 == "99");
@@ -154,41 +154,41 @@ TEST(FixedString, AssignIterator)
         static_assert(VAL1.max_size() == 7);
     }
     {
-        auto v2 = []()
+        auto var2 = []()
         {
-            std::array<char, 2> a{'9', '9'};
-            FixedString<7> v{"012"};
-            v.assign(a.begin(), a.end());
-            return v;
+            std::array<char, 2> entry_a{'9', '9'};
+            FixedString<7> var{"012"};
+            var.assign(entry_a.begin(), entry_a.end());
+            return var;
         }();
 
-        EXPECT_EQ(v2, "99");
-        EXPECT_EQ(2, v2.size());
+        EXPECT_EQ(var2, "99");
+        EXPECT_EQ(2, var2.size());
     }
 }
 
 TEST(FixedString, AssignIteratorExceedsCapacity)
 {
-    FixedString<3> v1{"012"};
-    std::array<char, 5> a{'9', '9', '9', '9', '9'};
-    EXPECT_DEATH(v1.assign(a.begin(), a.end()), "");
+    FixedString<3> var1{"012"};
+    std::array<char, 5> entry_a{'9', '9', '9', '9', '9'};
+    EXPECT_DEATH(var1.assign(entry_a.begin(), entry_a.end()), "");
 }
 
 TEST(FixedString, AssignInputIterator)
 {
     MockIntegralStream<char> stream{static_cast<char>(3)};
-    FixedString<14> v{"abcd"};
-    v.assign(stream.begin(), stream.end());
-    ASSERT_EQ(3, v.size());
+    FixedString<14> var{"abcd"};
+    var.assign(stream.begin(), stream.end());
+    ASSERT_EQ(3, var.size());
     EXPECT_TRUE(std::ranges::equal(
-        v, std::array{static_cast<char>(3), static_cast<char>(2), static_cast<char>(1)}));
+        var, std::array{static_cast<char>(3), static_cast<char>(2), static_cast<char>(1)}));
 }
 
 TEST(FixedString, AssignInputIteratorExceedsCapacity)
 {
     MockIntegralStream<char> stream{static_cast<char>(7)};
-    FixedString<2> v{};
-    EXPECT_DEATH(v.assign(stream.begin(), stream.end()), "");
+    FixedString<2> var{};
+    EXPECT_DEATH(var.assign(stream.begin(), stream.end()), "");
 }
 
 TEST(FixedString, AssignInitializerList)
@@ -196,9 +196,9 @@ TEST(FixedString, AssignInitializerList)
     {
         constexpr auto VAL1 = []()
         {
-            FixedString<7> v{"012"};
-            v.assign({'9', '9'});
-            return v;
+            FixedString<7> var{"012"};
+            var.assign({'9', '9'});
+            return var;
         }();
 
         static_assert(VAL1 == "99");
@@ -206,22 +206,22 @@ TEST(FixedString, AssignInitializerList)
         static_assert(VAL1.max_size() == 7);
     }
     {
-        auto v2 = []()
+        auto var2 = []()
         {
-            FixedString<7> v{"012"};
-            v.assign({'9', '9'});
-            return v;
+            FixedString<7> var{"012"};
+            var.assign({'9', '9'});
+            return var;
         }();
 
-        EXPECT_EQ(v2, "99");
-        EXPECT_EQ(2, v2.size());
+        EXPECT_EQ(var2, "99");
+        EXPECT_EQ(2, var2.size());
     }
 }
 
 TEST(FixedString, AssignInitializerListExceedsCapacity)
 {
-    FixedString<3> v{'0', '1', '2'};
-    EXPECT_DEATH(v.assign({'9', '9', '9', '9', '9'}), "");
+    FixedString<3> var{'0', '1', '2'};
+    EXPECT_DEATH(var.assign({'9', '9', '9', '9', '9'}), "");
 }
 
 TEST(FixedString, AssignStringView)
@@ -229,10 +229,10 @@ TEST(FixedString, AssignStringView)
     {
         constexpr auto VAL1 = []()
         {
-            FixedString<7> v{"012"};
-            const std::string_view s{"99"};
-            v.assign(s);
-            return v;
+            FixedString<7> var{"012"};
+            const std::string_view entry_sv{"99"};
+            var.assign(entry_sv);
+            return var;
         }();
 
         static_assert(VAL1 == "99");
@@ -240,16 +240,16 @@ TEST(FixedString, AssignStringView)
         static_assert(VAL1.max_size() == 7);
     }
     {
-        auto v2 = []()
+        auto var2 = []()
         {
-            FixedString<7> v{"012"};
-            const std::string_view s{"99"};
-            v.assign(s);
-            return v;
+            FixedString<7> var{"012"};
+            const std::string_view entry_sv{"99"};
+            var.assign(entry_sv);
+            return var;
         }();
 
-        EXPECT_EQ(v2, "99");
-        EXPECT_EQ(2, v2.size());
+        EXPECT_EQ(var2, "99");
+        EXPECT_EQ(2, var2.size());
     }
 }
 
@@ -257,14 +257,14 @@ TEST(FixedString, BracketOperator)
 {
     constexpr auto VAL1 = []()
     {
-        FixedString<11> v{"aaa"};
-        // v.resize(3);
-        v[0] = '0';
-        v[1] = '1';
-        v[2] = '2';
-        v[1] = 'b';
+        FixedString<11> var{"aaa"};
+        // var.resize(3);
+        var[0] = '0';
+        var[1] = '1';
+        var[2] = '2';
+        var[1] = 'b';
 
-        return v;
+        return var;
     }();
 
     static_assert(VAL1[0] == '0');
@@ -272,30 +272,30 @@ TEST(FixedString, BracketOperator)
     static_assert(VAL1[2] == '2');
     static_assert(VAL1.size() == 3);
 
-    auto v2 = FixedString<11>{"012"};
-    v2[1] = 'b';
-    EXPECT_EQ(v2[0], '0');
-    EXPECT_EQ(v2[1], 'b');
-    EXPECT_EQ(v2[2], '2');
+    auto var2 = FixedString<11>{"012"};
+    var2[1] = 'b';
+    EXPECT_EQ(var2[0], '0');
+    EXPECT_EQ(var2[1], 'b');
+    EXPECT_EQ(var2[2], '2');
 
-    const auto& v3 = v2;
-    EXPECT_EQ(v3[0], '0');
-    EXPECT_EQ(v3[1], 'b');
-    EXPECT_EQ(v3[2], '2');
+    const auto& var3 = var2;
+    EXPECT_EQ(var3[0], '0');
+    EXPECT_EQ(var3[1], 'b');
+    EXPECT_EQ(var3[2], '2');
 }
 
 TEST(FixedString, At)
 {
     constexpr auto VAL1 = []()
     {
-        FixedString<11> v{"012"};
-        // v.resize(3);
-        v.at(0) = '0';
-        v.at(1) = '1';
-        v.at(2) = '2';
-        v.at(1) = 'b';
+        FixedString<11> var{"012"};
+        // var.resize(3);
+        var.at(0) = '0';
+        var.at(1) = '1';
+        var.at(2) = '2';
+        var.at(1) = 'b';
 
-        return v;
+        return var;
     }();
 
     static_assert(VAL1.at(0) == '0');
@@ -303,58 +303,58 @@ TEST(FixedString, At)
     static_assert(VAL1.at(2) == '2');
     static_assert(VAL1.size() == 3);
 
-    auto v2 = FixedString<11>{"012"};
-    v2.at(1) = 'b';
-    EXPECT_EQ(v2.at(0), '0');
-    EXPECT_EQ(v2.at(1), 'b');
-    EXPECT_EQ(v2.at(2), '2');
+    auto var2 = FixedString<11>{"012"};
+    var2.at(1) = 'b';
+    EXPECT_EQ(var2.at(0), '0');
+    EXPECT_EQ(var2.at(1), 'b');
+    EXPECT_EQ(var2.at(2), '2');
 
-    const auto& v3 = v2;
-    EXPECT_EQ(v3.at(0), '0');
-    EXPECT_EQ(v3.at(1), 'b');
-    EXPECT_EQ(v3.at(2), '2');
+    const auto& var3 = var2;
+    EXPECT_EQ(var3.at(0), '0');
+    EXPECT_EQ(var3.at(1), 'b');
+    EXPECT_EQ(var3.at(2), '2');
 }
 
 TEST(FixedString, AtOutOfBounds)
 {
-    auto v2 = FixedString<11>{"012"};
-    EXPECT_DEATH(v2.at(3) = 'z', "");
-    EXPECT_DEATH(v2.at(v2.size()) = 'z', "");
+    auto var2 = FixedString<11>{"012"};
+    EXPECT_DEATH(var2.at(3) = 'z', "");
+    EXPECT_DEATH(var2.at(var2.size()) = 'z', "");
 
-    const auto& v3 = v2;
-    EXPECT_DEATH(static_cast<void>(v3.at(5)), "");
-    EXPECT_DEATH(static_cast<void>(v3.at(v2.size())), "");
+    const auto& var3 = var2;
+    EXPECT_DEATH(static_cast<void>(var3.at(5)), "");
+    EXPECT_DEATH(static_cast<void>(var3.at(var2.size())), "");
 }
 
 TEST(FixedString, Front)
 {
     constexpr auto VAL1 = []()
     {
-        FixedString<8> v{"z12"};
-        return v;
+        FixedString<8> var{"z12"};
+        return var;
     }();
 
     static_assert(VAL1.front() == 'z');
     static_assert(VAL1 == "z12");
     static_assert(VAL1.size() == 3);
 
-    FixedString<8> v2{"abc"};
-    const auto& v2_const_ref = v2;
+    FixedString<8> var2{"abc"};
+    const auto& v2_const_ref = var2;
 
-    EXPECT_EQ(v2.front(), 'a');  // non-const variant
-    v2.front() = 'a';
+    EXPECT_EQ(var2.front(), 'a');  // non-const variant
+    var2.front() = 'a';
     EXPECT_EQ(v2_const_ref.front(), 'a');  // const variant
 }
 
 TEST(FixedString, FrontEmptyContainer)
 {
     {
-        const FixedString<3> v{};
-        EXPECT_DEATH((void)v.front(), "");
+        const FixedString<3> var{};
+        EXPECT_DEATH((void)var.front(), "");
     }
     {
-        FixedString<3> v{};
-        EXPECT_DEATH(v.front(), "");
+        FixedString<3> var{};
+        EXPECT_DEATH(var.front(), "");
     }
 }
 
@@ -362,31 +362,31 @@ TEST(FixedString, Back)
 {
     constexpr auto VAL1 = []()
     {
-        FixedString<8> v{"01w"};
-        return v;
+        FixedString<8> var{"01w"};
+        return var;
     }();
 
     static_assert(VAL1.back() == 'w');
     static_assert(VAL1 == "01w");
     static_assert(VAL1.size() == 3);
 
-    FixedString<8> v2{"abc"};
-    const auto& v2_const_ref = v2;
+    FixedString<8> var2{"abc"};
+    const auto& v2_const_ref = var2;
 
-    EXPECT_EQ(v2.back(), 'c');  // non-const variant
-    v2.back() = 'c';
+    EXPECT_EQ(var2.back(), 'c');  // non-const variant
+    var2.back() = 'c';
     EXPECT_EQ(v2_const_ref.back(), 'c');  // const variant
 }
 
 TEST(FixedString, BackEmptyContainer)
 {
     {
-        const FixedString<3> v{};
-        EXPECT_DEATH((void)v.back(), "");
+        const FixedString<3> var{};
+        EXPECT_DEATH((void)var.back(), "");
     }
     {
-        FixedString<3> v{};
-        EXPECT_DEATH(v.back(), "");
+        FixedString<3> var{};
+        EXPECT_DEATH(var.back(), "");
     }
 }
 
@@ -395,8 +395,8 @@ TEST(FixedString, Data)
     {
         constexpr auto VAL1 = []()
         {
-            FixedString<8> v{"012"};
-            return v;
+            FixedString<8> var{"012"};
+            return var;
         }();
 
         static_assert(*std::next(VAL1.data(), 0) == '0');
@@ -415,13 +415,13 @@ TEST(FixedString, Data)
     }
 
     {
-        FixedString<8> v2{"abc"};
-        const auto& v2_const_ref = v2;
+        FixedString<8> var2{"abc"};
+        const auto& v2_const_ref = var2;
 
-        auto* it = std::next(v2.data(), 1);
-        EXPECT_EQ(*it, 'b');  // non-const variant
-        *it = 'z';
-        EXPECT_EQ(*it, 'z');
+        auto* iter = std::next(var2.data(), 1);
+        EXPECT_EQ(*iter, 'b');  // non-const variant
+        *iter = 'z';
+        EXPECT_EQ(*iter, 'z');
 
         EXPECT_EQ(*std::next(v2_const_ref.data(), 1), 'z');  // const variant
     }
@@ -432,8 +432,8 @@ TEST(FixedString, CStr)
     {
         constexpr auto VAL1 = []()
         {
-            FixedString<8> v{"012"};
-            return v;
+            FixedString<8> var{"012"};
+            return var;
         }();
 
         static_assert(*std::next(VAL1.c_str(), 0) == '0');
@@ -466,10 +466,10 @@ TEST(FixedString, StringViewConversion)
 
 TEST(FixedString, IteratorAssignment)
 {
-    const FixedString<8>::iterator it;        // Default construction
-    FixedString<8>::const_iterator const_it;  // Default construction
+    const FixedString<8>::iterator mutable_it;  // Default construction
+    FixedString<8>::const_iterator const_it;    // Default construction
 
-    const_it = it;  // Non-const needs to be assignable to const
+    const_it = mutable_it;  // Non-const needs to be assignable to const
 }
 
 TEST(FixedString, TrivialIterators)
@@ -492,14 +492,14 @@ TEST(FixedString, TrivialIterators)
     }
 
     {
-        /*non-const*/ FixedString<8> v{};
-        v.push_back('0');
-        v.push_back('1');
-        v.push_back('2');
-        v.push_back('3');
+        /*non-const*/ FixedString<8> var{};
+        var.push_back('0');
+        var.push_back('1');
+        var.push_back('2');
+        var.push_back('3');
         {
             char ctr = '0';
-            for (auto it = v.begin(); it != v.end(); it++)
+            for (auto it = var.begin(); it != var.end(); it++)
             {
                 (void)it;  // Use `it` to suppress conversion to for-each
                 EXPECT_LT(ctr, '4');
@@ -510,7 +510,7 @@ TEST(FixedString, TrivialIterators)
         }
         {
             char ctr = '0';
-            for (auto it = v.cbegin(); it != v.cend(); it++)
+            for (auto it = var.cbegin(); it != var.cend(); it++)
             {
                 (void)it;  // Use `it` to suppress conversion to for-each
                 EXPECT_LT(ctr, '4');
@@ -521,10 +521,10 @@ TEST(FixedString, TrivialIterators)
         }
     }
     {
-        const FixedString<8> v = {"0123"};
+        const FixedString<8> var = {"0123"};
         {
             char ctr = '0';
-            for (auto it = v.begin(); it != v.end(); it++)
+            for (auto it = var.begin(); it != var.end(); it++)
             {
                 (void)it;  // Use `it` to suppress conversion to for-each
                 EXPECT_LT(ctr, '4');
@@ -535,7 +535,7 @@ TEST(FixedString, TrivialIterators)
         }
         {
             char ctr = '0';
-            for (auto it = v.cbegin(); it != v.cend(); it++)
+            for (auto it = var.cbegin(); it != var.cend(); it++)
             {
                 (void)it;  // Use `it` to suppress conversion to for-each
                 EXPECT_LT(ctr, '4');
@@ -567,14 +567,14 @@ TEST(FixedString, ReverseIterators)
     }
 
     {
-        /*non-cost*/ FixedString<8> v{};
-        v.push_back(0);
-        v.push_back(1);
-        v.push_back(2);
-        v.push_back(3);
+        /*non-cost*/ FixedString<8> var{};
+        var.push_back(0);
+        var.push_back(1);
+        var.push_back(2);
+        var.push_back(3);
         {
             int ctr = 3;
-            for (auto it = v.rbegin(); it != v.rend(); it++)
+            for (auto it = var.rbegin(); it != var.rend(); it++)
             {
                 (void)it;  // Use `it` to suppress conversion to for-each
                 EXPECT_GT(ctr, -1);
@@ -585,7 +585,7 @@ TEST(FixedString, ReverseIterators)
         }
         {
             int ctr = 3;
-            for (auto it = v.crbegin(); it != v.crend(); it++)
+            for (auto it = var.crbegin(); it != var.crend(); it++)
             {
                 (void)it;  // Use `it` to suppress conversion to for-each
                 EXPECT_GT(ctr, -1);
@@ -596,10 +596,10 @@ TEST(FixedString, ReverseIterators)
         }
     }
     {
-        const FixedString<8> v = {"0123"};
+        const FixedString<8> var = {"0123"};
         {
             char ctr = '3';
-            for (auto it = v.rbegin(); it != v.rend(); it++)
+            for (auto it = var.rbegin(); it != var.rend(); it++)
             {
                 (void)it;  // Use `it` to suppress conversion to for-each
                 EXPECT_GT(ctr, '0' - 1);
@@ -610,7 +610,7 @@ TEST(FixedString, ReverseIterators)
         }
         {
             char ctr = '3';
-            for (auto it = v.crbegin(); it != v.crend(); it++)
+            for (auto it = var.crbegin(); it != var.crend(); it++)
             {
                 (void)it;  // Use `it` to suppress conversion to for-each
                 EXPECT_GT(ctr, '0' - 1);
@@ -626,12 +626,12 @@ TEST(FixedString, ReverseIteratorBase)
 {
     constexpr auto VAL1 = []()
     {
-        FixedString<7> v{"123"};
-        auto it = v.rbegin();  // points to 3
-        std::advance(it, 1);   // points to 2
+        FixedString<7> var{"123"};
+        auto iter = var.rbegin();  // points to 3
+        std::advance(iter, 1);     // points to 2
         // https://stackoverflow.com/questions/1830158/how-to-call-erase-with-a-reverse-iterator
-        v.erase(std::next(it).base());
-        return v;
+        var.erase(std::next(iter).base());
+        return var;
     }();
 
     static_assert(VAL1 == "13");
@@ -641,52 +641,52 @@ TEST(FixedString, IterationBasic)
 {
     FixedString<13> v_expected{};
 
-    FixedString<8> v{};
-    v.push_back('0');
-    v.push_back('1');
-    v.push_back('2');
-    v.push_back('3');
+    FixedString<8> var{};
+    var.push_back('0');
+    var.push_back('1');
+    var.push_back('2');
+    var.push_back('3');
     // Expect {0, 1, 2, 3}
 
     char ctr = '0';
-    for (const char& x : v)
+    for (const char& entry : var)
     {
         EXPECT_LT(ctr, '4');
-        EXPECT_EQ(ctr, x);
+        EXPECT_EQ(ctr, entry);
         ++ctr;
     }
     EXPECT_EQ(ctr, '4');
 
     v_expected = {"0123"};
-    EXPECT_TRUE((v == v_expected));
+    EXPECT_TRUE((var == v_expected));
 
-    v.push_back('4');
-    v.push_back('5');
+    var.push_back('4');
+    var.push_back('5');
 
     v_expected = "012345";
-    EXPECT_TRUE((v == v_expected));
+    EXPECT_TRUE((var == v_expected));
 
     ctr = '0';
-    for (const char& x : v)
+    for (const char& entry : var)
     {
         EXPECT_LT(ctr, '6');
-        EXPECT_EQ(ctr, x);
+        EXPECT_EQ(ctr, entry);
         ++ctr;
     }
     EXPECT_EQ(ctr, '6');
 
-    v.erase(std::next(v.begin(), 5));
-    v.erase(std::next(v.begin(), 3));
-    v.erase(std::next(v.begin(), 1));
+    var.erase(std::next(var.begin(), 5));
+    var.erase(std::next(var.begin(), 3));
+    var.erase(std::next(var.begin(), 1));
 
     v_expected = "024";
-    EXPECT_TRUE((v == v_expected));
+    EXPECT_TRUE((var == v_expected));
 
     ctr = '0';
-    for (const char& x : v)
+    for (const char& entry : var)
     {
         EXPECT_LT(ctr, '6');
-        EXPECT_EQ(ctr, x);
+        EXPECT_EQ(ctr, entry);
         ctr += 2;
     }
     EXPECT_EQ(ctr, '6');
@@ -726,9 +726,9 @@ TEST(FixedString, CapacityAndMaxSize)
     }
 
     {
-        const FixedString<3> v1{};
-        EXPECT_EQ(3, v1.capacity());
-        EXPECT_EQ(3, v1.max_size());
+        const FixedString<3> var1{};
+        EXPECT_EQ(3, var1.capacity());
+        EXPECT_EQ(3, var1.max_size());
     }
 
     {
@@ -743,27 +743,27 @@ TEST(FixedString, Reserve)
 {
     constexpr auto VAL1 = []()
     {
-        FixedString<11> v{};
-        v.reserve(5);
-        return v;
+        FixedString<11> var{};
+        var.reserve(5);
+        return var;
     }();
 
     static_assert(VAL1.capacity() == 11);
     static_assert(VAL1.max_size() == 11);
 
-    FixedString<7> v2{};
-    v2.reserve(5);
-    EXPECT_DEATH(v2.reserve(15), "");
+    FixedString<7> var2{};
+    var2.reserve(5);
+    EXPECT_DEATH(var2.reserve(15), "");
 }
 
 TEST(FixedString, Clear)
 {
     constexpr auto VAL1 = []()
     {
-        FixedString<7> v{"012"};
-        v.assign(5, 'a');
-        v.clear();
-        return v;
+        FixedString<7> var{"012"};
+        var.assign(5, 'a');
+        var.clear();
+        return var;
     }();
 
     static_assert(VAL1.empty());
@@ -776,11 +776,11 @@ TEST(FixedString, InsertValue)
     {
         constexpr auto VAL1 = []()
         {
-            FixedString<7> v{"0123"};
-            v.insert(v.begin(), 'a');
+            FixedString<7> var{"0123"};
+            var.insert(var.begin(), 'a');
             const char value = 'e';
-            v.insert(std::next(v.begin(), 2), value);
-            return v;
+            var.insert(std::next(var.begin(), 2), value);
+            return var;
         }();
 
         static_assert(VAL1 == "a0e123");
@@ -791,11 +791,11 @@ TEST(FixedString, InsertValue)
         // For off-by-one issues, make the capacity just fit
         constexpr auto VAL2 = []()
         {
-            FixedString<5> v{"012"};
-            v.insert(v.begin(), 'a');
+            FixedString<5> var{"012"};
+            var.insert(var.begin(), 'a');
             const char value = 'e';
-            v.insert(std::next(v.begin(), 2), value);
-            return v;
+            var.insert(std::next(var.begin(), 2), value);
+            return var;
         }();
 
         static_assert(VAL2 == "a0e12");
@@ -806,8 +806,8 @@ TEST(FixedString, InsertValue)
 
 TEST(FixedString, InsertValueExceedsCapacity)
 {
-    FixedString<4> v1{"0123"};
-    EXPECT_DEATH(v1.insert(std::next(v1.begin(), 1), '5'), "");
+    FixedString<4> var1{"0123"};
+    EXPECT_DEATH(var1.insert(std::next(var1.begin(), 1), '5'), "");
 }
 
 TEST(FixedString, InsertIterator)
@@ -815,10 +815,10 @@ TEST(FixedString, InsertIterator)
     {
         constexpr auto VAL1 = []()
         {
-            std::array<char, 2> a{'a', 'e'};
-            FixedString<7> v{"0123"};
-            v.insert(std::next(v.begin(), 2), a.begin(), a.end());
-            return v;
+            std::array<char, 2> entry_a{'a', 'e'};
+            FixedString<7> var{"0123"};
+            var.insert(std::next(var.begin(), 2), entry_a.begin(), entry_a.end());
+            return var;
         }();
 
         static_assert(VAL1 == "01ae23");
@@ -829,10 +829,10 @@ TEST(FixedString, InsertIterator)
         // For off-by-one issues, make the capacity just fit
         constexpr auto VAL2 = []()
         {
-            std::array<char, 2> a{'a', 'e'};
-            FixedString<5> v{"012"};
-            v.insert(std::next(v.begin(), 2), a.begin(), a.end());
-            return v;
+            std::array<char, 2> entry_a{'a', 'e'};
+            FixedString<5> var{"012"};
+            var.insert(std::next(var.begin(), 2), entry_a.begin(), entry_a.end());
+            return var;
         }();
 
         static_assert(VAL2 == "01ae2");
@@ -841,39 +841,39 @@ TEST(FixedString, InsertIterator)
     }
 
     {
-        std::array<char, 2> a{'a', 'e'};
-        FixedString<7> v{"0123"};
-        auto it = v.insert(std::next(v.begin(), 2), a.begin(), a.end());
-        EXPECT_EQ(v, "01ae23");
-        EXPECT_EQ(it, std::next(v.begin(), 2));
+        std::array<char, 2> entry_a{'a', 'e'};
+        FixedString<7> var{"0123"};
+        auto iter = var.insert(std::next(var.begin(), 2), entry_a.begin(), entry_a.end());
+        EXPECT_EQ(var, "01ae23");
+        EXPECT_EQ(iter, std::next(var.begin(), 2));
     }
 }
 
 TEST(FixedString, InsertIteratorExceedsCapacity)
 {
-    FixedString<4> v1{"012"};
-    std::array<char, 2> a{'3', '4'};
-    EXPECT_DEATH(v1.insert(std::next(v1.begin(), 1), a.begin(), a.end()), "");
+    FixedString<4> var1{"012"};
+    std::array<char, 2> entry_a{'3', '4'};
+    EXPECT_DEATH(var1.insert(std::next(var1.begin(), 1), entry_a.begin(), entry_a.end()), "");
 }
 
 TEST(FixedString, InsertInputIterator)
 {
     MockIntegralStream<char> stream{static_cast<char>(3)};
-    FixedString<14> v{"abcd"};
-    auto it = v.insert(std::next(v.begin(), 2), stream.begin(), stream.end());
-    ASSERT_EQ(7, v.size());
+    FixedString<14> var{"abcd"};
+    auto iter = var.insert(std::next(var.begin(), 2), stream.begin(), stream.end());
+    ASSERT_EQ(7, var.size());
     EXPECT_TRUE(std::ranges::equal(
-        v,
+        var,
         std::array{
             'a', 'b', static_cast<char>(3), static_cast<char>(2), static_cast<char>(1), 'c', 'd'}));
-    EXPECT_EQ(it, std::next(v.begin(), 2));
+    EXPECT_EQ(iter, std::next(var.begin(), 2));
 }
 
 TEST(FixedString, InsertInputIteratorExceedsCapacity)
 {
     MockIntegralStream<char> stream{3};
-    FixedString<6> v{"abcd"};
-    EXPECT_DEATH(v.insert(std::next(v.begin(), 2), stream.begin(), stream.end()), "");
+    FixedString<6> var{"abcd"};
+    EXPECT_DEATH(var.insert(std::next(var.begin(), 2), stream.begin(), stream.end()), "");
 }
 
 TEST(FixedString, InsertInitializerList)
@@ -882,9 +882,9 @@ TEST(FixedString, InsertInitializerList)
         // For off-by-one issues, make the capacity just fit
         constexpr auto VAL1 = []()
         {
-            FixedString<5> v{"012"};
-            v.insert(std::next(v.begin(), 2), {'a', 'e'});
-            return v;
+            FixedString<5> var{"012"};
+            var.insert(std::next(var.begin(), 2), {'a', 'e'});
+            return var;
         }();
 
         static_assert(VAL1 == "01ae2");
@@ -893,17 +893,17 @@ TEST(FixedString, InsertInitializerList)
     }
 
     {
-        FixedString<7> v{"0123"};
-        auto it = v.insert(std::next(v.begin(), 2), {'a', 'e'});
-        EXPECT_EQ(v, "01ae23");
-        EXPECT_EQ(it, std::next(v.begin(), 2));
+        FixedString<7> var{"0123"};
+        auto iter = var.insert(std::next(var.begin(), 2), {'a', 'e'});
+        EXPECT_EQ(var, "01ae23");
+        EXPECT_EQ(iter, std::next(var.begin(), 2));
     }
 }
 
 TEST(FixedString, InsertInitializerListExceedsCapacity)
 {
-    FixedString<4> v1{"012"};
-    EXPECT_DEATH(v1.insert(std::next(v1.begin(), 1), {'3', '4'}), "");
+    FixedString<4> var1{"012"};
+    EXPECT_DEATH(var1.insert(std::next(var1.begin(), 1), {'3', '4'}), "");
 }
 
 TEST(FixedString, InsertStringView)
@@ -912,10 +912,10 @@ TEST(FixedString, InsertStringView)
         // For off-by-one issues, make the capacity just fit
         constexpr auto VAL1 = []()
         {
-            FixedString<5> v{"012"};
-            const std::string_view s = "ae";
-            v.insert(std::next(v.begin(), 2), s);
-            return v;
+            FixedString<5> var{"012"};
+            const std::string_view entry_sv = "ae";
+            var.insert(std::next(var.begin(), 2), entry_sv);
+            return var;
         }();
 
         static_assert(VAL1 == "01ae2");
@@ -924,11 +924,11 @@ TEST(FixedString, InsertStringView)
     }
 
     {
-        FixedString<7> v{"0123"};
-        const std::string_view s = "ae";
-        auto it = v.insert(std::next(v.begin(), 2), s);
-        EXPECT_EQ(v, "01ae23");
-        EXPECT_EQ(it, std::next(v.begin(), 2));
+        FixedString<7> var{"0123"};
+        const std::string_view entry_sv = "ae";
+        auto iter = var.insert(std::next(var.begin(), 2), entry_sv);
+        EXPECT_EQ(var, "01ae23");
+        EXPECT_EQ(iter, std::next(var.begin(), 2));
     }
 }
 
@@ -936,71 +936,73 @@ TEST(FixedString, EraseRange)
 {
     constexpr auto VAL1 = []()
     {
-        FixedString<8> v{"012345"};
-        v.erase(std::next(v.cbegin(), 2), std::next(v.begin(), 4));
-        return v;
+        FixedString<8> var{"012345"};
+        var.erase(std::next(var.cbegin(), 2), std::next(var.begin(), 4));
+        return var;
     }();
 
     static_assert(VAL1 == "0145");
     static_assert(VAL1.size() == 4);
     static_assert(VAL1.max_size() == 8);
 
-    FixedString<8> v2{"214503"};
+    FixedString<8> var2{"214503"};
 
-    auto it = v2.erase(std::next(v2.begin(), 1), std::next(v2.cbegin(), 3));
-    EXPECT_EQ(it, std::next(v2.begin(), 1));
-    EXPECT_EQ(*it, '5');
-    EXPECT_EQ(v2, "2503");
+    auto iter = var2.erase(std::next(var2.begin(), 1), std::next(var2.cbegin(), 3));
+    EXPECT_EQ(iter, std::next(var2.begin(), 1));
+    EXPECT_EQ(*iter, '5');
+    EXPECT_EQ(var2, "2503");
 }
 
 TEST(FixedString, EraseOne)
 {
     constexpr auto VAL1 = []()
     {
-        FixedString<8> v{"012345"};
-        v.erase(v.cbegin());
-        v.erase(std::next(v.begin(), 2));
-        return v;
+        FixedString<8> var{"012345"};
+        var.erase(var.cbegin());
+        var.erase(std::next(var.begin(), 2));
+        return var;
     }();
 
     static_assert(VAL1 == "1245");
     static_assert(VAL1.size() == 4);
     static_assert(VAL1.max_size() == 8);
 
-    FixedString<8> v2{"214503"};
+    FixedString<8> var2{"214503"};
 
-    auto it = v2.erase(v2.begin());
-    EXPECT_EQ(it, v2.begin());
-    EXPECT_EQ(*it, '1');
-    EXPECT_EQ(v2, "14503");
-    std::advance(it, 2);
-    it = v2.erase(it);
-    EXPECT_EQ(it, std::next(v2.begin(), 2));
-    EXPECT_EQ(*it, '0');
-    EXPECT_EQ(v2, "1403");
-    ++it;
-    it = v2.erase(it);
-    EXPECT_EQ(it, v2.cend());
+    auto iter = var2.erase(var2.begin());
+    EXPECT_EQ(iter, var2.begin());
+    EXPECT_EQ(*iter, '1');
+    EXPECT_EQ(var2, "14503");
+    std::advance(iter, 2);
+    iter = var2.erase(iter);
+    EXPECT_EQ(iter, std::next(var2.begin(), 2));
+    EXPECT_EQ(*iter, '0');
+    EXPECT_EQ(var2, "1403");
+    ++iter;
+    iter = var2.erase(iter);
+    EXPECT_EQ(iter, var2.cend());
     // EXPECT_EQ(*it, '\0'); // Not dereferenceable
-    EXPECT_EQ(v2, "140");
+    EXPECT_EQ(var2, "140");
 }
 
 TEST(FixedString, EraseEmpty)
 {
     {
-        FixedString<3> v1{};
+        FixedString<3> var1{};
 
         // Don't Expect Death
-        v1.erase(std::remove_if(v1.begin(), v1.end(), [&](const auto&) { return true; }), v1.end());
+        var1.erase(std::remove_if(var1.begin(), var1.end(), [&](const auto&) { return true; }),
+                   var1.end());
 
-        EXPECT_DEATH(v1.erase(v1.begin()), "");
+        EXPECT_DEATH(var1.erase(var1.begin()), "");
     }
 
     {
-        std::string v1{};
+        std::string var1{};
 
         // Don't Expect Death
-        v1.erase(std::remove_if(v1.begin(), v1.end(), [&](const auto&) { return true; }), v1.end());
+        var1.erase(std::remove_if(var1.begin(), var1.end(), [&](const auto&) { return true; }),
+                   var1.end());
 
         // The iterator pos must be valid and dereferenceable. Thus the end() iterator (which is
         // valid, but is not dereferenceable) cannot be used as a value for pos.
@@ -1008,7 +1010,7 @@ TEST(FixedString, EraseEmpty)
         // https://en.cppreference.com/w/cpp/string/basic_string/erase
 
         // Whether the following dies or not is implementation-dependent
-        // EXPECT_DEATH(v1.erase(v1.begin()), "");
+        // EXPECT_DEATH(var1.erase(var1.begin()), "");
     }
 }
 
@@ -1016,12 +1018,12 @@ TEST(FixedString, PushBack)
 {
     constexpr auto VAL1 = []()
     {
-        FixedString<11> v{};
-        v.push_back('0');
+        FixedString<11> var{};
+        var.push_back('0');
         const char value = '1';
-        v.push_back(value);
-        v.push_back('2');
-        return v;
+        var.push_back(value);
+        var.push_back('2');
+        return var;
     }();
 
     static_assert(std::ranges::equal(VAL1, std::array{'0', '1', '2'}));
@@ -1029,33 +1031,33 @@ TEST(FixedString, PushBack)
 
 TEST(FixedString, PushBackExceedsCapacity)
 {
-    FixedString<2> v{};
-    v.push_back('0');
+    FixedString<2> var{};
+    var.push_back('0');
     const char value = '1';
-    v.push_back(value);
-    EXPECT_DEATH(v.push_back('2'), "");
+    var.push_back(value);
+    EXPECT_DEATH(var.push_back('2'), "");
 }
 
 TEST(FixedString, PopBack)
 {
     constexpr auto VAL1 = []()
     {
-        FixedString<11> v{"012"};
-        v.pop_back();
-        return v;
+        FixedString<11> var{"012"};
+        var.pop_back();
+        return var;
     }();
 
     static_assert(std::ranges::equal(VAL1, std::array{'0', '1'}));
 
-    FixedString<17> v2{"abc"};
-    v2.pop_back();
-    EXPECT_EQ(v2, "ab");
+    FixedString<17> var2{"abc"};
+    var2.pop_back();
+    EXPECT_EQ(var2, "ab");
 }
 
 TEST(FixedString, PopBackEmpty)
 {
-    FixedString<5> v1{};
-    EXPECT_DEATH(v1.pop_back(), "");
+    FixedString<5> var1{};
+    EXPECT_DEATH(var1.pop_back(), "");
 }
 
 TEST(FixedString, AppendIterator)
@@ -1063,10 +1065,10 @@ TEST(FixedString, AppendIterator)
     {
         constexpr auto VAL1 = []()
         {
-            std::array<char, 2> a{'a', 'e'};
-            FixedString<7> v{"0123"};
-            v.append(a.begin(), a.end());
-            return v;
+            std::array<char, 2> entry_a{'a', 'e'};
+            FixedString<7> var{"0123"};
+            var.append(entry_a.begin(), entry_a.end());
+            return var;
         }();
 
         static_assert(VAL1 == "0123ae");
@@ -1077,10 +1079,10 @@ TEST(FixedString, AppendIterator)
         // For off-by-one issues, make the capacity just fit
         constexpr auto VAL2 = []()
         {
-            std::array<char, 2> a{'a', 'e'};
-            FixedString<5> v{"012"};
-            v.append(a.begin(), a.end());
-            return v;
+            std::array<char, 2> entry_a{'a', 'e'};
+            FixedString<5> var{"012"};
+            var.append(entry_a.begin(), entry_a.end());
+            return var;
         }();
 
         static_assert(VAL2 == "012ae");
@@ -1089,28 +1091,28 @@ TEST(FixedString, AppendIterator)
     }
 
     {
-        std::array<char, 2> a{'a', 'e'};
-        FixedString<7> v{"0123"};
-        auto& self = v.append(a.begin(), a.end());
-        EXPECT_EQ(v, "0123ae");
-        EXPECT_EQ(self, v);
+        std::array<char, 2> entry_a{'a', 'e'};
+        FixedString<7> var{"0123"};
+        auto& self = var.append(entry_a.begin(), entry_a.end());
+        EXPECT_EQ(var, "0123ae");
+        EXPECT_EQ(self, var);
     }
 }
 
 TEST(FixedString, AppendIteratorExceedsCapacity)
 {
-    FixedString<4> v1{"012"};
-    std::array<char, 2> a{'3', '4'};
-    EXPECT_DEATH(v1.append(a.begin(), a.end()), "");
+    FixedString<4> var1{"012"};
+    std::array<char, 2> entry_a{'3', '4'};
+    EXPECT_DEATH(var1.append(entry_a.begin(), entry_a.end()), "");
 }
 
 TEST(FixedString, AppendInputIterator)
 {
     MockIntegralStream<char> stream{static_cast<char>(3)};
-    FixedString<14> v{"abcd"};
-    auto& self = v.append(stream.begin(), stream.end());
-    ASSERT_EQ(7, v.size());
-    EXPECT_TRUE(std::ranges::equal(v,
+    FixedString<14> var{"abcd"};
+    auto& self = var.append(stream.begin(), stream.end());
+    ASSERT_EQ(7, var.size());
+    EXPECT_TRUE(std::ranges::equal(var,
                                    std::array{
                                        'a',
                                        'b',
@@ -1120,14 +1122,14 @@ TEST(FixedString, AppendInputIterator)
                                        static_cast<char>(2),
                                        static_cast<char>(1),
                                    }));
-    EXPECT_EQ(self, v);
+    EXPECT_EQ(self, var);
 }
 
 TEST(FixedString, AppendInputIteratorExceedsCapacity)
 {
     MockIntegralStream<char> stream{3};
-    FixedString<6> v{"abcd"};
-    EXPECT_DEATH(v.append(stream.begin(), stream.end()), "");
+    FixedString<6> var{"abcd"};
+    EXPECT_DEATH(var.append(stream.begin(), stream.end()), "");
 }
 
 TEST(FixedString, AppendInitializerList)
@@ -1136,9 +1138,9 @@ TEST(FixedString, AppendInitializerList)
         // For off-by-one issues, make the capacity just fit
         constexpr auto VAL1 = []()
         {
-            FixedString<5> v{"012"};
-            v.append({'a', 'e'});
-            return v;
+            FixedString<5> var{"012"};
+            var.append({'a', 'e'});
+            return var;
         }();
 
         static_assert(VAL1 == "012ae");
@@ -1147,10 +1149,10 @@ TEST(FixedString, AppendInitializerList)
     }
 
     {
-        FixedString<7> v{"0123"};
-        auto& self = v.append({'a', 'e'});
-        EXPECT_EQ(v, "0123ae");
-        EXPECT_EQ(self, v);
+        FixedString<7> var{"0123"};
+        auto& self = var.append({'a', 'e'});
+        EXPECT_EQ(var, "0123ae");
+        EXPECT_EQ(self, var);
     }
 }
 
@@ -1160,10 +1162,10 @@ TEST(FixedString, AppendStringView)
         // For off-by-one issues, make the capacity just fit
         constexpr auto VAL1 = []()
         {
-            FixedString<5> v{"012"};
-            const std::string_view s = "ae";
-            v.append(s);
-            return v;
+            FixedString<5> var{"012"};
+            const std::string_view entry_sv = "ae";
+            var.append(entry_sv);
+            return var;
         }();
 
         static_assert(VAL1 == "012ae");
@@ -1172,11 +1174,11 @@ TEST(FixedString, AppendStringView)
     }
 
     {
-        FixedString<7> v{"0123"};
-        const std::string_view s = "ae";
-        auto& self = v.append(s);
-        EXPECT_EQ(v, "0123ae");
-        EXPECT_EQ(self, v);
+        FixedString<7> var{"0123"};
+        const std::string_view entry_sv = "ae";
+        auto& self = var.append(entry_sv);
+        EXPECT_EQ(var, "0123ae");
+        EXPECT_EQ(self, var);
     }
 }
 
@@ -1184,12 +1186,12 @@ TEST(FixedString, OperatorPlusEqual)
 {
     constexpr auto VAL1 = []()
     {
-        FixedString<17> v{"012"};
-        v.append("abc");
-        v.append({'d', 'e'});
-        const std::string_view s = "fg";
-        v.append(s);
-        return v;
+        FixedString<17> var{"012"};
+        var.append("abc");
+        var.append({'d', 'e'});
+        const std::string_view entry_sv = "fg";
+        var.append(entry_sv);
+        return var;
     }();
 
     static_assert(VAL1 == "012abcdefg");
@@ -1406,8 +1408,8 @@ TEST(FixedString, StartsWith)
 {
     constexpr auto VAL1 = []()
     {
-        FixedString<7> v{"0123"};
-        return v;
+        FixedString<7> var{"0123"};
+        return var;
     }();
 
     static_assert(VAL1.starts_with('0'));
@@ -1423,8 +1425,8 @@ TEST(FixedString, EndsWith)
 {
     constexpr auto VAL1 = []()
     {
-        FixedString<7> v{"0123"};
-        return v;
+        FixedString<7> var{"0123"};
+        return var;
     }();
 
     static_assert(VAL1.ends_with('3'));
@@ -1440,8 +1442,8 @@ TEST(FixedString, Substring)
 {
     constexpr auto VAL1 = []()
     {
-        FixedString<7> v{"0123"};
-        return v;
+        FixedString<7> var{"0123"};
+        return var;
     }();
 
     static_assert(VAL1.substr(0, 3) == "012");
@@ -1455,9 +1457,9 @@ TEST(FixedString, Resize)
 {
     constexpr auto VAL1 = []()
     {
-        FixedString<7> v{"012"};
-        v.resize(6);
-        return v;
+        FixedString<7> var{"012"};
+        var.resize(6);
+        return var;
     }();
 
     static_assert(std::ranges::equal(VAL1, std::array{'0', '1', '2', '\0', '\0', '\0'}));
@@ -1465,47 +1467,47 @@ TEST(FixedString, Resize)
 
     constexpr auto VAL2 = []()
     {
-        FixedString<7> v{"012"};
-        v.resize(7, 'c');
-        v.resize(5, 'e');
-        return v;
+        FixedString<7> var{"012"};
+        var.resize(7, 'c');
+        var.resize(5, 'e');
+        return var;
     }();
 
     static_assert(std::ranges::equal(VAL2, std::array{'0', '1', '2', 'c', 'c'}));
     static_assert(VAL2.max_size() == 7);
 
-    FixedString<8> v3{"0123"};
-    v3.resize(6);
+    FixedString<8> var3{"0123"};
+    var3.resize(6);
 
-    EXPECT_TRUE(std::ranges::equal(v3, std::array<char, 6>{'0', '1', '2', '3', '\0', '\0'}));
+    EXPECT_TRUE(std::ranges::equal(var3, std::array<char, 6>{'0', '1', '2', '3', '\0', '\0'}));
 
-    v3.resize(2);
-    EXPECT_EQ(v3, "01");
+    var3.resize(2);
+    EXPECT_EQ(var3, "01");
 
-    v3.resize(5, '3');
-    EXPECT_EQ(v3, "01333");
+    var3.resize(5, '3');
+    EXPECT_EQ(var3, "01333");
 }
 
 TEST(FixedString, ResizeExceedsCapacity)
 {
-    FixedString<3> v1{};
-    EXPECT_DEATH(v1.resize(6), "");
-    EXPECT_DEATH(v1.resize(6, 5), "");
+    FixedString<3> var1{};
+    EXPECT_DEATH(var1.resize(6), "");
+    EXPECT_DEATH(var1.resize(6, 5), "");
     const std::size_t to_size = 7;
-    EXPECT_DEATH(v1.resize(to_size), "");
-    EXPECT_DEATH(v1.resize(to_size, 5), "");
+    EXPECT_DEATH(var1.resize(to_size), "");
+    EXPECT_DEATH(var1.resize(to_size, 5), "");
 }
 
 TEST(FixedString, Full)
 {
     constexpr auto VAL1 = []()
     {
-        FixedString<4> v{};
-        v.push_back('0');
-        v.push_back('1');
-        v.push_back('2');
-        v.push_back('3');
-        return v;
+        FixedString<4> var{};
+        var.push_back('0');
+        var.push_back('1');
+        var.push_back('2');
+        var.push_back('3');
+        return var;
     }();
 
     static_assert(VAL1 == "0123");
@@ -1521,8 +1523,8 @@ TEST(FixedString, Span)
     {
         constexpr auto VAL1 = []()
         {
-            FixedString<7> v{'0', '1', '2'};
-            return v;
+            FixedString<7> var{'0', '1', '2'};
+            return var;
         }();
 
         const std::span<const char> as_span{VAL1};
@@ -1532,13 +1534,13 @@ TEST(FixedString, Span)
         ASSERT_EQ('2', as_span[2]);
     }
     {
-        auto v1 = []()
+        auto var1 = []()
         {
-            FixedString<7> v{'0', '1', '2'};
-            return v;
+            FixedString<7> var{'0', '1', '2'};
+            return var;
         }();
 
-        const std::span<const char> as_span{v1};
+        const std::span<const char> as_span{var1};
         ASSERT_EQ(3, as_span.size());
         ASSERT_EQ('0', as_span[0]);
         ASSERT_EQ('1', as_span[1]);
@@ -1546,15 +1548,15 @@ TEST(FixedString, Span)
     }
 
     {
-        std::string v1{};
-        const std::span<const char> as_span_const{v1};
-        const std::span<char> as_span_non_cost{v1};
+        std::string var1{};
+        const std::span<const char> as_span_const{var1};
+        const std::span<char> as_span_non_cost{var1};
     }
 
     {
-        FixedString<7> v{'0', '1', '2'};
-        const_span_ref(v);
-        const_span_of_const_ref(v);
+        FixedString<7> var{'0', '1', '2'};
+        const_span_ref(var);
+        const_span_of_const_ref(var);
     }
 }
 
@@ -1568,18 +1570,18 @@ TEST(FixedString, MaxSizeDeduction)
 TEST(FixedString, ClassTemplateArgumentDeduction)
 {
     // Compile-only test
-    const FixedString a = FixedString<5>{};
-    (void)a;
+    const FixedString var1 = FixedString<5>{};
+    (void)var1;
 }
 
 TEST(FixedStringTest, OStreamOperator)
 {
     const FixedString<5> str{"hello"};
 
-    std::stringstream ss;
-    ss << str;
+    std::stringstream stream;
+    stream << str;
 
-    EXPECT_EQ(ss.str(), "hello");
+    EXPECT_EQ(stream.str(), "hello");
 }
 
 namespace
@@ -1610,7 +1612,7 @@ namespace another_namespace_unrelated_to_the_fixed_containers_namespace
 TEST(FixedString, ArgumentDependentLookup)
 {
     // Compile-only test
-    const fixed_containers::FixedString<5> a{};
-    (void)is_full(a);
+    const fixed_containers::FixedString<5> var1{};
+    (void)is_full(var1);
 }
 }  // namespace another_namespace_unrelated_to_the_fixed_containers_namespace

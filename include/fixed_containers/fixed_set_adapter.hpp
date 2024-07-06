@@ -336,16 +336,16 @@ private:
 };
 
 template <typename K, typename TableImpl, typename CheckingType>
-[[nodiscard]] constexpr bool is_full(const FixedSetAdapter<K, TableImpl, CheckingType>& c)
+[[nodiscard]] constexpr bool is_full(const FixedSetAdapter<K, TableImpl, CheckingType>& container)
 {
-    return c.size() >= c.max_size();
+    return container.size() >= container.max_size();
 }
 
 template <typename K, typename TableImpl, typename CheckingType, typename Predicate>
 constexpr typename FixedSetAdapter<K, TableImpl, CheckingType>::size_type erase_if(
-    FixedSetAdapter<K, TableImpl, CheckingType>& c, Predicate predicate)
+    FixedSetAdapter<K, TableImpl, CheckingType>& container, Predicate predicate)
 {
-    return erase_if_detail::erase_if_impl(c, predicate);
+    return erase_if_detail::erase_if_impl(container, predicate);
 }
 
 }  // namespace fixed_containers

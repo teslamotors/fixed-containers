@@ -61,9 +61,9 @@ private:
 
         // https://github.com/llvm/llvm-project/issues/62555
         template <bool IS_CONST_2>
-        constexpr PairProvider(const PairProvider<IS_CONST_2>& m) noexcept
+        constexpr PairProvider(const PairProvider<IS_CONST_2>& mutable_other) noexcept
             requires(IS_CONST and !IS_CONST_2)
-          : PairProvider{m.table_, m.current_index_}
+          : PairProvider{mutable_other.table_, mutable_other.current_index_}
         {
         }
 
@@ -477,16 +477,17 @@ private:
 };
 
 template <typename K, typename V, typename TableImpl, typename CheckingType>
-[[nodiscard]] constexpr bool is_full(const FixedMapAdapter<K, V, TableImpl, CheckingType>& c)
+[[nodiscard]] constexpr bool is_full(
+    const FixedMapAdapter<K, V, TableImpl, CheckingType>& container)
 {
-    return c.size() >= c.max_size();
+    return container.size() >= container.max_size();
 }
 
 template <typename K, typename V, typename TableImpl, typename CheckingType, typename Predicate>
 constexpr typename FixedMapAdapter<K, V, TableImpl, CheckingType>::size_type erase_if(
-    FixedMapAdapter<K, V, TableImpl, CheckingType>& c, Predicate predicate)
+    FixedMapAdapter<K, V, TableImpl, CheckingType>& container, Predicate predicate)
 {
-    return erase_if_detail::erase_if_impl(c, predicate);
+    return erase_if_detail::erase_if_impl(container, predicate);
 }
 
 }  // namespace fixed_containers

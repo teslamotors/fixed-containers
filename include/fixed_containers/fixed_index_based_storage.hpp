@@ -11,17 +11,17 @@
 namespace fixed_containers
 {
 template <class StorageType>
-concept IsFixedIndexBasedStorage =
-    requires(const StorageType& a, StorageType& b, const std::size_t i) {
-        typename StorageType::size_type;
-        typename StorageType::difference_type;
+concept IsFixedIndexBasedStorage = requires(
+    const StorageType& const_instance, StorageType& mutable_instance, const std::size_t index) {
+    typename StorageType::size_type;
+    typename StorageType::difference_type;
 
-        a.at(i);
-        b.at(i);
-        a.full();
-        b.emplace_and_return_index();
-        b.delete_at_and_return_repositioned_index(i);
-    };
+    const_instance.at(index);
+    mutable_instance.at(index);
+    const_instance.full();
+    mutable_instance.emplace_and_return_index();
+    mutable_instance.delete_at_and_return_repositioned_index(index);
+};
 
 template <class T, std::size_t MAXIMUM_SIZE>
 class FixedIndexBasedPoolStorage
@@ -50,38 +50,38 @@ public:
 
     [[nodiscard]] constexpr bool full() const noexcept { return next_index() == MAXIMUM_SIZE; }
 
-    constexpr T& at(const std::size_t i) noexcept { return array_unchecked_at(i).value; }
-    [[nodiscard]] constexpr const T& at(const std::size_t i) const noexcept
+    constexpr T& at(const std::size_t index) noexcept { return array_unchecked_at(index).value; }
+    [[nodiscard]] constexpr const T& at(const std::size_t index) const noexcept
     {
-        return array_unchecked_at(i).value;
+        return array_unchecked_at(index).value;
     }
 
     template <class... Args>
     constexpr std::size_t emplace_and_return_index(Args&&... args)
     {
         assert_or_abort(!full());
-        const std::size_t i = next_index();
+        const std::size_t index = next_index();
         set_next_index(array_unchecked_at(next_index()).index);
-        emplace_at(i, std::forward<Args>(args)...);
-        return i;
+        emplace_at(index, std::forward<Args>(args)...);
+        return index;
     }
 
-    constexpr std::size_t delete_at_and_return_repositioned_index(const std::size_t i) noexcept
+    constexpr std::size_t delete_at_and_return_repositioned_index(const std::size_t index) noexcept
     {
-        destroy_at(i);
-        array_unchecked_at(i).index = next_index();
-        set_next_index(i);
-        return i;
+        destroy_at(index);
+        array_unchecked_at(index).index = next_index();
+        set_next_index(index);
+        return index;
     }
 
 private:
-    [[nodiscard]] constexpr const IndexOrValueT& array_unchecked_at(const std::size_t i) const
+    [[nodiscard]] constexpr const IndexOrValueT& array_unchecked_at(const std::size_t index) const
     {
-        return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_[i];
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_[index];
     }
-    constexpr IndexOrValueT& array_unchecked_at(const std::size_t i)
+    constexpr IndexOrValueT& array_unchecked_at(const std::size_t index)
     {
-        return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_[i];
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_[index];
     }
     [[nodiscard]] constexpr std::size_t next_index() const
     {
@@ -93,15 +93,15 @@ private:
     }
 
     template <class... Args>
-    constexpr void emplace_at(const std::size_t& i, Args&&... args)
+    constexpr void emplace_at(const std::size_t& index, Args&&... args)
     {
         memory::construct_at_address_of(
-            array_unchecked_at(i), std::in_place, std::forward<Args>(args)...);
+            array_unchecked_at(index), std::in_place, std::forward<Args>(args)...);
     }
 
-    constexpr void destroy_at(std::size_t i)
+    constexpr void destroy_at(std::size_t index)
     {
-        memory::destroy_at_address_of(array_unchecked_at(i).value);
+        memory::destroy_at_address_of(array_unchecked_at(index).value);
     }
 };
 
@@ -128,10 +128,10 @@ public:
 
     [[nodiscard]] constexpr bool full() const noexcept { return nodes().full(); }
 
-    constexpr T& at(const std::size_t i) noexcept { return nodes().at(i); }
-    [[nodiscard]] constexpr const T& at(const std::size_t i) const noexcept
+    constexpr T& at(const std::size_t index) noexcept { return nodes().at(index); }
+    [[nodiscard]] constexpr const T& at(const std::size_t index) const noexcept
     {
-        return nodes().at(i);
+        return nodes().at(index);
     }
 
     template <class... Args>
@@ -141,10 +141,10 @@ public:
         return nodes().size() - 1;
     }
 
-    constexpr std::size_t delete_at_and_return_repositioned_index(const std::size_t i) noexcept
+    constexpr std::size_t delete_at_and_return_repositioned_index(const std::size_t index) noexcept
     {
-        memory::destroy_at_address_of(nodes().at(i));
-        memory::construct_at_address_of(nodes().at(i), std::move(nodes().back()));
+        memory::destroy_at_address_of(nodes().at(index));
+        memory::construct_at_address_of(nodes().at(index), std::move(nodes().back()));
         nodes().pop_back();
         return nodes().size();
     }

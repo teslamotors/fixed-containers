@@ -56,8 +56,8 @@ public:
         delete_range_and_return_next_index(front_index(), MAXIMUM_SIZE);
     }
 
-    [[nodiscard]] constexpr const T& at(const IndexType i) const { return storage().at(i); }
-    constexpr T& at(const IndexType i) { return storage().at(i); }
+    [[nodiscard]] constexpr const T& at(const IndexType index) const { return storage().at(index); }
+    constexpr T& at(const IndexType index) { return storage().at(index); }
 
     [[nodiscard]] constexpr IndexType front_index() const { return next_of(MAXIMUM_SIZE); }
     [[nodiscard]] constexpr IndexType back_index() const { return prev_of(MAXIMUM_SIZE); }
@@ -105,26 +105,26 @@ public:
     constexpr IndexType delete_range_and_return_next_index(const IndexType& from_index_inclusive,
                                                            const IndexType& to_index_exclusive)
     {
-        IndexType i = from_index_inclusive;
-        while (i != to_index_exclusive)
+        IndexType idx = from_index_inclusive;
+        while (idx != to_index_exclusive)
         {
-            i = delete_at_and_return_next_index(i);
+            idx = delete_at_and_return_next_index(idx);
         }
-        return i;
+        return idx;
     }
 
 public:
-    [[nodiscard]] constexpr const IndexType& next_of(IndexType i) const
+    [[nodiscard]] constexpr const IndexType& next_of(IndexType index) const
     {
-        return chain().at(i).next;
+        return chain().at(index).next;
     }
-    [[nodiscard]] constexpr IndexType& next_of(IndexType i) { return chain().at(i).next; }
+    [[nodiscard]] constexpr IndexType& next_of(IndexType index) { return chain().at(index).next; }
 
-    [[nodiscard]] constexpr const IndexType& prev_of(IndexType i) const
+    [[nodiscard]] constexpr const IndexType& prev_of(IndexType index) const
     {
-        return chain().at(i).prev;
+        return chain().at(index).prev;
     }
-    [[nodiscard]] constexpr IndexType& prev_of(IndexType i) { return chain().at(i).prev; }
+    [[nodiscard]] constexpr IndexType& prev_of(IndexType index) { return chain().at(index).prev; }
 
 private:
     [[nodiscard]] constexpr const StorageType& storage() const

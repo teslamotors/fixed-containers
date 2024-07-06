@@ -42,8 +42,8 @@ template <typename T>
 class out  // NOLINT(readability-identifier-naming)
 {
 public:
-    constexpr explicit out(T& t) noexcept
-      : t_{t}
+    constexpr explicit out(T& ref) noexcept
+      : ref_{ref}
     {
     }
 
@@ -53,15 +53,15 @@ public:
     constexpr out& operator=(out&& original) = delete;
 
     // non-cost overloads only, to prevent passing by `const`/`const&`
-    constexpr T* operator->() noexcept { return std::addressof(t_); }
-    constexpr T& operator*() noexcept { return t_; }
+    constexpr T* operator->() noexcept { return std::addressof(ref_); }
+    constexpr T& operator*() noexcept { return ref_; }
     constexpr T* operator&() noexcept  // NOLINT(google-runtime-operator)
     {
-        return std::addressof(t_);
+        return std::addressof(ref_);
     }
 
 private:
-    T& t_;
+    T& ref_;
 };
 
 }  // namespace fixed_containers

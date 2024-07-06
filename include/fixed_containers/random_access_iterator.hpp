@@ -11,13 +11,13 @@
 namespace fixed_containers
 {
 template <class P>
-concept RandomAccessEntryProvider = requires(P p, P other, std::size_t unsigned_integer) {
-    p.advance(unsigned_integer);
-    p.recede(unsigned_integer);
-    p.get();
-    { p == other } -> std::same_as<bool>;
-    { p <=> other };
-    { p - other } -> std::same_as<std::ptrdiff_t>;
+concept RandomAccessEntryProvider = requires(P instance, P other, std::size_t unsigned_integer) {
+    instance.advance(unsigned_integer);
+    instance.recede(unsigned_integer);
+    instance.get();
+    { instance == other } -> std::same_as<bool>;
+    { instance <=> other };
+    { instance - other } -> std::same_as<std::ptrdiff_t>;
 };
 
 template <RandomAccessEntryProvider ConstEntryProvider,

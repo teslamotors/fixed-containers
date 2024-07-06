@@ -39,10 +39,10 @@ TEST(OptionalReference, NullOptAssignment)
 {
     constexpr bool SUCCESS = []()
     {
-        int a = 9;
-        OptionalReference<int> v1(a);
-        v1 = std::nullopt;
-        return !v1.has_value();
+        int entry_a = 9;
+        OptionalReference<int> var1(entry_a);
+        var1 = std::nullopt;
+        return !var1.has_value();
     }();
     static_assert(SUCCESS);
 }
@@ -148,24 +148,24 @@ TEST(OptionalReference, Reset)
 
 TEST(OptionalReference, CopyCtor)
 {
-    int a = 5;
-    const OptionalReference first(a);
+    int entry_a = 5;
+    const OptionalReference first(entry_a);
     const OptionalReference second(first);
     EXPECT_EQ(first, second);
 }
 
 TEST(OptionalReference, MoveCtor)
 {
-    int a = 5;
-    OptionalReference first(a);
+    int entry_a = 5;
+    OptionalReference first(entry_a);
     const OptionalReference second(std::move(first));
     EXPECT_EQ(second, 5);
 }
 
 TEST(OptionalReference, MoveAssignment)
 {
-    int a = 5;
-    OptionalReference first(a);
+    int entry_a = 5;
+    OptionalReference first(entry_a);
     const OptionalReference second = std::move(first);
     EXPECT_EQ(second, 5);
 }
@@ -287,21 +287,21 @@ TEST(OptionalReference, EqualWithValue)
 // https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2012/n3406#rationale.refs
 TEST(OptionalReference, OpenStdAssignmentTests)
 {
-    int i = 0;
-    int j = 1;
+    int entry_i = 0;
+    int entry_j = 1;
     OptionalReference<int> ori;
-    OptionalReference<int> orj{j};
+    OptionalReference<int> orj{entry_j};
 
     *orj = 2;
-    ASSERT_EQ(j, 2);
+    ASSERT_EQ(entry_j, 2);
 
     // ori = i; // ERROR: no assignment from int&
-    ori = OptionalReference{i};  // OK: assignemnt from optional<int&>
+    ori = OptionalReference{entry_i};  // OK: assignemnt from optional<int&>
 
     orj = ori;  // OK: rebinding assignemnt from optional<int&>
     *orj = 4;
-    ASSERT_EQ(j, 2);
-    ASSERT_EQ(i, 4);
+    ASSERT_EQ(entry_j, 2);
+    ASSERT_EQ(entry_i, 4);
 }
 
 TEST(OptionalReference, ConstexprCtor)

@@ -280,10 +280,10 @@ class MockIntegralStream
         constexpr MockInputIterator& operator++() noexcept
         {
             assert_or_abort(remaining_.has_value());
-            auto& r = *remaining_.value();
-            assert_or_abort(r > 0);
-            r--;
-            if (r == 0)
+            auto& rem = *remaining_.value();
+            assert_or_abort(rem > 0);
+            rem--;
+            if (rem == 0)
             {
                 remaining_.reset();
             }
@@ -319,8 +319,8 @@ struct ImplicitlyConvertibleFromInt
 {
     int value;
 
-    explicit(false) constexpr ImplicitlyConvertibleFromInt(int v)
-      : value{v}
+    explicit(false) constexpr ImplicitlyConvertibleFromInt(int value_in_ctor)
+      : value{value_in_ctor}
     {
     }
 };
@@ -329,8 +329,8 @@ struct ExplicitlyConvertibleFromInt
 {
     int value;
 
-    explicit constexpr ExplicitlyConvertibleFromInt(int v)
-      : value{v}
+    explicit constexpr ExplicitlyConvertibleFromInt(int value_in_ctor)
+      : value{value_in_ctor}
     {
     }
 };
@@ -340,10 +340,10 @@ struct TypeWithMultipleConstructorParameters
     ImplicitlyConvertibleFromInt implicit_int;
     ExplicitlyConvertibleFromInt explicit_int;
 
-    constexpr TypeWithMultipleConstructorParameters(ImplicitlyConvertibleFromInt a0,
-                                                    ExplicitlyConvertibleFromInt b0)
-      : implicit_int{a0}
-      , explicit_int{b0}
+    constexpr TypeWithMultipleConstructorParameters(ImplicitlyConvertibleFromInt param_a0,
+                                                    ExplicitlyConvertibleFromInt param_b0)
+      : implicit_int{param_a0}
+      , explicit_int{param_b0}
     {
     }
 };

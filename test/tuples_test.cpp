@@ -110,10 +110,10 @@ TEST(Tuples, ForEachEntryEmpty)
 {
     constexpr auto RESULT = []()
     {
-        std::tuple<> a{};
-        tuples::for_each_entry(a, []<typename T>(T& /*t*/) {});
-        tuples::for_each_entry(a, []<typename T>(T& /*t*/, std::size_t /*i*/) {});
-        return a;
+        std::tuple<> var{};
+        tuples::for_each_entry(var, []<typename T>(T& /*t*/) {});
+        tuples::for_each_entry(var, []<typename T>(T& /*t*/, std::size_t /*i*/) {});
+        return var;
     }();
 
     static_assert(std::tuple_size_v<decltype(RESULT)> == 0);
@@ -123,17 +123,17 @@ TEST(Tuples, ForEachEntry)
 {
     constexpr auto RESULT = []()
     {
-        std::tuple<int, double> a{1, 2};
-        tuples::for_each_entry(a,
-                               []<typename T>(T& t)
+        std::tuple<int, double> var{1, 2};
+        tuples::for_each_entry(var,
+                               []<typename T>(T& entry)
                                {
-                                   t *= 2;
+                                   entry *= 2;
                                    if constexpr (std::same_as<T, int>)
                                    {
-                                       t += 7;
+                                       entry += 7;
                                    }
                                });
-        return a;
+        return var;
     }();
 
     static_assert(std::get<0>(RESULT) == 9);
@@ -144,25 +144,25 @@ TEST(Tuples, ForEachEntryWithIndex)
 {
     constexpr auto RESULT = []()
     {
-        std::tuple<int, double> a{1, 2};
-        tuples::for_each_entry(a,
-                               []<typename T>(std::size_t i, T& t)
+        std::tuple<int, double> var{1, 2};
+        tuples::for_each_entry(var,
+                               []<typename T>(std::size_t index, T& entry)
                                {
-                                   if (i == 0)
+                                   if (index == 0)
                                    {
-                                       t *= 2;
+                                       entry *= 2;
                                    }
                                    else
                                    {
-                                       t *= 3;
+                                       entry *= 3;
                                    }
 
                                    if constexpr (std::same_as<T, int>)
                                    {
-                                       t += 7;
+                                       entry += 7;
                                    }
                                });
-        return a;
+        return var;
     }();
 
     static_assert(std::get<0>(RESULT) == 9);

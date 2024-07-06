@@ -37,9 +37,9 @@ public:
         const std::size_t end_exclusive = integer_range_.end_exclusive();
         assert_or_abort(current_index_ != end_exclusive);
 
-        if (const std::size_t i = current_index_ + n; i < end_exclusive)
+        if (const std::size_t idx = current_index_ + n; idx < end_exclusive)
         {
-            current_index_ = i;
+            current_index_ = idx;
             return;
         }
 
@@ -50,10 +50,10 @@ public:
         const std::size_t start_inclusive = integer_range_.start_inclusive();
         assert_or_abort(current_index_ != start_inclusive - 1);
 
-        if (const auto i = int_math::safe_subtract(current_index_, n);
-            i.is_non_negative() && i.unsigned_value() >= start_inclusive)
+        if (const auto idx = int_math::safe_subtract(current_index_, n);
+            idx.is_non_negative() && idx.unsigned_value() >= start_inclusive)
         {
-            current_index_ = i.unsigned_value();
+            current_index_ = idx.unsigned_value();
             return;
         }
 

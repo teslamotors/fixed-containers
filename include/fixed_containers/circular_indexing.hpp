@@ -24,18 +24,18 @@ struct CyclesAndInteger
 
 template <IsIntegerRange IntegerRangeType>
 constexpr CyclesAndInteger increment_index_with_wraparound(const IntegerRangeType& range,
-                                                           std::size_t i,
+                                                           std::size_t index,
                                                            std::size_t n)
 {
     if (range.distance() == 0)
     {
         // Default constructed
-        assert_or_abort(i == 0);
+        assert_or_abort(index == 0);
         return {};
     }
 
     const std::size_t range_size = range.distance();
-    const std::size_t new_index_unwrapped = i + n;
+    const std::size_t new_index_unwrapped = index + n;
     const auto adjust_to_zero =
         int_math::safe_subtract(new_index_unwrapped, range.start_inclusive())
             .template cast<std::size_t>();
@@ -47,13 +47,13 @@ constexpr CyclesAndInteger increment_index_with_wraparound(const IntegerRangeTyp
 
 template <IsIntegerRange IntegerRangeType>
 constexpr CyclesAndInteger decrement_index_with_wraparound(const IntegerRangeType& range,
-                                                           std::size_t i,
+                                                           std::size_t index,
                                                            std::size_t n)
 {
     if (range.distance() == 0)
     {
         // Default constructed
-        assert_or_abort(i == 0);
+        assert_or_abort(index == 0);
         return {};
     }
 
@@ -62,7 +62,7 @@ constexpr CyclesAndInteger decrement_index_with_wraparound(const IntegerRangeTyp
     const auto positive_modulo =
         int_math::safe_subtract(negative_cycles * range_size, n).template cast<std::size_t>();
 
-    CyclesAndInteger out = increment_index_with_wraparound(range, i, positive_modulo);
+    CyclesAndInteger out = increment_index_with_wraparound(range, index, positive_modulo);
     out.cycles -= static_cast<std::int64_t>(negative_cycles);
     return out;
 }

@@ -84,12 +84,12 @@ TEST(TypeName, WithVariant)
 
     MyVariant my_variant = 1.0F;
     std::visit(
-        [&](auto v)
+        [&](auto entry)
         {
-            if constexpr (std::is_same_v<decltype(v), float>)
+            if constexpr (std::is_same_v<decltype(entry), float>)
             {
-                EXPECT_EQ(v, 1.0);
-                EXPECT_EQ(type_name<decltype(v)>(), "float");
+                EXPECT_EQ(entry, 1.0);
+                EXPECT_EQ(type_name<decltype(entry)>(), "float");
             }
             else
             {

@@ -59,11 +59,11 @@ public:
         return ret;
     }
 
-    constexpr void set_index(const NodeIndex i)
+    constexpr void set_index(const NodeIndex index)
     {
-        const NodeIndex j = i == NULL_INDEX ? LOCAL_NULL_INDEX : i;
-        assert_or_abort(j <= LOCAL_NULL_INDEX);
-        index_and_color() = (index_and_color() & MASK) | j;
+        const NodeIndex actual_index = index == NULL_INDEX ? LOCAL_NULL_INDEX : index;
+        assert_or_abort(actual_index <= LOCAL_NULL_INDEX);
+        index_and_color() = (index_and_color() & MASK) | actual_index;
     }
 
     [[nodiscard]] constexpr NodeColor get_color() const
@@ -71,10 +71,10 @@ public:
         return (index_and_color() & MASK) == MASK;
     }
 
-    constexpr void set_color(const NodeColor c)
+    constexpr void set_color(const NodeColor new_color)
     {
         index_and_color() = (~MASK & index_and_color()) |
-                            (static_cast<NodeIndex>(c) << SHIFT_TO_MOST_SIGNIFICANT_BIT);
+                            (static_cast<NodeIndex>(new_color) << SHIFT_TO_MOST_SIGNIFICANT_BIT);
     }
 
 private:

@@ -66,7 +66,7 @@ class FixedRedBlackTreeOps
             node_i,
             node_j,
             [](RedBlackTreeNodeView<TreeStorage> node) { return node.color(); },
-            [](RedBlackTreeNodeView<TreeStorage> node, NodeColor c) { node.set_color(c); });
+            [](RedBlackTreeNodeView<TreeStorage> node, NodeColor color) { node.set_color(color); });
     }
 
 public:
@@ -103,31 +103,31 @@ public:
     }
 
     static void constexpr swap_nodes_excluding_key_and_value(RedBlackTreeStorage& tree,
-                                                             const NodeIndex& i,
-                                                             const NodeIndex& j)
+                                                             const NodeIndex& index_i,
+                                                             const NodeIndex& index_j)
     {
-        RedBlackTreeNodeView node_i = tree.node_at(i);
-        RedBlackTreeNodeView node_j = tree.node_at(j);
+        RedBlackTreeNodeView node_i = tree.node_at(index_i);
+        RedBlackTreeNodeView node_j = tree.node_at(index_j);
 
-        if (node_j.parent_index() == i)
+        if (node_j.parent_index() == index_i)
         {
             // run with arguments swapped
-            swap_nodes_excluding_key_and_value_impl(tree, j, i, node_j, node_i);
+            swap_nodes_excluding_key_and_value_impl(tree, index_j, index_i, node_j, node_i);
             return;
         }
 
-        swap_nodes_excluding_key_and_value_impl(tree, i, j, node_i, node_j);
+        swap_nodes_excluding_key_and_value_impl(tree, index_i, index_j, node_i, node_j);
     }
 
     static constexpr void swap_nodes_including_key_and_value(RedBlackTreeStorage& tree,
-                                                             const NodeIndex& i,
-                                                             const NodeIndex& j)
+                                                             const NodeIndex& index_i,
+                                                             const NodeIndex& index_j)
         requires TriviallyCopyable<K> && TriviallyCopyable<V>
     {
-        swap_nodes_excluding_key_and_value(tree, i, j);
+        swap_nodes_excluding_key_and_value(tree, index_i, index_j);
 
-        RedBlackTreeNodeView node_i = tree.node_at(i);
-        RedBlackTreeNodeView node_j = tree.node_at(j);
+        RedBlackTreeNodeView node_i = tree.node_at(index_i);
+        RedBlackTreeNodeView node_j = tree.node_at(index_j);
         std::swap(node_i.key(), node_j.key());
         std::swap(node_i.value(), node_j.value());
     }
@@ -135,16 +135,16 @@ public:
 private:
     static void constexpr swap_nodes_excluding_key_and_value_impl(
         RedBlackTreeStorage& tree,
-        const NodeIndex& i,
-        const NodeIndex& j,
+        const NodeIndex& index_i,
+        const NodeIndex& index_j,
         RedBlackTreeNodeView<TreeStorage>& node_i,
         RedBlackTreeNodeView<TreeStorage>& node_j)
     {
-        assert_or_abort(node_j.parent_index() != i);
+        assert_or_abort(node_j.parent_index() != index_i);
 
         // Below this, nodes are either non-neighbors or j is the parent
 
-        if (node_j.left_index() == i)
+        if (node_j.left_index() == index_i)
         {
             /*
              *               j
@@ -156,17 +156,17 @@ private:
             node_i.set_parent_index(NULL_INDEX);
             node_j.set_left_index(NULL_INDEX);
 
-            fixup_neighbours_of_node_to_point_to_a_new_index(tree, node_i, i, j);
-            fixup_neighbours_of_node_to_point_to_a_new_index(tree, node_j, j, i);
+            fixup_neighbours_of_node_to_point_to_a_new_index(tree, node_i, index_i, index_j);
+            fixup_neighbours_of_node_to_point_to_a_new_index(tree, node_j, index_j, index_i);
 
             swap_right_index(node_i, node_j);
 
             node_i.set_parent_index(node_j.parent_index());
-            node_j.set_parent_index(i);
+            node_j.set_parent_index(index_i);
             node_j.set_left_index(node_i.left_index());
-            node_i.set_left_index(j);
+            node_i.set_left_index(index_j);
         }
-        else if (node_j.right_index() == i)
+        else if (node_j.right_index() == index_i)
         {
             /*
              *               j
@@ -178,33 +178,33 @@ private:
             node_i.set_parent_index(NULL_INDEX);
             node_j.set_right_index(NULL_INDEX);
 
-            fixup_neighbours_of_node_to_point_to_a_new_index(tree, node_i, i, j);
-            fixup_neighbours_of_node_to_point_to_a_new_index(tree, node_j, j, i);
+            fixup_neighbours_of_node_to_point_to_a_new_index(tree, node_i, index_i, index_j);
+            fixup_neighbours_of_node_to_point_to_a_new_index(tree, node_j, index_j, index_i);
 
             swap_left_index(node_i, node_j);
 
             node_i.set_parent_index(node_j.parent_index());
-            node_j.set_parent_index(i);
+            node_j.set_parent_index(index_i);
             node_j.set_right_index(node_i.right_index());
-            node_i.set_right_index(j);
+            node_i.set_right_index(index_j);
         }
         else
         {
-            fixup_neighbours_of_node_to_point_to_a_new_index(tree, node_i, i, j);
-            fixup_neighbours_of_node_to_point_to_a_new_index(tree, node_j, j, i);
+            fixup_neighbours_of_node_to_point_to_a_new_index(tree, node_i, index_i, index_j);
+            fixup_neighbours_of_node_to_point_to_a_new_index(tree, node_j, index_j, index_i);
 
             swap_parent_index(node_i, node_j);
             swap_left_index(node_i, node_j);
             swap_right_index(node_i, node_j);
         }
 
-        if (i == tree.root_index())
+        if (index_i == tree.root_index())
         {
-            tree.IMPLEMENTATION_DETAIL_DO_NOT_USE_root_index_ = j;
+            tree.IMPLEMENTATION_DETAIL_DO_NOT_USE_root_index_ = index_j;
         }
-        else if (j == tree.root_index())
+        else if (index_j == tree.root_index())
         {
-            tree.IMPLEMENTATION_DETAIL_DO_NOT_USE_root_index_ = i;
+            tree.IMPLEMENTATION_DETAIL_DO_NOT_USE_root_index_ = index_i;
         }
 
         swap_color(node_i, node_j);

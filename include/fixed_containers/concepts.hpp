@@ -111,7 +111,7 @@ template <class T>
 concept IsNotReference = not IsReference<T>;
 
 template <typename T>
-concept ConstexprDefaultConstructible = requires(T t) {
+concept ConstexprDefaultConstructible = requires() {
     { std::bool_constant<(T{}, true)>() } -> std::same_as<std::true_type>;
 };
 template <class T>

@@ -38,10 +38,10 @@ private:
     {
         const std::pair<const L, T> (&list_)[M];
 
-        constexpr std::size_t operator()(const std::size_t i) const
+        constexpr std::size_t operator()(const std::size_t index) const
         {
-            auto it = std::next(list_, static_cast<difference_type>(i));
-            return EnumAdapterType::ordinal(it->first);
+            auto pos = std::next(list_, static_cast<difference_type>(index));
+            return EnumAdapterType::ordinal(pos->first);
         }
     };
 
@@ -77,11 +77,11 @@ public:
     }
 
     template <class R>
-    constexpr EnumArray(std_transition::from_range_t, R&& rg) noexcept
+    constexpr EnumArray(std_transition::from_range_t, R&& range) noexcept
         requires DefaultConstructible<T>
       : EnumArray()
     {
-        for (const auto& [label, value] : rg)
+        for (const auto& [label, value] : range)
         {
             const std::size_t ordinal = EnumAdapterType::ordinal(label);
             values().at(ordinal) = value;

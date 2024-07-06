@@ -15,8 +15,8 @@ struct SimpleCounterForParameterizedTest
     template <class ParamType>
     std::string operator()(const testing::TestParamInfo<ParamType>& /*info*/) const
     {
-        static std::size_t i = 0;
-        return std::to_string(i++);
+        static std::size_t counter = 0;
+        return std::to_string(counter++);
     }
 };
 // The first value in the ::testing::tuple must be the title
@@ -32,9 +32,9 @@ struct SimpleTitleForParameterizedTest
 struct NameProviderForTypeParameterizedTest
 {
     template <class ParamType>
-    static std::string GetName(const int i)  // NOLINT(readability-identifier-naming)
+    static std::string GetName(const int integer)  // NOLINT(readability-identifier-naming)
     {
-        return std::string{type_name<ParamType>()} + "_" + std::to_string(i);
+        return std::string{type_name<ParamType>()} + "_" + std::to_string(integer);
     }
 };
 

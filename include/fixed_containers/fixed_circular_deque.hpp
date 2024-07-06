@@ -87,25 +87,25 @@ public:
     }
     constexpr void resize(
         size_type count,
-        const value_type& v,
+        const value_type& value,
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
-        deque().resize(count, v, loc);
+        deque().resize(count, value, loc);
     }
 
     constexpr void push_back(
-        const value_type& v,
+        const value_type& value,
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
         pop_front_if_full(loc);
-        deque().push_back(v, loc);
+        deque().push_back(value, loc);
     }
     constexpr void push_back(
-        value_type&& v,
+        value_type&& value,
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
         pop_front_if_full(loc);
-        deque().push_back(std::move(v), loc);
+        deque().push_back(std::move(value), loc);
     }
 
     template <class... Args>
@@ -122,18 +122,18 @@ public:
     }
 
     constexpr void push_front(
-        const value_type& v,
+        const value_type& value,
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
         pop_back_if_full(loc);
-        deque().push_front(v, loc);
+        deque().push_front(value, loc);
     }
     constexpr void push_front(
-        value_type&& v,
+        value_type&& value,
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
         pop_back_if_full(loc);
-        deque().push_front(std::move(v), loc);
+        deque().push_front(std::move(value), loc);
     }
 
     template <class... Args>
@@ -150,53 +150,53 @@ public:
     }
 
     constexpr iterator insert(
-        const_iterator it,
-        const value_type& v,
+        const_iterator pos,
+        const value_type& value,
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
         pop_front_if_full(loc);
-        return deque().insert(it, v, loc);
+        return deque().insert(pos, value, loc);
     }
     constexpr iterator insert(
-        const_iterator it,
-        value_type&& v,
+        const_iterator pos,
+        value_type&& value,
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
         pop_front_if_full(loc);
-        return deque().insert(it, std::move(v), loc);
+        return deque().insert(pos, std::move(value), loc);
     }
     template <InputIterator InputIt>
     constexpr iterator insert(
-        const_iterator it,
+        const_iterator pos,
         InputIt first,
         InputIt last,
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
         return insert_internal(
-            typename std::iterator_traits<InputIt>::iterator_category{}, it, first, last, loc);
+            typename std::iterator_traits<InputIt>::iterator_category{}, pos, first, last, loc);
     }
     constexpr iterator insert(
-        const_iterator it,
+        const_iterator pos,
         std::initializer_list<T> ilist,
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
         return insert_internal(
-            std::random_access_iterator_tag{}, it, ilist.begin(), ilist.end(), loc);
+            std::random_access_iterator_tag{}, pos, ilist.begin(), ilist.end(), loc);
     }
 
     template <class... Args>
-    constexpr iterator emplace(const_iterator it, Args&&... args)
+    constexpr iterator emplace(const_iterator pos, Args&&... args)
     {
         pop_front_if_full(std_transition::source_location::current());
-        return deque().emplace(it, std::forward<Args>(args)...);
+        return deque().emplace(pos, std::forward<Args>(args)...);
     }
 
     constexpr void assign(
         size_type count,
-        const value_type& v,
+        const value_type& value,
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
-        deque().assign((std::min)(count, MAXIMUM_SIZE), v, loc);
+        deque().assign((std::min)(count, MAXIMUM_SIZE), value, loc);
     }
 
     template <InputIterator InputIt>
@@ -238,11 +238,11 @@ public:
     {
         return deque().erase(first, last, loc);
     }
-    constexpr iterator erase(const_iterator it,
+    constexpr iterator erase(const_iterator pos,
                              const std_transition::source_location& loc =
                                  std_transition::source_location::current()) noexcept
     {
-        return deque().erase(it, loc);
+        return deque().erase(pos, loc);
     }
 
     constexpr void clear() noexcept { deque().clear(); }
@@ -285,31 +285,31 @@ public:
         return deque() <=> other.IMPLEMENTATION_DETAIL_DO_NOT_USE_data_;
     }
 
-    constexpr reference operator[](size_type i) noexcept
+    constexpr reference operator[](size_type index) noexcept
     {
         // Cannot capture real source_location for operator[]
         // This operator should not range-check according to the spec, but we want the extra safety.
-        return at(i, std_transition::source_location::current());
+        return at(index, std_transition::source_location::current());
     }
-    constexpr const_reference operator[](size_type i) const noexcept
+    constexpr const_reference operator[](size_type index) const noexcept
     {
         // Cannot capture real source_location for operator[]
         // This operator should not range-check according to the spec, but we want the extra safety.
-        return at(i, std_transition::source_location::current());
+        return at(index, std_transition::source_location::current());
     }
 
-    constexpr reference at(size_type i,
+    constexpr reference at(size_type index,
                            const std_transition::source_location& loc =
                                std_transition::source_location::current()) noexcept
     {
-        return deque().at(i, loc);
+        return deque().at(index, loc);
     }
     [[nodiscard]] constexpr const_reference at(
-        size_type i,
+        size_type index,
         const std_transition::source_location& loc =
             std_transition::source_location::current()) const noexcept
     {
-        return deque().at(i, loc);
+        return deque().at(index, loc);
     }
 
     constexpr reference front(
@@ -338,7 +338,7 @@ public:
 private:
     template <InputIterator InputIt>
     constexpr iterator insert_internal(std::forward_iterator_tag,
-                                       const_iterator it,
+                                       const_iterator pos,
                                        InputIt first,
                                        InputIt last,
                                        const std_transition::source_location& loc)
@@ -348,18 +348,18 @@ private:
         const auto excess_entry_count = (std::max)(static_cast<std::ptrdiff_t>(0),
                                                    incoming_entry_count - available_entry_count);
 
-        auto& dq = deque();
+        auto& deq = deque();
 
         if (excess_entry_count > 0)
         {
             // Need to make space for excess entries.
-            // 1) Remove as many existing elements as possible, but only until we hit `it`, which is
-            // treated as an uncrossable barrier
+            // 1) Remove as many existing elements as possible, but only until we hit `pos`, which
+            // is treated as an uncrossable barrier
             const std::ptrdiff_t existing_elements_to_be_dropped =
-                (std::min)(excess_entry_count, std::distance(dq.cbegin(), it));
+                (std::min)(excess_entry_count, std::distance(deq.cbegin(), pos));
             for (std::ptrdiff_t i = 0; i < existing_elements_to_be_dropped; i++)
             {
-                dq.pop_front(loc);
+                deq.pop_front(loc);
             }
 
             // 2) Drop incoming elements
@@ -369,18 +369,18 @@ private:
             std::advance(first, incoming_elements_to_be_dropped);
         }
 
-        return dq.insert(it, first, last, loc);
+        return deq.insert(pos, first, last, loc);
     }
 
     template <InputIterator InputIt>
     constexpr iterator insert_internal(std::input_iterator_tag,
-                                       const_iterator it,
+                                       const_iterator pos,
                                        InputIt first,
                                        InputIt last,
                                        const std_transition::source_location& loc)
     {
-        const bool inserting_at_end = it == cend();
-        auto first_it = const_to_mutable_it(it);
+        const bool inserting_at_end = pos == cend();
+        auto first_it = const_to_mutable_it(pos);
         auto middle_it = end();
 
         auto increment_first_it = [&]()
@@ -393,29 +393,29 @@ private:
             ++first_it;
         };
 
-        auto& dq = deque();
+        auto& deq = deque();
 
         // Place everything at the end of the deque
         for (; first != last; ++first)
         {
-            if (is_full(dq))
+            if (is_full(deq))
             {
-                // Treat non-end `it` as an uncrossable barrier
-                if (dq.cbegin() == it && not inserting_at_end)
+                // Treat non-end `pos` as an uncrossable barrier
+                if (deq.cbegin() == pos && not inserting_at_end)
                 {
                     break;
                 }
 
                 // We are about to discard the first element.
                 // Push `first_it` forward if it is that element.
-                if (dq.begin() == first_it)
+                if (deq.begin() == first_it)
                 {
                     increment_first_it();
                 }
-                dq.pop_front(loc);
+                deq.pop_front(loc);
             }
 
-            dq.push_back(*first, loc);
+            deq.push_back(*first, loc);
         }
 
         // If there are still more elements when we reach the barrier, overwrite the just-inserted
@@ -451,9 +451,9 @@ private:
     }
     constexpr FixedDequeStorage& deque() { return IMPLEMENTATION_DETAIL_DO_NOT_USE_data_; }
 
-    constexpr iterator const_to_mutable_it(const_iterator it)
+    constexpr iterator const_to_mutable_it(const_iterator pos)
     {
-        return std::next(begin(), std::distance(cbegin(), it));
+        return std::next(begin(), std::distance(cbegin(), pos));
     }
 
     constexpr void pop_back_if_full(const std_transition::source_location& loc)
@@ -475,27 +475,28 @@ private:
 };
 
 template <typename T, std::size_t MAXIMUM_SIZE, typename CheckingType>
-[[nodiscard]] constexpr bool is_full(const FixedCircularDeque<T, MAXIMUM_SIZE, CheckingType>& c)
+[[nodiscard]] constexpr bool is_full(
+    const FixedCircularDeque<T, MAXIMUM_SIZE, CheckingType>& container)
 {
-    return c.size() >= MAXIMUM_SIZE;
+    return container.size() >= MAXIMUM_SIZE;
 }
 
 template <typename T, std::size_t MAXIMUM_SIZE, typename CheckingType, typename U>
 constexpr typename FixedCircularDeque<T, MAXIMUM_SIZE, CheckingType>::size_type erase(
-    FixedCircularDeque<T, MAXIMUM_SIZE, CheckingType>& c, const U& value)
+    FixedCircularDeque<T, MAXIMUM_SIZE, CheckingType>& container, const U& value)
 {
-    const auto original_size = c.size();
-    c.erase(std::remove(c.begin(), c.end(), value), c.end());
-    return original_size - c.size();
+    const auto original_size = container.size();
+    container.erase(std::remove(container.begin(), container.end(), value), container.end());
+    return original_size - container.size();
 }
 
 template <typename T, std::size_t MAXIMUM_SIZE, typename CheckingType, typename Predicate>
 constexpr typename FixedCircularDeque<T, MAXIMUM_SIZE, CheckingType>::size_type erase_if(
-    FixedCircularDeque<T, MAXIMUM_SIZE, CheckingType>& c, Predicate predicate)
+    FixedCircularDeque<T, MAXIMUM_SIZE, CheckingType>& container, Predicate predicate)
 {
-    const auto original_size = c.size();
-    c.erase(std::remove_if(c.begin(), c.end(), predicate), c.end());
-    return original_size - c.size();
+    const auto original_size = container.size();
+    container.erase(std::remove_if(container.begin(), container.end(), predicate), container.end());
+    return original_size - container.size();
 }
 
 /**

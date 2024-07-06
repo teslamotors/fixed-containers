@@ -165,7 +165,7 @@ struct TestRichEnum2InfusedDataProvider
     using EnumType = TestRichEnum2BackingEnum;
     using DataType = TestRichEnum2Data;
 
-    static constexpr const TestRichEnum2Data& get(const EnumType& e) { return VALUES.at(e); }
+    static constexpr const TestRichEnum2Data& get(const EnumType& key) { return VALUES.at(key); }
 };
 
 }  // namespace detail

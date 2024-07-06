@@ -27,8 +27,8 @@ TEST(FixedQueue, IteratorConstructor)
 {
     constexpr FixedQueue<int, 3> VAL1 = []()
     {
-        FixedVector<int, 3> v1{77, 99};
-        return FixedQueue<int, 3>{v1.begin(), v1.end()};
+        FixedVector<int, 3> var1{77, 99};
+        return FixedQueue<int, 3>{var1.begin(), var1.end()};
     }();
 
     static_assert(VAL1.front() == 77);
@@ -43,8 +43,8 @@ TEST(FixedQueue, MaxSize)
     }
 
     {
-        const FixedQueue<int, 3> v1{};
-        EXPECT_EQ(3, v1.max_size());
+        const FixedQueue<int, 3> var1{};
+        EXPECT_EQ(3, var1.max_size());
     }
 
     {
@@ -68,8 +68,8 @@ TEST(FixedQueue, Front)
     {
         constexpr FixedQueue<int, 3> VAL1 = []()
         {
-            FixedVector<int, 3> v1{77, 99};
-            return FixedQueue<int, 3>{v1.begin(), v1.end()};
+            FixedVector<int, 3> var{77, 99};
+            return FixedQueue<int, 3>{var.begin(), var.end()};
         }();
 
         static_assert(VAL1.front() == 77);
@@ -77,14 +77,14 @@ TEST(FixedQueue, Front)
     }
 
     {
-        FixedQueue<int, 3> s1 = []()
+        FixedQueue<int, 3> var1 = []()
         {
-            FixedVector<int, 3> v1{77, 99};
-            return FixedQueue<int, 3>{v1.begin(), v1.end()};
+            FixedVector<int, 3> var{77, 99};
+            return FixedQueue<int, 3>{var.begin(), var.end()};
         }();
 
-        ASSERT_EQ(77, s1.front());
-        ASSERT_EQ(2, s1.size());
+        ASSERT_EQ(77, var1.front());
+        ASSERT_EQ(2, var1.size());
     }
 }
 
@@ -93,8 +93,8 @@ TEST(FixedQueue, Back)
     {
         constexpr FixedQueue<int, 3> VAL1 = []()
         {
-            FixedVector<int, 3> v1{77, 99};
-            return FixedQueue<int, 3>{v1.begin(), v1.end()};
+            FixedVector<int, 3> var{77, 99};
+            return FixedQueue<int, 3>{var.begin(), var.end()};
         }();
 
         static_assert(VAL1.back() == 99);
@@ -102,14 +102,14 @@ TEST(FixedQueue, Back)
     }
 
     {
-        FixedQueue<int, 3> s1 = []()
+        FixedQueue<int, 3> var1 = []()
         {
-            FixedVector<int, 3> v1{77, 99};
-            return FixedQueue<int, 3>{v1.begin(), v1.end()};
+            FixedVector<int, 3> var{77, 99};
+            return FixedQueue<int, 3>{var.begin(), var.end()};
         }();
 
-        ASSERT_EQ(99, s1.back());
-        ASSERT_EQ(2, s1.size());
+        ASSERT_EQ(99, var1.back());
+        ASSERT_EQ(2, var1.size());
     }
 }
 
@@ -117,11 +117,11 @@ TEST(FixedQueue, Push)
 {
     constexpr FixedQueue<int, 3> VAL1 = []()
     {
-        FixedQueue<int, 3> v1{};
+        FixedQueue<int, 3> var1{};
         const int my_int = 77;
-        v1.push(my_int);
-        v1.push(99);
-        return v1;
+        var1.push(my_int);
+        var1.push(99);
+        return var1;
     }();
 
     static_assert(VAL1.front() == 77);
@@ -132,11 +132,11 @@ TEST(FixedQueue, Emplace)
 {
     constexpr FixedQueue<int, 3> VAL1 = []()
     {
-        FixedQueue<int, 3> v1{};
+        FixedQueue<int, 3> var1{};
         const int my_int = 77;
-        v1.emplace(my_int);
-        v1.emplace(99);
-        return v1;
+        var1.emplace(my_int);
+        var1.emplace(99);
+        return var1;
     }();
 
     static_assert(VAL1.front() == 77);
@@ -147,8 +147,8 @@ TEST(FixedQueue, Pop)
 {
     constexpr FixedQueue<int, 3> VAL1 = []()
     {
-        FixedVector<int, 3> v1{77, 99};
-        FixedQueue<int, 3> out{v1.begin(), v1.end()};
+        FixedVector<int, 3> var1{77, 99};
+        FixedQueue<int, 3> out{var1.begin(), var1.end()};
         out.pop();
         return out;
     }();
@@ -188,12 +188,12 @@ TEST(FixedQueue, Full)
 {
     constexpr auto VAL1 = []()
     {
-        FixedQueue<int, 4> v{};
-        v.push(100);
-        v.push(100);
-        v.push(100);
-        v.push(100);
-        return v;
+        FixedQueue<int, 4> var{};
+        var.push(100);
+        var.push(100);
+        var.push(100);
+        var.push(100);
+        return var;
     }();
 
     static_assert(is_full(VAL1));
@@ -206,8 +206,8 @@ TEST(FixedQueue, Full)
 TEST(FixedQueue, ClassTemplateArgumentDeduction)
 {
     // Compile-only test
-    const FixedQueue a = FixedQueue<int, 5>{};
-    (void)a;
+    const FixedQueue var1 = FixedQueue<int, 5>{};
+    (void)var1;
 }
 
 namespace
@@ -238,7 +238,7 @@ namespace another_namespace_unrelated_to_the_fixed_containers_namespace
 TEST(FixedQueue, ArgumentDependentLookup)
 {
     // Compile-only test
-    const fixed_containers::FixedQueue<int, 5> a{};
-    (void)is_full(a);
+    const fixed_containers::FixedQueue<int, 5> var1{};
+    (void)is_full(var1);
 }
 }  // namespace another_namespace_unrelated_to_the_fixed_containers_namespace

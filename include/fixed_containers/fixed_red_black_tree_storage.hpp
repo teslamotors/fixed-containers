@@ -13,36 +13,36 @@ template <class StorageType>
 concept IsFixedRedBlackTreeStorage =
     IsFixedIndexBasedStorage<StorageType> && requires(const StorageType& const_s,
                                                       std::remove_const_t<StorageType>& mutable_s,
-                                                      const NodeIndex& i,
+                                                      const NodeIndex& index,
                                                       NodeColor color) {
         typename StorageType::KeyType;
         typename StorageType::ValueType;
         StorageType::HAS_ASSOCIATED_VALUE;
 
-        const_s.at(i);
-        mutable_s.at(i);
+        const_s.at(index);
+        mutable_s.at(index);
 
-        const_s.key(i);
-        mutable_s.key(i);
-        const_s.value(i);
-        mutable_s.value(i);
+        const_s.key(index);
+        mutable_s.key(index);
+        const_s.value(index);
+        mutable_s.value(index);
 
-        const_s.left_index(i);
-        mutable_s.left_index(i);
-        const_s.right_index(i);
-        mutable_s.right_index(i);
-        const_s.parent_index(i);
-        mutable_s.parent_index(i);
-        const_s.color(i);
-        mutable_s.color(i);
+        const_s.left_index(index);
+        mutable_s.left_index(index);
+        const_s.right_index(index);
+        mutable_s.right_index(index);
+        const_s.parent_index(index);
+        mutable_s.parent_index(index);
+        const_s.color(index);
+        mutable_s.color(index);
 
-        mutable_s.set_left_index(i, i);
-        mutable_s.set_right_index(i, i);
-        mutable_s.set_parent_index(i, i);
-        mutable_s.set_color(i, color);
+        mutable_s.set_left_index(index, index);
+        mutable_s.set_right_index(index, index);
+        mutable_s.set_parent_index(index, index);
+        mutable_s.set_color(index, color);
 
         mutable_s.emplace_and_return_index();
-        mutable_s.delete_at_and_return_repositioned_index(i);
+        mutable_s.delete_at_and_return_repositioned_index(index);
     };
 
 template <class K,
@@ -76,62 +76,65 @@ public:
     [[nodiscard]] constexpr bool full() const noexcept { return storage().full(); }
 
     [[nodiscard]] constexpr RedBlackTreeNodeView<const FixedRedBlackTreeStorage> at(
-        const NodeIndex& i) const
+        const NodeIndex& index) const
     {
-        return {this, i};
+        return {this, index};
     }
-    constexpr RedBlackTreeNodeView<FixedRedBlackTreeStorage> at(const NodeIndex& i)
+    constexpr RedBlackTreeNodeView<FixedRedBlackTreeStorage> at(const NodeIndex& index)
     {
-        return {this, i};
+        return {this, index};
     }
 
-    [[nodiscard]] constexpr const K& key(const NodeIndex& i) const { return storage().at(i).key(); }
-    constexpr K& key(const NodeIndex& i) { return storage().at(i).key(); }
-    [[nodiscard]] constexpr const V& value(const NodeIndex& i) const
+    [[nodiscard]] constexpr const K& key(const NodeIndex& index) const
+    {
+        return storage().at(index).key();
+    }
+    constexpr K& key(const NodeIndex& index) { return storage().at(index).key(); }
+    [[nodiscard]] constexpr const V& value(const NodeIndex& index) const
         requires HAS_ASSOCIATED_VALUE
     {
-        return storage().at(i).value();
+        return storage().at(index).value();
     }
-    constexpr V& value(const NodeIndex& i)
+    constexpr V& value(const NodeIndex& index)
         requires HAS_ASSOCIATED_VALUE
     {
-        return storage().at(i).value();
+        return storage().at(index).value();
     }
 
-    [[nodiscard]] constexpr NodeIndex left_index(const NodeIndex& i) const
+    [[nodiscard]] constexpr NodeIndex left_index(const NodeIndex& index) const
     {
-        return storage().at(i).left_index();
+        return storage().at(index).left_index();
     }
-    constexpr void set_left_index(const NodeIndex& i, const NodeIndex& s)
+    constexpr void set_left_index(const NodeIndex& index, const NodeIndex& new_left_index)
     {
-        storage().at(i).set_left_index(s);
-    }
-
-    [[nodiscard]] constexpr NodeIndex right_index(const NodeIndex& i) const
-    {
-        return storage().at(i).right_index();
-    }
-    constexpr void set_right_index(const NodeIndex& i, const NodeIndex& s)
-    {
-        return storage().at(i).set_right_index(s);
+        storage().at(index).set_left_index(new_left_index);
     }
 
-    [[nodiscard]] constexpr NodeIndex parent_index(const NodeIndex& i) const
+    [[nodiscard]] constexpr NodeIndex right_index(const NodeIndex& index) const
     {
-        return storage().at(i).parent_index();
+        return storage().at(index).right_index();
     }
-    constexpr void set_parent_index(const NodeIndex& i, const NodeIndex& s)
+    constexpr void set_right_index(const NodeIndex& index, const NodeIndex& new_right_index)
     {
-        return storage().at(i).set_parent_index(s);
+        return storage().at(index).set_right_index(new_right_index);
     }
 
-    [[nodiscard]] constexpr NodeColor color(const NodeIndex& i) const
+    [[nodiscard]] constexpr NodeIndex parent_index(const NodeIndex& index) const
     {
-        return storage().at(i).color();
+        return storage().at(index).parent_index();
     }
-    constexpr void set_color(const NodeIndex& i, const NodeColor& c)
+    constexpr void set_parent_index(const NodeIndex& index, const NodeIndex& new_parent_index)
     {
-        return storage().at(i).set_color(c);
+        return storage().at(index).set_parent_index(new_parent_index);
+    }
+
+    [[nodiscard]] constexpr NodeColor color(const NodeIndex& index) const
+    {
+        return storage().at(index).color();
+    }
+    constexpr void set_color(const NodeIndex& index, const NodeColor& new_color)
+    {
+        return storage().at(index).set_color(new_color);
     }
 
     template <class... Args>
@@ -140,9 +143,9 @@ public:
         return storage().emplace_and_return_index(std::forward<Args>(args)...);
     }
 
-    constexpr NodeIndex delete_at_and_return_repositioned_index(const std::size_t i) noexcept
+    constexpr NodeIndex delete_at_and_return_repositioned_index(const std::size_t index) noexcept
     {
-        return storage().delete_at_and_return_repositioned_index(i);
+        return storage().delete_at_and_return_repositioned_index(index);
     }
 
 private:

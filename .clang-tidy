@@ -74,7 +74,6 @@ Checks: >
   -performance-move-const-arg,
   -performance-enum-size,
   -readability-function-cognitive-complexity,
-  -readability-identifier-length,
   -readability-magic-numbers,
   -readability-named-parameter,
   -readability-redundant-declaration,

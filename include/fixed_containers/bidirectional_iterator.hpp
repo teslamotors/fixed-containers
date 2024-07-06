@@ -11,11 +11,11 @@
 namespace fixed_containers
 {
 template <class P>
-concept BidirectionalEntryProvider = DefaultConstructible<P> && requires(P p, P other) {
-    p.advance();
-    p.recede();
-    p.get();
-    { p == other } -> std::same_as<bool>;
+concept BidirectionalEntryProvider = DefaultConstructible<P> && requires(P instance, P other) {
+    instance.advance();
+    instance.recede();
+    instance.get();
+    { instance == other } -> std::same_as<bool>;
 };
 
 template <BidirectionalEntryProvider ConstEntryProvider,

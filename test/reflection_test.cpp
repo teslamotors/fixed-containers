@@ -167,9 +167,9 @@ struct NonConstexprDefaultConstructibleWithFields
     double b;
 
     // Needs to be constexpr constructible, just not with a default constructor
-    constexpr NonConstexprDefaultConstructibleWithFields(int a0, double b0)
-      : a{a0}
-      , b{b0}
+    constexpr NonConstexprDefaultConstructibleWithFields(int a_ctor, double b_ctor)
+      : a{a_ctor}
+      , b{b_ctor}
     {
     }
 };
@@ -182,12 +182,13 @@ struct StructWithFieldsWithLimitedConstructibility
 };
 
 constexpr std::string_view pick_compiler_specific_string(
-    [[maybe_unused]] const std::string_view& s1, [[maybe_unused]] const std::string_view& s2)
+    [[maybe_unused]] const std::string_view& string1,
+    [[maybe_unused]] const std::string_view& string2)
 {
 #if defined(__clang__) && __clang_major__ == 15
-    return s1;
+    return string1;
 #else
-    return s2;
+    return string2;
 #endif
 }
 
@@ -516,10 +517,10 @@ TEST(Reflection, ForEachField)
 {
     constexpr std::pair<StructWithNestedStructs, FixedVector<std::string_view, 10>> OUTPUT = []()
     {
-        StructWithNestedStructs a{};
+        StructWithNestedStructs instance{};
         FixedVector<std::string_view, 10> field_list{};
 
-        reflection::for_each_field(a,
+        reflection::for_each_field(instance,
                                    [&field_list]<class T>(const std::string_view& name, T& field)
                                    {
                                        if constexpr (std::is_same_v<int, T>)
@@ -530,7 +531,7 @@ TEST(Reflection, ForEachField)
                                        field_list.push_back(name);
                                    });
 
-        return std::pair{a, field_list};
+        return std::pair{instance, field_list};
     }();
 
     constexpr StructWithNestedStructs STRUCT = OUTPUT.first;
@@ -547,10 +548,10 @@ TEST(Reflection, ForEachField)
 
 TEST(Reflection, ForEachFieldLimitedConstructibility)
 {
-    StructWithFieldsWithLimitedConstructibility a{};
+    StructWithFieldsWithLimitedConstructibility instance{};
     FixedVector<std::string_view, 10> field_list{};
 
-    reflection::for_each_field(a,
+    reflection::for_each_field(instance,
                                [&field_list]<class T>(const std::string_view& name, T& field)
                                {
                                    if constexpr (std::is_same_v<MockNonTrivialInt, T>)
@@ -561,7 +562,7 @@ TEST(Reflection, ForEachFieldLimitedConstructibility)
                                    field_list.push_back(name);
                                });
 
-    EXPECT_EQ(a.non_trivial.value, 5);
+    EXPECT_EQ(instance.non_trivial.value, 5);
     EXPECT_EQ(field_list.size(), 3);
     EXPECT_EQ(field_list.at(0), "non_copyable_non_moveable");
     EXPECT_EQ(field_list.at(1), "non_trivial");
@@ -589,8 +590,9 @@ TEST(Reflection, ForEachFieldEmptyStruct)
 
 TEST(Reflection, MockFailingAddressOfOperator)
 {
-    MockFailingAddressOfOperator a{};
-    reflection::for_each_field(a, [&]<typename T>(const std::string_view& /*name*/, const T&) {});
+    MockFailingAddressOfOperator instance{};
+    reflection::for_each_field(instance,
+                               [&]<typename T>(const std::string_view& /*name*/, const T&) {});
 }
 
 }  // namespace fixed_containers

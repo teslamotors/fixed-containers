@@ -73,8 +73,8 @@ public:
     {
     }
 
-    constexpr RandomAccessIteratorTransformer(IteratorType it, UnaryFunction unary_function)
-      : iterator_(it)
+    constexpr RandomAccessIteratorTransformer(IteratorType iterator, UnaryFunction unary_function)
+      : iterator_(iterator)
       , unary_function_(unary_function)
     {
     }

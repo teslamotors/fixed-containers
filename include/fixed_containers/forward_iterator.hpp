@@ -11,10 +11,10 @@
 namespace fixed_containers
 {
 template <class P>
-concept ForwardEntryProvider = DefaultConstructible<P> && requires(P p, P other) {
-    p.advance();
-    p.get();
-    { p == other } -> std::same_as<bool>;
+concept ForwardEntryProvider = DefaultConstructible<P> && requires(P instance, P other) {
+    instance.advance();
+    instance.get();
+    { instance == other } -> std::same_as<bool>;
 };
 
 template <ForwardEntryProvider ConstEntryProvider,

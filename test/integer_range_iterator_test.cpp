@@ -40,12 +40,12 @@ static_assert(
 TEST(IntegerRangeIterator, DefaultConstructor)
 {
     using ItType = IntegerRangeIterator<IteratorDirection::FORWARD>;
-    const ItType it{};
-    (void)it;
+    const ItType iter{};
+    (void)iter;
 
     using ReverseItType = IntegerRangeIterator<IteratorDirection::REVERSE>;
-    const ReverseItType revert_it{};
-    (void)revert_it;
+    const ReverseItType reverse_iter{};
+    (void)reverse_iter;
 }
 
 TEST(IntegerRangeIterator, StartAndFinishAreTheSameAsRange)

@@ -91,17 +91,25 @@ constexpr CompactRedBlackTreeNode<K, V> make_node(const K& key,
 }
 
 template <IsRedBlackTreeNode NodeTypeA, IsRedBlackTreeNode NodeTypeB>
-constexpr bool are_equal_impl(const NodeTypeA& a, const NodeTypeB& b)
+constexpr bool are_equal_impl(const NodeTypeA& node_a, const NodeTypeB& node_b)
 {
-    auto left = std::tuple(a.key(), a.color(), a.parent_index(), a.left_index(), a.right_index());
-    auto right = std::tuple(b.key(), b.color(), b.parent_index(), b.left_index(), b.right_index());
+    auto left = std::tuple(node_a.key(),
+                           node_a.color(),
+                           node_a.parent_index(),
+                           node_a.left_index(),
+                           node_a.right_index());
+    auto right = std::tuple(node_b.key(),
+                            node_b.color(),
+                            node_b.parent_index(),
+                            node_b.left_index(),
+                            node_b.right_index());
 
     if (left != right)
     {
-        std::cout << a.key() << ", " << a.color() << ", " << a.parent_index() << ", "
-                  << a.left_index() << ", " << a.right_index() << std::endl;
-        std::cout << b.key() << ", " << b.color() << ", " << b.parent_index() << ", "
-                  << b.left_index() << ", " << b.right_index() << std::endl;
+        std::cout << node_a.key() << ", " << node_a.color() << ", " << node_a.parent_index() << ", "
+                  << node_a.left_index() << ", " << node_a.right_index() << std::endl;
+        std::cout << node_b.key() << ", " << node_b.color() << ", " << node_b.parent_index() << ", "
+                  << node_b.left_index() << ", " << node_b.right_index() << std::endl;
         return false;
     }
 
@@ -109,19 +117,29 @@ constexpr bool are_equal_impl(const NodeTypeA& a, const NodeTypeB& b)
 }
 
 template <IsRedBlackTreeNodeWithValue NodeTypeA, IsRedBlackTreeNodeWithValue NodeTypeB>
-constexpr bool are_equal_impl(const NodeTypeA& a, const NodeTypeB& b)
+constexpr bool are_equal_impl(const NodeTypeA& node_a, const NodeTypeB& node_b)
 {
-    auto left = std::tuple(
-        a.key(), a.value(), a.color(), a.parent_index(), a.left_index(), a.right_index());
-    auto right = std::tuple(
-        b.key(), b.value(), b.color(), b.parent_index(), b.left_index(), b.right_index());
+    auto left = std::tuple(node_a.key(),
+                           node_a.value(),
+                           node_a.color(),
+                           node_a.parent_index(),
+                           node_a.left_index(),
+                           node_a.right_index());
+    auto right = std::tuple(node_b.key(),
+                            node_b.value(),
+                            node_b.color(),
+                            node_b.parent_index(),
+                            node_b.left_index(),
+                            node_b.right_index());
 
     if (left != right)
     {
-        std::cout << a.key() << ", " << a.value() << ", " << a.color() << ", " << a.parent_index()
-                  << ", " << a.left_index() << ", " << a.right_index() << std::endl;
-        std::cout << b.key() << ", " << b.value() << ", " << b.color() << ", " << b.parent_index()
-                  << ", " << b.left_index() << ", " << b.right_index() << std::endl;
+        std::cout << node_a.key() << ", " << node_a.value() << ", " << node_a.color() << ", "
+                  << node_a.parent_index() << ", " << node_a.left_index() << ", "
+                  << node_a.right_index() << std::endl;
+        std::cout << node_b.key() << ", " << node_b.value() << ", " << node_b.color() << ", "
+                  << node_b.parent_index() << ", " << node_b.left_index() << ", "
+                  << node_b.right_index() << std::endl;
         return false;
     }
 
@@ -129,18 +147,18 @@ constexpr bool are_equal_impl(const NodeTypeA& a, const NodeTypeB& b)
 }
 
 template <IsRedBlackTreeNode NodeTypeA, IsRedBlackTreeNode NodeTypeB>
-constexpr bool are_equal(const NodeTypeA& a, const NodeTypeB& b)
+constexpr bool are_equal(const NodeTypeA& node_a, const NodeTypeB& node_b)
 {
-    return are_equal_impl(a, b);
+    return are_equal_impl(node_a, node_b);
 }
 
 template <class TreeType, class ArrayType>
 constexpr bool contains_all_from_to(const TreeType& tree,
                                     const ArrayType& arr,
-                                    const std::size_t from,
-                                    const std::size_t to)
+                                    const std::size_t from_inclusive,
+                                    const std::size_t to_exclusive)
 {
-    for (std::size_t i = from; i < to; i++)
+    for (std::size_t i = from_inclusive; i < to_exclusive; i++)
     {
         if (!tree.contains_node(arr[i]))
         {
@@ -159,33 +177,33 @@ std::size_t find_height(const TreeStorageType& tree_storage, const NodeIndex& ro
         return 0;
     }
 
-    std::queue<NodeIndex> q{};
+    std::queue<NodeIndex> queue{};
     std::size_t height = 0;
-    q.push(root_index);
-    q.push(HEIGHT_MARKER);
-    while (!q.empty())
+    queue.push(root_index);
+    queue.push(HEIGHT_MARKER);
+    while (!queue.empty())
     {
-        const NodeIndex i = q.front();
-        q.pop();
-        if (i == HEIGHT_MARKER)
+        const NodeIndex index = queue.front();
+        queue.pop();
+        if (index == HEIGHT_MARKER)
         {
             height++;
             // Unless we are done, add another marker
-            if (!q.empty())
+            if (!queue.empty())
             {
-                q.push(HEIGHT_MARKER);
+                queue.push(HEIGHT_MARKER);
             }
             continue;
         }
 
-        const auto& node = tree_storage.node_at(i);
+        const auto& node = tree_storage.node_at(index);
         if (node.left_index() != NULL_INDEX)
         {
-            q.push(node.left_index());
+            queue.push(node.left_index());
         }
         if (node.right_index() != NULL_INDEX)
         {
-            q.push(node.right_index());
+            queue.push(node.right_index());
         }
     }
     return height - 1;
@@ -1730,9 +1748,9 @@ void consistency_test_helper(const std::array<int, MAXIMUM_SIZE>& insertion_orde
         // Copy the value, as the node might move.
         const int expected_successor_value = [&]()
         {
-            // gt will be invalid after the deletion, so hide it with scope
-            const NodeIndex gt = bst.index_of_node_higher(value_to_delete);
-            return bst.contains_at(gt) ? bst.node_at(gt).value() : 0;
+            // gt_index will be invalid after the deletion, so hide it with scope
+            const NodeIndex gt_index = bst.index_of_node_higher(value_to_delete);
+            return bst.contains_at(gt_index) ? bst.node_at(gt_index).value() : 0;
         }();
 
         const NodeIndex index_to_delete = bst.index_of_node_or_null(value_to_delete);
@@ -1804,12 +1822,12 @@ TEST(FixedRedBlackTree, RandomizedConsistencyTest)
     }
 
     static constexpr std::size_t ITERATIONS = 20;
-    std::random_device rd;
-    std::mt19937 g(rd());
+    std::random_device rand_device;
+    std::mt19937 rng(rand_device());
     for (std::size_t iteration = 0; iteration < ITERATIONS; iteration++)
     {
-        std::shuffle(insertion_order.begin(), insertion_order.end(), g);
-        std::shuffle(deletion_order.begin(), deletion_order.end(), g);
+        std::shuffle(insertion_order.begin(), insertion_order.end(), rng);
+        std::shuffle(deletion_order.begin(), deletion_order.end(), rng);
         consistency_test_helper(insertion_order, deletion_order, bst);
     }
 }
@@ -1842,11 +1860,11 @@ TEST(FixedRedBlackTree, TreeMaxHeight)
 
     // Randomized Insertion
     static constexpr std::size_t ITERATIONS = 10;
-    std::random_device rd;
-    std::mt19937 g(rd());
+    std::random_device rand_device;
+    std::mt19937 rng(rand_device());
     for (std::size_t iteration = 0; iteration < ITERATIONS; iteration++)
     {
-        std::shuffle(insertion_order.begin(), insertion_order.end(), g);
+        std::shuffle(insertion_order.begin(), insertion_order.end(), rng);
         for (std::size_t i = 0; i < MAXIMUM_SIZE; i++)
         {
             bst[insertion_order[i]] = insertion_order[i];

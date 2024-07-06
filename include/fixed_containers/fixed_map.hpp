@@ -86,9 +86,9 @@ private:
 
         // https://github.com/llvm/llvm-project/issues/62555
         template <bool IS_CONST_2>
-        constexpr PairProvider(const PairProvider<IS_CONST_2>& m) noexcept
+        constexpr PairProvider(const PairProvider<IS_CONST_2>& mutable_other) noexcept
             requires(IS_CONST and !IS_CONST_2)
-          : PairProvider{m.tree_, m.current_index_}
+          : PairProvider{mutable_other.tree_, mutable_other.current_index_}
         {
         }
 
@@ -141,9 +141,9 @@ private:
     // For the purposes of iterators, use NULL_INDEX for rend() and
     // MAXIMUM_SIZE for end()
     static constexpr NodeIndex replace_null_index_with_max_size_for_end_iterator(
-        const NodeIndex& i) noexcept
+        const NodeIndex& index) noexcept
     {
-        return i == NULL_INDEX ? MAXIMUM_SIZE : i;
+        return index == NULL_INDEX ? MAXIMUM_SIZE : index;
     }
 
 public:
@@ -199,51 +199,51 @@ public:
                                   const std_transition::source_location& loc =
                                       std_transition::source_location::current()) noexcept
     {
-        const NodeIndex i = tree().index_of_node_or_null(key);
-        if (preconditions::test(tree().contains_at(i)))
+        const NodeIndex index = tree().index_of_node_or_null(key);
+        if (preconditions::test(tree().contains_at(index)))
         {
             CheckingType::out_of_range(key, size(), loc);
         }
-        return tree().node_at(i).value();
+        return tree().node_at(index).value();
     }
     [[nodiscard]] constexpr const V& at(
         const K& key,
         const std_transition::source_location& loc =
             std_transition::source_location::current()) const noexcept
     {
-        const NodeIndex i = tree().index_of_node_or_null(key);
-        if (preconditions::test(tree().contains_at(i)))
+        const NodeIndex index = tree().index_of_node_or_null(key);
+        if (preconditions::test(tree().contains_at(index)))
         {
             CheckingType::out_of_range(key, size(), loc);
         }
-        return tree().node_at(i).value();
+        return tree().node_at(index).value();
     }
 
     constexpr V& operator[](const K& key) noexcept
     {
-        NodeIndexAndParentIndex np = tree().index_of_node_with_parent(key);
-        if (tree().contains_at(np.i))
+        NodeIndexAndParentIndex np_idxs = tree().index_of_node_with_parent(key);
+        if (tree().contains_at(np_idxs.i))
         {
-            return tree().node_at(np.i).value();
+            return tree().node_at(np_idxs.i).value();
         }
 
         // Cannot capture real source_location for operator[]
         check_not_full(std_transition::source_location::current());
-        tree().insert_new_at(np, key);
-        return tree().node_at(np.i).value();
+        tree().insert_new_at(np_idxs, key);
+        return tree().node_at(np_idxs.i).value();
     }
     constexpr V& operator[](K&& key) noexcept
     {
-        NodeIndexAndParentIndex np = tree().index_of_node_with_parent(key);
-        if (tree().contains_at(np.i))
+        NodeIndexAndParentIndex np_idxs = tree().index_of_node_with_parent(key);
+        if (tree().contains_at(np_idxs.i))
         {
-            return tree().node_at(np.i).value();
+            return tree().node_at(np_idxs.i).value();
         }
 
         // Cannot capture real source_location for operator[]
         check_not_full(std_transition::source_location::current());
-        tree().insert_new_at(np, std::move(key));
-        return tree().node_at(np.i).value();
+        tree().insert_new_at(np_idxs, std::move(key));
+        return tree().node_at(np_idxs.i).value();
     }
 
     [[nodiscard]] constexpr const_iterator cbegin() const noexcept
@@ -286,35 +286,35 @@ public:
         const std_transition::source_location& loc =
             std_transition::source_location::current()) noexcept
     {
-        NodeIndexAndParentIndex np = tree().index_of_node_with_parent(value.first);
-        if (tree().contains_at(np.i))
+        NodeIndexAndParentIndex np_idxs = tree().index_of_node_with_parent(value.first);
+        if (tree().contains_at(np_idxs.i))
         {
-            return {create_iterator(np.i), false};
+            return {create_iterator(np_idxs.i), false};
         }
 
         check_not_full(loc);
-        tree().insert_new_at(np, value.first, value.second);
-        return {create_iterator(np.i), true};
+        tree().insert_new_at(np_idxs, value.first, value.second);
+        return {create_iterator(np_idxs.i), true};
     }
     constexpr std::pair<iterator, bool> insert(
         value_type&& value,
         const std_transition::source_location& loc =
             std_transition::source_location::current()) noexcept
     {
-        NodeIndexAndParentIndex np = tree().index_of_node_with_parent(value.first);
-        if (tree().contains_at(np.i))
+        NodeIndexAndParentIndex np_idxs = tree().index_of_node_with_parent(value.first);
+        if (tree().contains_at(np_idxs.i))
         {
-            return {create_iterator(np.i), false};
+            return {create_iterator(np_idxs.i), false};
         }
 
         check_not_full(loc);
-        tree().insert_new_at(np, value.first, std::move(value.second));
-        return {create_iterator(np.i), true};
+        tree().insert_new_at(np_idxs, value.first, std::move(value.second));
+        return {create_iterator(np_idxs.i), true};
     }
 
-    template <InputIterator InputIt>
-    constexpr void insert(InputIt first,
-                          InputIt last,
+    template <InputIterator Input>
+    constexpr void insert(Input first,
+                          Input last,
                           const std_transition::source_location& loc =
                               std_transition::source_location::current()) noexcept
     {
@@ -338,16 +338,16 @@ public:
             std_transition::source_location::current()) noexcept
         requires std::is_assignable_v<mapped_type&, M&&>
     {
-        NodeIndexAndParentIndex np = tree().index_of_node_with_parent(key);
-        if (tree().contains_at(np.i))
+        NodeIndexAndParentIndex np_idxs = tree().index_of_node_with_parent(key);
+        if (tree().contains_at(np_idxs.i))
         {
-            tree().node_at(np.i).value() = std::forward<M>(obj);
-            return {create_iterator(np.i), false};
+            tree().node_at(np_idxs.i).value() = std::forward<M>(obj);
+            return {create_iterator(np_idxs.i), false};
         }
 
         check_not_full(loc);
-        tree().insert_new_at(np, key, std::forward<M>(obj));
-        return {create_iterator(np.i), true};
+        tree().insert_new_at(np_idxs, key, std::forward<M>(obj));
+        return {create_iterator(np_idxs.i), true};
     }
     template <class M>
     constexpr std::pair<iterator, bool> insert_or_assign(
@@ -357,16 +357,16 @@ public:
             std_transition::source_location::current()) noexcept
         requires std::is_assignable_v<mapped_type&, M&&>
     {
-        NodeIndexAndParentIndex np = tree().index_of_node_with_parent(key);
-        if (tree().contains_at(np.i))
+        NodeIndexAndParentIndex np_idxs = tree().index_of_node_with_parent(key);
+        if (tree().contains_at(np_idxs.i))
         {
-            tree().node_at(np.i).value() = std::forward<M>(obj);
-            return {create_iterator(np.i), false};
+            tree().node_at(np_idxs.i).value() = std::forward<M>(obj);
+            return {create_iterator(np_idxs.i), false};
         }
 
         check_not_full(loc);
-        tree().insert_new_at(np, std::move(key), std::forward<M>(obj));
-        return {create_iterator(np.i), true};
+        tree().insert_new_at(np_idxs, std::move(key), std::forward<M>(obj));
+        return {create_iterator(np_idxs.i), true};
     }
     template <class M>
     constexpr iterator insert_or_assign(const_iterator /*hint*/,
@@ -392,28 +392,28 @@ public:
     template <class... Args>
     constexpr std::pair<iterator, bool> try_emplace(const K& key, Args&&... args) noexcept
     {
-        NodeIndexAndParentIndex np = tree().index_of_node_with_parent(key);
-        if (tree().contains_at(np.i))
+        NodeIndexAndParentIndex np_idxs = tree().index_of_node_with_parent(key);
+        if (tree().contains_at(np_idxs.i))
         {
-            return {create_iterator(np.i), false};
+            return {create_iterator(np_idxs.i), false};
         }
 
         check_not_full(std_transition::source_location::current());
-        tree().insert_new_at(np, key, std::forward<Args>(args)...);
-        return {create_iterator(np.i), true};
+        tree().insert_new_at(np_idxs, key, std::forward<Args>(args)...);
+        return {create_iterator(np_idxs.i), true};
     }
     template <class... Args>
     constexpr std::pair<iterator, bool> try_emplace(K&& key, Args&&... args) noexcept
     {
-        NodeIndexAndParentIndex np = tree().index_of_node_with_parent(key);
-        if (tree().contains_at(np.i))
+        NodeIndexAndParentIndex np_idxs = tree().index_of_node_with_parent(key);
+        if (tree().contains_at(np_idxs.i))
         {
-            return {create_iterator(np.i), false};
+            return {create_iterator(np_idxs.i), false};
         }
 
         check_not_full(std_transition::source_location::current());
-        tree().insert_new_at(np, std::move(key), std::forward<Args>(args)...);
-        return {create_iterator(np.i), true};
+        tree().insert_new_at(np_idxs, std::move(key), std::forward<Args>(args)...);
+        return {create_iterator(np_idxs.i), true};
     }
     template <class... Args>
     constexpr std::pair<iterator, bool> try_emplace(const_iterator /*hint*/,
@@ -447,9 +447,9 @@ public:
     constexpr iterator erase(const_iterator pos) noexcept
     {
         assert_or_abort(pos != cend());
-        const NodeIndex i = get_node_index_from_iterator(pos);
-        assert_or_abort(tree().contains_at(i));
-        const NodeIndex successor_index = tree().delete_at_and_return_successor(i);
+        const NodeIndex index = get_node_index_from_iterator(pos);
+        assert_or_abort(tree().contains_at(index));
+        const NodeIndex successor_index = tree().delete_at_and_return_successor(index);
         return create_iterator(successor_index);
     }
     constexpr iterator erase(iterator pos) noexcept { return erase(const_iterator{pos}); }
@@ -457,10 +457,12 @@ public:
     constexpr iterator erase(const_iterator first, const_iterator last) noexcept
     {
         // iterators might be invalidated after every deletion, so we can't just loop through
-        const NodeIndex from = first == cend() ? NULL_INDEX : get_node_index_from_iterator(first);
-        const NodeIndex to = last == cend() ? NULL_INDEX : get_node_index_from_iterator(last);
+        const NodeIndex from_idx =
+            first == cend() ? NULL_INDEX : get_node_index_from_iterator(first);
+        const NodeIndex to_idx = last == cend() ? NULL_INDEX : get_node_index_from_iterator(last);
 
-        const NodeIndex successor_index = tree().delete_range_and_return_successor(from, to);
+        const NodeIndex successor_index =
+            tree().delete_range_and_return_successor(from_idx, to_idx);
         return create_iterator(successor_index);
     }
 
@@ -468,50 +470,50 @@ public:
 
     [[nodiscard]] constexpr iterator find(const K& key) noexcept
     {
-        const NodeIndex i = tree().index_of_node_or_null(key);
-        if (!tree().contains_at(i))
+        const NodeIndex index = tree().index_of_node_or_null(key);
+        if (!tree().contains_at(index))
         {
             return this->end();
         }
 
-        return create_iterator(i);
+        return create_iterator(index);
     }
 
     [[nodiscard]] constexpr const_iterator find(const K& key) const noexcept
     {
-        const NodeIndex i = tree().index_of_node_or_null(key);
-        if (!tree().contains_at(i))
+        const NodeIndex index = tree().index_of_node_or_null(key);
+        if (!tree().contains_at(index))
         {
             return this->cend();
         }
 
-        return create_const_iterator(i);
+        return create_const_iterator(index);
     }
 
     template <class K0>
     [[nodiscard]] constexpr iterator find(const K0& key) noexcept
         requires IsTransparent<Compare>
     {
-        const NodeIndex i = tree().index_of_node_or_null(key);
-        if (!tree().contains_at(i))
+        const NodeIndex index = tree().index_of_node_or_null(key);
+        if (!tree().contains_at(index))
         {
             return this->end();
         }
 
-        return create_iterator(i);
+        return create_iterator(index);
     }
 
     template <class K0>
     [[nodiscard]] constexpr const_iterator find(const K0& key) const noexcept
         requires IsTransparent<Compare>
     {
-        const NodeIndex i = tree().index_of_node_or_null(key);
-        if (!tree().contains_at(i))
+        const NodeIndex index = tree().index_of_node_or_null(key);
+        if (!tree().contains_at(index))
         {
             return this->cend();
         }
 
-        return create_const_iterator(i);
+        return create_const_iterator(index);
     }
 
     [[nodiscard]] constexpr bool contains(const K& key) const noexcept
@@ -550,15 +552,15 @@ public:
     [[nodiscard]] constexpr iterator lower_bound(const K0& key) noexcept
         requires IsTransparent<Compare>
     {
-        const NodeIndexAndParentIndex np = tree().index_of_node_with_parent(key);
-        return create_iterator(tree().index_of_node_ceiling(np));
+        const NodeIndexAndParentIndex np_idxs = tree().index_of_node_with_parent(key);
+        return create_iterator(tree().index_of_node_ceiling(np_idxs));
     }
     template <class K0>
     [[nodiscard]] constexpr const_iterator lower_bound(const K0& key) const noexcept
         requires IsTransparent<Compare>
     {
-        const NodeIndexAndParentIndex np = tree().index_of_node_with_parent(key);
-        return create_const_iterator(tree().index_of_node_ceiling(np));
+        const NodeIndexAndParentIndex np_idxs = tree().index_of_node_with_parent(key);
+        return create_const_iterator(tree().index_of_node_ceiling(np_idxs));
     }
 
     [[nodiscard]] constexpr iterator upper_bound(const K& key) noexcept
@@ -573,42 +575,42 @@ public:
     [[nodiscard]] constexpr iterator upper_bound(const K0& key) noexcept
         requires IsTransparent<Compare>
     {
-        const NodeIndexAndParentIndex np = tree().index_of_node_with_parent(key);
-        return create_iterator(tree().index_of_node_higher(np));
+        const NodeIndexAndParentIndex np_idxs = tree().index_of_node_with_parent(key);
+        return create_iterator(tree().index_of_node_higher(np_idxs));
     }
     template <class K0>
     [[nodiscard]] constexpr const_iterator upper_bound(const K0& key) const noexcept
         requires IsTransparent<Compare>
     {
-        const NodeIndexAndParentIndex np = tree().index_of_node_with_parent(key);
-        return create_const_iterator(tree().index_of_node_higher(np));
+        const NodeIndexAndParentIndex np_idxs = tree().index_of_node_with_parent(key);
+        return create_const_iterator(tree().index_of_node_higher(np_idxs));
     }
 
     [[nodiscard]] constexpr std::pair<iterator, iterator> equal_range(const K& key) noexcept
     {
-        const NodeIndexAndParentIndex np = tree().index_of_node_with_parent(key);
-        return equal_range_impl(np);
+        const NodeIndexAndParentIndex np_idxs = tree().index_of_node_with_parent(key);
+        return equal_range_impl(np_idxs);
     }
     [[nodiscard]] constexpr std::pair<const_iterator, const_iterator> equal_range(
         const K& key) const noexcept
     {
-        const NodeIndexAndParentIndex np = tree().index_of_node_with_parent(key);
-        return equal_range_impl(np);
+        const NodeIndexAndParentIndex np_idxs = tree().index_of_node_with_parent(key);
+        return equal_range_impl(np_idxs);
     }
     template <class K0>
     [[nodiscard]] constexpr std::pair<iterator, iterator> equal_range(const K0& key) noexcept
         requires IsTransparent<Compare>
     {
-        const NodeIndexAndParentIndex np = tree().index_of_node_with_parent(key);
-        return equal_range_impl(np);
+        const NodeIndexAndParentIndex np_idxs = tree().index_of_node_with_parent(key);
+        return equal_range_impl(np_idxs);
     }
     template <class K0>
     [[nodiscard]] constexpr std::pair<const_iterator, const_iterator> equal_range(
         const K0& key) const noexcept
         requires IsTransparent<Compare>
     {
-        const NodeIndexAndParentIndex np = tree().index_of_node_with_parent(key);
-        return equal_range_impl(np);
+        const NodeIndexAndParentIndex np_idxs = tree().index_of_node_with_parent(key);
+        return equal_range_impl(np_idxs);
     }
 
     template <std::size_t MAXIMUM_SIZE_2,
@@ -648,15 +650,15 @@ private:
 
     constexpr iterator create_iterator(const NodeIndex& start_index) noexcept
     {
-        const NodeIndex i = replace_null_index_with_max_size_for_end_iterator(start_index);
-        return iterator{PairProvider<false>{std::addressof(tree()), i}};
+        const NodeIndex index = replace_null_index_with_max_size_for_end_iterator(start_index);
+        return iterator{PairProvider<false>{std::addressof(tree()), index}};
     }
 
     [[nodiscard]] constexpr const_iterator create_const_iterator(
         const NodeIndex& start_index) const noexcept
     {
-        const NodeIndex i = replace_null_index_with_max_size_for_end_iterator(start_index);
-        return const_iterator{PairProvider<true>{std::addressof(tree()), i}};
+        const NodeIndex index = replace_null_index_with_max_size_for_end_iterator(start_index);
+        return const_iterator{PairProvider<true>{std::addressof(tree()), index}};
     }
 
     constexpr reverse_iterator create_reverse_iterator(const NodeIndex& start_index) noexcept
@@ -679,23 +681,25 @@ private:
     }
 
     [[nodiscard]] constexpr std::pair<iterator, iterator> equal_range_impl(
-        const NodeIndexAndParentIndex& np) noexcept
+        const NodeIndexAndParentIndex& np_idxs_idxs) noexcept
     {
-        const NodeIndex l = tree().index_of_node_ceiling(np);
-        const NodeIndex r = tree().contains_at(np.i) ? tree().index_of_successor_at(l) : l;
-        return {create_iterator(l), create_iterator(r)};
+        const NodeIndex l_idx = tree().index_of_node_ceiling(np_idxs_idxs);
+        const NodeIndex r_idx =
+            tree().contains_at(np_idxs_idxs.i) ? tree().index_of_successor_at(l_idx) : l_idx;
+        return {create_iterator(l_idx), create_iterator(r_idx)};
     }
     [[nodiscard]] constexpr std::pair<const_iterator, const_iterator> equal_range_impl(
-        const NodeIndexAndParentIndex& np) const noexcept
+        const NodeIndexAndParentIndex& np_idxs_idxs) const noexcept
     {
-        const NodeIndex l = tree().index_of_node_ceiling(np);
-        const NodeIndex r = tree().contains_at(np.i) ? tree().index_of_successor_at(l) : l;
-        return {create_const_iterator(l), create_const_iterator(r)};
+        const NodeIndex l_idx = tree().index_of_node_ceiling(np_idxs_idxs);
+        const NodeIndex r_idx =
+            tree().contains_at(np_idxs_idxs.i) ? tree().index_of_successor_at(l_idx) : l_idx;
+        return {create_const_iterator(l_idx), create_const_iterator(r_idx)};
     }
 
-    [[nodiscard]] constexpr NodeIndex get_node_index_from_iterator(const_iterator it)
+    [[nodiscard]] constexpr NodeIndex get_node_index_from_iterator(const_iterator pos)
     {
-        return it.template private_reference_provider<PairProvider<true>>().current_index();
+        return pos.template private_reference_provider<PairProvider<true>>().current_index();
     }
 };
 
@@ -711,9 +715,10 @@ here. clang accepts it */
           typename StorageTemplate,
           customize::MapChecking<K> CheckingType>
 [[nodiscard]] constexpr bool is_full(
-    const FixedMap<K, V, MAXIMUM_SIZE, Compare, COMPACTNESS, StorageTemplate, CheckingType>& c)
+    const FixedMap<K, V, MAXIMUM_SIZE, Compare, COMPACTNESS, StorageTemplate, CheckingType>&
+        container)
 {
-    return c.size() >= c.max_size();
+    return container.size() >= container.max_size();
 }
 
 template <class K,
@@ -731,11 +736,11 @@ here. clang accepts it */
 constexpr
     typename FixedMap<K, V, MAXIMUM_SIZE, Compare, COMPACTNESS, StorageTemplate, CheckingType>::
         size_type
-        erase_if(
-            FixedMap<K, V, MAXIMUM_SIZE, Compare, COMPACTNESS, StorageTemplate, CheckingType>& c,
-            Predicate predicate)
+        erase_if(FixedMap<K, V, MAXIMUM_SIZE, Compare, COMPACTNESS, StorageTemplate, CheckingType>&
+                     container,
+                 Predicate predicate)
 {
-    return erase_if_detail::erase_if_impl(c, predicate);
+    return erase_if_detail::erase_if_impl(container, predicate);
 }
 
 /**

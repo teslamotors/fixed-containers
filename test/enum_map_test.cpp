@@ -183,7 +183,7 @@ TEST(EnumMap, BuilderMultipleOuts)
     }();
 
     {
-        // out1 should be unaffected by out2's addition of extra elements
+        // out1 should be unaffected by out2'var addition of extra elements
         constexpr EnumMap<TestEnum1, int> VAL1 = VAL_ALL[0];
         static_assert(VAL1.size() == 1);
 
@@ -259,33 +259,33 @@ TEST(EnumMap, CreateWithAllEntries)
 
     constexpr auto GET_MAP_WITH_MISSING_ENTRIES = []
     {
-        const auto s2 = EnumMap<TestEnum1, int>::create_with_all_entries(std::array{
+        const auto var2 = EnumMap<TestEnum1, int>::create_with_all_entries(std::array{
             std::pair{TestEnum1::ONE, 42},
             std::pair{TestEnum1::THREE, 42},
             std::pair{TestEnum1::FOUR, 7},
         });
-        return s2;
+        return var2;
     };
 
     // The following line must not compile:
-    // constexpr auto s2 = get_map_with_missing_entries();
+    // constexpr auto var2 = get_map_with_missing_entries();
 
     // constexpr functions that follow an assertion path will fail at compile time, with something
     // like:
-    //   > 's2' must be initialized by a constant expression
-    //   >     constexpr auto s2 = EnumMap<TestEnum1, int>::create_with_all_entries({
+    //   > 'var2' must be initialized by a constant expression
+    //   >     constexpr auto var2 = EnumMap<TestEnum1, int>::create_with_all_entries({
     //   >  'missing_enum_entries' cannot be used in a constant expression
     EXPECT_DEATH(GET_MAP_WITH_MISSING_ENTRIES(), "");
 
     constexpr auto GET_MAP_WITH_DUPLICATE_ENTRIES = []
     {
-        const auto s3 = EnumMap<TestEnum1, int>::create_with_all_entries({
+        const auto var3 = EnumMap<TestEnum1, int>::create_with_all_entries({
             {TestEnum1::ONE, 42},
             {TestEnum1::THREE, 42},
             {TestEnum1::ONE, 999999999},
             {TestEnum1::FOUR, 7},
         });
-        return s3;
+        return var3;
     };
 
     // The following line must not compile:
@@ -302,7 +302,7 @@ TEST(EnumMap, CreateWithAllEntries)
 TEST(EnumMap, CreateWithAllEntriesWithCompileTimeErrorReporting)
 {
     // Manual test. Removing one or more entries should cause a static_assert that prints the
-    // missing value(s)
+    // missing value(var)
     // Sample compilation error message:
     /*
      error: static assertion failed due to requirement
@@ -396,10 +396,10 @@ TEST(EnumMap, OperatorBracketConstexpr)
 {
     constexpr auto VAL1 = []()
     {
-        EnumMap<TestEnum1, int> s{};
-        s[TestEnum1::TWO] = 20;
-        s[TestEnum1::FOUR] = 40;
-        return s;
+        EnumMap<TestEnum1, int> var{};
+        var[TestEnum1::TWO] = 20;
+        var[TestEnum1::FOUR] = 40;
+        return var;
     }();
 
     static_assert(VAL1.size() == 2);
@@ -411,14 +411,14 @@ TEST(EnumMap, OperatorBracketConstexpr)
 
 TEST(EnumMap, OperatorBracketNonConstexpr)
 {
-    EnumMap<TestEnum1, int> s1{};
-    s1[TestEnum1::TWO] = 25;
-    s1[TestEnum1::FOUR] = 45;
-    ASSERT_EQ(2, s1.size());
-    ASSERT_TRUE(!s1.contains(TestEnum1::ONE));
-    ASSERT_TRUE(s1.contains(TestEnum1::TWO));
-    ASSERT_TRUE(!s1.contains(TestEnum1::THREE));
-    ASSERT_TRUE(s1.contains(TestEnum1::FOUR));
+    EnumMap<TestEnum1, int> var1{};
+    var1[TestEnum1::TWO] = 25;
+    var1[TestEnum1::FOUR] = 45;
+    ASSERT_EQ(2, var1.size());
+    ASSERT_TRUE(!var1.contains(TestEnum1::ONE));
+    ASSERT_TRUE(var1.contains(TestEnum1::TWO));
+    ASSERT_TRUE(!var1.contains(TestEnum1::THREE));
+    ASSERT_TRUE(var1.contains(TestEnum1::FOUR));
 }
 
 namespace
@@ -447,16 +447,16 @@ int ConstructionCounter::counter_ = 0;
 
 TEST(EnumMap, OperatorBracketEnsureNoUnnecessaryTemporaries)
 {
-    EnumMap<TestEnum1, ConstructionCounter> s1{};
+    EnumMap<TestEnum1, ConstructionCounter> var1{};
     ASSERT_EQ(0, ConstructionCounter::counter_);
     const ConstructionCounter instance1{25};
     const ConstructionCounter instance2{35};
     ASSERT_EQ(2, ConstructionCounter::counter_);
-    s1[TestEnum1::TWO] = instance1;
+    var1[TestEnum1::TWO] = instance1;
     ASSERT_EQ(3, ConstructionCounter::counter_);
-    s1[TestEnum1::FOUR] = s1.at(TestEnum1::TWO);
+    var1[TestEnum1::FOUR] = var1.at(TestEnum1::TWO);
     ASSERT_EQ(4, ConstructionCounter::counter_);
-    s1[TestEnum1::FOUR] = instance2;
+    var1[TestEnum1::FOUR] = instance2;
     ASSERT_EQ(4, ConstructionCounter::counter_);
 }
 
@@ -464,10 +464,10 @@ TEST(EnumMap, Insert)
 {
     constexpr auto VAL1 = []()
     {
-        EnumMap<TestEnum1, int> s{};
-        s.insert({TestEnum1::TWO, 20});
-        s.insert({TestEnum1::FOUR, 40});
-        return s;
+        EnumMap<TestEnum1, int> var{};
+        var.insert({TestEnum1::TWO, 20});
+        var.insert({TestEnum1::FOUR, 40});
+        return var;
     }();
 
     static_assert(VAL1.size() == 2);
@@ -481,32 +481,32 @@ TEST(EnumMap, InsertMultipleTimes)
 {
     constexpr auto VAL1 = []()
     {
-        EnumMap<TestEnum1, int> s{};
+        EnumMap<TestEnum1, int> var{};
         {
-            auto [it, was_inserted] = s.insert({TestEnum1::TWO, 20});
+            auto [it, was_inserted] = var.insert({TestEnum1::TWO, 20});
             assert_or_abort(was_inserted);
             assert_or_abort(TestEnum1::TWO == it->first);
             assert_or_abort(20 == it->second);
         }
         {
-            auto [it, was_inserted] = s.insert({TestEnum1::FOUR, 40});
+            auto [it, was_inserted] = var.insert({TestEnum1::FOUR, 40});
             assert_or_abort(was_inserted);
             assert_or_abort(TestEnum1::FOUR == it->first);
             assert_or_abort(40 == it->second);
         }
         {
-            auto [it, was_inserted] = s.insert({TestEnum1::TWO, 99999});
+            auto [it, was_inserted] = var.insert({TestEnum1::TWO, 99999});
             assert_or_abort(!was_inserted);
             assert_or_abort(TestEnum1::TWO == it->first);
             assert_or_abort(20 == it->second);
         }
         {
-            auto [it, was_inserted] = s.insert({TestEnum1::FOUR, 88888});
+            auto [it, was_inserted] = var.insert({TestEnum1::FOUR, 88888});
             assert_or_abort(!was_inserted);
             assert_or_abort(TestEnum1::FOUR == it->first);
             assert_or_abort(40 == it->second);
         }
-        return s;
+        return var;
     }();
 
     static_assert(VAL1.size() == 2);
@@ -522,9 +522,9 @@ TEST(EnumMap, InsertIterators)
 
     constexpr auto VAL1 = [&]()
     {
-        EnumMap<TestEnum1, int> s{};
-        s.insert(ENTRY_A.begin(), ENTRY_A.end());
-        return s;
+        EnumMap<TestEnum1, int> var{};
+        var.insert(ENTRY_A.begin(), ENTRY_A.end());
+        return var;
     }();
 
     static_assert(VAL1.size() == 2);
@@ -538,9 +538,9 @@ TEST(EnumMap, InsertInitializer)
 {
     constexpr auto VAL1 = []()
     {
-        EnumMap<TestEnum1, int> s{};
-        s.insert({{TestEnum1::TWO, 20}, {TestEnum1::FOUR, 40}});
-        return s;
+        EnumMap<TestEnum1, int> var{};
+        var.insert({{TestEnum1::TWO, 20}, {TestEnum1::FOUR, 40}});
+        return var;
     }();
 
     static_assert(VAL1.size() == 2);
@@ -554,34 +554,34 @@ TEST(EnumMap, InsertOrAssign)
 {
     constexpr auto VAL1 = []()
     {
-        EnumMap<TestEnum1, int> s{};
+        EnumMap<TestEnum1, int> var{};
         {
-            auto [it, was_inserted] = s.insert_or_assign(TestEnum1::TWO, 20);
+            auto [it, was_inserted] = var.insert_or_assign(TestEnum1::TWO, 20);
             assert_or_abort(was_inserted);
             assert_or_abort(TestEnum1::TWO == it->first);
             assert_or_abort(20 == it->second);
         }
         {
             const TestEnum1 key = TestEnum1::FOUR;
-            auto [it, was_inserted] = s.insert_or_assign(key, 40);
+            auto [it, was_inserted] = var.insert_or_assign(key, 40);
             assert_or_abort(was_inserted);
             assert_or_abort(TestEnum1::FOUR == it->first);
             assert_or_abort(40 == it->second);
         }
         {
-            auto [it, was_inserted] = s.insert_or_assign(TestEnum1::TWO, 99999);
+            auto [it, was_inserted] = var.insert_or_assign(TestEnum1::TWO, 99999);
             assert_or_abort(!was_inserted);
             assert_or_abort(TestEnum1::TWO == it->first);
             assert_or_abort(99999 == it->second);
         }
         {
             const TestEnum1 key = TestEnum1::FOUR;
-            auto [it, was_inserted] = s.insert_or_assign(key, 88888);
+            auto [it, was_inserted] = var.insert_or_assign(key, 88888);
             assert_or_abort(!was_inserted);
             assert_or_abort(TestEnum1::FOUR == it->first);
             assert_or_abort(88888 == it->second);
         }
-        return s;
+        return var;
     }();
 
     static_assert(VAL1.size() == 2);
@@ -596,11 +596,11 @@ TEST(EnumMap, TryEmplace)
     {
         constexpr EnumMap<TestEnum1, int> VAL = []()
         {
-            EnumMap<TestEnum1, int> s1{};
-            s1.try_emplace(TestEnum1::TWO, 20);
+            EnumMap<TestEnum1, int> var1{};
+            var1.try_emplace(TestEnum1::TWO, 20);
             const TestEnum1 key = TestEnum1::TWO;
-            s1.try_emplace(key, 209999999);
-            return s1;
+            var1.try_emplace(key, 209999999);
+            return var1;
         }();
 
         static_assert(consteval_compare::equal<1, VAL.size()>);
@@ -608,17 +608,17 @@ TEST(EnumMap, TryEmplace)
     }
 
     {
-        EnumMap<TestEnum1, int> s1{};
+        EnumMap<TestEnum1, int> var1{};
 
         {
-            auto [it, was_inserted] = s1.try_emplace(TestEnum1::TWO, 20);
+            auto [it, was_inserted] = var1.try_emplace(TestEnum1::TWO, 20);
 
-            ASSERT_EQ(1, s1.size());
-            ASSERT_TRUE(!s1.contains(TestEnum1::ONE));
-            ASSERT_TRUE(s1.contains(TestEnum1::TWO));
-            ASSERT_TRUE(!s1.contains(TestEnum1::THREE));
-            ASSERT_TRUE(!s1.contains(TestEnum1::FOUR));
-            ASSERT_EQ(20, s1.at(TestEnum1::TWO));
+            ASSERT_EQ(1, var1.size());
+            ASSERT_TRUE(!var1.contains(TestEnum1::ONE));
+            ASSERT_TRUE(var1.contains(TestEnum1::TWO));
+            ASSERT_TRUE(!var1.contains(TestEnum1::THREE));
+            ASSERT_TRUE(!var1.contains(TestEnum1::FOUR));
+            ASSERT_EQ(20, var1.at(TestEnum1::TWO));
             ASSERT_TRUE(was_inserted);
             ASSERT_EQ(TestEnum1::TWO, it->first);
             ASSERT_EQ(20, it->second);
@@ -626,31 +626,31 @@ TEST(EnumMap, TryEmplace)
 
         {
             const TestEnum1 key = TestEnum1::TWO;
-            auto [it, was_inserted] = s1.try_emplace(key, 209999999);
-            ASSERT_EQ(1, s1.size());
-            ASSERT_TRUE(!s1.contains(TestEnum1::ONE));
-            ASSERT_TRUE(s1.contains(TestEnum1::TWO));
-            ASSERT_TRUE(!s1.contains(TestEnum1::THREE));
-            ASSERT_TRUE(!s1.contains(TestEnum1::FOUR));
-            ASSERT_EQ(20, s1.at(TestEnum1::TWO));
+            auto [it, was_inserted] = var1.try_emplace(key, 209999999);
+            ASSERT_EQ(1, var1.size());
+            ASSERT_TRUE(!var1.contains(TestEnum1::ONE));
+            ASSERT_TRUE(var1.contains(TestEnum1::TWO));
+            ASSERT_TRUE(!var1.contains(TestEnum1::THREE));
+            ASSERT_TRUE(!var1.contains(TestEnum1::FOUR));
+            ASSERT_EQ(20, var1.at(TestEnum1::TWO));
             ASSERT_FALSE(was_inserted);
             ASSERT_EQ(TestEnum1::TWO, it->first);
             ASSERT_EQ(20, it->second);
         }
 
         {
-            EnumMap<TestEnum1, MockMoveableButNotCopyable> s2{};
-            s2.emplace(TestEnum1::ONE, MockMoveableButNotCopyable{});
+            EnumMap<TestEnum1, MockMoveableButNotCopyable> var2{};
+            var2.emplace(TestEnum1::ONE, MockMoveableButNotCopyable{});
         }
     }
 
     {
-        EnumMap<TestEnum1, TypeWithMultipleConstructorParameters> s1{};
-        s1.try_emplace(
+        EnumMap<TestEnum1, TypeWithMultipleConstructorParameters> var1{};
+        var1.try_emplace(
             TestEnum1::ONE, /*ImplicitlyConvertibleFromInt*/ 2, ExplicitlyConvertibleFromInt{3});
 
-        std::map<TestEnum1, TypeWithMultipleConstructorParameters> s2{};
-        s2.try_emplace(
+        std::map<TestEnum1, TypeWithMultipleConstructorParameters> var2{};
+        var2.try_emplace(
             TestEnum1::ONE, /*ImplicitlyConvertibleFromInt*/ 2, ExplicitlyConvertibleFromInt{3});
     }
 }
@@ -659,13 +659,13 @@ TEST(EnumMap, TryEmplaceTypeConversion)
 {
     {
         int* raw_ptr = new int;
-        EnumMap<TestEnum1, std::unique_ptr<int>> s{};
-        s.try_emplace(TestEnum1::THREE, raw_ptr);
+        EnumMap<TestEnum1, std::unique_ptr<int>> var{};
+        var.try_emplace(TestEnum1::THREE, raw_ptr);
     }
     {
         int* raw_ptr = new int;
-        std::map<TestEnum1, std::unique_ptr<int>> s{};
-        s.try_emplace(TestEnum1::THREE, raw_ptr);
+        std::map<TestEnum1, std::unique_ptr<int>> var{};
+        var.try_emplace(TestEnum1::THREE, raw_ptr);
     }
 }
 
@@ -674,11 +674,11 @@ TEST(EnumMap, Emplace)
     {
         constexpr EnumMap<TestEnum1, int> VAL = []()
         {
-            EnumMap<TestEnum1, int> s1{};
-            s1.emplace(TestEnum1::TWO, 20);
+            EnumMap<TestEnum1, int> var1{};
+            var1.emplace(TestEnum1::TWO, 20);
             const TestEnum1 key = TestEnum1::TWO;
-            s1.emplace(key, 209999999);
-            return s1;
+            var1.emplace(key, 209999999);
+            return var1;
         }();
 
         static_assert(consteval_compare::equal<1, VAL.size()>);
@@ -686,43 +686,43 @@ TEST(EnumMap, Emplace)
     }
 
     {
-        EnumMap<TestEnum1, int> s1{};
+        EnumMap<TestEnum1, int> var1{};
 
         {
-            auto [it, was_inserted] = s1.emplace(TestEnum1::TWO, 20);
+            auto [it, was_inserted] = var1.emplace(TestEnum1::TWO, 20);
 
-            ASSERT_EQ(1, s1.size());
-            ASSERT_TRUE(!s1.contains(TestEnum1::ONE));
-            ASSERT_TRUE(s1.contains(TestEnum1::TWO));
-            ASSERT_TRUE(!s1.contains(TestEnum1::THREE));
-            ASSERT_TRUE(!s1.contains(TestEnum1::FOUR));
-            ASSERT_EQ(20, s1.at(TestEnum1::TWO));
+            ASSERT_EQ(1, var1.size());
+            ASSERT_TRUE(!var1.contains(TestEnum1::ONE));
+            ASSERT_TRUE(var1.contains(TestEnum1::TWO));
+            ASSERT_TRUE(!var1.contains(TestEnum1::THREE));
+            ASSERT_TRUE(!var1.contains(TestEnum1::FOUR));
+            ASSERT_EQ(20, var1.at(TestEnum1::TWO));
             ASSERT_TRUE(was_inserted);
             ASSERT_EQ(TestEnum1::TWO, it->first);
             ASSERT_EQ(20, it->second);
         }
 
         {
-            auto [it, was_inserted] = s1.emplace(TestEnum1::TWO, 209999999);
-            ASSERT_EQ(1, s1.size());
-            ASSERT_TRUE(!s1.contains(TestEnum1::ONE));
-            ASSERT_TRUE(s1.contains(TestEnum1::TWO));
-            ASSERT_TRUE(!s1.contains(TestEnum1::THREE));
-            ASSERT_TRUE(!s1.contains(TestEnum1::FOUR));
-            ASSERT_EQ(20, s1.at(TestEnum1::TWO));
+            auto [it, was_inserted] = var1.emplace(TestEnum1::TWO, 209999999);
+            ASSERT_EQ(1, var1.size());
+            ASSERT_TRUE(!var1.contains(TestEnum1::ONE));
+            ASSERT_TRUE(var1.contains(TestEnum1::TWO));
+            ASSERT_TRUE(!var1.contains(TestEnum1::THREE));
+            ASSERT_TRUE(!var1.contains(TestEnum1::FOUR));
+            ASSERT_EQ(20, var1.at(TestEnum1::TWO));
             ASSERT_FALSE(was_inserted);
             ASSERT_EQ(TestEnum1::TWO, it->first);
             ASSERT_EQ(20, it->second);
         }
 
         {
-            auto [it, was_inserted] = s1.emplace(std::make_pair(TestEnum1::TWO, 209999999));
-            ASSERT_EQ(1, s1.size());
-            ASSERT_TRUE(!s1.contains(TestEnum1::ONE));
-            ASSERT_TRUE(s1.contains(TestEnum1::TWO));
-            ASSERT_TRUE(!s1.contains(TestEnum1::THREE));
-            ASSERT_TRUE(!s1.contains(TestEnum1::FOUR));
-            ASSERT_EQ(20, s1.at(TestEnum1::TWO));
+            auto [it, was_inserted] = var1.emplace(std::make_pair(TestEnum1::TWO, 209999999));
+            ASSERT_EQ(1, var1.size());
+            ASSERT_TRUE(!var1.contains(TestEnum1::ONE));
+            ASSERT_TRUE(var1.contains(TestEnum1::TWO));
+            ASSERT_TRUE(!var1.contains(TestEnum1::THREE));
+            ASSERT_TRUE(!var1.contains(TestEnum1::FOUR));
+            ASSERT_EQ(20, var1.at(TestEnum1::TWO));
             ASSERT_FALSE(was_inserted);
             ASSERT_EQ(TestEnum1::TWO, it->first);
             ASSERT_EQ(20, it->second);
@@ -730,18 +730,18 @@ TEST(EnumMap, Emplace)
     }
 
     {
-        EnumMap<TestEnum1, MockMoveableButNotCopyable> s2{};
-        s2.emplace(TestEnum1::ONE, MockMoveableButNotCopyable{});
+        EnumMap<TestEnum1, MockMoveableButNotCopyable> var2{};
+        var2.emplace(TestEnum1::ONE, MockMoveableButNotCopyable{});
     }
 
     {
-        EnumMap<TestEnum1, MockTriviallyCopyableButNotCopyableOrMoveable> s2{};
-        s2.emplace(TestEnum1::ONE);
+        EnumMap<TestEnum1, MockTriviallyCopyableButNotCopyableOrMoveable> var2{};
+        var2.emplace(TestEnum1::ONE);
     }
 
     {
-        EnumMap<TestEnum1, std::pair<int, int>> s3{};
-        s3.emplace(
+        EnumMap<TestEnum1, std::pair<int, int>> var3{};
+        var3.emplace(
             std::piecewise_construct, std::make_tuple(TestEnum1::ONE), std::make_tuple(2, 3));
     }
 }
@@ -750,9 +750,9 @@ TEST(EnumMap, Clear)
 {
     constexpr auto VAL1 = []()
     {
-        EnumMap<TestEnum1, int> s{{TestEnum1::TWO, 20}, {TestEnum1::FOUR, 40}};
-        s.clear();
-        return s;
+        EnumMap<TestEnum1, int> var{{TestEnum1::TWO, 20}, {TestEnum1::FOUR, 40}};
+        var.clear();
+        return var;
     }();
 
     static_assert(VAL1.empty());
@@ -762,12 +762,12 @@ TEST(EnumMap, Erase)
 {
     constexpr auto VAL1 = []()
     {
-        EnumMap<TestEnum1, int> s{{TestEnum1::TWO, 20}, {TestEnum1::FOUR, 40}};
-        auto removed_count = s.erase(TestEnum1::TWO);
+        EnumMap<TestEnum1, int> var{{TestEnum1::TWO, 20}, {TestEnum1::FOUR, 40}};
+        auto removed_count = var.erase(TestEnum1::TWO);
         assert_or_abort(removed_count == 1);
-        removed_count = s.erase(TestEnum1::THREE);
+        removed_count = var.erase(TestEnum1::THREE);
         assert_or_abort(removed_count == 0);
-        return s;
+        return var;
     }();
 
     static_assert(VAL1.size() == 1);
@@ -781,22 +781,22 @@ TEST(EnumMap, EraseIterator)
 {
     constexpr auto VAL1 = []()
     {
-        EnumMap<TestEnum1, int> s{
+        EnumMap<TestEnum1, int> var{
             {TestEnum1::TWO, 20}, {TestEnum1::THREE, 30}, {TestEnum1::FOUR, 40}};
         {
-            auto it = s.begin();
-            auto next = s.erase(it);
+            auto iter = var.begin();
+            auto next = var.erase(iter);
             assert_or_abort(next->first == TestEnum1::THREE);
             assert_or_abort(next->second == 30);
         }
 
         {
-            auto it = s.cbegin();
-            auto next = s.erase(it);
+            auto iter = var.cbegin();
+            auto next = var.erase(iter);
             assert_or_abort(next->first == TestEnum1::FOUR);
             assert_or_abort(next->second == 40);
         }
-        return s;
+        return var;
     }();
 
     static_assert(VAL1.size() == 1);
@@ -808,11 +808,11 @@ TEST(EnumMap, EraseIterator)
 
 TEST(EnumMap, EraseIteratorInvalidIterator)
 {
-    EnumMap<TestEnum1, int> s{{TestEnum1::TWO, 20}, {TestEnum1::FOUR, 40}};
+    EnumMap<TestEnum1, int> var{{TestEnum1::TWO, 20}, {TestEnum1::FOUR, 40}};
     {
-        auto it = s.begin();
-        s.erase(it);
-        EXPECT_DEATH(s.erase(it), "");
+        auto iter = var.begin();
+        var.erase(iter);
+        EXPECT_DEATH(var.erase(iter), "");
     }
 }
 
@@ -821,16 +821,16 @@ TEST(EnumMap, EraseRange)
     {
         constexpr auto VAL1 = []()
         {
-            EnumMap<TestEnum1, int> s{
+            EnumMap<TestEnum1, int> var{
                 {TestEnum1::TWO, 20}, {TestEnum1::THREE, 30}, {TestEnum1::FOUR, 40}};
-            auto from = s.begin();
-            std::advance(from, 1);
-            auto to = s.begin();
-            std::advance(to, 2);
-            auto next = s.erase(from, to);
+            auto erase_from = var.begin();
+            std::advance(erase_from, 1);
+            auto erase_to = var.begin();
+            std::advance(erase_to, 2);
+            auto next = var.erase(erase_from, erase_to);
             assert_or_abort(next->first == TestEnum1::FOUR);
             assert_or_abort(next->second == 40);
-            return s;
+            return var;
         }();
 
         static_assert(consteval_compare::equal<2, VAL1.size()>);
@@ -842,13 +842,13 @@ TEST(EnumMap, EraseRange)
     {
         constexpr auto VAL1 = []()
         {
-            EnumMap<TestEnum1, int> s{{TestEnum1::TWO, 20}, {TestEnum1::FOUR, 40}};
-            auto from = s.begin();
-            auto to = s.begin();
-            auto next = s.erase(from, to);
+            EnumMap<TestEnum1, int> var{{TestEnum1::TWO, 20}, {TestEnum1::FOUR, 40}};
+            auto erase_from = var.begin();
+            auto erase_to = var.begin();
+            auto next = var.erase(erase_from, erase_to);
             assert_or_abort(next->first == TestEnum1::TWO);
             assert_or_abort(next->second == 20);
-            return s;
+            return var;
         }();
 
         static_assert(consteval_compare::equal<2, VAL1.size()>);
@@ -860,12 +860,12 @@ TEST(EnumMap, EraseRange)
     {
         constexpr auto VAL1 = []()
         {
-            EnumMap<TestEnum1, int> s{{TestEnum1::ONE, 10}, {TestEnum1::FOUR, 40}};
-            auto from = s.begin();
-            auto to = s.end();
-            auto next = s.erase(from, to);
-            assert_or_abort(next == s.end());
-            return s;
+            EnumMap<TestEnum1, int> var{{TestEnum1::ONE, 10}, {TestEnum1::FOUR, 40}};
+            auto erase_from = var.begin();
+            auto erase_to = var.end();
+            auto next = var.erase(erase_from, erase_to);
+            assert_or_abort(next == var.end());
+            return var;
         }();
 
         static_assert(consteval_compare::equal<0, VAL1.size()>);
@@ -880,17 +880,17 @@ TEST(EnumMap, EraseIf)
 {
     constexpr auto VAL1 = []()
     {
-        EnumMap<TestEnum1, int> s{
+        EnumMap<TestEnum1, int> var{
             {TestEnum1::TWO, 20}, {TestEnum1::THREE, 30}, {TestEnum1::FOUR, 40}};
         const std::size_t removed_count =
-            fixed_containers::erase_if(s,
+            fixed_containers::erase_if(var,
                                        [](const auto& entry)
                                        {
                                            const auto& [key, _] = entry;
                                            return key == TestEnum1::TWO or key == TestEnum1::FOUR;
                                        });
         assert_or_abort(2 == removed_count);
-        return s;
+        return var;
     }();
 
     static_assert(consteval_compare::equal<1, VAL1.size()>);
@@ -906,11 +906,11 @@ TEST(EnumMap, IteratorStructuredBinding)
 {
     constexpr auto VAL1 = []()
     {
-        EnumMap<TestEnum1, int> s{};
-        s.insert({TestEnum1::THREE, 30});
-        s.insert({TestEnum1::FOUR, 40});
-        s.insert({TestEnum1::ONE, 10});
-        return s;
+        EnumMap<TestEnum1, int> var{};
+        var.insert({TestEnum1::THREE, 30});
+        var.insert({TestEnum1::FOUR, 40});
+        var.insert({TestEnum1::ONE, 10});
+        return var;
     }();
 
     for (auto&& [key, value] : VAL1)
@@ -950,8 +950,8 @@ TEST(EnumMap, IteratorTypes)
 {
     constexpr auto VAL1 = []()
     {
-        EnumMap<TestEnum1, int> s{{TestEnum1::TWO, 20}, {TestEnum1::FOUR, 40}};
-        for (const auto& key_and_value : s)  // "-Wrange-loop-bind-reference"
+        EnumMap<TestEnum1, int> var{{TestEnum1::TWO, 20}, {TestEnum1::FOUR, 40}};
+        for (const auto& key_and_value : var)  // "-Wrange-loop-bind-reference"
         {
             static_assert(
                 std::is_same_v<decltype(key_and_value), const std::pair<const TestEnum1&, int&>&>);
@@ -963,7 +963,7 @@ TEST(EnumMap, IteratorTypes)
         // error: non-const lvalue reference to type 'std::pair<...>' cannot bind to a temporary of
         // type 'std::pair<...>'
         /*
-        for (auto& key_and_value : s)
+        for (auto& key_and_value : var)
         {
             static_assert(std::is_same_v<decltype(key_and_value),  //
                                          std::pair<const TestEnum1&, int&>&>);
@@ -971,14 +971,14 @@ TEST(EnumMap, IteratorTypes)
         }
          */
 
-        for (auto&& key_and_value : s)
+        for (auto&& key_and_value : var)
         {
             static_assert(
                 std::is_same_v<decltype(key_and_value), std::pair<const TestEnum1&, int&>&&>);
             key_and_value.second = 5;  // Allowed
         }
 
-        for (const auto& [key, value] : s)  // "-Wrange-loop-bind-reference"
+        for (const auto& [key, value] : var)  // "-Wrange-loop-bind-reference"
         {
             static_assert(std::is_same_v<decltype(key), const TestEnum1&>);
             static_assert(std::is_same_v<decltype(value), int&>);  // Non-ideal, should be const
@@ -988,20 +988,20 @@ TEST(EnumMap, IteratorTypes)
         // error: non-const lvalue reference to type 'std::pair<...>' cannot bind to a temporary of
         // type 'std::pair<...>'
         /*
-        for (auto& [key, value] : s)
+        for (auto& [key, value] : var)
         {
             static_assert(std::is_same_v<decltype(key), const TestEnum1&>);
             static_assert(std::is_same_v<decltype(value), int&>);
         }
          */
 
-        for (auto&& [key, value] : s)
+        for (auto&& [key, value] : var)
         {
             static_assert(std::is_same_v<decltype(key), const TestEnum1&>);
             static_assert(std::is_same_v<decltype(value), int&>);
         }
 
-        return s;
+        return var;
     }();
 
     const auto lvalue_it = VAL1.begin();
@@ -1028,42 +1028,42 @@ TEST(EnumMap, IteratorTypes)
     }
 
     {
-        std::map<TestEnum1, int> s{};
+        std::map<TestEnum1, int> var{};
 
-        for (const auto& key_and_value : s)
+        for (const auto& key_and_value : var)
         {
             static_assert(
                 std::is_same_v<decltype(key_and_value), const std::pair<const TestEnum1, int>&>);
             // key_and_value.second = 5;  // Not allowed
         }
 
-        for (auto& key_and_value : s)
+        for (auto& key_and_value : var)
         {
             static_assert(
                 std::is_same_v<decltype(key_and_value), std::pair<const TestEnum1, int>&>);
             key_and_value.second = 5;  // Allowed
         }
 
-        for (auto&& key_and_value : s)
+        for (auto&& key_and_value : var)
         {
             static_assert(
                 std::is_same_v<decltype(key_and_value), std::pair<const TestEnum1, int>&>);
             key_and_value.second = 5;  // Allowed
         }
 
-        for (const auto& [key, value] : s)
+        for (const auto& [key, value] : var)
         {
             static_assert(std::is_same_v<decltype(key), const TestEnum1>);
             static_assert(std::is_same_v<decltype(value), const int>);
         }
 
-        for (auto& [key, value] : s)
+        for (auto& [key, value] : var)
         {
             static_assert(std::is_same_v<decltype(key), const TestEnum1>);
             static_assert(std::is_same_v<decltype(value), int>);
         }
 
-        for (auto&& [key, value] : s)
+        for (auto&& [key, value] : var)
         {
             static_assert(std::is_same_v<decltype(key), const TestEnum1>);
             static_assert(std::is_same_v<decltype(value), int>);
@@ -1075,14 +1075,14 @@ TEST(EnumMap, IteratorMutableValue)
 {
     constexpr auto VAL1 = []()
     {
-        EnumMap<TestEnum1, int> s{{TestEnum1::TWO, 20}, {TestEnum1::FOUR, 40}};
+        EnumMap<TestEnum1, int> var{{TestEnum1::TWO, 20}, {TestEnum1::FOUR, 40}};
 
-        for (auto&& [key, value] : s)
+        for (auto&& [key, value] : var)
         {
             value *= 2;
         }
 
-        return s;
+        return var;
     }();
 
     static_assert(std::distance(VAL1.cbegin(), VAL1.cend()) == 2);
@@ -1118,51 +1118,51 @@ TEST(EnumMap, IteratorAssignment)
 {
     constexpr auto VAL1 = []()
     {
-        EnumMap<TestEnum1, int> s{{TestEnum1::TWO, 20}, {TestEnum1::FOUR, 40}};
+        EnumMap<TestEnum1, int> var{{TestEnum1::TWO, 20}, {TestEnum1::FOUR, 40}};
 
         {
-            EnumMap<TestEnum1, int>::const_iterator it;  // Default construction
-            it = s.cbegin();
-            assert_or_abort(it == s.begin());  // Asserts are just to make the value used.
+            EnumMap<TestEnum1, int>::const_iterator iter;  // Default construction
+            iter = var.cbegin();
+            assert_or_abort(iter == var.begin());  // Asserts are just to make the value used.
 
-            it = s.cend();
-            assert_or_abort(it == s.cend());
+            iter = var.cend();
+            assert_or_abort(iter == var.cend());
 
             {
                 EnumMap<TestEnum1, int>::iterator non_const_it;  // Default construction
-                non_const_it = s.end();
-                it = non_const_it;  // Non-const needs to be assignable to const
-                assert_or_abort(it == s.end());
+                non_const_it = var.end();
+                iter = non_const_it;  // Non-const needs to be assignable to const
+                assert_or_abort(iter == var.end());
             }
 
-            for (it = s.cbegin(); it != s.cend(); it++)
+            for (iter = var.cbegin(); iter != var.cend(); iter++)
             {
                 static_assert(
-                    std::is_same_v<decltype(it), EnumMap<TestEnum1, int>::const_iterator>);
+                    std::is_same_v<decltype(iter), EnumMap<TestEnum1, int>::const_iterator>);
             }
 
-            for (it = s.begin(); it != s.end(); it++)
+            for (iter = var.begin(); iter != var.end(); iter++)
             {
                 static_assert(
-                    std::is_same_v<decltype(it), EnumMap<TestEnum1, int>::const_iterator>);
+                    std::is_same_v<decltype(iter), EnumMap<TestEnum1, int>::const_iterator>);
             }
         }
         {
-            EnumMap<TestEnum1, int>::iterator it = s.begin();
-            assert_or_abort(it == s.begin());  // Asserts are just to make the value used.
+            EnumMap<TestEnum1, int>::iterator iter = var.begin();
+            assert_or_abort(iter == var.begin());  // Asserts are just to make the value used.
 
             // Const should not be assignable to non-const
-            // it = s.cend();
+            // it = var.cend();
 
-            it = s.end();
-            assert_or_abort(it == s.end());
+            iter = var.end();
+            assert_or_abort(iter == var.end());
 
-            for (it = s.begin(); it != s.end(); it++)
+            for (iter = var.begin(); iter != var.end(); iter++)
             {
-                static_assert(std::is_same_v<decltype(it), EnumMap<TestEnum1, int>::iterator>);
+                static_assert(std::is_same_v<decltype(iter), EnumMap<TestEnum1, int>::iterator>);
             }
         }
-        return s;
+        return var;
     }();
 
     static_assert(VAL1.size() == 2);
@@ -1189,11 +1189,11 @@ TEST(EnumMap, IteratorEnsureOrder)
 {
     constexpr auto VAL1 = []()
     {
-        EnumMap<TestEnum1, int> s{};
-        s.insert({TestEnum1::THREE, 30});
-        s.insert({TestEnum1::FOUR, 40});
-        s.insert({TestEnum1::ONE, 10});
-        return s;
+        EnumMap<TestEnum1, int> var{};
+        var.insert({TestEnum1::THREE, 30});
+        var.insert({TestEnum1::FOUR, 40});
+        var.insert({TestEnum1::ONE, 10});
+        return var;
     }();
 
     static_assert(std::distance(VAL1.cbegin(), VAL1.cend()) == 3);
@@ -1230,9 +1230,9 @@ TEST(EnumMap, DereferencedIteratorAssignability)
 
 TEST(EnumMap, IteratorAccessingDefaultConstructedIteratorFails)
 {
-    auto it = EnumMap<TestEnum1, int>::iterator{};
+    auto iter = EnumMap<TestEnum1, int>::iterator{};
 
-    EXPECT_DEATH(it->second++, "");
+    EXPECT_DEATH(iter->second++, "");
 }
 
 static constexpr EnumMap<TestEnum1, int> LIVENESS_TEST_INSTANCE{{TestEnum1::ONE, 100}};
@@ -1247,23 +1247,23 @@ TEST(EnumMap, IteratorDereferenceLiveness)
 
     {
         // this test needs ubsan/asan
-        EnumMap<TestEnum1, int> m = {{TestEnum1::ONE, 2}};
-        const decltype(m)::reference ref = *m.begin();  // Fine
+        EnumMap<TestEnum1, int> var1 = {{TestEnum1::ONE, 2}};
+        const decltype(var1)::reference ref = *var1.begin();  // Fine
         EXPECT_EQ(TestEnum1::ONE, ref.first);
         EXPECT_EQ(2, ref.second);
     }
     {
         // this test needs ubsan/asan
-        EnumMap<TestEnum1, int> m = {{TestEnum1::ONE, 2}};
-        auto ref = *m.begin();  // Fine
+        EnumMap<TestEnum1, int> var1 = {{TestEnum1::ONE, 2}};
+        auto ref = *var1.begin();  // Fine
         EXPECT_EQ(TestEnum1::ONE, ref.first);
         EXPECT_EQ(2, ref.second);
     }
     {
         /*
         // this test needs ubsan/asan
-        EnumMap<TestEnum1, int> m = {{TestEnum1::ONE, 2}};
-        auto& ref = *m.begin();  // Fails to compile, instead of allowing dangling pointers
+        EnumMap<TestEnum1, int> var1 = {{TestEnum1::ONE, 2}};
+        auto& ref = *var1.begin();  // Fails to compile, instead of allowing dangling pointers
         EXPECT_EQ(TestEnum1::ONE, ref.first);
         EXPECT_EQ(2, ref.second);
          */
@@ -1300,13 +1300,13 @@ TEST(EnumMap, ReverseIteratorBase)
 {
     constexpr auto VAL1 = []()
     {
-        EnumMap<TestEnum1, int> s{
+        EnumMap<TestEnum1, int> var{
             {TestEnum1::ONE, 10}, {TestEnum1::TWO, 20}, {TestEnum1::THREE, 30}};
-        auto it = s.rbegin();  // points to 3
-        std::advance(it, 1);   // points to 2
+        auto iter = var.rbegin();  // points to 3
+        std::advance(iter, 1);     // points to 2
         // https://stackoverflow.com/questions/1830158/how-to-call-erase-with-a-reverse-iterator
-        s.erase(std::next(it).base());
-        return s;
+        var.erase(std::next(iter).base());
+        return var;
     }();
 
     static_assert(VAL1.size() == 2);
@@ -1332,12 +1332,12 @@ TEST(EnumMap, MutableFind)
 {
     constexpr auto VAL1 = []()
     {
-        EnumMap<TestEnum1, int> s{{TestEnum1::TWO, 20}, {TestEnum1::FOUR, 40}};
-        auto it = s.find(TestEnum1::TWO);
-        it->second = 25;
-        it++;
-        it->second = 45;
-        return s;
+        EnumMap<TestEnum1, int> var{{TestEnum1::TWO, 20}, {TestEnum1::FOUR, 40}};
+        auto iter = var.find(TestEnum1::TWO);
+        iter->second = 25;
+        iter++;
+        iter->second = 45;
+        return var;
     }();
 
     static_assert(VAL1.at(TestEnum1::TWO) == 25);
@@ -1376,9 +1376,9 @@ TEST(EnumMap, RichEnum)
 {
     constexpr auto VAL1 = []()
     {
-        EnumMap<TestRichEnum1, int> s{};
-        s.insert({TestRichEnum1::C_ONE(), 100});
-        return s;
+        EnumMap<TestRichEnum1, int> var{};
+        var.insert({TestRichEnum1::C_ONE(), 100});
+        return var;
     }();
 
     static_assert(VAL1.size() == 1);
@@ -1390,9 +1390,9 @@ TEST(EnumMap, NonConformingRichEnum)
 {
     constexpr auto VAL1 = []()
     {
-        EnumMap<NonConformingTestRichEnum1, int> s{};
-        s.insert({NonConformingTestRichEnum1::NC_ONE(), 100});
-        return s;
+        EnumMap<NonConformingTestRichEnum1, int> var{};
+        var.insert({NonConformingTestRichEnum1::NC_ONE(), 100});
+        return var;
     }();
 
     static_assert(VAL1.size() == 1);
@@ -1431,30 +1431,32 @@ TEST(EnumMap, Equality)
 
 TEST(EnumMap, Ranges)
 {
-    EnumMap<TestRichEnum1, int> s1{{TestRichEnum1::C_ONE(), 10}, {TestRichEnum1::C_FOUR(), 40}};
-    auto f = s1 | ranges::views::filter([](const auto& v) -> bool { return v.second == 10; });
+    EnumMap<TestRichEnum1, int> var1{{TestRichEnum1::C_ONE(), 10}, {TestRichEnum1::C_FOUR(), 40}};
+    auto filtered =
+        var1 | ranges::views::filter([](const auto& var) -> bool { return var.second == 10; });
 
-    EXPECT_EQ(1, ranges::distance(f));
-    const int first_entry = (*f.begin()).second;  // Can't use arrow with range-v3 because it
-                                                  // requires l-value. Note that std::ranges works
+    EXPECT_EQ(1, ranges::distance(filtered));
+    const int first_entry =
+        (*filtered.begin()).second;  // Can't use arrow with range-v3 because it
+                                     // requires l-value. Note that std::ranges works
     EXPECT_EQ(10, first_entry);
 }
 
 TEST(EnumMap, OverloadedAddressOfOperator)
 {
     {
-        EnumMap<TestEnum1, MockFailingAddressOfOperator> v{};
-        v[TestEnum1::ONE] = {};
-        v.at(TestEnum1::ONE) = {};
-        v.insert({TestEnum1::TWO, {}});
-        v.emplace(TestEnum1::THREE, MockFailingAddressOfOperator{});
-        v.erase(TestEnum1::THREE);
-        v.try_emplace(TestEnum1::FOUR, MockFailingAddressOfOperator{});
-        v.clear();
-        v.insert_or_assign(TestEnum1::TWO, MockFailingAddressOfOperator{});
-        v.insert_or_assign(TestEnum1::TWO, MockFailingAddressOfOperator{});
-        v.clear();
-        ASSERT_TRUE(v.empty());
+        EnumMap<TestEnum1, MockFailingAddressOfOperator> var{};
+        var[TestEnum1::ONE] = {};
+        var.at(TestEnum1::ONE) = {};
+        var.insert({TestEnum1::TWO, {}});
+        var.emplace(TestEnum1::THREE, MockFailingAddressOfOperator{});
+        var.erase(TestEnum1::THREE);
+        var.try_emplace(TestEnum1::FOUR, MockFailingAddressOfOperator{});
+        var.clear();
+        var.insert_or_assign(TestEnum1::TWO, MockFailingAddressOfOperator{});
+        var.insert_or_assign(TestEnum1::TWO, MockFailingAddressOfOperator{});
+        var.clear();
+        ASSERT_TRUE(var.empty());
     }
 
     {
@@ -1463,19 +1465,19 @@ TEST(EnumMap, OverloadedAddressOfOperator)
     }
 
     {
-        EnumMap<TestEnum1, MockFailingAddressOfOperator> v{
+        EnumMap<TestEnum1, MockFailingAddressOfOperator> var{
             {TestEnum1::TWO, {}},
             {TestEnum1::THREE, {}},
             {TestEnum1::FOUR, {}},
         };
-        ASSERT_FALSE(v.empty());
-        auto it = v.begin();
-        it->second.do_nothing();
-        (void)it++;
-        (void)it--;
-        ++it;
-        --it;
-        it->second.do_nothing();
+        ASSERT_FALSE(var.empty());
+        auto iter = var.begin();
+        iter->second.do_nothing();
+        (void)iter++;
+        (void)iter--;
+        ++iter;
+        --iter;
+        iter->second.do_nothing();
     }
 
     {
@@ -1485,21 +1487,21 @@ TEST(EnumMap, OverloadedAddressOfOperator)
             {TestEnum1::FOUR, {}},
         };
         static_assert(!VAL.empty());
-        auto it = VAL.cbegin();
-        it->second.do_nothing();
-        (void)it++;
-        (void)it--;
-        ++it;
-        --it;
-        it->second.do_nothing();
+        auto iter = VAL.cbegin();
+        iter->second.do_nothing();
+        (void)iter++;
+        (void)iter--;
+        ++iter;
+        --iter;
+        iter->second.do_nothing();
     }
 }
 
 TEST(EnumMap, ClassTemplateArgumentDeduction)
 {
     // Compile-only test
-    const EnumMap a = EnumMap<TestEnum1, int>{};
-    (void)a;
+    const EnumMap var1 = EnumMap<TestEnum1, int>{};
+    (void)var1;
 }
 
 TEST(EnumMap, NonDefaultConstructible)
@@ -1510,26 +1512,26 @@ TEST(EnumMap, NonDefaultConstructible)
     }
 
     {
-        EnumMap<TestEnum1, MockNonDefaultConstructible> s2{};
-        s2.emplace(TestEnum1::ONE, 3);
+        EnumMap<TestEnum1, MockNonDefaultConstructible> var2{};
+        var2.emplace(TestEnum1::ONE, 3);
     }
 }
 
 TEST(EnumMap, MoveableButNotCopyable)
 {
     {
-        EnumMap<TestEnum1, MockMoveableButNotCopyable> s{};
-        s.emplace(TestEnum1::TWO, MockMoveableButNotCopyable{});
+        EnumMap<TestEnum1, MockMoveableButNotCopyable> var{};
+        var.emplace(TestEnum1::TWO, MockMoveableButNotCopyable{});
     }
 }
 
 TEST(EnumMap, NonAssignable)
 {
     {
-        EnumMap<TestEnum1, MockNonAssignable> s{};
-        s[TestEnum1::TWO];
+        EnumMap<TestEnum1, MockNonAssignable> var{};
+        var[TestEnum1::TWO];
 
-        s.erase(TestEnum1::TWO);
+        var.erase(TestEnum1::TWO);
     }
 }
 
@@ -1541,55 +1543,55 @@ TEST(EnumMap, ConstRef)
 {
     {
 #ifndef _LIBCPP_VERSION
-        std::map<TestEnum1, const int&> s{{TestEnum1::ONE, INT_VALUE_10}};
-        s.insert({TestEnum1::TWO, INT_VALUE_20});
-        s.emplace(TestEnum1::THREE, INT_VALUE_30);
-        s.erase(TestEnum1::THREE);
+        std::map<TestEnum1, const int&> var{{TestEnum1::ONE, INT_VALUE_10}};
+        var.insert({TestEnum1::TWO, INT_VALUE_20});
+        var.emplace(TestEnum1::THREE, INT_VALUE_30);
+        var.erase(TestEnum1::THREE);
 
-        auto s_copy = s;
-        s = s_copy;
-        s = std::move(s_copy);
+        auto s_copy = var;
+        var = s_copy;
+        var = std::move(s_copy);
 
-        ASSERT_TRUE(s.contains(TestEnum1::ONE));
-        ASSERT_TRUE(s.contains(TestEnum1::TWO));
-        ASSERT_TRUE(!s.contains(TestEnum1::THREE));
-        ASSERT_TRUE(!s.contains(TestEnum1::FOUR));
+        ASSERT_TRUE(var.contains(TestEnum1::ONE));
+        ASSERT_TRUE(var.contains(TestEnum1::TWO));
+        ASSERT_TRUE(!var.contains(TestEnum1::THREE));
+        ASSERT_TRUE(!var.contains(TestEnum1::FOUR));
 
-        ASSERT_EQ(INT_VALUE_10, s.at(TestEnum1::ONE));
+        ASSERT_EQ(INT_VALUE_10, var.at(TestEnum1::ONE));
 #endif
     }
 
     {
-        EnumMap<TestEnum1, const int&> s{{TestEnum1::ONE, INT_VALUE_10}};
-        s.insert({TestEnum1::TWO, INT_VALUE_20});
-        s.emplace(TestEnum1::THREE, INT_VALUE_30);
-        s.erase(TestEnum1::THREE);
+        EnumMap<TestEnum1, const int&> var{{TestEnum1::ONE, INT_VALUE_10}};
+        var.insert({TestEnum1::TWO, INT_VALUE_20});
+        var.emplace(TestEnum1::THREE, INT_VALUE_30);
+        var.erase(TestEnum1::THREE);
 
-        auto s_copy = s;
-        s = s_copy;
-        s = std::move(s_copy);
+        auto s_copy = var;
+        var = s_copy;
+        var = std::move(s_copy);
 
-        ASSERT_TRUE(s.contains(TestEnum1::ONE));
-        ASSERT_TRUE(s.contains(TestEnum1::TWO));
-        ASSERT_TRUE(!s.contains(TestEnum1::THREE));
-        ASSERT_TRUE(!s.contains(TestEnum1::FOUR));
+        ASSERT_TRUE(var.contains(TestEnum1::ONE));
+        ASSERT_TRUE(var.contains(TestEnum1::TWO));
+        ASSERT_TRUE(!var.contains(TestEnum1::THREE));
+        ASSERT_TRUE(!var.contains(TestEnum1::FOUR));
 
-        ASSERT_EQ(INT_VALUE_10, s.at(TestEnum1::ONE));
+        ASSERT_EQ(INT_VALUE_10, var.at(TestEnum1::ONE));
     }
 
     {
         constexpr EnumMap<TestEnum1, const int&> VAL1 = []()
         {
-            EnumMap<TestEnum1, const int&> s{{TestEnum1::ONE, INT_VALUE_10}};
-            s.insert({TestEnum1::TWO, INT_VALUE_20});
-            s.emplace(TestEnum1::THREE, INT_VALUE_30);
-            s.erase(TestEnum1::THREE);
+            EnumMap<TestEnum1, const int&> var{{TestEnum1::ONE, INT_VALUE_10}};
+            var.insert({TestEnum1::TWO, INT_VALUE_20});
+            var.emplace(TestEnum1::THREE, INT_VALUE_30);
+            var.erase(TestEnum1::THREE);
 
-            auto s_copy = s;
-            s = s_copy;
-            s = std::move(s_copy);
+            auto s_copy = var;
+            var = s_copy;
+            var = std::move(s_copy);
 
-            return s;
+            return var;
         }();
 
         static_assert(VAL1.contains(TestEnum1::ONE));
@@ -1661,23 +1663,23 @@ TYPED_TEST_P(EnumMapInstanceCheckFixture, EnumMapInstanceCheck)
 {
     using MapOfInstanceCounterType = TypeParam;
     using InstanceCounterType = typename MapOfInstanceCounterType::mapped_type;
-    MapOfInstanceCounterType v1{};
+    MapOfInstanceCounterType var1{};
 
     // [] l-value
     ASSERT_EQ(0, InstanceCounterType::counter);
     {  // IMPORTANT SCOPE, don't remove.
         // This will be destroyed when we go out of scope
-        const InstanceCounterType aa{1};
+        const InstanceCounterType entry_aa{1};
         ASSERT_EQ(1, InstanceCounterType::counter);
-        v1[TestEnum1::ONE] = aa;
+        var1[TestEnum1::ONE] = entry_aa;
         ASSERT_EQ(2, InstanceCounterType::counter);
-        v1[TestEnum1::ONE] = aa;
-        v1[TestEnum1::ONE] = aa;
-        v1[TestEnum1::ONE] = aa;
-        v1[TestEnum1::ONE] = aa;
-        v1[TestEnum1::ONE] = aa;
+        var1[TestEnum1::ONE] = entry_aa;
+        var1[TestEnum1::ONE] = entry_aa;
+        var1[TestEnum1::ONE] = entry_aa;
+        var1[TestEnum1::ONE] = entry_aa;
+        var1[TestEnum1::ONE] = entry_aa;
         ASSERT_EQ(2, InstanceCounterType::counter);
-        v1.clear();
+        var1.clear();
         ASSERT_EQ(1, InstanceCounterType::counter);
     }
     ASSERT_EQ(0, InstanceCounterType::counter);
@@ -1686,88 +1688,88 @@ TYPED_TEST_P(EnumMapInstanceCheckFixture, EnumMapInstanceCheck)
     ASSERT_EQ(0, InstanceCounterType::counter);
     {  // IMPORTANT SCOPE, don't remove.
         // This will be destroyed when we go out of scope
-        const InstanceCounterType aa{1};
+        const InstanceCounterType entry_aa{1};
         ASSERT_EQ(1, InstanceCounterType::counter);
-        v1.insert({TestEnum1::ONE, aa});
-        ASSERT_EQ(1, v1.size());
+        var1.insert({TestEnum1::ONE, entry_aa});
+        ASSERT_EQ(1, var1.size());
         ASSERT_EQ(2, InstanceCounterType::counter);
-        v1.insert({TestEnum1::ONE, aa});
-        v1.insert({TestEnum1::ONE, aa});
-        v1.insert({TestEnum1::ONE, aa});
-        ASSERT_EQ(1, v1.size());
+        var1.insert({TestEnum1::ONE, entry_aa});
+        var1.insert({TestEnum1::ONE, entry_aa});
+        var1.insert({TestEnum1::ONE, entry_aa});
+        ASSERT_EQ(1, var1.size());
         ASSERT_EQ(2, InstanceCounterType::counter);
-        v1.clear();
-        ASSERT_EQ(0, v1.size());
+        var1.clear();
+        ASSERT_EQ(0, var1.size());
         ASSERT_EQ(1, InstanceCounterType::counter);
     }
     ASSERT_EQ(0, InstanceCounterType::counter);
 
     // Double clear
     {
-        v1.clear();
-        v1.clear();
+        var1.clear();
+        var1.clear();
     }
 
     // [] r-value
     ASSERT_EQ(0, InstanceCounterType::counter);
     {  // IMPORTANT SCOPE, don't remove.
         // This will be destroyed when we go out of scope
-        InstanceCounterType aa{1};
+        InstanceCounterType entry_aa{1};
         ASSERT_EQ(1, InstanceCounterType::counter);
-        v1[TestEnum1::ONE] = std::move(aa);
-        ASSERT_EQ(1, v1.size());
+        var1[TestEnum1::ONE] = std::move(entry_aa);
+        ASSERT_EQ(1, var1.size());
         ASSERT_EQ(2, InstanceCounterType::counter);
-        v1.clear();
-        ASSERT_EQ(0, v1.size());
+        var1.clear();
+        ASSERT_EQ(0, var1.size());
         ASSERT_EQ(1, InstanceCounterType::counter);
-        v1[TestEnum1::ONE] = InstanceCounterType{};  // With temporary
-        v1[TestEnum1::ONE] = InstanceCounterType{};  // With temporary
-        v1[TestEnum1::ONE] = InstanceCounterType{};  // With temporary
-        ASSERT_EQ(1, v1.size());
+        var1[TestEnum1::ONE] = InstanceCounterType{};  // With temporary
+        var1[TestEnum1::ONE] = InstanceCounterType{};  // With temporary
+        var1[TestEnum1::ONE] = InstanceCounterType{};  // With temporary
+        ASSERT_EQ(1, var1.size());
         ASSERT_EQ(2, InstanceCounterType::counter);
     }
     ASSERT_EQ(1, InstanceCounterType::counter);
-    v1.clear();
+    var1.clear();
     ASSERT_EQ(0, InstanceCounterType::counter);
 
     // insert r-value
     ASSERT_EQ(0, InstanceCounterType::counter);
     {  // IMPORTANT SCOPE, don't remove.
         // This will be destroyed when we go out of scope
-        InstanceCounterType aa{1};
+        InstanceCounterType entry_aa{1};
         ASSERT_EQ(1, InstanceCounterType::counter);
-        v1.insert({TestEnum1::ONE, std::move(aa)});
-        ASSERT_EQ(1, v1.size());
+        var1.insert({TestEnum1::ONE, std::move(entry_aa)});
+        ASSERT_EQ(1, var1.size());
         ASSERT_EQ(2, InstanceCounterType::counter);
-        v1.clear();
-        ASSERT_EQ(0, v1.size());
+        var1.clear();
+        ASSERT_EQ(0, var1.size());
         ASSERT_EQ(1, InstanceCounterType::counter);
-        v1.insert({TestEnum1::ONE, InstanceCounterType{}});  // With temporary
-        v1.insert({TestEnum1::ONE, InstanceCounterType{}});  // With temporary
-        v1.insert({TestEnum1::ONE, InstanceCounterType{}});  // With temporary
-        ASSERT_EQ(1, v1.size());
+        var1.insert({TestEnum1::ONE, InstanceCounterType{}});  // With temporary
+        var1.insert({TestEnum1::ONE, InstanceCounterType{}});  // With temporary
+        var1.insert({TestEnum1::ONE, InstanceCounterType{}});  // With temporary
+        ASSERT_EQ(1, var1.size());
         ASSERT_EQ(2, InstanceCounterType::counter);
     }
     ASSERT_EQ(1, InstanceCounterType::counter);
-    v1.clear();
+    var1.clear();
     ASSERT_EQ(0, InstanceCounterType::counter);
 
     // Emplace
     ASSERT_EQ(0, InstanceCounterType::counter);
     {  // IMPORTANT SCOPE, don't remove.
         // This will be destroyed when we go out of scope
-        const InstanceCounterType aa{1};
+        const InstanceCounterType entry_aa{1};
         ASSERT_EQ(1, InstanceCounterType::counter);
-        v1.emplace(TestEnum1::ONE, aa);
-        ASSERT_EQ(1, v1.size());
+        var1.emplace(TestEnum1::ONE, entry_aa);
+        ASSERT_EQ(1, var1.size());
         ASSERT_EQ(2, InstanceCounterType::counter);
-        v1.emplace(TestEnum1::ONE, aa);
-        v1.emplace(TestEnum1::ONE, aa);
-        v1.emplace(TestEnum1::ONE, aa);
-        ASSERT_EQ(1, v1.size());
+        var1.emplace(TestEnum1::ONE, entry_aa);
+        var1.emplace(TestEnum1::ONE, entry_aa);
+        var1.emplace(TestEnum1::ONE, entry_aa);
+        ASSERT_EQ(1, var1.size());
         ASSERT_EQ(2, InstanceCounterType::counter);
-        v1.clear();
-        ASSERT_EQ(0, v1.size());
+        var1.clear();
+        ASSERT_EQ(0, var1.size());
         ASSERT_EQ(1, InstanceCounterType::counter);
     }
     ASSERT_EQ(0, InstanceCounterType::counter);
@@ -1776,152 +1778,152 @@ TYPED_TEST_P(EnumMapInstanceCheckFixture, EnumMapInstanceCheck)
     ASSERT_EQ(0, InstanceCounterType::counter);
     {  // IMPORTANT SCOPE, don't remove.
         // This will be destroyed when we go out of scope
-        const InstanceCounterType aa{1};
+        const InstanceCounterType entry_aa{1};
         ASSERT_EQ(1, InstanceCounterType::counter);
-        v1.try_emplace(TestEnum1::ONE, aa);
-        ASSERT_EQ(1, v1.size());
+        var1.try_emplace(TestEnum1::ONE, entry_aa);
+        ASSERT_EQ(1, var1.size());
         ASSERT_EQ(2, InstanceCounterType::counter);
-        v1.try_emplace(TestEnum1::ONE, aa);
-        v1.try_emplace(TestEnum1::ONE, aa);
-        v1.try_emplace(TestEnum1::ONE, InstanceCounterType{1});
-        ASSERT_EQ(1, v1.size());
+        var1.try_emplace(TestEnum1::ONE, entry_aa);
+        var1.try_emplace(TestEnum1::ONE, entry_aa);
+        var1.try_emplace(TestEnum1::ONE, InstanceCounterType{1});
+        ASSERT_EQ(1, var1.size());
         ASSERT_EQ(2, InstanceCounterType::counter);
-        v1.clear();
-        ASSERT_EQ(0, v1.size());
+        var1.clear();
+        ASSERT_EQ(0, var1.size());
         ASSERT_EQ(1, InstanceCounterType::counter);
     }
     ASSERT_EQ(0, InstanceCounterType::counter);
 
     // Erase with iterators
     {
-        v1[TestEnum1::ONE] = InstanceCounterType{1};
-        v1[TestEnum1::TWO] = InstanceCounterType{2};
-        v1[TestEnum1::THREE] = InstanceCounterType{3};
-        v1[TestEnum1::FOUR] = InstanceCounterType{4};
+        var1[TestEnum1::ONE] = InstanceCounterType{1};
+        var1[TestEnum1::TWO] = InstanceCounterType{2};
+        var1[TestEnum1::THREE] = InstanceCounterType{3};
+        var1[TestEnum1::FOUR] = InstanceCounterType{4};
 
-        ASSERT_EQ(4, v1.size());
+        ASSERT_EQ(4, var1.size());
         ASSERT_EQ(4, InstanceCounterType::counter);
-        v1.erase(v1.begin());
-        ASSERT_EQ(3, v1.size());
+        var1.erase(var1.begin());
+        ASSERT_EQ(3, var1.size());
         ASSERT_EQ(3, InstanceCounterType::counter);
-        v1.erase(std::next(v1.begin(), 2), std::next(v1.begin(), 3));
-        ASSERT_EQ(2, v1.size());
+        var1.erase(std::next(var1.begin(), 2), std::next(var1.begin(), 3));
+        ASSERT_EQ(2, var1.size());
         ASSERT_EQ(2, InstanceCounterType::counter);
-        v1.erase(v1.cbegin());
-        ASSERT_EQ(1, v1.size());
+        var1.erase(var1.cbegin());
+        ASSERT_EQ(1, var1.size());
         ASSERT_EQ(1, InstanceCounterType::counter);
 
-        v1[TestEnum1::ONE] = InstanceCounterType{1};
-        v1.erase(v1.begin(), v1.end());
-        ASSERT_EQ(0, v1.size());
+        var1[TestEnum1::ONE] = InstanceCounterType{1};
+        var1.erase(var1.begin(), var1.end());
+        ASSERT_EQ(0, var1.size());
         ASSERT_EQ(0, InstanceCounterType::counter);
     }
 
     // Erase with key
     {
-        v1[TestEnum1::ONE] = InstanceCounterType{1};
-        v1[TestEnum1::TWO] = InstanceCounterType{2};
-        v1[TestEnum1::THREE] = InstanceCounterType{3};
-        v1[TestEnum1::FOUR] = InstanceCounterType{4};
+        var1[TestEnum1::ONE] = InstanceCounterType{1};
+        var1[TestEnum1::TWO] = InstanceCounterType{2};
+        var1[TestEnum1::THREE] = InstanceCounterType{3};
+        var1[TestEnum1::FOUR] = InstanceCounterType{4};
 
-        ASSERT_EQ(4, v1.size());
+        ASSERT_EQ(4, var1.size());
         ASSERT_EQ(4, InstanceCounterType::counter);
-        v1.erase(TestEnum1::ONE);
-        ASSERT_EQ(3, v1.size());
+        var1.erase(TestEnum1::ONE);
+        ASSERT_EQ(3, var1.size());
         ASSERT_EQ(3, InstanceCounterType::counter);
-        v1.erase(TestEnum1::ONE);  // not in map
-        ASSERT_EQ(3, v1.size());
+        var1.erase(TestEnum1::ONE);  // not in map
+        ASSERT_EQ(3, var1.size());
         ASSERT_EQ(3, InstanceCounterType::counter);
-        v1.erase(TestEnum1::THREE);
-        ASSERT_EQ(2, v1.size());
+        var1.erase(TestEnum1::THREE);
+        ASSERT_EQ(2, var1.size());
         ASSERT_EQ(2, InstanceCounterType::counter);
-        v1.clear();
-        ASSERT_EQ(0, v1.size());
+        var1.clear();
+        ASSERT_EQ(0, var1.size());
         ASSERT_EQ(0, InstanceCounterType::counter);
     }
 
     ASSERT_EQ(0, InstanceCounterType::counter);
-    v1[TestEnum1::ONE] = InstanceCounterType{1};
-    v1[TestEnum1::TWO] = InstanceCounterType{2};
+    var1[TestEnum1::ONE] = InstanceCounterType{1};
+    var1[TestEnum1::TWO] = InstanceCounterType{2};
     ASSERT_EQ(2, InstanceCounterType::counter);
 
     {  // IMPORTANT SCOPE, don't remove.
-        const MapOfInstanceCounterType v2{v1};
-        (void)v2;
+        const MapOfInstanceCounterType var2{var1};
+        (void)var2;
         ASSERT_EQ(4, InstanceCounterType::counter);
     }
     ASSERT_EQ(2, InstanceCounterType::counter);
 
     {  // IMPORTANT SCOPE, don't remove.
-        const MapOfInstanceCounterType v2 = v1;
+        const MapOfInstanceCounterType var2 = var1;
         ASSERT_EQ(4, InstanceCounterType::counter);
-        v1 = v2;
+        var1 = var2;
         ASSERT_EQ(4, InstanceCounterType::counter);
     }
     ASSERT_EQ(2, InstanceCounterType::counter);
 
     {  // IMPORTANT SCOPE, don't remove.
-        const MapOfInstanceCounterType v2{std::move(v1)};
+        const MapOfInstanceCounterType var2{std::move(var1)};
         ASSERT_EQ(2, InstanceCounterType::counter);
     }
     ASSERT_EQ(0, InstanceCounterType::counter);
-    memory::destroy_and_construct_at_address_of(v1);
+    memory::destroy_and_construct_at_address_of(var1);
 
-    v1[TestEnum1::ONE] = InstanceCounterType{1};
-    v1[TestEnum1::TWO] = InstanceCounterType{2};
+    var1[TestEnum1::ONE] = InstanceCounterType{1};
+    var1[TestEnum1::TWO] = InstanceCounterType{2};
     ASSERT_EQ(2, InstanceCounterType::counter);
 
     {  // IMPORTANT SCOPE, don't remove.
-        const MapOfInstanceCounterType v2 = std::move(v1);
+        const MapOfInstanceCounterType var2 = std::move(var1);
         ASSERT_EQ(2, InstanceCounterType::counter);
     }
     ASSERT_EQ(0, InstanceCounterType::counter);
-    memory::destroy_and_construct_at_address_of(v1);
+    memory::destroy_and_construct_at_address_of(var1);
 
     // Lookup
     {
-        v1[TestEnum1::ONE] = InstanceCounterType{1};
-        v1[TestEnum1::TWO] = InstanceCounterType{2};
-        v1[TestEnum1::FOUR] = InstanceCounterType{4};
+        var1[TestEnum1::ONE] = InstanceCounterType{1};
+        var1[TestEnum1::TWO] = InstanceCounterType{2};
+        var1[TestEnum1::FOUR] = InstanceCounterType{4};
 
-        const auto v2 = v1;
-        ASSERT_EQ(3, v1.size());
-        ASSERT_EQ(3, v2.size());
+        const auto var2 = var1;
+        ASSERT_EQ(3, var1.size());
+        ASSERT_EQ(3, var2.size());
         ASSERT_EQ(6, InstanceCounterType::counter);
 
-        (void)v1.find(TestEnum1::ONE);
-        (void)v1.find(TestEnum1::THREE);
-        (void)v2.find(TestEnum1::ONE);
-        (void)v2.find(TestEnum1::THREE);
-        ASSERT_EQ(3, v1.size());
-        ASSERT_EQ(3, v2.size());
+        (void)var1.find(TestEnum1::ONE);
+        (void)var1.find(TestEnum1::THREE);
+        (void)var2.find(TestEnum1::ONE);
+        (void)var2.find(TestEnum1::THREE);
+        ASSERT_EQ(3, var1.size());
+        ASSERT_EQ(3, var2.size());
         ASSERT_EQ(6, InstanceCounterType::counter);
 
-        (void)v1.contains(TestEnum1::ONE);
-        (void)v1.contains(TestEnum1::THREE);
-        (void)v2.contains(TestEnum1::ONE);
-        (void)v2.contains(TestEnum1::THREE);
-        ASSERT_EQ(3, v1.size());
-        ASSERT_EQ(3, v2.size());
+        (void)var1.contains(TestEnum1::ONE);
+        (void)var1.contains(TestEnum1::THREE);
+        (void)var2.contains(TestEnum1::ONE);
+        (void)var2.contains(TestEnum1::THREE);
+        ASSERT_EQ(3, var1.size());
+        ASSERT_EQ(3, var2.size());
         ASSERT_EQ(6, InstanceCounterType::counter);
 
-        (void)v1.count(TestEnum1::ONE);
-        (void)v1.count(TestEnum1::THREE);
-        (void)v2.count(TestEnum1::ONE);
-        (void)v2.count(TestEnum1::THREE);
-        ASSERT_EQ(3, v1.size());
-        ASSERT_EQ(3, v2.size());
+        (void)var1.count(TestEnum1::ONE);
+        (void)var1.count(TestEnum1::THREE);
+        (void)var2.count(TestEnum1::ONE);
+        (void)var2.count(TestEnum1::THREE);
+        ASSERT_EQ(3, var1.size());
+        ASSERT_EQ(3, var2.size());
         ASSERT_EQ(6, InstanceCounterType::counter);
 
-        v1.clear();
-        ASSERT_EQ(0, v1.size());
+        var1.clear();
+        ASSERT_EQ(0, var1.size());
         ASSERT_EQ(3, InstanceCounterType::counter);
     }
 
     ASSERT_EQ(0, InstanceCounterType::counter);
 
-    v1.clear();
-    ASSERT_EQ(0, v1.size());
+    var1.clear();
+    ASSERT_EQ(0, var1.size());
     ASSERT_EQ(0, InstanceCounterType::counter);
 }
 
@@ -1946,7 +1948,7 @@ namespace another_namespace_unrelated_to_the_fixed_containers_namespace
 TEST(EnumMap, ArgumentDependentLookup)
 {
     // Compile-only test
-    fixed_containers::EnumMap<fixed_containers::TestEnum1, int> a{};
-    erase_if(a, [](auto&&) { return true; });
+    fixed_containers::EnumMap<fixed_containers::TestEnum1, int> var1{};
+    erase_if(var1, [](auto&&) { return true; });
 }
 }  // namespace another_namespace_unrelated_to_the_fixed_containers_namespace

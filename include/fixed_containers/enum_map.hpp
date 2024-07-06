@@ -146,7 +146,7 @@ private:
     struct IndexPredicate
     {
         const std::array<bool, ENUM_COUNT>* array_set_;
-        constexpr bool operator()(const std::size_t i) const { return (*array_set_)[i]; }
+        constexpr bool operator()(const std::size_t index) const { return (*array_set_)[index]; }
         constexpr bool operator==(const IndexPredicate&) const = default;
     };
 
@@ -185,10 +185,10 @@ private:
 
         // https://github.com/llvm/llvm-project/issues/62555
         template <bool IS_CONST_2>
-        constexpr PairProvider(const PairProvider<IS_CONST_2>& m) noexcept
+        constexpr PairProvider(const PairProvider<IS_CONST_2>& mutable_other) noexcept
             requires(IS_CONST and !IS_CONST_2)
-          : present_indices_{m.present_indices_}
-          , values_{m.values_}
+          : present_indices_{mutable_other.present_indices_}
+          , values_{mutable_other.values_}
         {
         }
 
@@ -198,8 +198,8 @@ private:
         [[nodiscard]] constexpr std::conditional_t<IS_CONST, const_reference, reference> get()
             const noexcept
         {
-            const std::size_t i = present_indices_.get();
-            return {ENUM_VALUES[i], (*values_)[i].get()};
+            const std::size_t index = present_indices_.get();
+            return {ENUM_VALUES[index], (*values_)[index].get()};
         }
 
         template <bool IS_CONST2>
@@ -226,12 +226,12 @@ public:
 
 public:
     template <class Container, class EnumMapType>
-    static constexpr EnumMapType create_with_keys(const Container& sp, const V& value)
+    static constexpr EnumMapType create_with_keys(const Container& container, const V& value)
     {
         EnumMapType output{};
-        for (auto&& k : sp)
+        for (auto&& key : container)
         {
-            output.try_emplace(k, value);
+            output.try_emplace(key, value);
         }
         return output;
     }
@@ -412,8 +412,8 @@ public:
 
     constexpr void clear() noexcept
     {
-        const std::size_t sz = values().size();
-        for (std::size_t i = 0; i < sz; i++)
+        const std::size_t max_sz = max_size();
+        for (std::size_t i = 0; i < max_sz; i++)
         {
             if (array_set_unchecked_at(i))
             {
@@ -522,28 +522,29 @@ public:
     constexpr iterator erase(const_iterator pos) noexcept
     {
         assert_or_abort(pos != cend());
-        const std::size_t i = EnumAdapterType::ordinal(pos->first);
-        assert_or_abort(contains_at(i));
-        reset_at(i);
-        return create_iterator(i);
+        const std::size_t index = EnumAdapterType::ordinal(pos->first);
+        assert_or_abort(contains_at(index));
+        reset_at(index);
+        return create_iterator(index);
     }
     constexpr iterator erase(iterator pos) noexcept
     {
         assert_or_abort(pos != end());
-        const std::size_t i = EnumAdapterType::ordinal(pos->first);
-        assert_or_abort(contains_at(i));
-        reset_at(i);
-        return create_iterator(i);
+        const std::size_t index = EnumAdapterType::ordinal(pos->first);
+        assert_or_abort(contains_at(index));
+        reset_at(index);
+        return create_iterator(index);
     }
 
     constexpr iterator erase(const_iterator first, const_iterator last) noexcept
     {
-        const std::size_t from =
+        const std::size_t from_inclusive =
             first == cend() ? ENUM_COUNT : EnumAdapterType::ordinal(first->first);
-        const std::size_t to = last == cend() ? ENUM_COUNT : EnumAdapterType::ordinal(last->first);
-        assert_or_abort(from <= to);
+        const std::size_t to_exclusive =
+            last == cend() ? ENUM_COUNT : EnumAdapterType::ordinal(last->first);
+        assert_or_abort(from_inclusive <= to_exclusive);
 
-        for (std::size_t i = from; i < to; i++)
+        for (std::size_t i = from_inclusive; i < to_exclusive; i++)
         {
             if (contains_at(i))
             {
@@ -551,18 +552,18 @@ public:
             }
         }
 
-        return create_iterator(to);
+        return create_iterator(to_exclusive);
     }
 
     constexpr size_type erase(const K& key) noexcept
     {
-        const std::size_t i = EnumAdapterType::ordinal(key);
-        if (!contains_at(i))
+        const std::size_t index = EnumAdapterType::ordinal(key);
+        if (!contains_at(index))
         {
             return 0;
         }
 
-        reset_at(i);
+        reset_at(index);
         return 1;
     }
 
@@ -661,14 +662,14 @@ private:
             PairProvider<true>{std::addressof(array_set()), std::addressof(values()), start_index}};
     }
 
-    constexpr void reset_at(const std::size_t i) noexcept
+    constexpr void reset_at(const std::size_t index) noexcept
     {
-        assert_or_abort(contains_at(i));
+        assert_or_abort(contains_at(index));
         if constexpr (NotTriviallyDestructible<V>)  // if-check needed by clang
         {
-            memory::destroy_at_address_of(unchecked_at(i));
+            memory::destroy_at_address_of(unchecked_at(index));
         }
-        array_set_unchecked_at(i) = false;
+        array_set_unchecked_at(index) = false;
         decrement_size();
     }
 
@@ -681,13 +682,13 @@ protected:  // [WORKAROUND-1]
     {
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_set_;
     }
-    [[nodiscard]] constexpr const bool& array_set_unchecked_at(const std::size_t i) const
+    [[nodiscard]] constexpr const bool& array_set_unchecked_at(const std::size_t index) const
     {
-        return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_set_[i];
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_set_[index];
     }
-    constexpr bool& array_set_unchecked_at(const std::size_t i)
+    constexpr bool& array_set_unchecked_at(const std::size_t index)
     {
-        return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_set_[i];
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_set_[index];
     }
 
     [[nodiscard]] constexpr const ValueArrayType& values() const
@@ -695,25 +696,25 @@ protected:  // [WORKAROUND-1]
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_values_;
     }
     constexpr ValueArrayType& values() { return IMPLEMENTATION_DETAIL_DO_NOT_USE_values_; }
-    [[nodiscard]] constexpr const OptionalV& values_unchecked_at(const std::size_t i) const
+    [[nodiscard]] constexpr const OptionalV& values_unchecked_at(const std::size_t index) const
     {
-        return IMPLEMENTATION_DETAIL_DO_NOT_USE_values_[i];
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_values_[index];
     }
-    constexpr OptionalV& values_unchecked_at(const std::size_t i)
+    constexpr OptionalV& values_unchecked_at(const std::size_t index)
     {
-        return IMPLEMENTATION_DETAIL_DO_NOT_USE_values_[i];
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_values_[index];
     }
-    [[nodiscard]] constexpr const V& unchecked_at(const std::size_t i) const
+    [[nodiscard]] constexpr const V& unchecked_at(const std::size_t index) const
     {
-        return optional_storage_detail::get(IMPLEMENTATION_DETAIL_DO_NOT_USE_values_[i]);
+        return optional_storage_detail::get(IMPLEMENTATION_DETAIL_DO_NOT_USE_values_[index]);
     }
-    constexpr V& unchecked_at(const std::size_t i)
+    constexpr V& unchecked_at(const std::size_t index)
     {
-        return optional_storage_detail::get(IMPLEMENTATION_DETAIL_DO_NOT_USE_values_[i]);
+        return optional_storage_detail::get(IMPLEMENTATION_DETAIL_DO_NOT_USE_values_[index]);
     }
-    [[nodiscard]] constexpr bool contains_at(const std::size_t i) const noexcept
+    [[nodiscard]] constexpr bool contains_at(const std::size_t index) const noexcept
     {
-        return array_set_unchecked_at(i);
+        return array_set_unchecked_at(index);
     }
 
     constexpr void increment_size(const std::size_t n = 1)
@@ -743,9 +744,9 @@ public:
     using Builder = enum_map_detail::EnumMapBuilder<K, V, EnumMap<K, V, CheckingType>>;
 
     template <class Container, class EnumMapType = Self>
-    static constexpr EnumMapType create_with_keys(const Container& sp, const V& value = V())
+    static constexpr EnumMapType create_with_keys(const Container& container, const V& value = V())
     {
-        return Base::template create_with_keys<Container, EnumMapType>(sp, value);
+        return Base::template create_with_keys<Container, EnumMapType>(container, value);
     }
 
     template <class CollectionOfPairs, class EnumMapType = Self>
@@ -906,9 +907,9 @@ public:
     using Builder = enum_map_detail::EnumMapBuilder<K, V, Self>;
 
     template <class Container, class EnumMapType = Self>
-    static constexpr EnumMapType create_with_keys(const Container& sp, const V& value = V())
+    static constexpr EnumMapType create_with_keys(const Container& container, const V& value = V())
     {
-        return Base::template create_with_keys<Container, EnumMapType>(sp, value);
+        return Base::template create_with_keys<Container, EnumMapType>(container, value);
     }
 
     template <class CollectionOfPairs, class EnumMapType = Self>
@@ -989,9 +990,9 @@ public:
     using Builder = enum_map_detail::EnumMapBuilder<K, V, Self>;
 
     template <class Container, class EnumMapType = Self>
-    static constexpr EnumMapType create_with_keys(const Container& sp, const V& value = V())
+    static constexpr EnumMapType create_with_keys(const Container& container, const V& value = V())
     {
-        return Base::template create_with_keys<Container, EnumMapType>(sp, value);
+        return Base::template create_with_keys<Container, EnumMapType>(container, value);
     }
 
     template <class CollectionOfPairs, class EnumMapType = Self>
@@ -1051,9 +1052,9 @@ public:
 };
 
 template <typename K, typename V, fixed_containers::customize::EnumMapChecking<K> CheckingType>
-[[nodiscard]] constexpr bool is_full(const EnumMap<K, V, CheckingType>& c)
+[[nodiscard]] constexpr bool is_full(const EnumMap<K, V, CheckingType>& container)
 {
-    return c.size() >= c.max_size();
+    return container.size() >= container.max_size();
 }
 
 template <InputIterator InputIt>
@@ -1062,10 +1063,10 @@ EnumMap(InputIt first,
                                  typename std::iterator_traits<InputIt>::value_type::second_type>;
 
 template <class K, class V, customize::EnumMapChecking<K> CheckingType, class Predicate>
-constexpr typename EnumMap<K, V, CheckingType>::size_type erase_if(EnumMap<K, V, CheckingType>& c,
-                                                                   Predicate predicate)
+constexpr typename EnumMap<K, V, CheckingType>::size_type erase_if(
+    EnumMap<K, V, CheckingType>& container, Predicate predicate)
 {
-    return erase_if_detail::erase_if_impl(c, predicate);
+    return erase_if_detail::erase_if_impl(container, predicate);
 }
 
 }  // namespace fixed_containers

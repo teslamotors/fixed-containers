@@ -121,7 +121,7 @@ private:
     struct IndexPredicate
     {
         const std::array<bool, ENUM_COUNT>* array_set_;
-        constexpr bool operator()(const std::size_t i) const { return (*array_set_)[i]; }
+        constexpr bool operator()(const std::size_t index) const { return (*array_set_)[index]; }
         constexpr bool operator==(const IndexPredicate&) const = default;
     };
 
@@ -184,10 +184,10 @@ public:
     }
 
     template <class Container, class EnumSetType = Self>
-    static constexpr EnumSetType complement_of(const Container& s)
+    static constexpr EnumSetType complement_of(const Container& container)
     {
         auto output = all<EnumSetType>();
-        for (const K& key : s)
+        for (const K& key : container)
         {
             output.erase(key);
         }
@@ -262,8 +262,8 @@ public:
 
     constexpr void clear() noexcept
     {
-        const std::size_t sz = array_set().size();
-        for (std::size_t i = 0; i < sz; i++)
+        const std::size_t max_sz = max_size();
+        for (std::size_t i = 0; i < max_sz; i++)
         {
             if (contains_at(i))
             {
@@ -314,19 +314,21 @@ public:
     constexpr const_iterator erase(const_iterator pos) noexcept
     {
         assert_or_abort(pos != cend());
-        const std::size_t i = EnumAdapterType::ordinal(*pos);
-        assert_or_abort(contains_at(i));
-        reset_at(i);
-        return create_const_iterator(i);
+        const std::size_t index = EnumAdapterType::ordinal(*pos);
+        assert_or_abort(contains_at(index));
+        reset_at(index);
+        return create_const_iterator(index);
     }
 
     constexpr const_iterator erase(const_iterator first, const_iterator last) noexcept
     {
-        const std::size_t from = first == end() ? ENUM_COUNT : EnumAdapterType::ordinal(*first);
-        const std::size_t to = last == end() ? ENUM_COUNT : EnumAdapterType::ordinal(*last);
-        assert_or_abort(from <= to);
+        const std::size_t from_inclusive =
+            first == end() ? ENUM_COUNT : EnumAdapterType::ordinal(*first);
+        const std::size_t to_exclusive =
+            last == end() ? ENUM_COUNT : EnumAdapterType::ordinal(*last);
+        assert_or_abort(from_inclusive <= to_exclusive);
 
-        for (std::size_t i = from; i < to; i++)
+        for (std::size_t i = from_inclusive; i < to_exclusive; i++)
         {
             if (contains_at(i))
             {
@@ -334,18 +336,18 @@ public:
             }
         }
 
-        return create_const_iterator(to);
+        return create_const_iterator(to_exclusive);
     }
 
     constexpr size_type erase(const K& key) noexcept
     {
-        const std::size_t i = EnumAdapterType::ordinal(key);
-        if (!contains_at(i))
+        const std::size_t index = EnumAdapterType::ordinal(key);
+        if (!contains_at(index))
         {
             return 0;
         }
 
-        reset_at(i);
+        reset_at(index);
         return 1;
     }
 
@@ -368,13 +370,13 @@ private:
     {
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_set_;
     }
-    [[nodiscard]] constexpr const bool& array_set_unchecked_at(const std::size_t i) const
+    [[nodiscard]] constexpr const bool& array_set_unchecked_at(const std::size_t index) const
     {
-        return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_set_[i];
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_set_[index];
     }
-    constexpr bool& array_set_unchecked_at(const std::size_t i)
+    constexpr bool& array_set_unchecked_at(const std::size_t index)
     {
-        return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_set_[i];
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_set_[index];
     }
     constexpr void increment_size(const std::size_t n = 1)
     {
@@ -396,23 +398,23 @@ private:
         return const_reverse_iterator{ReferenceProvider{std::addressof(array_set()), start_index}};
     }
 
-    [[nodiscard]] constexpr bool contains_at(const std::size_t i) const noexcept
+    [[nodiscard]] constexpr bool contains_at(const std::size_t index) const noexcept
     {
-        return array_set_unchecked_at(i);
+        return array_set_unchecked_at(index);
     }
 
-    constexpr void reset_at(const std::size_t i) noexcept
+    constexpr void reset_at(const std::size_t index) noexcept
     {
-        assert_or_abort(contains_at(i));
-        array_set_unchecked_at(i) = false;
+        assert_or_abort(contains_at(index));
+        array_set_unchecked_at(index) = false;
         decrement_size();
     }
 };
 
 template <typename K>
-[[nodiscard]] constexpr bool is_full(const EnumSet<K>& c)
+[[nodiscard]] constexpr bool is_full(const EnumSet<K>& container)
 {
-    return c.size() >= c.max_size();
+    return container.size() >= container.max_size();
 }
 
 template <InputIterator InputIt>
@@ -420,9 +422,9 @@ EnumSet(InputIt first,
         InputIt last) noexcept -> EnumSet<typename std::iterator_traits<InputIt>::value_type>;
 
 template <class K, class Predicate>
-constexpr typename EnumSet<K>::size_type erase_if(EnumSet<K>& c, Predicate predicate)
+constexpr typename EnumSet<K>::size_type erase_if(EnumSet<K>& container, Predicate predicate)
 {
-    return erase_if_detail::erase_if_impl(c, predicate);
+    return erase_if_detail::erase_if_impl(container, predicate);
 }
 
 }  // namespace fixed_containers

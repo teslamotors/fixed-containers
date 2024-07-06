@@ -14,8 +14,8 @@ union IndexOrValueStorage
     T value;
     // clang-format off
     constexpr IndexOrValueStorage() noexcept : index{} { }
-    explicit constexpr IndexOrValueStorage(const T& v) : value{v} { }
-    explicit constexpr IndexOrValueStorage(T&& v) : value{std::move(v)} { }
+    explicit constexpr IndexOrValueStorage(const T& var) : value{var} { }
+    explicit constexpr IndexOrValueStorage(T&& var) : value{std::move(var)} { }
     template <class... Args>
     explicit constexpr IndexOrValueStorage(std::in_place_t, Args&&... args) : value(std::forward<Args>(args)...) { }
 
@@ -58,8 +58,8 @@ union IndexOrValueStorage<T>
     T value;
     // clang-format off
     constexpr IndexOrValueStorage() noexcept : index{} { }
-    explicit constexpr IndexOrValueStorage(const T& v) : value{v} { }
-    explicit constexpr IndexOrValueStorage(T&& v) : value{std::move(v)} { }
+    explicit constexpr IndexOrValueStorage(const T& var) : value{var} { }
+    explicit constexpr IndexOrValueStorage(T&& var) : value{std::move(var)} { }
     template <class... Args>
     explicit constexpr IndexOrValueStorage(std::in_place_t, Args&&... args) : value(std::forward<Args>(args)...) { }
     // clang-format on

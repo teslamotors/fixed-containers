@@ -13,8 +13,8 @@ struct ReferenceStorage
     using T0 = std::remove_reference_t<T>;
     std::reference_wrapper<T0> value;
 
-    explicit constexpr ReferenceStorage(T v)
-      : value{v}
+    explicit constexpr ReferenceStorage(T value_in_ctor)
+      : value{value_in_ctor}
     {
     }
 

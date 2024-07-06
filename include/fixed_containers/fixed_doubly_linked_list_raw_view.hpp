@@ -108,10 +108,11 @@ public:
         return list_ptr_;
     }
 
-    [[nodiscard]] constexpr const std::byte* value_at(IndexType i) const noexcept
+    [[nodiscard]] constexpr const std::byte* value_at(IndexType index) const noexcept
     {
         // this relies on `FixedIndexBasedPoolStorage` starting with its dense array of `Value`
-        return std::next(value_storage_start(), static_cast<std::ptrdiff_t>(elem_size_bytes_ * i));
+        return std::next(value_storage_start(),
+                         static_cast<std::ptrdiff_t>(elem_size_bytes_ * index));
     }
 
     [[nodiscard]] constexpr const ChainEntryType* chain_start() const noexcept
@@ -122,9 +123,9 @@ public:
         return reinterpret_cast<const ChainEntryType*>(std::next(list_ptr_, value_storage_size()));
     }
 
-    [[nodiscard]] constexpr const ChainEntryType& indices_of(IndexType i) const noexcept
+    [[nodiscard]] constexpr const ChainEntryType& indices_of(IndexType index) const noexcept
     {
-        return *std::next(chain_start(), static_cast<std::ptrdiff_t>(i));
+        return *std::next(chain_start(), static_cast<std::ptrdiff_t>(index));
     }
 };
 }  // namespace fixed_containers::fixed_doubly_linked_list_detail

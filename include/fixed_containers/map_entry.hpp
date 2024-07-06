@@ -23,14 +23,14 @@ public:  // Public so this type is a structural type and can thus be used in tem
 
 public:
     template <typename... Args>
-    explicit(sizeof...(Args) == 0) constexpr MapEntry(const K& k, Args&&... args) noexcept
-      : IMPLEMENTATION_DETAIL_DO_NOT_USE_key_(k)
+    explicit(sizeof...(Args) == 0) constexpr MapEntry(const K& key, Args&&... args) noexcept
+      : IMPLEMENTATION_DETAIL_DO_NOT_USE_key_(key)
       , IMPLEMENTATION_DETAIL_DO_NOT_USE_value_(std::forward<Args>(args)...)
     {
     }
     template <typename... Args>
-    explicit(sizeof...(Args) == 0) constexpr MapEntry(K&& k, Args&&... args) noexcept
-      : IMPLEMENTATION_DETAIL_DO_NOT_USE_key_(std::move(k))
+    explicit(sizeof...(Args) == 0) constexpr MapEntry(K&& key, Args&&... args) noexcept
+      : IMPLEMENTATION_DETAIL_DO_NOT_USE_key_(std::move(key))
       , IMPLEMENTATION_DETAIL_DO_NOT_USE_value_(std::forward<Args>(args)...)
     {
     }
@@ -61,12 +61,12 @@ public:  // Public so this type is a structural type and can thus be used in tem
     K IMPLEMENTATION_DETAIL_DO_NOT_USE_key_;
 
 public:
-    explicit constexpr MapEntry(const K& k) noexcept
-      : IMPLEMENTATION_DETAIL_DO_NOT_USE_key_(k)
+    explicit constexpr MapEntry(const K& key) noexcept
+      : IMPLEMENTATION_DETAIL_DO_NOT_USE_key_(key)
     {
     }
-    explicit constexpr MapEntry(K&& k) noexcept
-      : IMPLEMENTATION_DETAIL_DO_NOT_USE_key_(std::move(k))
+    explicit constexpr MapEntry(K&& key) noexcept
+      : IMPLEMENTATION_DETAIL_DO_NOT_USE_key_(std::move(key))
     {
     }
 

@@ -37,9 +37,10 @@ public:
 };
 
 template <typename T, std::size_t MAXIMUM_SIZE, typename CheckingType>
-[[nodiscard]] constexpr bool is_full(const FixedCircularQueue<T, MAXIMUM_SIZE, CheckingType>& c)
+[[nodiscard]] constexpr bool is_full(
+    const FixedCircularQueue<T, MAXIMUM_SIZE, CheckingType>& container)
 {
-    return c.size() >= MAXIMUM_SIZE;
+    return container.size() >= MAXIMUM_SIZE;
 }
 
 }  // namespace fixed_containers

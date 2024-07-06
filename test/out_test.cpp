@@ -17,10 +17,10 @@ struct SomeStruct
 };
 
 constexpr void set_int(int input, out<int> output) { *output = input; }
-constexpr void set_struct(out<SomeStruct> s)
+constexpr void set_struct(out<SomeStruct> instance)
 {
-    s->a = 1;
-    s->b = 2;
+    instance->a = 1;
+    instance->b = 2;
 }
 
 }  // namespace
@@ -52,9 +52,9 @@ TEST(Out, Usage2)
     {
         constexpr SomeStruct RESULT = []()
         {
-            SomeStruct s{0, 0};
-            set_struct(out{s});
-            return s;
+            SomeStruct instance{0, 0};
+            set_struct(out{instance});
+            return instance;
         }();
 
         static_assert(1 == RESULT.a);
@@ -62,29 +62,29 @@ TEST(Out, Usage2)
     }
 
     {
-        SomeStruct s{0, 0};
-        set_struct(out{s});
-        EXPECT_EQ(1, s.a);
-        EXPECT_EQ(2, s.b);
+        SomeStruct instance{0, 0};
+        set_struct(out{instance});
+        EXPECT_EQ(1, instance.a);
+        EXPECT_EQ(2, instance.b);
     }
 }
 
 TEST(Out, MockFailingAddressOfOperator)
 {
-    MockFailingAddressOfOperator a = 5;
-    out b{a};
+    MockFailingAddressOfOperator instance = 5;
+    out as_out{instance};
 
-    const int result = b->get();
+    const int result = as_out->get();
     ASSERT_EQ(5, result);
 }
 
 TEST(Out, ArrowOperator)
 {
-    std::unique_ptr<int> a = std::make_unique_for_overwrite<int>();
-    *a = 5;
-    out<std::unique_ptr<int>> b{a};
+    std::unique_ptr<int> instance = std::make_unique_for_overwrite<int>();
+    *instance = 5;
+    out<std::unique_ptr<int>> as_out{instance};
 
-    const int result = *(b->get());  // NOLINT(readability-redundant-smartptr-get)
+    const int result = *(as_out->get());  // NOLINT(readability-redundant-smartptr-get)
     ASSERT_EQ(5, result);
 }
 

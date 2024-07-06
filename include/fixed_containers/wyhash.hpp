@@ -14,73 +14,74 @@
 namespace fixed_containers::wyhash_detail
 {
 
-constexpr void mum(std::uint64_t* a, std::uint64_t* b)
+constexpr void mum(std::uint64_t* aaa, std::uint64_t* bbb)
 {
 #if defined(__SIZEOF_INT128__)
-    __uint128_t r = *a;
-    r *= *b;
-    *a = static_cast<std::uint64_t>(r);
-    *b = static_cast<std::uint64_t>(r >> 64U);
+    __uint128_t rrr = *aaa;
+    rrr *= *bbb;
+    *aaa = static_cast<std::uint64_t>(rrr);
+    *bbb = static_cast<std::uint64_t>(rrr >> 64U);
     // Disabled because `_umul128` is not constexpr
 /*
 #elif defined(_MSC_VER) && defined(_M_X64)
-    *a = _umul128(*a, *b, b);
+    *aaa = _umul128(*aaa, *bbb, bbb);
  */
 #else
 #if defined(_MSC_VER)
     static_assert(1ULL >> 32U == 1ULL / 0x100000000ULL);
     // Use division, because `>>` causes msvc to ICE
-    std::uint64_t ha = *a / 0x100000000ULL;
-    std::uint64_t hb = *b / 0x100000000ULL;
+    std::uint64_t ha0 = *aaa / 0x100000000ULL;
+    std::uint64_t hb0 = *bbb / 0x100000000ULL;
 #else
-    std::uint64_t ha = *a >> 32U;
-    std::uint64_t hb = *b >> 32U;
+    std::uint64_t ha0 = *aaa >> 32U;
+    std::uint64_t hb0 = *bbb >> 32U;
 #endif
-    std::uint64_t la = static_cast<std::uint32_t>(*a);
-    std::uint64_t lb = static_cast<std::uint32_t>(*b);
-    std::uint64_t hi{};
-    std::uint64_t lo{};
-    std::uint64_t rh = ha * hb;
-    std::uint64_t rm0 = ha * lb;
-    std::uint64_t rm1 = hb * la;
-    std::uint64_t rl = la * lb;
-    std::uint64_t t = rl + (rm0 << 32U);
-    auto c = static_cast<std::uint64_t>(t < rl);
-    lo = t + (rm1 << 32U);
-    c += static_cast<std::uint64_t>(lo < t);
-    hi = rh + (rm0 >> 32U) + (rm1 >> 32U) + c;
-    *a = lo;
-    *b = hi;
+    std::uint64_t la0 = static_cast<std::uint32_t>(*aaa);
+    std::uint64_t lb0 = static_cast<std::uint32_t>(*bbb);
+    std::uint64_t hi0{};
+    std::uint64_t lo0{};
+    std::uint64_t rh0 = ha0 * hb0;
+    std::uint64_t rm0 = ha0 * lb0;
+    std::uint64_t rm1 = hb0 * la0;
+    std::uint64_t rl0 = la0 * lb0;
+    std::uint64_t ttt = rl0 + (rm0 << 32U);
+    auto ccc = static_cast<std::uint64_t>(ttt < rl0);
+    lo0 = ttt + (rm1 << 32U);
+    ccc += static_cast<std::uint64_t>(lo0 < ttt);
+    hi0 = rh0 + (rm0 >> 32U) + (rm1 >> 32U) + ccc;
+    *aaa = lo0;
+    *bbb = hi0;
 #endif
 }
 
 // multiply and xor mix function, aka MUM
-[[nodiscard]] constexpr auto mix(std::uint64_t a, std::uint64_t b) -> std::uint64_t
+[[nodiscard]] constexpr auto mix(std::uint64_t aaa, std::uint64_t bbb) -> std::uint64_t
 {
-    mum(&a, &b);
-    return a ^ b;
+    mum(&aaa, &bbb);
+    return aaa ^ bbb;
 }
 
 // read functions. WARNING: we don't care about endianness, so results are different on big endian!
-[[nodiscard]] inline auto r8(const std::uint8_t* p) -> std::uint64_t
+[[nodiscard]] inline auto r8(const std::uint8_t* ppp) -> std::uint64_t
 {
-    std::uint64_t v{};
-    std::memcpy(&v, p, 8U);
-    return v;
+    std::uint64_t vvv{};
+    std::memcpy(&vvv, ppp, 8U);
+    return vvv;
 }
 
-[[nodiscard]] inline auto r4(const std::uint8_t* p) -> std::uint64_t
+[[nodiscard]] inline auto r4(const std::uint8_t* ppp) -> std::uint64_t
 {
-    std::uint32_t v{};
-    std::memcpy(&v, p, 4);
-    return v;
+    std::uint32_t vvv{};
+    std::memcpy(&vvv, ppp, 4);
+    return vvv;
 }
 
 // reads 1, 2, or 3 bytes
-[[nodiscard]] inline auto r3(const std::uint8_t* p, std::int64_t k) -> std::uint64_t
+[[nodiscard]] inline auto r3(const std::uint8_t* ppp, std::int64_t kkk) -> std::uint64_t
 {
-    return (static_cast<std::uint64_t>(*p) << 16U) |
-           (static_cast<std::uint64_t>(*std::next(p, k >> 1U)) << 8U) | *std::next(p, k - 1);
+    return (static_cast<std::uint64_t>(*ppp) << 16U) |
+           (static_cast<std::uint64_t>(*std::next(ppp, kkk >> 1U)) << 8U) |
+           *std::next(ppp, kkk - 1);
 }
 
 [[maybe_unused]] [[nodiscard]] inline auto hash(void const* key, std::int64_t len) -> std::uint64_t
@@ -90,62 +91,62 @@ constexpr void mum(std::uint64_t* a, std::uint64_t* b)
                                        UINT64_C(0x8ebc6af09c88c6e3),
                                        UINT64_C(0x589965cc75374cc3)};
 
-    auto const* p = static_cast<std::uint8_t const*>(key);
+    auto const* ppp = static_cast<std::uint8_t const*>(key);
     std::uint64_t seed = SECRET[0];
-    std::uint64_t a{};
-    std::uint64_t b{};
+    std::uint64_t aaa{};
+    std::uint64_t bbb{};
     if (len <= 16)
     {
         if (len >= 4)
         {
-            a = (r4(p) << 32U) | r4(std::next(p, (len >> 3U) << 2U));
-            b = (r4(std::next(p, len - 4)) << 32U) |
-                r4(std::next(p, len - 4 - ((len >> 3U) << 2U)));
+            aaa = (r4(ppp) << 32U) | r4(std::next(ppp, (len >> 3U) << 2U));
+            bbb = (r4(std::next(ppp, len - 4)) << 32U) |
+                  r4(std::next(ppp, len - 4 - ((len >> 3U) << 2U)));
         }
         else if (len > 0)
         {
-            a = r3(p, len);
-            b = 0;
+            aaa = r3(ppp, len);
+            bbb = 0;
         }
         else
         {
-            a = 0;
-            b = 0;
+            aaa = 0;
+            bbb = 0;
         }
     }
     else
     {
-        std::int64_t i = len;
-        if (i > 48)
+        std::int64_t iii = len;
+        if (iii > 48)
         {
             std::uint64_t see1 = seed;
             std::uint64_t see2 = seed;
             do
             {
-                seed = mix(r8(p) ^ SECRET[1], r8(std::next(p, 8)) ^ seed);
-                see1 = mix(r8(std::next(p, 16)) ^ SECRET[2], r8(std::next(p, 24)) ^ see1);
-                see2 = mix(r8(std::next(p, 32)) ^ SECRET[3], r8(std::next(p, 40)) ^ see2);
-                std::advance(p, 48);
-                i -= 48;
-            } while (i > 48);
+                seed = mix(r8(ppp) ^ SECRET[1], r8(std::next(ppp, 8)) ^ seed);
+                see1 = mix(r8(std::next(ppp, 16)) ^ SECRET[2], r8(std::next(ppp, 24)) ^ see1);
+                see2 = mix(r8(std::next(ppp, 32)) ^ SECRET[3], r8(std::next(ppp, 40)) ^ see2);
+                std::advance(ppp, 48);
+                iii -= 48;
+            } while (iii > 48);
             seed ^= see1 ^ see2;
         }
-        while (i > 16)
+        while (iii > 16)
         {
-            seed = mix(r8(p) ^ SECRET[1], r8(std::next(p, 8)) ^ seed);
-            i -= 16;
-            std::advance(p, 16);
+            seed = mix(r8(ppp) ^ SECRET[1], r8(std::next(ppp, 8)) ^ seed);
+            iii -= 16;
+            std::advance(ppp, 16);
         }
-        a = r8(std::next(p, i - 16));
-        b = r8(std::next(p, i - 8));
+        aaa = r8(std::next(ppp, iii - 16));
+        bbb = r8(std::next(ppp, iii - 8));
     }
 
-    return mix(SECRET[1] ^ static_cast<std::uint64_t>(len), mix(a ^ SECRET[1], b ^ seed));
+    return mix(SECRET[1] ^ static_cast<std::uint64_t>(len), mix(aaa ^ SECRET[1], bbb ^ seed));
 }
 
-[[nodiscard]] constexpr std::uint64_t hash(std::uint64_t x)
+[[nodiscard]] constexpr std::uint64_t hash(std::uint64_t value)
 {
-    return mix(x, UINT64_C(0x9E3779B97F4A7C15));
+    return mix(value, UINT64_C(0x9E3779B97F4A7C15));
 }
 
 }  // namespace fixed_containers::wyhash_detail
@@ -178,9 +179,10 @@ struct hash<std::basic_string<CharT>>
 template <typename CharT>
 struct hash<std::basic_string_view<CharT>>
 {
-    std::uint64_t operator()(std::basic_string_view<CharT> const& sv) const noexcept
+    std::uint64_t operator()(std::basic_string_view<CharT> const& str) const noexcept
     {
-        return wyhash_detail::hash(sv.data(), static_cast<std::int64_t>(sizeof(CharT) * sv.size()));
+        return wyhash_detail::hash(str.data(),
+                                   static_cast<std::int64_t>(sizeof(CharT) * str.size()));
     }
 };
 
@@ -215,10 +217,10 @@ template <typename Enum>
     requires std::is_enum_v<Enum>
 struct hash<Enum>
 {
-    constexpr std::uint64_t operator()(Enum e) const noexcept
+    constexpr std::uint64_t operator()(Enum value) const noexcept
     {
         using underlying = typename std::underlying_type_t<Enum>;
-        return wyhash_detail::hash(static_cast<underlying>(e));
+        return wyhash_detail::hash(static_cast<underlying>(value));
     }
 };
 
@@ -226,9 +228,9 @@ template <typename T>
     requires std::convertible_to<T, std::uint64_t>
 struct hash<T>
 {
-    constexpr std::uint64_t operator()(T t) const noexcept
+    constexpr std::uint64_t operator()(T value) const noexcept
     {
-        return wyhash_detail::hash(static_cast<std::uint64_t>(t));
+        return wyhash_detail::hash(static_cast<std::uint64_t>(value));
     }
 };
 

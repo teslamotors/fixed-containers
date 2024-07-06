@@ -28,26 +28,26 @@ TEST(FixedRedBlackTreeView, ViewOfPoolStorage)
         fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness::DEDICATED_COLOR;
     using FixedSetType = FixedSet<int, 10, std::less<>, COMPACTNESS, FixedIndexBasedPoolStorage>;
 
-    FixedSetType s1{1, 2, 3, 4};
+    FixedSetType var1{1, 2, 3, 4};
 
-    const auto* const ptr = reinterpret_cast<const void*>(&s1);
+    const auto* const ptr = reinterpret_cast<const void*>(&var1);
     auto view = FixedRedBlackTreeRawView(
         ptr,
         sizeof(FixedSetType::value_type),
-        s1.max_size(),
+        var1.max_size(),
         COMPACTNESS,
         fixed_red_black_tree_detail::RedBlackTreeStorageType::FIXED_INDEX_POOL);
 
-    EXPECT_EQ(s1.size(), view.size());
+    EXPECT_EQ(var1.size(), view.size());
 
-    FixedSetType s2;
+    FixedSetType var2;
     for (const std::byte* elm_ptr : view)
     {
         const int elm_value = *reinterpret_cast<const int*>(elm_ptr);
-        s2.insert(elm_value);
+        var2.insert(elm_value);
     }
 
-    EXPECT_EQ(s1, s2);
+    EXPECT_EQ(var1, var2);
 }
 
 TEST(FixedRedBlackTreeView, ViewWithStructValue)
@@ -57,8 +57,8 @@ TEST(FixedRedBlackTreeView, ViewWithStructValue)
         int x;
         std::array<int, 42> y;
 
-        A(int cx)
-          : x(cx)
+        A(int x_ctor)
+          : x(x_ctor)
           , y{}
         {
             y.fill(x);
@@ -73,26 +73,26 @@ TEST(FixedRedBlackTreeView, ViewWithStructValue)
         fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness::DEDICATED_COLOR;
     using FixedSetType = FixedSet<A, 10, std::less<>, COMPACTNESS, FixedIndexBasedPoolStorage>;
 
-    FixedSetType s1{A(1), A(2), A(3)};
+    FixedSetType var1{A(1), A(2), A(3)};
 
-    const auto* const ptr = reinterpret_cast<const void*>(&s1);
+    const auto* const ptr = reinterpret_cast<const void*>(&var1);
     auto view = FixedRedBlackTreeRawView(
         ptr,
         sizeof(FixedSetType::value_type),
-        s1.max_size(),
+        var1.max_size(),
         COMPACTNESS,
         fixed_red_black_tree_detail::RedBlackTreeStorageType::FIXED_INDEX_POOL);
 
-    EXPECT_EQ(s1.size(), view.size());
+    EXPECT_EQ(var1.size(), view.size());
 
-    FixedSetType s2;
+    FixedSetType var2;
     for (const std::byte* elm_ptr : view)
     {
         const A* elm_value = reinterpret_cast<const A*>(elm_ptr);
-        s2.insert(*elm_value);
+        var2.insert(*elm_value);
     }
 
-    EXPECT_EQ(s1, s2);
+    EXPECT_EQ(var1, var2);
 }
 
 TEST(FixedRedBlackTreeView, ViewOfContiguousStorage)
@@ -102,26 +102,26 @@ TEST(FixedRedBlackTreeView, ViewOfContiguousStorage)
     using FixedSetType =
         FixedSet<int, 10, std::less<>, COMPACTNESS, FixedIndexBasedContiguousStorage>;
 
-    FixedSetType s1{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    FixedSetType var1{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 
-    const auto* const ptr = reinterpret_cast<const void*>(&s1);
+    const auto* const ptr = reinterpret_cast<const void*>(&var1);
     auto view = FixedRedBlackTreeRawView(
         ptr,
         sizeof(FixedSetType::value_type),
-        s1.max_size(),
+        var1.max_size(),
         COMPACTNESS,
         fixed_red_black_tree_detail::RedBlackTreeStorageType::FIXED_INDEX_CONTIGUOUS);
 
-    EXPECT_EQ(s1.size(), view.size());
+    EXPECT_EQ(var1.size(), view.size());
 
-    FixedSetType s2;
+    FixedSetType var2;
     for (const std::byte* elm_ptr : view)
     {
         const int elm_value = *reinterpret_cast<const int*>(elm_ptr);
-        s2.insert(elm_value);
+        var2.insert(elm_value);
     }
 
-    EXPECT_EQ(s1, s2);
+    EXPECT_EQ(var1, var2);
 }
 
 TEST(FixedRedBlackTreeView, PreservedOrdering)
@@ -130,22 +130,22 @@ TEST(FixedRedBlackTreeView, PreservedOrdering)
         fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR;
     using FixedSetType = FixedSet<int, 10, std::less<>, COMPACTNESS, FixedIndexBasedPoolStorage>;
 
-    FixedSetType s1{4, 1, 2, 6, 3, 5};
-    const FixedVector<int, 10> v1{1, 2, 3, 4, 5, 6};
+    FixedSetType var1{4, 1, 2, 6, 3, 5};
+    const FixedVector<int, 10> vector1{1, 2, 3, 4, 5, 6};
 
-    const auto* const ptr = reinterpret_cast<const void*>(&s1);
+    const auto* const ptr = reinterpret_cast<const void*>(&var1);
     auto view = FixedRedBlackTreeRawView(
         ptr,
         sizeof(FixedSetType::value_type),
-        s1.max_size(),
+        var1.max_size(),
         COMPACTNESS,
         fixed_red_black_tree_detail::RedBlackTreeStorageType::FIXED_INDEX_POOL);
 
-    EXPECT_EQ(s1.size(), view.size());
+    EXPECT_EQ(var1.size(), view.size());
 
     auto view_itr = view.begin();
-    auto ord_itr = v1.cbegin();
-    for (; view_itr != view.end() && ord_itr != v1.cend(); ++view_itr, ++ord_itr)
+    auto ord_itr = vector1.cbegin();
+    for (; view_itr != view.end() && ord_itr != vector1.cend(); ++view_itr, ++ord_itr)
     {
         const int view_val = *reinterpret_cast<const int*>(*view_itr);
         const int ord_val = *ord_itr;
@@ -162,45 +162,45 @@ TEST(FixedRedBlackTreeView, SizeCalculation)
         FixedSet<int, MAXIMUM_ENTRIES, std::less<>, COMPACTNESS, FixedIndexBasedPoolStorage>;
 
     // Test empty set.
-    FixedSetType s1{};
-    auto v1 = FixedRedBlackTreeRawView(
-        &s1,
+    FixedSetType var1{};
+    auto view1 = FixedRedBlackTreeRawView(
+        &var1,
         sizeof(FixedSetType::value_type),
-        s1.max_size(),
+        var1.max_size(),
         COMPACTNESS,
         fixed_red_black_tree_detail::RedBlackTreeStorageType::FIXED_INDEX_POOL);
-    EXPECT_EQ(v1.size(), 0);
+    EXPECT_EQ(view1.size(), 0);
 
     // Test partially filled set.
-    FixedSetType s2{1, 2, 3, 4, 5};
-    auto v2 = FixedRedBlackTreeRawView(
-        &s2,
+    FixedSetType var2{1, 2, 3, 4, 5};
+    auto view2 = FixedRedBlackTreeRawView(
+        &var2,
         sizeof(FixedSetType::value_type),
-        s2.max_size(),
+        var2.max_size(),
         COMPACTNESS,
         fixed_red_black_tree_detail::RedBlackTreeStorageType::FIXED_INDEX_POOL);
-    EXPECT_EQ(v2.size(), s2.size());
+    EXPECT_EQ(view2.size(), var2.size());
 
     // Test completely filled set.
-    FixedSetType s3{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-    auto v3 = FixedRedBlackTreeRawView(
-        &s3,
+    FixedSetType var3{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    auto view3 = FixedRedBlackTreeRawView(
+        &var3,
         sizeof(FixedSetType::value_type),
-        s3.max_size(),
+        var3.max_size(),
         COMPACTNESS,
         fixed_red_black_tree_detail::RedBlackTreeStorageType::FIXED_INDEX_POOL);
-    EXPECT_EQ(v3.size(), s3.size());
+    EXPECT_EQ(view3.size(), var3.size());
 
     // Test set whose memory has been zero'ed out.
     std::byte buf[sizeof(FixedSetType)];
     std::memset(buf, 0, sizeof(FixedSetType));
-    auto v4 = FixedRedBlackTreeRawView(
+    auto view4 = FixedRedBlackTreeRawView(
         buf,
         sizeof(FixedSetType::value_type),
         MAXIMUM_ENTRIES,
         COMPACTNESS,
         fixed_red_black_tree_detail::RedBlackTreeStorageType::FIXED_INDEX_POOL);
-    EXPECT_EQ(v4.size(), 0);
+    EXPECT_EQ(view4.size(), 0);
 }
 
 }  // namespace fixed_containers

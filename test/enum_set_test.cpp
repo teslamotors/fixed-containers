@@ -185,7 +185,7 @@ TEST(EnumSet, BuilderMultipleOuts)
     }();
 
     {
-        // out1 should be unaffected by out2's addition of extra elements
+        // out1 should be unaffected by out2'var addition of extra elements
         constexpr EnumSet<TestEnum1> VAL1 = VAL_ALL[0];
         static_assert(VAL1.size() == 1);
 
@@ -287,10 +287,10 @@ TEST(EnumSet, Insert)
 {
     constexpr auto VAL1 = []()
     {
-        EnumSet<TestEnum1> s{};
-        s.insert(TestEnum1::TWO);
-        s.insert(TestEnum1::FOUR);
-        return s;
+        EnumSet<TestEnum1> var{};
+        var.insert(TestEnum1::TWO);
+        var.insert(TestEnum1::FOUR);
+        return var;
     }();
 
     static_assert(VAL1.size() == 2);
@@ -304,28 +304,28 @@ TEST(EnumSet, InsertMultipleTimes)
 {
     constexpr auto VAL1 = []()
     {
-        EnumSet<TestEnum1> s{};
+        EnumSet<TestEnum1> var{};
         {
-            auto [it, was_inserted] = s.insert(TestEnum1::TWO);
+            auto [it, was_inserted] = var.insert(TestEnum1::TWO);
             assert_or_abort(was_inserted);
             assert_or_abort(TestEnum1::TWO == *it);
         }
         {
-            auto [it, was_inserted] = s.insert(TestEnum1::FOUR);
+            auto [it, was_inserted] = var.insert(TestEnum1::FOUR);
             assert_or_abort(was_inserted);
             assert_or_abort(TestEnum1::FOUR == *it);
         }
         {
-            auto [it, was_inserted] = s.insert(TestEnum1::TWO);
+            auto [it, was_inserted] = var.insert(TestEnum1::TWO);
             assert_or_abort(!was_inserted);
             assert_or_abort(TestEnum1::TWO == *it);
         }
         {
-            auto [it, was_inserted] = s.insert(TestEnum1::FOUR);
+            auto [it, was_inserted] = var.insert(TestEnum1::FOUR);
             assert_or_abort(!was_inserted);
             assert_or_abort(TestEnum1::FOUR == *it);
         }
-        return s;
+        return var;
     }();
 
     static_assert(VAL1.size() == 2);
@@ -339,9 +339,9 @@ TEST(EnumSet, InsertInitializer)
 {
     constexpr auto VAL1 = []()
     {
-        EnumSet<TestEnum1> s{};
-        s.insert({TestEnum1::TWO, TestEnum1::FOUR});
-        return s;
+        EnumSet<TestEnum1> var{};
+        var.insert({TestEnum1::TWO, TestEnum1::FOUR});
+        return var;
     }();
 
     static_assert(VAL1.size() == 2);
@@ -355,10 +355,10 @@ TEST(EnumSet, InsertIterators)
 {
     constexpr auto VAL1 = []()
     {
-        EnumSet<TestEnum1> s{};
-        std::array<TestEnum1, 2> a{TestEnum1::TWO, TestEnum1::FOUR};
-        s.insert(a.begin(), a.end());
-        return s;
+        EnumSet<TestEnum1> var{};
+        std::array<TestEnum1, 2> entry_a{TestEnum1::TWO, TestEnum1::FOUR};
+        var.insert(entry_a.begin(), entry_a.end());
+        return var;
     }();
 
     static_assert(VAL1.size() == 2);
@@ -378,11 +378,11 @@ TEST(EnumSet, Emplace)
     {
         constexpr EnumSet<TestEnum1> VAL = []()
         {
-            EnumSet<TestEnum1> s1{};
-            s1.emplace(TestEnum1::TWO);
+            EnumSet<TestEnum1> var{};
+            var.emplace(TestEnum1::TWO);
             const TestEnum1 key = TestEnum1::TWO;
-            s1.emplace(key);
-            return s1;
+            var.emplace(key);
+            return var;
         }();
 
         static_assert(consteval_compare::equal<1, VAL.size()>);
@@ -390,41 +390,41 @@ TEST(EnumSet, Emplace)
     }
 
     {
-        EnumSet<TestEnum1> s1{};
+        EnumSet<TestEnum1> var{};
 
         {
-            auto [it, was_inserted] = s1.emplace(TestEnum1::TWO);
+            auto [it, was_inserted] = var.emplace(TestEnum1::TWO);
 
-            ASSERT_EQ(1, s1.size());
-            ASSERT_TRUE(!s1.contains(TestEnum1::ONE));
-            ASSERT_TRUE(s1.contains(TestEnum1::TWO));
-            ASSERT_TRUE(!s1.contains(TestEnum1::THREE));
-            ASSERT_TRUE(!s1.contains(TestEnum1::FOUR));
-            ASSERT_TRUE(s1.contains(TestEnum1::TWO));
+            ASSERT_EQ(1, var.size());
+            ASSERT_TRUE(!var.contains(TestEnum1::ONE));
+            ASSERT_TRUE(var.contains(TestEnum1::TWO));
+            ASSERT_TRUE(!var.contains(TestEnum1::THREE));
+            ASSERT_TRUE(!var.contains(TestEnum1::FOUR));
+            ASSERT_TRUE(var.contains(TestEnum1::TWO));
             ASSERT_TRUE(was_inserted);
             ASSERT_EQ(TestEnum1::TWO, *it);
         }
 
         {
-            auto [it, was_inserted] = s1.emplace(TestEnum1::TWO);
-            ASSERT_EQ(1, s1.size());
-            ASSERT_TRUE(!s1.contains(TestEnum1::ONE));
-            ASSERT_TRUE(s1.contains(TestEnum1::TWO));
-            ASSERT_TRUE(!s1.contains(TestEnum1::THREE));
-            ASSERT_TRUE(!s1.contains(TestEnum1::FOUR));
-            ASSERT_TRUE(s1.contains(TestEnum1::TWO));
+            auto [it, was_inserted] = var.emplace(TestEnum1::TWO);
+            ASSERT_EQ(1, var.size());
+            ASSERT_TRUE(!var.contains(TestEnum1::ONE));
+            ASSERT_TRUE(var.contains(TestEnum1::TWO));
+            ASSERT_TRUE(!var.contains(TestEnum1::THREE));
+            ASSERT_TRUE(!var.contains(TestEnum1::FOUR));
+            ASSERT_TRUE(var.contains(TestEnum1::TWO));
             ASSERT_FALSE(was_inserted);
             ASSERT_EQ(TestEnum1::TWO, *it);
         }
 
         {
-            auto [it, was_inserted] = s1.emplace(TestEnum1::TWO);
-            ASSERT_EQ(1, s1.size());
-            ASSERT_TRUE(!s1.contains(TestEnum1::ONE));
-            ASSERT_TRUE(s1.contains(TestEnum1::TWO));
-            ASSERT_TRUE(!s1.contains(TestEnum1::THREE));
-            ASSERT_TRUE(!s1.contains(TestEnum1::FOUR));
-            ASSERT_TRUE(s1.contains(TestEnum1::TWO));
+            auto [it, was_inserted] = var.emplace(TestEnum1::TWO);
+            ASSERT_EQ(1, var.size());
+            ASSERT_TRUE(!var.contains(TestEnum1::ONE));
+            ASSERT_TRUE(var.contains(TestEnum1::TWO));
+            ASSERT_TRUE(!var.contains(TestEnum1::THREE));
+            ASSERT_TRUE(!var.contains(TestEnum1::FOUR));
+            ASSERT_TRUE(var.contains(TestEnum1::TWO));
             ASSERT_FALSE(was_inserted);
             ASSERT_EQ(TestEnum1::TWO, *it);
         }
@@ -435,9 +435,9 @@ TEST(EnumSet, Clear)
 {
     constexpr auto VAL1 = []()
     {
-        EnumSet<TestEnum1> s{TestEnum1::TWO, TestEnum1::FOUR};
-        s.clear();
-        return s;
+        EnumSet<TestEnum1> var{TestEnum1::TWO, TestEnum1::FOUR};
+        var.clear();
+        return var;
     }();
 
     static_assert(VAL1.empty());
@@ -447,12 +447,12 @@ TEST(EnumSet, Erase)
 {
     constexpr auto VAL1 = []()
     {
-        EnumSet<TestEnum1> s{TestEnum1::TWO, TestEnum1::FOUR};
-        auto removed_count = s.erase(TestEnum1::TWO);
+        EnumSet<TestEnum1> var{TestEnum1::TWO, TestEnum1::FOUR};
+        auto removed_count = var.erase(TestEnum1::TWO);
         assert_or_abort(removed_count == 1);
-        removed_count = s.erase(TestEnum1::THREE);
+        removed_count = var.erase(TestEnum1::THREE);
         assert_or_abort(removed_count == 0);
-        return s;
+        return var;
     }();
 
     static_assert(VAL1.size() == 1);
@@ -466,19 +466,19 @@ TEST(EnumSet, EraseIterator)
 {
     constexpr auto VAL1 = []()
     {
-        EnumSet<TestEnum1> s{TestEnum1::TWO, TestEnum1::THREE, TestEnum1::FOUR};
+        EnumSet<TestEnum1> var{TestEnum1::TWO, TestEnum1::THREE, TestEnum1::FOUR};
         {
-            auto it = s.begin();
-            auto next = s.erase(it);
+            auto iter = var.begin();
+            auto next = var.erase(iter);
             assert_or_abort(*next == TestEnum1::THREE);
         }
 
         {
-            auto it = s.cbegin();
-            auto next = s.erase(it);
+            auto iter = var.cbegin();
+            auto next = var.erase(iter);
             assert_or_abort(*next == TestEnum1::FOUR);
         }
-        return s;
+        return var;
     }();
 
     static_assert(VAL1.size() == 1);
@@ -490,11 +490,11 @@ TEST(EnumSet, EraseIterator)
 
 TEST(EnumSet, EraseIteratorInvalidIterator)
 {
-    EnumSet<TestEnum1> s{TestEnum1::TWO, TestEnum1::FOUR};
+    EnumSet<TestEnum1> var{TestEnum1::TWO, TestEnum1::FOUR};
     {
-        auto it = s.begin();
-        s.erase(it);
-        EXPECT_DEATH(s.erase(it), "");
+        auto iter = var.begin();
+        var.erase(iter);
+        EXPECT_DEATH(var.erase(iter), "");
     }
 }
 
@@ -503,14 +503,14 @@ TEST(EnumSet, EraseRange)
     {
         constexpr auto VAL1 = []()
         {
-            EnumSet<TestEnum1> s{TestEnum1::TWO, TestEnum1::THREE, TestEnum1::FOUR};
-            auto from = s.begin();
-            std::advance(from, 1);
-            auto to = s.begin();
-            std::advance(to, 2);
-            auto next = s.erase(from, to);
+            EnumSet<TestEnum1> var{TestEnum1::TWO, TestEnum1::THREE, TestEnum1::FOUR};
+            auto erase_from = var.begin();
+            std::advance(erase_from, 1);
+            auto erase_to = var.begin();
+            std::advance(erase_to, 2);
+            auto next = var.erase(erase_from, erase_to);
             assert_or_abort(*next == TestEnum1::FOUR);
-            return s;
+            return var;
         }();
 
         static_assert(consteval_compare::equal<2, VAL1.size()>);
@@ -522,12 +522,12 @@ TEST(EnumSet, EraseRange)
     {
         constexpr auto VAL1 = []()
         {
-            EnumSet<TestEnum1> s{TestEnum1::TWO, TestEnum1::FOUR};
-            auto from = s.begin();
-            auto to = s.begin();
-            auto next = s.erase(from, to);
+            EnumSet<TestEnum1> var{TestEnum1::TWO, TestEnum1::FOUR};
+            auto erase_from = var.begin();
+            auto erase_to = var.begin();
+            auto next = var.erase(erase_from, erase_to);
             assert_or_abort(*next == TestEnum1::TWO);
-            return s;
+            return var;
         }();
 
         static_assert(consteval_compare::equal<2, VAL1.size()>);
@@ -539,12 +539,12 @@ TEST(EnumSet, EraseRange)
     {
         constexpr auto VAL1 = []()
         {
-            EnumSet<TestEnum1> s{TestEnum1::ONE, TestEnum1::FOUR};
-            auto from = s.begin();
-            auto to = s.end();
-            auto next = s.erase(from, to);
-            assert_or_abort(next == s.end());
-            return s;
+            EnumSet<TestEnum1> var{TestEnum1::ONE, TestEnum1::FOUR};
+            auto erase_from = var.begin();
+            auto erase_to = var.end();
+            auto next = var.erase(erase_from, erase_to);
+            assert_or_abort(next == var.end());
+            return var;
         }();
 
         static_assert(consteval_compare::equal<0, VAL1.size()>);
@@ -559,11 +559,11 @@ TEST(EnumSet, EraseIf)
 {
     constexpr auto VAL1 = []()
     {
-        EnumSet<TestEnum1> s{TestEnum1::TWO, TestEnum1::THREE, TestEnum1::FOUR};
+        EnumSet<TestEnum1> var{TestEnum1::TWO, TestEnum1::THREE, TestEnum1::FOUR};
         const std::size_t removed_count = fixed_containers::erase_if(
-            s, [](const auto& key) { return key == TestEnum1::TWO or key == TestEnum1::FOUR; });
+            var, [](const auto& key) { return key == TestEnum1::TWO or key == TestEnum1::FOUR; });
         assert_or_abort(2 == removed_count);
-        return s;
+        return var;
     }();
 
     static_assert(consteval_compare::equal<1, VAL1.size()>);
@@ -608,11 +608,11 @@ TEST(EnumSet, IteratorEnsureOrder)
 {
     constexpr auto VAL1 = []()
     {
-        EnumSet<TestEnum1> s{};
-        s.insert(TestEnum1::THREE);
-        s.insert(TestEnum1::FOUR);
-        s.insert(TestEnum1::ONE);
-        return s;
+        EnumSet<TestEnum1> var{};
+        var.insert(TestEnum1::THREE);
+        var.insert(TestEnum1::FOUR);
+        var.insert(TestEnum1::ONE);
+        return var;
     }();
 
     static_assert(std::distance(VAL1.cbegin(), VAL1.cend()) == 3);
@@ -648,12 +648,12 @@ TEST(EnumSet, ReverseIteratorBase)
 {
     constexpr auto VAL1 = []()
     {
-        EnumSet<TestEnum1> s{TestEnum1::ONE, TestEnum1::TWO, TestEnum1::THREE};
-        auto it = s.rbegin();  // points to 3
-        std::advance(it, 1);   // points to 2
+        EnumSet<TestEnum1> var{TestEnum1::ONE, TestEnum1::TWO, TestEnum1::THREE};
+        auto iter = var.rbegin();  // points to 3
+        std::advance(iter, 1);     // points to 2
         // https://stackoverflow.com/questions/1830158/how-to-call-erase-with-a-reverse-iterator
-        s.erase(std::next(it).base());
-        return s;
+        var.erase(std::next(iter).base());
+        return var;
     }();
 
     static_assert(VAL1.size() == 2);
@@ -665,9 +665,9 @@ TEST(EnumSet, RichEnum)
 {
     constexpr auto VAL1 = []()
     {
-        EnumSet<TestRichEnum1> s{};
-        s.insert(TestRichEnum1::C_ONE());
-        return s;
+        EnumSet<TestRichEnum1> var{};
+        var.insert(TestRichEnum1::C_ONE());
+        return var;
     }();
 
     static_assert(VAL1.size() == 1);
@@ -679,9 +679,9 @@ TEST(EnumSet, NonConformingRichEnum)
 {
     constexpr auto VAL1 = []()
     {
-        EnumSet<NonConformingTestRichEnum1> s{};
-        s.insert(NonConformingTestRichEnum1::NC_ONE());
-        return s;
+        EnumSet<NonConformingTestRichEnum1> var{};
+        var.insert(NonConformingTestRichEnum1::NC_ONE());
+        return var;
     }();
 
     static_assert(VAL1.size() == 1);
@@ -708,33 +708,33 @@ TEST(EnumSet, Equality)
 
 TEST(EnumSet, Ranges)
 {
-    EnumSet<TestRichEnum1> s1{TestRichEnum1::C_ONE(), TestRichEnum1::C_FOUR()};
-    auto f = s1 | ranges::views::filter([](const auto& v) -> bool
-                                        { return v == TestRichEnum1::C_FOUR(); });
+    EnumSet<TestRichEnum1> var{TestRichEnum1::C_ONE(), TestRichEnum1::C_FOUR()};
+    auto filtered = var | ranges::views::filter([](const auto& entry) -> bool
+                                                { return entry == TestRichEnum1::C_FOUR(); });
 
-    EXPECT_EQ(1, ranges::distance(f));
-    EXPECT_EQ(TestRichEnum1::C_FOUR(), *f.begin());
+    EXPECT_EQ(1, ranges::distance(filtered));
+    EXPECT_EQ(TestRichEnum1::C_FOUR(), *filtered.begin());
 }
 
 TEST(EnumSet, ClassTemplateArgumentDeduction)
 {
     // Compile-only test
-    const EnumSet a = EnumSet<TestEnum1>{};
-    (void)a;
+    const EnumSet var1 = EnumSet<TestEnum1>{};
+    (void)var1;
 }
 
 TEST(EnumSet, SetIntersection)
 {
     constexpr EnumSet<TestEnum1> VAL1 = []()
     {
-        const EnumSet<TestEnum1> v1{TestEnum1::ONE, TestEnum1::FOUR};
-        const EnumSet<TestEnum1> v2{TestEnum1::ONE};
+        const EnumSet<TestEnum1> var1{TestEnum1::ONE, TestEnum1::FOUR};
+        const EnumSet<TestEnum1> var2{TestEnum1::ONE};
 
         EnumSet<TestEnum1> v_intersection;
-        std::set_intersection(v1.begin(),
-                              v1.end(),
-                              v2.begin(),
-                              v2.end(),
+        std::set_intersection(var1.begin(),
+                              var1.end(),
+                              var2.begin(),
+                              var2.end(),
                               std::inserter(v_intersection, v_intersection.begin()));
         return v_intersection;
     }();
@@ -774,7 +774,7 @@ namespace another_namespace_unrelated_to_the_fixed_containers_namespace
 TEST(EnumSet, ArgumentDependentLookup)
 {
     // Compile-only test
-    fixed_containers::EnumSet<fixed_containers::TestEnum1> a{};
-    erase_if(a, [](fixed_containers::TestEnum1) { return true; });
+    fixed_containers::EnumSet<fixed_containers::TestEnum1> var1{};
+    erase_if(var1, [](fixed_containers::TestEnum1) { return true; });
 }
 }  // namespace another_namespace_unrelated_to_the_fixed_containers_namespace

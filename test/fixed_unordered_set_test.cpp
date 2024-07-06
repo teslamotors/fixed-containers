@@ -81,9 +81,9 @@ TEST(FixedUnorderedSet, Initializer)
 
 // TEST(FixedUnorderedSet, Find_TransparentComparator)
 // {
-//     constexpr FixedUnorderedSet<MockAComparableToB, 3, std::less<>> s{};
+//     constexpr FixedUnorderedSet<MockAComparableToB, 3, std::less<>> var{};
 //     constexpr MockBComparableToA b{5};
-//     static_assert(s.find(b) == s.end());
+//     static_assert(var.find(b) == var.end());
 // }
 
 TEST(FixedUnorderedSet, Contains)
@@ -99,18 +99,18 @@ TEST(FixedUnorderedSet, Contains)
 
 // TEST(FixedUnorderedSet, Contains_TransparentComparator)
 // {
-//     constexpr FixedUnorderedSet<MockAComparableToB, 5, std::less<>> s{
+//     constexpr FixedUnorderedSet<MockAComparableToB, 5, std::less<>> var{
 //         MockAComparableToB{1}, MockAComparableToB{3}, MockAComparableToB{5}};
 //     constexpr MockBComparableToA b{5};
-//     static_assert(s.contains(b));
+//     static_assert(var.contains(b));
 // }
 
 // TEST(FixedUnorderedSet, Count_TransparentComparator)
 // {
-//     constexpr FixedUnorderedSet<MockAComparableToB, 5, std::less<>> s{
+//     constexpr FixedUnorderedSet<MockAComparableToB, 5, std::less<>> var{
 //         MockAComparableToB{1}, MockAComparableToB{3}, MockAComparableToB{5}};
 //     constexpr MockBComparableToA b{5};
-//     static_assert(s.count(b) == 1);
+//     static_assert(var.count(b) == 1);
 // }
 
 TEST(FixedUnorderedSet, MaxSize)
@@ -167,10 +167,10 @@ TEST(FixedUnorderedSet, Insert)
 {
     constexpr auto VAL1 = []()
     {
-        FixedUnorderedSet<int, 10> s{};
-        s.insert(2);
-        s.insert(4);
-        return s;
+        FixedUnorderedSet<int, 10> var{};
+        var.insert(2);
+        var.insert(4);
+        return var;
     }();
 
     static_assert(VAL1.size() == 2);
@@ -183,21 +183,21 @@ TEST(FixedUnorderedSet, Insert)
 TEST(FixedUnorderedSet, InsertExceedsCapacity)
 {
     {
-        FixedUnorderedSet<int, 2> s1{};
-        s1.insert(2);
-        s1.insert(4);
-        s1.insert(4);
-        s1.insert(4);
-        EXPECT_DEATH(s1.insert(6), "");
+        FixedUnorderedSet<int, 2> var1{};
+        var1.insert(2);
+        var1.insert(4);
+        var1.insert(4);
+        var1.insert(4);
+        EXPECT_DEATH(var1.insert(6), "");
     }
     {
-        FixedUnorderedSet<int, 2> s1{};
-        s1.insert(2);
-        s1.insert(4);
-        s1.insert(4);
-        s1.insert(4);
+        FixedUnorderedSet<int, 2> var1{};
+        var1.insert(2);
+        var1.insert(4);
+        var1.insert(4);
+        var1.insert(4);
         const int key = 6;
-        EXPECT_DEATH(s1.insert(key), "");
+        EXPECT_DEATH(var1.insert(key), "");
     }
 }
 
@@ -205,28 +205,28 @@ TEST(FixedUnorderedSet, InsertMultipleTimes)
 {
     constexpr auto VAL1 = []()
     {
-        FixedUnorderedSet<int, 10> s{};
+        FixedUnorderedSet<int, 10> var{};
         {
-            auto [it, was_inserted] = s.insert(2);
+            auto [it, was_inserted] = var.insert(2);
             assert_or_abort(was_inserted);
             assert_or_abort(2 == *it);
         }
         {
-            auto [it, was_inserted] = s.insert(4);
+            auto [it, was_inserted] = var.insert(4);
             assert_or_abort(was_inserted);
             assert_or_abort(4 == *it);
         }
         {
-            auto [it, was_inserted] = s.insert(2);
+            auto [it, was_inserted] = var.insert(2);
             assert_or_abort(!was_inserted);
             assert_or_abort(2 == *it);
         }
         {
-            auto [it, was_inserted] = s.insert(4);
+            auto [it, was_inserted] = var.insert(4);
             assert_or_abort(!was_inserted);
             assert_or_abort(4 == *it);
         }
-        return s;
+        return var;
     }();
 
     static_assert(VAL1.size() == 2);
@@ -240,9 +240,9 @@ TEST(FixedUnorderedSet, InsertInitializer)
 {
     constexpr auto VAL1 = []()
     {
-        FixedUnorderedSet<int, 10> s{};
-        s.insert({2, 4});
-        return s;
+        FixedUnorderedSet<int, 10> var{};
+        var.insert({2, 4});
+        return var;
     }();
 
     static_assert(VAL1.size() == 2);
@@ -256,10 +256,10 @@ TEST(FixedUnorderedSet, InsertIterators)
 {
     constexpr auto VAL1 = []()
     {
-        FixedUnorderedSet<int, 10> s{};
-        std::array<int, 2> a{2, 4};
-        s.insert(a.begin(), a.end());
-        return s;
+        FixedUnorderedSet<int, 10> var{};
+        std::array<int, 2> entry_a{2, 4};
+        var.insert(entry_a.begin(), entry_a.end());
+        return var;
     }();
 
     static_assert(VAL1.size() == 2);
@@ -279,11 +279,11 @@ TEST(FixedUnorderedSet, Emplace)
     {
         constexpr FixedUnorderedSet<int, 10> VAL = []()
         {
-            FixedUnorderedSet<int, 10> s1{};
-            s1.emplace(2);
+            FixedUnorderedSet<int, 10> var1{};
+            var1.emplace(2);
             const int key = 2;
-            s1.emplace(key);
-            return s1;
+            var1.emplace(key);
+            return var1;
         }();
 
         static_assert(consteval_compare::equal<1, VAL.size()>);
@@ -291,29 +291,29 @@ TEST(FixedUnorderedSet, Emplace)
     }
 
     {
-        FixedUnorderedSet<int, 10> s1{};
+        FixedUnorderedSet<int, 10> var1{};
 
         {
-            auto [it, was_inserted] = s1.emplace(2);
+            auto [it, was_inserted] = var1.emplace(2);
 
-            ASSERT_EQ(1, s1.size());
-            ASSERT_TRUE(!s1.contains(1));
-            ASSERT_TRUE(s1.contains(2));
-            ASSERT_TRUE(!s1.contains(3));
-            ASSERT_TRUE(!s1.contains(4));
-            ASSERT_TRUE(s1.contains(2));
+            ASSERT_EQ(1, var1.size());
+            ASSERT_TRUE(!var1.contains(1));
+            ASSERT_TRUE(var1.contains(2));
+            ASSERT_TRUE(!var1.contains(3));
+            ASSERT_TRUE(!var1.contains(4));
+            ASSERT_TRUE(var1.contains(2));
             ASSERT_TRUE(was_inserted);
             ASSERT_EQ(2, *it);
         }
 
         {
-            auto [it, was_inserted] = s1.emplace(2);
-            ASSERT_EQ(1, s1.size());
-            ASSERT_TRUE(!s1.contains(1));
-            ASSERT_TRUE(s1.contains(2));
-            ASSERT_TRUE(!s1.contains(3));
-            ASSERT_TRUE(!s1.contains(4));
-            ASSERT_TRUE(s1.contains(2));
+            auto [it, was_inserted] = var1.emplace(2);
+            ASSERT_EQ(1, var1.size());
+            ASSERT_TRUE(!var1.contains(1));
+            ASSERT_TRUE(var1.contains(2));
+            ASSERT_TRUE(!var1.contains(3));
+            ASSERT_TRUE(!var1.contains(4));
+            ASSERT_TRUE(var1.contains(2));
             ASSERT_FALSE(was_inserted);
             ASSERT_EQ(2, *it);
         }
@@ -323,21 +323,21 @@ TEST(FixedUnorderedSet, Emplace)
 TEST(FixedUnorderedSet, EmplaceExceedsCapacity)
 {
     {
-        FixedUnorderedSet<int, 2> s1{};
-        s1.emplace(2);
-        s1.emplace(4);
-        s1.emplace(4);
-        s1.emplace(4);
-        EXPECT_DEATH(s1.emplace(6), "");
+        FixedUnorderedSet<int, 2> var1{};
+        var1.emplace(2);
+        var1.emplace(4);
+        var1.emplace(4);
+        var1.emplace(4);
+        EXPECT_DEATH(var1.emplace(6), "");
     }
     {
-        FixedUnorderedSet<int, 2> s1{};
-        s1.emplace(2);
-        s1.emplace(4);
-        s1.emplace(4);
-        s1.emplace(4);
+        FixedUnorderedSet<int, 2> var1{};
+        var1.emplace(2);
+        var1.emplace(4);
+        var1.emplace(4);
+        var1.emplace(4);
         const int key = 6;
-        EXPECT_DEATH(s1.emplace(key), "");
+        EXPECT_DEATH(var1.emplace(key), "");
     }
 }
 
@@ -345,9 +345,9 @@ TEST(FixedUnorderedSet, Clear)
 {
     constexpr auto VAL1 = []()
     {
-        FixedUnorderedSet<int, 10> s{2, 4};
-        s.clear();
-        return s;
+        FixedUnorderedSet<int, 10> var{2, 4};
+        var.clear();
+        return var;
     }();
 
     static_assert(VAL1.empty());
@@ -357,12 +357,12 @@ TEST(FixedUnorderedSet, Erase)
 {
     constexpr auto VAL1 = []()
     {
-        FixedUnorderedSet<int, 10> s{2, 4};
-        auto removed_count = s.erase(2);
+        FixedUnorderedSet<int, 10> var{2, 4};
+        auto removed_count = var.erase(2);
         assert_or_abort(removed_count == 1);
-        removed_count = s.erase(3);
+        removed_count = var.erase(3);
         assert_or_abort(removed_count == 0);
-        return s;
+        return var;
     }();
 
     static_assert(VAL1.size() == 1);
@@ -376,19 +376,19 @@ TEST(FixedUnorderedSet, EraseIterator)
 {
     constexpr auto VAL1 = []()
     {
-        FixedUnorderedSet<int, 10> s{2, 3, 4};
+        FixedUnorderedSet<int, 10> var{2, 3, 4};
         {
-            auto it = s.begin();
-            auto next = s.erase(it);
+            auto iter = var.begin();
+            auto next = var.erase(iter);
             assert_or_abort(*next == 3);
         }
 
         {
-            auto it = s.cbegin();
-            auto next = s.erase(it);
+            auto iter = var.cbegin();
+            auto next = var.erase(iter);
             assert_or_abort(*next == 4);
         }
-        return s;
+        return var;
     }();
 
     static_assert(VAL1.size() == 1);
@@ -402,17 +402,17 @@ TEST(FixedUnorderedSet, EraseIteratorAmbiguity)
 {
     // If the iterator has extraneous auto-conversions, it might cause ambiguity between the various
     // overloads
-    FixedUnorderedSet<std::string, 5> s1{};
-    s1.erase("");
+    FixedUnorderedSet<std::string, 5> var1{};
+    var1.erase("");
 }
 
 TEST(FixedUnorderedSet, EraseIteratorInvalidIterator)
 {
-    FixedUnorderedSet<int, 10> s{2, 4};
+    FixedUnorderedSet<int, 10> var{2, 4};
     {
-        auto it = s.begin();
-        std::advance(it, 2);
-        EXPECT_DEATH(s.erase(it), "");
+        auto iter = var.begin();
+        std::advance(iter, 2);
+        EXPECT_DEATH(var.erase(iter), "");
     }
 }
 
@@ -421,14 +421,14 @@ TEST(FixedUnorderedSet, EraseRange)
     {
         constexpr auto VAL1 = []()
         {
-            FixedUnorderedSet<int, 10> s{2, 3, 4};
-            auto from = s.begin();
-            std::advance(from, 1);
-            auto to = s.begin();
-            std::advance(to, 2);
-            auto next = s.erase(from, to);
+            FixedUnorderedSet<int, 10> var{2, 3, 4};
+            auto erase_from = var.begin();
+            std::advance(erase_from, 1);
+            auto erase_to = var.begin();
+            std::advance(erase_to, 2);
+            auto next = var.erase(erase_from, erase_to);
             assert_or_abort(*next == 4);
-            return s;
+            return var;
         }();
 
         static_assert(consteval_compare::equal<2, VAL1.size()>);
@@ -440,12 +440,12 @@ TEST(FixedUnorderedSet, EraseRange)
     {
         constexpr auto VAL1 = []()
         {
-            FixedUnorderedSet<int, 10> s{2, 4};
-            auto from = s.begin();
-            auto to = s.begin();
-            auto next = s.erase(from, to);
+            FixedUnorderedSet<int, 10> var{2, 4};
+            auto erase_from = var.begin();
+            auto erase_to = var.begin();
+            auto next = var.erase(erase_from, erase_to);
             assert_or_abort(*next == 2);
-            return s;
+            return var;
         }();
 
         static_assert(consteval_compare::equal<2, VAL1.size()>);
@@ -457,12 +457,12 @@ TEST(FixedUnorderedSet, EraseRange)
     {
         constexpr auto VAL1 = []()
         {
-            FixedUnorderedSet<int, 10> s{1, 4};
-            auto from = s.begin();
-            auto to = s.end();
-            auto next = s.erase(from, to);
-            assert_or_abort(next == s.end());
-            return s;
+            FixedUnorderedSet<int, 10> var{1, 4};
+            auto erase_from = var.begin();
+            auto erase_to = var.end();
+            auto next = var.erase(erase_from, erase_to);
+            assert_or_abort(next == var.end());
+            return var;
         }();
 
         static_assert(consteval_compare::equal<0, VAL1.size()>);
@@ -477,11 +477,11 @@ TEST(FixedUnorderedSet, EraseIf)
 {
     constexpr auto VAL1 = []()
     {
-        FixedUnorderedSet<int, 10> s{2, 3, 4};
+        FixedUnorderedSet<int, 10> var{2, 3, 4};
         const std::size_t removed_count =
-            fixed_containers::erase_if(s, [](const auto& key) { return key == 2 or key == 4; });
+            fixed_containers::erase_if(var, [](const auto& key) { return key == 2 or key == 4; });
         assert_or_abort(2 == removed_count);
-        return s;
+        return var;
     }();
 
     static_assert(consteval_compare::equal<1, VAL1.size()>);
@@ -517,11 +517,11 @@ TEST(FixedUnorderedSet, IteratorEnsureOrder)
 {
     constexpr auto VAL1 = []()
     {
-        FixedUnorderedSet<int, 10> s{};
-        s.insert(3);
-        s.insert(4);
-        s.insert(1);
-        return s;
+        FixedUnorderedSet<int, 10> var{};
+        var.insert(3);
+        var.insert(4);
+        var.insert(1);
+        return var;
     }();
 
     static_assert(std::distance(VAL1.cbegin(), VAL1.cend()) == 3);
@@ -533,11 +533,11 @@ TEST(FixedUnorderedSet, IteratorEnsureOrder)
 
 TEST(FixedUnorderedSet, IteratorInvalidation)
 {
-    FixedUnorderedSet<int, 10> s1{10, 20, 30, 40};
-    auto it1 = s1.begin();
-    auto it2 = std::next(s1.begin(), 1);
-    auto it3 = std::next(s1.begin(), 2);
-    auto it4 = std::next(s1.begin(), 3);
+    FixedUnorderedSet<int, 10> var1{10, 20, 30, 40};
+    auto it1 = var1.begin();
+    auto it2 = std::next(var1.begin(), 1);
+    auto it3 = std::next(var1.begin(), 2);
+    auto it4 = std::next(var1.begin(), 3);
 
     EXPECT_EQ(10, *it1);
     EXPECT_EQ(20, *it2);
@@ -550,7 +550,7 @@ TEST(FixedUnorderedSet, IteratorInvalidation)
 
     // Deletion
     {
-        s1.erase(30);
+        var1.erase(30);
         EXPECT_EQ(10, *it1);
         EXPECT_EQ(20, *it2);
         EXPECT_EQ(40, *it4);
@@ -562,9 +562,9 @@ TEST(FixedUnorderedSet, IteratorInvalidation)
 
     // Insertion
     {
-        s1.insert(30);
-        s1.insert(1);
-        s1.insert(50);
+        var1.insert(30);
+        var1.insert(1);
+        var1.insert(50);
 
         EXPECT_EQ(10, *it1);
         EXPECT_EQ(20, *it2);
@@ -595,22 +595,23 @@ TEST(FixedUnorderedSet, Equality)
 
 TEST(FixedUnorderedSet, Ranges)
 {
-    FixedUnorderedSet<int, 10> s1{1, 4};
-    auto f = s1 | ranges::views::filter([](const auto& v) -> bool { return v == 4; });
+    FixedUnorderedSet<int, 10> var1{1, 4};
+    auto filtered =
+        var1 | ranges::views::filter([](const auto& entry) -> bool { return entry == 4; });
 
-    EXPECT_EQ(1, ranges::distance(f));
-    EXPECT_EQ(4, *f.begin());
+    EXPECT_EQ(1, ranges::distance(filtered));
+    EXPECT_EQ(4, *filtered.begin());
 }
 
 TEST(FixedUnorderedSet, OverloadedAddressOfOperator)
 {
     {
-        FixedUnorderedSet<MockFailingAddressOfOperator, 15> v{};
-        v.insert({2});
-        v.emplace(3);
-        v.erase(3);
-        v.clear();
-        ASSERT_TRUE(v.empty());
+        FixedUnorderedSet<MockFailingAddressOfOperator, 15> var{};
+        var.insert({2});
+        var.emplace(3);
+        var.erase(3);
+        var.clear();
+        ASSERT_TRUE(var.empty());
     }
 
     {
@@ -619,45 +620,45 @@ TEST(FixedUnorderedSet, OverloadedAddressOfOperator)
     }
 
     {
-        const FixedUnorderedSet<MockFailingAddressOfOperator, 15> v{{2, 3, 4}};
-        ASSERT_FALSE(v.empty());
-        auto it = v.begin();
-        it->do_nothing();
-        (void)it++;
-        ++it;
-        it->do_nothing();
+        const FixedUnorderedSet<MockFailingAddressOfOperator, 15> var{{2, 3, 4}};
+        ASSERT_FALSE(var.empty());
+        auto iter = var.begin();
+        iter->do_nothing();
+        (void)iter++;
+        ++iter;
+        iter->do_nothing();
     }
 
     {
         constexpr FixedUnorderedSet<MockFailingAddressOfOperator, 15> VAL{{2, 3, 4}};
         static_assert(!VAL.empty());
-        auto it = VAL.cbegin();
-        it->do_nothing();
-        (void)it++;
-        ++it;
-        it->do_nothing();
+        auto iter = VAL.cbegin();
+        iter->do_nothing();
+        (void)iter++;
+        ++iter;
+        iter->do_nothing();
     }
 }
 
 TEST(FixedUnorderedSet, ClassTemplateArgumentDeduction)
 {
     // Compile-only test
-    const FixedUnorderedSet a = FixedUnorderedSet<int, 5>{};
-    (void)a;
+    const FixedUnorderedSet var1 = FixedUnorderedSet<int, 5>{};
+    (void)var1;
 }
 
 TEST(FixedUnorderedSet, SetIntersection)
 {
     constexpr FixedUnorderedSet<int, 10> VAL1 = []()
     {
-        const FixedUnorderedSet<int, 10> v1{1, 4};
-        const FixedUnorderedSet<int, 10> v2{1};
+        const FixedUnorderedSet<int, 10> var1{1, 4};
+        const FixedUnorderedSet<int, 10> var2{1};
 
         FixedUnorderedSet<int, 10> v_intersection;
-        std::set_intersection(v1.begin(),
-                              v1.end(),
-                              v2.begin(),
-                              v2.end(),
+        std::set_intersection(var1.begin(),
+                              var1.end(),
+                              var2.begin(),
+                              var2.end(),
                               std::inserter(v_intersection, v_intersection.begin()));
         return v_intersection;
     }();
@@ -695,8 +696,8 @@ namespace another_namespace_unrelated_to_the_fixed_containers_namespace
 TEST(FixedUnorderedSet, ArgumentDependentLookup)
 {
     // Compile-only test
-    fixed_containers::FixedUnorderedSet<int, 5> a{};
-    erase_if(a, [](int) { return true; });
-    (void)is_full(a);
+    fixed_containers::FixedUnorderedSet<int, 5> var1{};
+    erase_if(var1, [](int) { return true; });
+    (void)is_full(var1);
 }
 }  // namespace another_namespace_unrelated_to_the_fixed_containers_namespace

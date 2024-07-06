@@ -71,56 +71,56 @@ TEST(MacroCountermeasures, DummyUsagesOfContainers)
     // Dummy usages are not necessary, this is mostly a compile-only test.
     // Counters tools that remove unused headers.
     {
-        const EnumArray<Color, int> s{};
-        (void)s;
+        const EnumArray<Color, int> instance{};
+        (void)instance;
     }
     {
-        const EnumMap<Color, int> s{};
-        (void)s;
+        const EnumMap<Color, int> instance{};
+        (void)instance;
     }
     {
-        const EnumSet<Color> s{};
-        (void)s;
+        const EnumSet<Color> instance{};
+        (void)instance;
     }
     {
-        const FixedCircularDeque<int, 5> s{};
-        (void)s;
+        const FixedCircularDeque<int, 5> instance{};
+        (void)instance;
     }
     {
-        const FixedCircularQueue<int, 5> s{};
-        (void)s;
+        const FixedCircularQueue<int, 5> instance{};
+        (void)instance;
     }
     {
-        const FixedDeque<int, 5> s{};
-        (void)s;
+        const FixedDeque<int, 5> instance{};
+        (void)instance;
     }
     {
-        const FixedMap<int, int, 5> s{};
-        (void)s;
+        const FixedMap<int, int, 5> instance{};
+        (void)instance;
     }
     {
-        const FixedSet<int, 5> s{};
-        (void)s;
+        const FixedSet<int, 5> instance{};
+        (void)instance;
     }
     {
-        const FixedStack<int, 5> s{};
-        (void)s;
+        const FixedStack<int, 5> instance{};
+        (void)instance;
     }
     {
-        const FixedString<5> s{};
-        (void)s;
+        const FixedString<5> instance{};
+        (void)instance;
     }
     {
-        const FixedUnorderedMap<int, int, 5> s{};
-        (void)s;
+        const FixedUnorderedMap<int, int, 5> instance{};
+        (void)instance;
     }
     {
-        const FixedUnorderedSet<int, 5> s{};
-        (void)s;
+        const FixedUnorderedSet<int, 5> instance{};
+        (void)instance;
     }
     {
-        const FixedVector<int, 5> s{};
-        (void)s;
+        const FixedVector<int, 5> instance{};
+        (void)instance;
     }
 }
 }  // namespace fixed_containers

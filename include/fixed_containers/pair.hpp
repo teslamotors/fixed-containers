@@ -32,6 +32,6 @@ struct Pair
 };
 
 template <typename T1, typename T2>
-Pair(T1 t1, T2 t2) -> Pair<T1, T2>;
+Pair(T1 val1, T2 val2) -> Pair<T1, T2>;
 
 }  // namespace fixed_containers

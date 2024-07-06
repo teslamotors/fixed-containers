@@ -19,10 +19,10 @@ namespace
 // readable.
 struct ConvenientIntHash
 {
-    constexpr uint64_t operator()(const int& t) const
+    constexpr uint64_t operator()(const int& value) const
     {
-        const uint64_t fingerprint = static_cast<uint64_t>(t) & 0xFFUL;
-        const uint64_t upper = static_cast<uint64_t>(t) << 8;
+        const uint64_t fingerprint = static_cast<uint64_t>(value) & 0xFFUL;
+        const uint64_t upper = static_cast<uint64_t>(value) << 8;
         return fingerprint | upper;
     }
 };
@@ -49,18 +49,18 @@ template <typename T>
     std::cout << "--- map with " << map.size() << " elems ---" << std::endl;
     for (typename T::SizeType i = 0; i < T::INTERNAL_TABLE_SIZE; i++)
     {
-        const Bucket& b = map.bucket_at(i);
+        const Bucket& bucket = map.bucket_at(i);
 
         // don't print anything for empty slots
-        if (b.dist_and_fingerprint_ == 0)
+        if (bucket.dist_and_fingerprint_ == 0)
         {
             std::cout << i << std::endl;
         }
         else
         {
-            std::cout << i << " (" << b.dist() << ", " << b.fingerprint() << ") -" << b.value_index_
-                      << "-> ";
-            const auto& pair = map.value_at(b.value_index_);
+            std::cout << i << " (" << bucket.dist() << ", " << bucket.fingerprint() << ") -"
+                      << bucket.value_index_ << "-> ";
+            const auto& pair = map.value_at(bucket.value_index_);
             std::cout << "(" << pair.first << ", " << pair.second << ")" << std::endl;
         }
     }
@@ -109,11 +109,11 @@ TEST(MapOperations, Emplace)
 {
     IntIntMap10 map{};
 
-    auto test_emplace = [&](int k, int v)
+    auto test_emplace = [&](int key, int value)
     {
-        const OIT idx = map.opaque_index_of(k);
+        const OIT idx = map.opaque_index_of(key);
         EXPECT_FALSE(map.exists(idx));
-        return map.emplace(idx, k, v);
+        return map.emplace(idx, key, value);
     };
 
     // empty map, so it will place in the correct spot trivially
@@ -308,11 +308,11 @@ TEST(MapOperations, Search)
 
     IntIntMap10 map{};
 
-    auto test_emplace = [&](int k, int v)
+    auto test_emplace = [&](int key, int value)
     {
-        const OIT idx = map.opaque_index_of(k);
+        const OIT idx = map.opaque_index_of(key);
         EXPECT_FALSE(map.exists(idx));
-        return map.emplace(idx, k, v);
+        return map.emplace(idx, key, value);
     };
 
     test_emplace(13, 1);
@@ -409,11 +409,11 @@ TEST(MapOperations, Erase)
 
     IntIntMap10 map{};
 
-    auto test_emplace = [&](int k, int v)
+    auto test_emplace = [&](int key, int value)
     {
-        const OIT idx = map.opaque_index_of(k);
+        const OIT idx = map.opaque_index_of(key);
         EXPECT_FALSE(map.exists(idx));
-        return map.emplace(idx, k, v);
+        return map.emplace(idx, key, value);
     };
 
     test_emplace(13, 1);
@@ -570,11 +570,11 @@ TEST(MapOperations, LinkedListIteration)
     EXPECT_EQ(map.size(), 0);
     EXPECT_EQ(map.begin_index(), map.end_index());
 
-    auto test_emplace = [&](int k, int v)
+    auto test_emplace = [&](int key, int value)
     {
-        const OIT idx = map.opaque_index_of(k);
+        const OIT idx = map.opaque_index_of(key);
         EXPECT_FALSE(map.exists(idx));
-        return map.emplace(idx, k, v);
+        return map.emplace(idx, key, value);
     };
 
     OIT idx = test_emplace(13, 1);
@@ -683,11 +683,11 @@ TEST(MapOperations, EraseRange)
 
     IntIntMap10 map{};
 
-    auto test_emplace = [&](int k, int v)
+    auto test_emplace = [&](int key, int value)
     {
-        const OIT idx = map.opaque_index_of(k);
+        const OIT idx = map.opaque_index_of(key);
         EXPECT_FALSE(map.exists(idx));
-        return map.emplace(idx, k, v);
+        return map.emplace(idx, key, value);
     };
 
     test_emplace(13, 1);

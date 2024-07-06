@@ -69,18 +69,18 @@ public:
 
     constexpr FixedString(
         size_type count,
-        CharT ch,
+        CharT character,
         const std_transition::source_location& loc = std_transition::source_location::current())
-      : IMPLEMENTATION_DETAIL_DO_NOT_USE_data_{count, ch, loc}
+      : IMPLEMENTATION_DETAIL_DO_NOT_USE_data_{count, character, loc}
     {
         null_terminate_at_max_length();
         null_terminate(loc);
     }
 
     constexpr FixedString(
-        const CharT* s,
+        const CharT* char_ptr,
         const std_transition::source_location& loc = std_transition::source_location::current())
-      : FixedString(std::string_view{s}, loc)
+      : FixedString(std::string_view{char_ptr}, loc)
     {
     }
 
@@ -104,10 +104,10 @@ public:
 
     constexpr FixedString& assign(
         size_type count,
-        CharT ch,
+        CharT character,
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
-        vec().assign(count, ch, loc);
+        vec().assign(count, character, loc);
         null_terminate(loc);
         return *this;
     }
@@ -130,39 +130,39 @@ public:
         return *this;
     }
     constexpr FixedString& assign(
-        const std::string_view& t,
+        const std::string_view& view,
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
-        vec().assign(t.begin(), t.end(), loc);
+        vec().assign(view.begin(), view.end(), loc);
         null_terminate(loc);
         return *this;
     }
 
-    [[nodiscard]] constexpr reference operator[](size_type i) noexcept
+    [[nodiscard]] constexpr reference operator[](size_type index) noexcept
     {
         // Cannot capture real source_location for operator[]
         // This operator should not range-check according to the spec, but we want the extra safety.
-        return vec().at(i, std_transition::source_location::current());
+        return vec().at(index, std_transition::source_location::current());
     }
-    [[nodiscard]] constexpr const_reference operator[](size_type i) const noexcept
+    [[nodiscard]] constexpr const_reference operator[](size_type index) const noexcept
     {
         // Cannot capture real source_location for operator[]
         // This operator should not range-check according to the spec, but we want the extra safety.
-        return vec().at(i, std_transition::source_location::current());
+        return vec().at(index, std_transition::source_location::current());
     }
 
-    [[nodiscard]] constexpr reference at(size_type i,
+    [[nodiscard]] constexpr reference at(size_type index,
                                          const std_transition::source_location& loc =
                                              std_transition::source_location::current()) noexcept
     {
-        return vec().at(i, loc);
+        return vec().at(index, loc);
     }
     [[nodiscard]] constexpr const_reference at(
-        size_type i,
+        size_type index,
         const std_transition::source_location& loc =
             std_transition::source_location::current()) const noexcept
     {
-        return vec().at(i, loc);
+        return vec().at(index, loc);
     }
 
     constexpr reference front(
@@ -237,38 +237,38 @@ public:
     }
 
     constexpr iterator insert(
-        const_iterator it,
-        CharT v,
+        const_iterator pos,
+        CharT character,
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
         const ScopedNullTermination guard{this, loc};
-        return vec().insert(it, v, loc);
+        return vec().insert(pos, character, loc);
     }
     template <InputIterator InputIt>
     constexpr iterator insert(
-        const_iterator it,
+        const_iterator pos,
         InputIt first,
         InputIt last,
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
         const ScopedNullTermination guard{this, loc};
-        return vec().insert(it, first, last, loc);
+        return vec().insert(pos, first, last, loc);
     }
     constexpr iterator insert(
-        const_iterator it,
+        const_iterator pos,
         std::initializer_list<CharT> ilist,
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
         const ScopedNullTermination guard{this, loc};
-        return vec().insert(it, ilist, loc);
+        return vec().insert(pos, ilist, loc);
     }
     constexpr iterator insert(
-        const_iterator it,
-        std::string_view s,
+        const_iterator pos,
+        std::string_view view,
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
         const ScopedNullTermination guard{this, loc};
-        return vec().insert(it, s.begin(), s.end(), loc);
+        return vec().insert(pos, view.begin(), view.end(), loc);
     }
 
     constexpr iterator erase(
@@ -288,10 +288,10 @@ public:
     }
 
     constexpr void push_back(
-        CharT ch,
+        CharT character,
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
-        vec().push_back(ch, loc);
+        vec().push_back(character, loc);
         null_terminate(loc);
     }
 
@@ -321,29 +321,29 @@ public:
         return *this;
     }
     constexpr FixedString& append(
-        const std::string_view& t,
+        const std::string_view& view,
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
-        vec().insert(vec().cend(), t.begin(), t.end(), loc);
+        vec().insert(vec().cend(), view.begin(), view.end(), loc);
         null_terminate(loc);
         return *this;
     }
 
-    constexpr FixedString& operator+=(CharT ch)
+    constexpr FixedString& operator+=(CharT character)
     {
-        return append(ch, std_transition::source_location::current());
+        return append(character, std_transition::source_location::current());
     }
-    constexpr FixedString& operator+=(const CharT* s)
+    constexpr FixedString& operator+=(const CharT* char_ptr)
     {
-        return append(std::string_view{s}, std_transition::source_location::current());
+        return append(std::string_view{char_ptr}, std_transition::source_location::current());
     }
     constexpr FixedString& operator+=(std::initializer_list<CharT> ilist)
     {
         return append(ilist, std_transition::source_location::current());
     }
-    constexpr FixedString& operator+=(const std::string_view& t)
+    constexpr FixedString& operator+=(const std::string_view& view)
     {
-        return append(t, std_transition::source_location::current());
+        return append(view, std_transition::source_location::current());
     }
 
     [[nodiscard]] constexpr int compare(std::string_view view) const
@@ -381,24 +381,27 @@ public:
     {
         return as_view().starts_with(prefix);
     }
-    [[nodiscard]] constexpr bool starts_with(char x) const noexcept
+    [[nodiscard]] constexpr bool starts_with(char character) const noexcept
     {
-        return as_view().starts_with(x);
+        return as_view().starts_with(character);
     }
 
-    [[nodiscard]] constexpr bool starts_with(const char* x) const noexcept
+    [[nodiscard]] constexpr bool starts_with(const char* char_ptr) const noexcept
     {
-        return as_view().starts_with(x);
+        return as_view().starts_with(char_ptr);
     }
 
     [[nodiscard]] constexpr bool ends_with(const std::string_view& suffix) const noexcept
     {
         return as_view().ends_with(suffix);
     }
-    [[nodiscard]] constexpr bool ends_with(char x) const noexcept { return as_view().ends_with(x); }
-    [[nodiscard]] constexpr bool ends_with(const char* x) const noexcept
+    [[nodiscard]] constexpr bool ends_with(char character) const noexcept
     {
-        return as_view().ends_with(x);
+        return as_view().ends_with(character);
+    }
+    [[nodiscard]] constexpr bool ends_with(const char* char_ptr) const noexcept
+    {
+        return as_view().ends_with(char_ptr);
     }
 
     [[nodiscard]] constexpr std::string_view substr(
@@ -424,10 +427,10 @@ public:
 
     constexpr void resize(
         size_type count,
-        CharT ch,
+        CharT character,
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
-        vec().resize(count, ch, loc);
+        vec().resize(count, character, loc);
         null_terminate(loc);
     }
 
@@ -440,10 +443,10 @@ private:
     }
     constexpr void null_terminate(const std_transition::source_location& loc)
     {
-        const std::size_t n = length();
-        if (preconditions::test(n <= MAXIMUM_LENGTH))
+        const std::size_t len = length();
+        if (preconditions::test(len <= MAXIMUM_LENGTH))
         {
-            Checking::length_error(n + 1, loc);
+            Checking::length_error(len + 1, loc);
         }
 
         null_terminate(length());
@@ -460,15 +463,15 @@ private:
 };
 
 template <std::size_t MAXIMUM_LENGTH, typename CheckingType>
-std::ostream& operator<<(std::ostream& os, const FixedString<MAXIMUM_LENGTH, CheckingType>& str)
+std::ostream& operator<<(std::ostream& stream, const FixedString<MAXIMUM_LENGTH, CheckingType>& str)
 {
-    return os << std::string_view{str};
+    return stream << std::string_view{str};
 }
 
 template <std::size_t MAXIMUM_LENGTH, typename CheckingType>
-[[nodiscard]] constexpr bool is_full(const FixedString<MAXIMUM_LENGTH, CheckingType>& c)
+[[nodiscard]] constexpr bool is_full(const FixedString<MAXIMUM_LENGTH, CheckingType>& container)
 {
-    return c.size() >= c.max_size();
+    return container.size() >= container.max_size();
 }
 
 /**

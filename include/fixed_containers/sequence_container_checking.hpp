@@ -10,12 +10,12 @@
 namespace fixed_containers::customize
 {
 template <class T>
-concept SequenceContainerChecking = requires(std::size_t i,
-                                             std::size_t s,
+concept SequenceContainerChecking = requires(std::size_t index,
+                                             std::size_t size,
                                              const StringLiteral& error_message,
                                              const std_transition::source_location& loc) {
-    T::out_of_range(i, s, loc);  // ~ std::out_of_range
-    T::length_error(s, loc);     // ~ std::length_error
+    T::out_of_range(index, size, loc);  // ~ std::out_of_range
+    T::length_error(size, loc);         // ~ std::length_error
     T::empty_container_access(loc);
     T::invalid_argument(error_message, loc);  // ~ std::invalid_argument
 };
