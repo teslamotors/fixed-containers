@@ -16,7 +16,7 @@ struct CyclesAndInteger
     std::size_t integer;
 
     constexpr bool operator==(const CyclesAndInteger&) const noexcept = default;
-    constexpr auto operator<=>(const CyclesAndInteger& other) const noexcept
+    constexpr std::strong_ordering operator<=>(const CyclesAndInteger& other) const noexcept
     {
         return std::tie(cycles, integer) <=> std::tie(other.cycles, other.integer);
     }
