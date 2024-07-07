@@ -68,7 +68,7 @@ Checks: >
   -google-readability-todo,
   -misc-non-private-member-variables-in-classes,
   -modernize-return-braced-init-list,
-  -modernize-use-default-member-init,braces-around,
+  -modernize-use-default-member-init,
   -modernize-use-trailing-return-type,
   -modernize-avoid-c-arrays,
   -performance-move-const-arg,
