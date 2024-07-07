@@ -59,6 +59,7 @@ Checks: >
   -google-readability-namespace-comments,
   -google-readability-todo,
   -misc-non-private-member-variables-in-classes,
+  -modernize-pass-by-value,
   -modernize-return-braced-init-list,
   -modernize-use-default-member-init,
   -modernize-use-trailing-return-type,
@@ -67,14 +68,12 @@ Checks: >
   -performance-enum-size,
   -readability-function-cognitive-complexity,
   -readability-magic-numbers,
+  -readability-redundant-access-specifiers,
   -readability-redundant-member-init,
   -readability-suspicious-call-argument,
   -bugprone-easily-swappable-parameters,
   -bugprone-switch-missing-default-case,
   -bugprone-unchecked-optional-access,
-
-  -modernize-pass-by-value,
-  -readability-redundant-access-specifiers,
 
 # Turn all the warnings from the checks above into errors.
 WarningsAsErrors: "*"
