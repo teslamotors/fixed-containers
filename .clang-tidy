@@ -33,11 +33,6 @@
 #      the architechture. If data size was a consideration, we might decide to
 #      enable the warnings.
 #
-#  -readability-redundant-declaration: A friend declaration inside a class
-#      counts as a declaration, so if we also declare that friend outside the
-#      class in order to document it as part of the public API, that will
-#      trigger a redundant declaration warning from this check.
-#
 #  -readability-function-cognitive-complexity: too many false positives with
 #      clang-tidy-12. We need to disable this check in macros, and that setting
 #      only appears in clang-tidy-13.
@@ -72,7 +67,6 @@ Checks: >
   -performance-enum-size,
   -readability-function-cognitive-complexity,
   -readability-magic-numbers,
-  -readability-redundant-declaration,
   -readability-redundant-member-init,
   -readability-suspicious-call-argument,
   -bugprone-easily-swappable-parameters,
