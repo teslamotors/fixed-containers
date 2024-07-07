@@ -21,7 +21,7 @@ namespace fixed_containers
 struct MockNonDefaultConstructible
 {
     constexpr MockNonDefaultConstructible() = delete;
-    constexpr MockNonDefaultConstructible(int) {}
+    constexpr MockNonDefaultConstructible(int /*unused*/) {}
     constexpr MockNonDefaultConstructible(const MockNonDefaultConstructible& other) noexcept =
         default;
     constexpr MockNonDefaultConstructible(MockNonDefaultConstructible&& other) noexcept = default;
@@ -63,7 +63,8 @@ struct MockNonTrivialCopyAssignable
     MockNonTrivialCopyAssignable& operator=(MockNonTrivialCopyAssignable&& other) noexcept =
         default;
 
-    constexpr MockNonTrivialCopyAssignable& operator=(const MockNonTrivialCopyAssignable&) noexcept
+    constexpr MockNonTrivialCopyAssignable& operator=(
+        const MockNonTrivialCopyAssignable& /*other*/) noexcept
     {
         mock_testing_types_detail::noop_constexpr_function_to_induce_non_triviality();
         return *this;
@@ -74,7 +75,8 @@ struct MockNonTrivialCopyConstructible
 {
     constexpr MockNonTrivialCopyConstructible() = default;
 
-    constexpr MockNonTrivialCopyConstructible(const MockNonTrivialCopyConstructible&) noexcept
+    constexpr MockNonTrivialCopyConstructible(
+        const MockNonTrivialCopyConstructible& /*other*/) noexcept
     {
         mock_testing_types_detail::noop_constexpr_function_to_induce_non_triviality();
     }
@@ -120,12 +122,13 @@ struct MockNonTriviallyCopyAssignable
     MockNonTriviallyCopyAssignable(const MockNonTriviallyCopyAssignable& other) noexcept = default;
     MockNonTriviallyCopyAssignable(MockNonTriviallyCopyAssignable&& other) noexcept = default;
 
-    MockNonTriviallyCopyAssignable& operator=(const MockNonTriviallyCopyAssignable&) noexcept
+    MockNonTriviallyCopyAssignable& operator=(
+        const MockNonTriviallyCopyAssignable& /*other*/) noexcept
     {
         mock_testing_types_detail::noop_constexpr_function_to_induce_non_triviality();
         return *this;
     }
-    MockNonTriviallyCopyAssignable& operator=(MockNonTriviallyCopyAssignable&&) noexcept
+    MockNonTriviallyCopyAssignable& operator=(MockNonTriviallyCopyAssignable&& /*other*/) noexcept
     {
         return *this;
     }

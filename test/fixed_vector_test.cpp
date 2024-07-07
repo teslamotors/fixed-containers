@@ -122,8 +122,8 @@ static_assert(
     std::is_same_v<typename std::pointer_traits<VecType::const_iterator>::element_type, const T>);
 }  // namespace not_trivially_copyable_vector
 
-void const_span_ref(const std::span<int>&) {}
-void const_span_of_const_ref(const std::span<const int>&) {}
+void const_span_ref(const std::span<int>& /*unused*/) {}
+void const_span_of_const_ref(const std::span<const int>& /*unused*/) {}
 
 struct ComplexStruct
 {

@@ -31,8 +31,8 @@ static_assert(IsStructuralType<FixedStringType>);
 static_assert(std::contiguous_iterator<FixedStringType::iterator>);
 static_assert(std::contiguous_iterator<FixedStringType::const_iterator>);
 
-void const_span_ref(const std::span<char>&) {}
-void const_span_of_const_ref(const std::span<const char>&) {}
+void const_span_ref(const std::span<char>& /*unused*/) {}
+void const_span_of_const_ref(const std::span<const char>& /*unused*/) {}
 
 }  // namespace
 

@@ -22,7 +22,7 @@ union OptionalStorage
     explicit constexpr OptionalStorage(const T& var) : value{var} { }
     explicit constexpr OptionalStorage(T&& var) : value{std::move(var)} { }
     template <class... Args>
-    explicit constexpr OptionalStorage(std::in_place_t, Args&&... args) : value(std::forward<Args>(args)...) { }
+    explicit constexpr OptionalStorage(std::in_place_t /*unused*/, Args&&... args) : value(std::forward<Args>(args)...) { }
 
     constexpr OptionalStorage(const OptionalStorage&) requires TriviallyCopyConstructible<T> = default;
     constexpr OptionalStorage(OptionalStorage&&) noexcept requires TriviallyMoveConstructible<T> = default;
@@ -70,7 +70,7 @@ union OptionalStorage<T>
     explicit constexpr OptionalStorage(const T& var) : value{var} { }
     explicit constexpr OptionalStorage(T&& var) : value{std::move(var)} { }
     template <class... Args>
-    explicit constexpr OptionalStorage(std::in_place_t, Args&&... args) : value(std::forward<Args>(args)...) { }
+    explicit constexpr OptionalStorage(std::in_place_t /*unused*/, Args&&... args) : value(std::forward<Args>(args)...) { }
 
     // clang-format on
     constexpr OptionalStorage(const OptionalStorage&) = default;
@@ -91,7 +91,7 @@ union OptionalStorage<T>
     // clang-format off
     constexpr OptionalStorage() noexcept : dummy_ref{} { }
     constexpr OptionalStorage(T var) : value{var} { }
-    constexpr OptionalStorage(std::in_place_t, T var) : value(var) { }
+    constexpr OptionalStorage(std::in_place_t /*unused*/, T var) : value(var) { }
 
     // clang-format on
     constexpr OptionalStorage(const OptionalStorage&) = default;

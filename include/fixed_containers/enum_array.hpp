@@ -48,7 +48,7 @@ private:
 private:
     template <std::size_t M, std::size_t... IS>
     [[nodiscard]] static constexpr ValueArrayType initializer_pair_list_to_value_array_impl(
-        const std::pair<const L, T> (&list)[M], std::index_sequence<IS...>)
+        const std::pair<const L, T> (&list)[M], std::index_sequence<IS...> /*unused*/)
     {
         return ValueArrayType{std::next(list, static_cast<difference_type>(IS))->second...};
     }
@@ -77,7 +77,7 @@ public:
     }
 
     template <class R>
-    constexpr EnumArray(std_transition::from_range_t, R&& range) noexcept
+    constexpr EnumArray(std_transition::from_range_t /*unused*/, R&& range) noexcept
         requires DefaultConstructible<T>
       : EnumArray()
     {

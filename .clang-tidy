@@ -33,9 +33,6 @@
 #      the architechture. If data size was a consideration, we might decide to
 #      enable the warnings.
 #
-#  -readability-named-parameter: std::in_place_t and other similar use-cases
-#      where a name is not needed would be flagged.
-#
 #  -readability-redundant-declaration: A friend declaration inside a class
 #      counts as a declaration, so if we also declare that friend outside the
 #      class in order to document it as part of the public API, that will
@@ -75,7 +72,6 @@ Checks: >
   -performance-enum-size,
   -readability-function-cognitive-complexity,
   -readability-magic-numbers,
-  -readability-named-parameter,
   -readability-redundant-declaration,
   -readability-redundant-member-init,
   -readability-suspicious-call-argument,

@@ -483,7 +483,7 @@ public:
 
 private:
     template <InputIterator InputIt>
-    constexpr iterator insert_internal(std::forward_iterator_tag,
+    constexpr iterator insert_internal(std::forward_iterator_tag /*unused*/,
                                        const_iterator pos,
                                        InputIt first,
                                        InputIt last,
@@ -508,7 +508,7 @@ private:
     }
 
     template <InputIterator InputIt>
-    constexpr iterator insert_internal(std::input_iterator_tag,
+    constexpr iterator insert_internal(std::input_iterator_tag /*unused*/,
                                        const_iterator pos,
                                        InputIt first,
                                        InputIt last,

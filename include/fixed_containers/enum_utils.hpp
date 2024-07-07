@@ -430,7 +430,7 @@ class SkeletalRichEnumValues
 
     template <std::size_t N, std::size_t... I>
     static constexpr std::array<RichEnumType, N> wrap_array_impl(
-        const std::array<BackingEnumType, N>& input, std::index_sequence<I...>) noexcept
+        const std::array<BackingEnumType, N>& input, std::index_sequence<I...> /*unused*/) noexcept
         requires(std::is_empty_v<InfusedData>)
     {
         return {
@@ -440,7 +440,7 @@ class SkeletalRichEnumValues
 
     template <std::size_t N, std::size_t... I>
     static constexpr std::array<RichEnumType, N> wrap_array_impl(
-        const std::array<BackingEnumType, N>& input, std::index_sequence<I...>) noexcept
+        const std::array<BackingEnumType, N>& input, std::index_sequence<I...> /*unused*/) noexcept
         requires(!std::is_empty_v<InfusedData>)
     {
         return {

@@ -593,7 +593,7 @@ private:
     }
 
     template <InputIterator InputIt>
-    constexpr iterator insert_internal(std::forward_iterator_tag,
+    constexpr iterator insert_internal(std::forward_iterator_tag /*unused*/,
                                        const_iterator pos,
                                        InputIt first,
                                        InputIt last,
@@ -611,7 +611,7 @@ private:
     }
 
     template <InputIterator InputIt>
-    constexpr iterator insert_internal(std::input_iterator_tag,
+    constexpr iterator insert_internal(std::input_iterator_tag /*unused*/,
                                        const_iterator pos,
                                        InputIt first,
                                        InputIt last,
@@ -744,7 +744,7 @@ private:
         return optional_storage_detail::get(array()[index]);
     }
 
-    constexpr void destroy_at(std::size_t)
+    constexpr void destroy_at(std::size_t /*index*/)
         requires TriviallyDestructible<T>
     {
     }

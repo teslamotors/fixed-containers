@@ -37,7 +37,7 @@ public:
     {
     }
 
-    constexpr OptionalReference(std::nullopt_t) noexcept
+    constexpr OptionalReference(std::nullopt_t /*unused*/) noexcept
       : OptionalReference()
     {
     }
@@ -65,7 +65,7 @@ public:
     // this operator is ambiguous. Seee the open-std link
     constexpr Self& operator=(T) = delete;
 
-    constexpr Self& operator=(std::nullopt_t) noexcept
+    constexpr Self& operator=(std::nullopt_t /*unused*/) noexcept
     {
         this->reset();
         return *this;
@@ -183,14 +183,14 @@ constexpr bool operator==(const OptionalReference<T, CheckT>& lhs,
 // Compares OptionalReference with a nullopt. Equivalent to above when comparing to an optional that
 // does not contain a value.
 template <typename T, customize::OptionalReferenceChecking<T> CheckT>
-constexpr auto operator<=>(const OptionalReference<T, CheckT>& lhs, std::nullopt_t)
+constexpr auto operator<=>(const OptionalReference<T, CheckT>& lhs, std::nullopt_t /*unused*/)
 {
     return lhs <=> OptionalReference<T, CheckT>{};
 }
 
 // <=> only gives definition for secondary relational operators (ie. <)
 template <typename T, customize::OptionalReferenceChecking<T> CheckT>
-constexpr bool operator==(const OptionalReference<T, CheckT>& lhs, std::nullopt_t)
+constexpr bool operator==(const OptionalReference<T, CheckT>& lhs, std::nullopt_t /*unused*/)
 {
     return !lhs.has_value();
 }
