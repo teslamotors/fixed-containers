@@ -343,7 +343,17 @@ target_link_libraries(<your_binary> fixed_containers::fixed_containers)
 ```
 
 ### bazel
-Use the following in your `WORKSPACE` file:
+If you are managing dependencies with the newer bzlmod system, use the following in your `MODULE.bazel` file:
+```
+bazel_dep(name = "fixed_containers")
+archive_override(
+    module_name = "fixed_containers",
+    strip_prefix = "fixed-containers-<commit>",
+    urls = ["https://github.com/teslamotors/fixed-containers/archive/<commit>.tar.gz"],
+)
+```
+
+If you are managing dependencies with the older `WORKSPACE` system, use the following in your `WORKSPACE` file:
 ```
 http_archive(
     name = "fixed_containers",

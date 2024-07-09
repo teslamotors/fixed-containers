@@ -1,0 +1,10 @@
+diff --git a/MODULE.bazel b/MODULE.bazel
+new file mode 100644
+index 0000000..2a3ae781c
+--- /dev/null
++++ MODULE.bazel
+@@ -0,0 +1,3 @@
++module(
++    name = "range-v3",
++)
+
