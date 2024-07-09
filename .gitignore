@@ -13,6 +13,8 @@ CTestTestfile.cmake
 _deps
 
 ### Bazel ###
+# Ignore the lock file
+MODULE.bazel.lock
 # Ignore backup files.
 *~
 # Ignore Vim swap files.
