@@ -12,6 +12,7 @@ build:san --linkopt -fsanitize=address,undefined
 build:san --linkopt -fsanitize-link-c++-runtime
 
 ### DIAGNOSTICS
+build --define enable_strip_include_prefix_instead_of_includes=true
 build:clang  --copt -Weverything
 # Disables C++98 to C++17 compatibility enforcement
 build:clang  --copt -Wno-c++98-compat-pedantic

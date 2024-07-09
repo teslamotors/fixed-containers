@@ -1,13 +1,28 @@
+load("//:build_helpers.bzl", "includes_config", "strip_include_prefix_config")
+
 licenses(["notice"])
 
 exports_files(["LICENSE"])
 
 package(default_visibility = ["//visibility:public"])
 
+# Use `includes` for public usage so diagnostics are not emitted to users for issues in our headers.
+# This is because this option uses -isystem for includes.
+# More info: https://bazel.build/reference/be/c-cpp#cc_library.includes
+#
+# Use `strip_include_prefix` during testing so diagnostics apply.
+# This is because this option uses -I for includes.
+# More info: https://bazel.build/reference/be/c-cpp#cc_library.strip_include_prefix
+config_setting(
+    name = "strip_include_prefix_instead_of_includes",
+    define_values = {"enable_strip_include_prefix_instead_of_includes": "true"},
+)
+
 cc_library(
     name = "algorithm",
     hdrs = ["include/fixed_containers/algorithm.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":memory",
     ],
@@ -17,21 +32,24 @@ cc_library(
 cc_library(
     name = "arrow_proxy",
     hdrs = ["include/fixed_containers/arrow_proxy.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     copts = ["-std=c++20"],
 )
 
 cc_library(
     name = "assert_or_abort",
     hdrs = ["include/fixed_containers/assert_or_abort.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     copts = ["-std=c++20"],
 )
 
 cc_library(
     name = "bidirectional_iterator",
     hdrs = ["include/fixed_containers/bidirectional_iterator.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":arrow_proxy",
         ":concepts",
@@ -43,7 +61,8 @@ cc_library(
 cc_library(
     name = "circular_indexing",
     hdrs = ["include/fixed_containers/circular_indexing.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":assert_or_abort",
         ":int_math",
@@ -55,7 +74,8 @@ cc_library(
 cc_library(
     name = "circular_integer_range_iterator",
     hdrs = ["include/fixed_containers/circular_integer_range_iterator.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":assert_or_abort",
         ":circular_indexing",
@@ -70,28 +90,32 @@ cc_library(
 cc_library(
     name = "comparison_chain",
     hdrs = ["include/fixed_containers/comparison_chain.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     # copts = ["-std=c++20"], # Not needed
 )
 
 cc_library(
     name = "concepts",
     hdrs = ["include/fixed_containers/concepts.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     copts = ["-std=c++20"],
 )
 
 cc_library(
     name = "consteval_compare",
     hdrs = ["include/fixed_containers/consteval_compare.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     copts = ["-std=c++20"],
 )
 
 cc_library(
     name = "emplace",
     hdrs = ["include/fixed_containers/emplace.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":concepts",
     ],
@@ -101,7 +125,8 @@ cc_library(
 cc_library(
     name = "enum_array",
     hdrs = ["include/fixed_containers/enum_array.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":assert_or_abort",
         ":concepts",
@@ -114,7 +139,8 @@ cc_library(
 cc_library(
     name = "enum_map",
     hdrs = ["include/fixed_containers/enum_map.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":assert_or_abort",
         ":bidirectional_iterator",
@@ -137,7 +163,8 @@ cc_library(
 cc_library(
     name = "enum_set",
     hdrs = ["include/fixed_containers/enum_set.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":assert_or_abort",
         ":bidirectional_iterator",
@@ -152,7 +179,8 @@ cc_library(
 cc_library(
     name = "enum_utils",
     hdrs = ["include/fixed_containers/enum_utils.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":assert_or_abort",
         "@com_github_neargye_magic_enum//:magic_enum",
@@ -163,14 +191,16 @@ cc_library(
 cc_library(
     name = "erase_if",
     hdrs = ["include/fixed_containers/erase_if.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     copts = ["-std=c++20"],
 )
 
 cc_library(
     name = "filtered_integer_range_iterator",
     hdrs = ["include/fixed_containers/filtered_integer_range_iterator.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":assert_or_abort",
         ":bidirectional_iterator",
@@ -183,7 +213,8 @@ cc_library(
 cc_library(
     name = "fixed_circular_deque",
     hdrs = ["include/fixed_containers/fixed_circular_deque.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":concepts",
         ":fixed_deque",
@@ -196,7 +227,8 @@ cc_library(
 cc_library(
     name = "fixed_circular_queue",
     hdrs = ["include/fixed_containers/fixed_circular_queue.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":concepts",
         ":fixed_circular_deque",
@@ -210,7 +242,8 @@ cc_library(
 cc_library(
     name = "fixed_deque",
     hdrs = ["include/fixed_containers/fixed_deque.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":algorithm",
         ":assert_or_abort",
@@ -231,7 +264,8 @@ cc_library(
 cc_library(
     name = "fixed_doubly_linked_list",
     hdrs = ["include/fixed_containers/fixed_doubly_linked_list.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":fixed_index_based_storage",
         ":concepts",
@@ -241,7 +275,8 @@ cc_library(
 cc_library(
     name = "fixed_doubly_linked_list_raw_view",
     hdrs = ["include/fixed_containers/fixed_doubly_linked_list_raw_view.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":fixed_doubly_linked_list",
         ":forward_iterator",
@@ -252,7 +287,8 @@ cc_library(
 cc_library(
     name = "fixed_index_based_storage",
     hdrs = ["include/fixed_containers/fixed_index_based_storage.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":assert_or_abort",
         ":fixed_vector",
@@ -264,7 +300,8 @@ cc_library(
 cc_library(
     name = "fixed_list",
     hdrs = ["include/fixed_containers/fixed_list.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":assert_or_abort",
         ":bidirectional_iterator",
@@ -280,7 +317,8 @@ cc_library(
 cc_library(
     name = "fixed_map",
     hdrs = ["include/fixed_containers/fixed_map.hpp",],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":assert_or_abort",
         ":bidirectional_iterator",
@@ -297,14 +335,16 @@ cc_library(
 cc_library(
     name = "wyhash",
     hdrs = ["include/fixed_containers/wyhash.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     copts = ["-std=c++20"],
 )
 
 cc_library(
     name = "fixed_robinhood_hashtable",
     hdrs = ["include/fixed_containers/fixed_robinhood_hashtable.hpp",],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":map_entry",
         ":fixed_doubly_linked_list",
@@ -315,7 +355,8 @@ cc_library(
 cc_library(
     name = "fixed_map_adapter",
     hdrs = ["include/fixed_containers/fixed_map_adapter.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":erase_if",
         ":forward_iterator",
@@ -329,7 +370,8 @@ cc_library(
 cc_library(
     name = "fixed_set_adapter",
     hdrs = ["include/fixed_containers/fixed_set_adapter.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":erase_if",
         ":forward_iterator",
@@ -342,7 +384,8 @@ cc_library(
 cc_library(
     name = "fixed_unordered_map",
     hdrs = ["include/fixed_containers/fixed_unordered_map.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":wyhash",
         ":fixed_robinhood_hashtable",
@@ -354,7 +397,8 @@ cc_library(
 cc_library(
     name = "fixed_unordered_map_raw_view",
     hdrs = ["include/fixed_containers/fixed_unordered_map_raw_view.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":fixed_doubly_linked_list_raw_view",
         ":forward_iterator",
@@ -365,7 +409,8 @@ cc_library(
 cc_library(
     name = "fixed_unordered_set",
     hdrs = ["include/fixed_containers/fixed_unordered_set.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":wyhash",
         ":fixed_robinhood_hashtable",
@@ -377,7 +422,8 @@ cc_library(
 cc_library(
     name = "fixed_unordered_set_raw_view",
     hdrs = ["include/fixed_containers/fixed_unordered_set_raw_view.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":concepts",
         ":fixed_doubly_linked_list_raw_view",
@@ -389,7 +435,8 @@ cc_library(
 cc_library(
     name = "fixed_queue",
     hdrs = ["include/fixed_containers/fixed_queue.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":concepts",
         ":fixed_deque",
@@ -409,7 +456,8 @@ cc_library(
         "include/fixed_containers/fixed_red_black_tree_storage.hpp",
         "include/fixed_containers/fixed_red_black_tree_types.hpp",
     ],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":assert_or_abort",
         ":concepts",
@@ -426,14 +474,16 @@ cc_library(
         ":assert_or_abort",
         ":fixed_red_black_tree",
     ],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     copts = ["-std=c++20"],
 )
 
 cc_library(
     name = "fixed_set",
     hdrs = ["include/fixed_containers/fixed_set.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":assert_or_abort",
         ":bidirectional_iterator",
@@ -449,7 +499,8 @@ cc_library(
 cc_library(
     name = "fixed_stack",
     hdrs = ["include/fixed_containers/fixed_stack.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":concepts",
         ":fixed_vector",
@@ -463,7 +514,8 @@ cc_library(
 cc_library(
     name = "fixed_string",
     hdrs = ["include/fixed_containers/fixed_string.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":assert_or_abort",
         ":concepts",
@@ -478,7 +530,8 @@ cc_library(
 cc_library(
     name = "fixed_vector",
     hdrs = ["include/fixed_containers/fixed_vector.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":algorithm",
         ":concepts",
@@ -496,7 +549,8 @@ cc_library(
 cc_library(
     name = "forward_iterator",
     hdrs = ["include/fixed_containers/forward_iterator.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":arrow_proxy",
         ":concepts",
@@ -508,14 +562,16 @@ cc_library(
 cc_library(
     name = "in_out",
     hdrs = ["include/fixed_containers/in_out.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     copts = ["-std=c++20"],
 )
 
 cc_library(
     name = "index_or_value_storage",
     hdrs = ["include/fixed_containers/index_or_value_storage.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":concepts"
     ],
@@ -525,7 +581,8 @@ cc_library(
 cc_library(
     name = "int_math",
     hdrs = ["include/fixed_containers/int_math.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":assert_or_abort",
     ],
@@ -535,7 +592,8 @@ cc_library(
 cc_library(
     name = "integer_range",
     hdrs = ["include/fixed_containers/integer_range.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":assert_or_abort",
     ],
@@ -545,7 +603,8 @@ cc_library(
 cc_library(
     name = "integer_range_iterator",
     hdrs = ["include/fixed_containers/integer_range_iterator.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":assert_or_abort",
         ":int_math",
@@ -559,14 +618,16 @@ cc_library(
 cc_library(
     name = "iterator_utils",
     hdrs = ["include/fixed_containers/iterator_utils.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     copts = ["-std=c++20"],
 )
 
 cc_library(
     name = "map_checking",
     hdrs = ["include/fixed_containers/map_checking.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":source_location",
         ":type_name",
@@ -577,7 +638,8 @@ cc_library(
 cc_library(
     name = "optional_storage",
     hdrs = ["include/fixed_containers/optional_storage.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":concepts",
         ":reference_storage",
@@ -588,7 +650,8 @@ cc_library(
 cc_library(
     name = "optional_reference",
     hdrs = ["include/fixed_containers/optional_reference.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":concepts",
         ":optional_reference_checking",
@@ -599,7 +662,8 @@ cc_library(
 cc_library(
     name = "optional_reference_checking",
     hdrs = ["include/fixed_containers/optional_reference_checking.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":source_location",
     ],
@@ -609,42 +673,48 @@ cc_library(
 cc_library(
     name = "max_size",
     hdrs = ["include/fixed_containers/max_size.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     copts = ["-std=c++20"],
 )
 
 cc_library(
     name = "memory",
     hdrs = ["include/fixed_containers/memory.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     copts = ["-std=c++20"],
 )
 
 cc_library(
     name = "out",
     hdrs = ["include/fixed_containers/out.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     copts = ["-std=c++20"],
 )
 
 cc_library(
     name = "pair",
     hdrs = ["include/fixed_containers/pair.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     copts = ["-std=c++20"],
 )
 
 cc_library(
     name = "pair_view",
     hdrs = ["include/fixed_containers/pair_view.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     copts = ["-std=c++20"],
 )
 
 cc_library(
     name = "map_entry",
     hdrs = ["include/fixed_containers/map_entry.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":value_or_reference_storage",
         ":concepts",
@@ -655,14 +725,16 @@ cc_library(
 cc_library(
     name = "preconditions",
     hdrs = ["include/fixed_containers/preconditions.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     copts = ["-std=c++20"],
 )
 
 cc_library(
     name = "queue_adapter",
     hdrs = ["include/fixed_containers/queue_adapter.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":concepts",
         ":source_location",
@@ -673,7 +745,8 @@ cc_library(
 cc_library(
     name = "random_access_iterator",
     hdrs = ["include/fixed_containers/random_access_iterator.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":arrow_proxy",
         ":iterator_utils",
@@ -684,7 +757,8 @@ cc_library(
 cc_library(
     name = "random_access_iterator_transformer",
     hdrs = ["include/fixed_containers/random_access_iterator_transformer.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":iterator_utils"
     ],
@@ -694,7 +768,8 @@ cc_library(
 cc_library(
     name = "ranges",
     hdrs = ["include/fixed_containers/ranges.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     deps = [":concepts"],
     copts = ["-std=c++20"],
 )
@@ -702,7 +777,8 @@ cc_library(
 cc_library(
     name = "reference_storage",
     hdrs = ["include/fixed_containers/reference_storage.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     deps = [":concepts"],
     copts = ["-std=c++20"],
 )
@@ -710,7 +786,8 @@ cc_library(
 cc_library(
     name = "reflection",
     hdrs = ["include/fixed_containers/reflection.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":assert_or_abort",
         ":concepts",
@@ -725,7 +802,8 @@ cc_library(
 cc_library(
     name = "sequence_container_checking",
     hdrs = ["include/fixed_containers/sequence_container_checking.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":source_location",
         ":string_literal",
@@ -737,7 +815,8 @@ cc_library(
 cc_library(
     name = "set_checking",
     hdrs = ["include/fixed_containers/set_checking.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":source_location",
         ":type_name",
@@ -748,14 +827,16 @@ cc_library(
 cc_library(
     name = "source_location",
     hdrs = ["include/fixed_containers/source_location.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     copts = ["-std=c++20"],
 )
 
 cc_library(
     name = "stack_adapter",
     hdrs = ["include/fixed_containers/stack_adapter.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":concepts",
         ":source_location",
@@ -766,7 +847,8 @@ cc_library(
 cc_library(
     name = "string_literal",
     hdrs = ["include/fixed_containers/string_literal.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":assert_or_abort",
     ],
@@ -779,7 +861,8 @@ cc_library(
         "include/fixed_containers/tuples.hpp",
         "include/fixed_containers/tuples_as_tuple_view.hpp"
     ],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":concepts",
     ],
@@ -789,14 +872,16 @@ cc_library(
 cc_library(
     name = "type_name",
     hdrs = ["include/fixed_containers/type_name.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     copts = ["-std=c++20"],
 )
 
 cc_library(
     name = "value_or_reference_storage",
     hdrs = ["include/fixed_containers/value_or_reference_storage.hpp"],
-    includes = ["include"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":concepts",
         ":reference_storage",
