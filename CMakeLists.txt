@@ -7,10 +7,8 @@ cmake_minimum_required(VERSION 3.16)
 #endif()
 
 set(CMAKE_CXX_STANDARD 20)
-# strongly encouraged to enable this globally to avoid conflicts between
-# -Wpedantic being enabled and -std=c++20 and -std=gnu++20 for example
-# when compiling with PCH enabled
-set(CMAKE_CXX_EXTENSIONS ON)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(CMAKE_CXX_EXTENSIONS OFF)  # This ensures that GNU extensions are not used (-std=c++20 vs -std=gnu++20)
 #set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
