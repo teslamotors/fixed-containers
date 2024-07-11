@@ -74,7 +74,7 @@ void benchmark_map_lookup(benchmark::State& state)
         instance.try_emplace(static_cast<KeyType>(i));
     }
 
-    for (auto unused : state)
+    for (auto _ : state)
     {
         auto& entry = instance.at(7);
         benchmark::DoNotOptimize(entry);
