@@ -8,6 +8,8 @@
 #include "fixed_containers/assert_or_abort.hpp"
 #include "fixed_containers/concepts.hpp"
 #include "fixed_containers/consteval_compare.hpp"
+#include "fixed_containers/fixed_index_based_storage.hpp"
+#include "fixed_containers/fixed_red_black_tree_nodes.hpp"
 #include "fixed_containers/max_size.hpp"
 #include "fixed_containers/memory.hpp"
 
@@ -76,6 +78,59 @@ using STD_MAP_INT_INT = std::map<int, int>;
 static_assert(ranges::bidirectional_iterator<STD_MAP_INT_INT::iterator>);
 static_assert(ranges::bidirectional_iterator<STD_MAP_INT_INT::const_iterator>);
 
+}  // namespace
+
+// verify that the FixedMap takes the expected amount of memory
+namespace
+{
+using V = std::array<std::array<int, 3>, 30>;
+constexpr std::size_t CAP = 130;
+
+template <class K, class V, std::size_t MAXIMUM_SIZE>
+using CompactPoolFixedMap =
+    FixedMap<K,
+             V,
+             MAXIMUM_SIZE,
+             std::less<int>,
+             fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR,
+             FixedIndexBasedPoolStorage>;
+static_assert(std::is_same_v<FixedMap<int, V, CAP>, CompactPoolFixedMap<int, V, CAP>>);
+
+template <class K, class V, std::size_t MAXIMUM_SIZE>
+using CompactContiguousFixedMap =
+    FixedMap<K,
+             V,
+             MAXIMUM_SIZE,
+             std::less<int>,
+             fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR,
+             FixedIndexBasedContiguousStorage>;
+
+template <class K, class V, std::size_t MAXIMUM_SIZE>
+using DedicatedColorBitPoolFixedMap =
+    FixedMap<K,
+             V,
+             MAXIMUM_SIZE,
+             std::less<int>,
+             fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness::DEDICATED_COLOR,
+             FixedIndexBasedContiguousStorage>;
+
+template <class K, class V, std::size_t MAXIMUM_SIZE>
+using DedicatedColorBitContiguousFixedMap =
+    FixedMap<K,
+             V,
+             MAXIMUM_SIZE,
+             std::less<int>,
+             fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness::DEDICATED_COLOR,
+             FixedIndexBasedContiguousStorage>;
+
+// The reference boost-based fixed_map (with an array-backed pool-allocator) was at 51000
+// at the time of writing.
+static_assert(consteval_compare::equal<50992, sizeof(FixedMap<int, V, CAP>)>);
+static_assert(consteval_compare::equal<50992, sizeof(CompactPoolFixedMap<int, V, CAP>)>);
+static_assert(consteval_compare::equal<50992, sizeof(CompactContiguousFixedMap<int, V, CAP>)>);
+static_assert(consteval_compare::equal<52032, sizeof(DedicatedColorBitPoolFixedMap<int, V, CAP>)>);
+static_assert(
+    consteval_compare::equal<52032, sizeof(DedicatedColorBitContiguousFixedMap<int, V, CAP>)>);
 }  // namespace
 
 TEST(FixedMap, DefaultConstructor)
@@ -1520,7 +1575,7 @@ TEST(FixedMap, ComplexNontrivialCopies)
     }
 
     auto map_2{map_1};
-    for(const auto& pair : map_1)
+    for (const auto& pair : map_1)
     {
         EXPECT_TRUE(map_2.contains(pair.first));
     }
@@ -1531,7 +1586,7 @@ TEST(FixedMap, ComplexNontrivialCopies)
         map_2.try_emplace(i + 100);
     }
     auto map_3{map_1};
-    for(const auto& pair : map_1)
+    for (const auto& pair : map_1)
     {
         EXPECT_TRUE(map_3.contains(pair.first));
     }
@@ -1542,20 +1597,20 @@ TEST(FixedMap, ComplexNontrivialCopies)
         map_3.try_emplace(i + 100);
     }
     auto map_4{map_1};
-    for(const auto& pair : map_1)
+    for (const auto& pair : map_1)
     {
         EXPECT_TRUE(map_4.contains(pair.first));
     }
     EXPECT_EQ(map_4.size(), map_1.size());
 
     map_1 = map_2;
-    for(const auto& pair : map_2)
+    for (const auto& pair : map_2)
     {
         EXPECT_TRUE(map_1.contains(pair.first));
     }
     map_1.clear();
     map_1 = map_3;
-    for(const auto& pair : map_3)
+    for (const auto& pair : map_3)
     {
         EXPECT_TRUE(map_1.contains(pair.first));
     }
@@ -1572,7 +1627,7 @@ TEST(FixedMap, ComplexNontrivialCopies)
 
     map_1.clear();
     map_1 = map_4;
-    for(const auto& pair : map_4)
+    for (const auto& pair : map_4)
     {
         EXPECT_TRUE(map_1.contains(pair.first));
     }
@@ -1591,7 +1646,7 @@ TEST(FixedUnorderedMap, ComplexNontrivialMoves)
     }
 
     FM map_2{std::move(map_1)};
-    for(const auto& pair : map_1_orig)
+    for (const auto& pair : map_1_orig)
     {
         EXPECT_TRUE(map_2.contains(pair.first));
     }
@@ -1612,13 +1667,13 @@ TEST(FixedUnorderedMap, ComplexNontrivialMoves)
     }
 
     map_1 = std::move(map_2);
-    for(const auto& pair : map_2_orig)
+    for (const auto& pair : map_2_orig)
     {
         EXPECT_TRUE(map_1.contains(pair.first));
     }
     map_1.clear();
     map_1 = std::move(map_3);
-    for(const auto& pair : map_3_orig)
+    for (const auto& pair : map_3_orig)
     {
         EXPECT_TRUE(map_1.contains(pair.first));
     }
