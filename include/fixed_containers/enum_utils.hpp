@@ -7,6 +7,7 @@
 #include <array>
 #include <concepts>
 #include <cstddef>
+#include <cstdlib>
 #include <functional>
 #include <optional>
 #include <string_view>
@@ -123,7 +124,11 @@ concept is_enum_adapter =
     has_zero_based_and_sorted_contiguous_ordinal(T::values(), RichEnumAdapterOrdinalFunctor<T>{});
 
 template <is_enum T>
-struct BuiltinEnumAdapter
+struct BuiltinEnumAdapter;
+
+template <is_enum T>
+    requires(magic_enum::enum_count<T>() > 0)
+struct BuiltinEnumAdapter<T>
 {
     using Enum = T;
     static constexpr std::size_t count() { return magic_enum::enum_count<T>(); }
@@ -133,6 +138,20 @@ struct BuiltinEnumAdapter
         return magic_enum::enum_index(key).value();
     }
     static constexpr std::string_view to_string(const T& key) { return magic_enum::enum_name(key); }
+};
+template <is_enum T>
+    requires(magic_enum::enum_count<T>() == 0)
+struct BuiltinEnumAdapter<T>
+{
+private:
+    static constexpr std::array<T, 0> ZERO_SIZED_ARRAY{};
+
+public:
+    using Enum = T;
+    static constexpr std::size_t count() { return 0; }
+    static constexpr const std::array<T, 0>& values() { return ZERO_SIZED_ARRAY; }
+    [[noreturn]] static /*constexpr*/ std::size_t ordinal(const T& /*key*/) { std::abort(); }
+    [[noreturn]] static /*constexpr*/ std::string_view to_string(const T& /*key*/) { std::abort(); }
 };
 
 template <is_rich_enum T>
