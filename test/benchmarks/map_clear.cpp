@@ -82,31 +82,39 @@ void benchmark_array_clear(benchmark::State& state)
         benchmark::DoNotOptimize(instance);
     }
 }
+
+constexpr std::size_t MAXIMUM_SIZE_LIMIT = 8 << 13;
+constexpr std::size_t START = 16;
 }  // namespace
 
-constexpr std::size_t MAX_SIZE = 8 << 13;
+BENCHMARK(benchmark_map_copy<std::map<int, int>>)->Range(START, MAXIMUM_SIZE_LIMIT);
+BENCHMARK(benchmark_map_copy_then_clear<std::map<int, int>>)->Range(START, MAXIMUM_SIZE_LIMIT);
+BENCHMARK(benchmark_map_copy_then_reconstruct<std::map<int, int>>)
+    ->Range(START, MAXIMUM_SIZE_LIMIT);
 
-BENCHMARK(benchmark_map_copy<std::map<int, int>>)->Range(16, MAX_SIZE);
-BENCHMARK(benchmark_map_copy_then_clear<std::map<int, int>>)->Range(16, MAX_SIZE);
-BENCHMARK(benchmark_map_copy_then_reconstruct<std::map<int, int>>)->Range(16, MAX_SIZE);
+BENCHMARK(benchmark_map_copy<std::unordered_map<int, int>>)->Range(START, MAXIMUM_SIZE_LIMIT);
+BENCHMARK(benchmark_map_copy_then_clear<std::unordered_map<int, int>>)
+    ->Range(START, MAXIMUM_SIZE_LIMIT);
+BENCHMARK(benchmark_map_copy_then_reconstruct<std::unordered_map<int, int>>)
+    ->Range(START, MAXIMUM_SIZE_LIMIT);
 
-BENCHMARK(benchmark_map_copy<std::unordered_map<int, int>>)->Range(16, MAX_SIZE);
-BENCHMARK(benchmark_map_copy_then_clear<std::unordered_map<int, int>>)->Range(16, MAX_SIZE);
-BENCHMARK(benchmark_map_copy_then_reconstruct<std::unordered_map<int, int>>)->Range(16, MAX_SIZE);
+BENCHMARK(benchmark_map_copy<FixedMap<int, int, MAXIMUM_SIZE_LIMIT>>)
+    ->Range(START, MAXIMUM_SIZE_LIMIT);
+BENCHMARK(benchmark_map_copy_then_clear<FixedMap<int, int, MAXIMUM_SIZE_LIMIT>>)
+    ->Range(START, MAXIMUM_SIZE_LIMIT);
+BENCHMARK(benchmark_map_copy_then_reconstruct<FixedMap<int, int, MAXIMUM_SIZE_LIMIT>>)
+    ->Range(START, MAXIMUM_SIZE_LIMIT);
 
-BENCHMARK(benchmark_map_copy<FixedMap<int, int, MAX_SIZE>>)->Range(16, MAX_SIZE);
-BENCHMARK(benchmark_map_copy_then_clear<FixedMap<int, int, MAX_SIZE>>)->Range(16, MAX_SIZE);
-BENCHMARK(benchmark_map_copy_then_reconstruct<FixedMap<int, int, MAX_SIZE>>)->Range(16, MAX_SIZE);
-
-BENCHMARK(benchmark_map_copy<FixedUnorderedMap<int, int, MAX_SIZE>>)->Range(16, MAX_SIZE);
-BENCHMARK(benchmark_map_copy_then_clear<FixedUnorderedMap<int, int, MAX_SIZE>>)
-    ->Range(16, MAX_SIZE);
-BENCHMARK(benchmark_map_copy_then_reconstruct<FixedUnorderedMap<int, int, MAX_SIZE>>)
-    ->Range(16, MAX_SIZE);
+BENCHMARK(benchmark_map_copy<FixedUnorderedMap<int, int, MAXIMUM_SIZE_LIMIT>>)
+    ->Range(START, MAXIMUM_SIZE_LIMIT);
+BENCHMARK(benchmark_map_copy_then_clear<FixedUnorderedMap<int, int, MAXIMUM_SIZE_LIMIT>>)
+    ->Range(START, MAXIMUM_SIZE_LIMIT);
+BENCHMARK(benchmark_map_copy_then_reconstruct<FixedUnorderedMap<int, int, MAXIMUM_SIZE_LIMIT>>)
+    ->Range(START, MAXIMUM_SIZE_LIMIT);
 
 // more-or-less the theoretical best performance we could possibly get for a full FixedUnorderedMap
 // (just 0 out every bucket)
-BENCHMARK(benchmark_array_clear<std::array<long, (MAX_SIZE * 130ULL) / 100>>);
+BENCHMARK(benchmark_array_clear<std::array<long, (MAXIMUM_SIZE_LIMIT * 130ULL) / 100>>);
 
 }  // namespace fixed_containers
 

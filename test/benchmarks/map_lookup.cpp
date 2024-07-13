@@ -94,22 +94,35 @@ void benchmark_map_iterate_shuffled(benchmark::State& state)
         }
     }
 }
+
+constexpr std::size_t MAXIMUM_SIZE_LIMIT = 8 << 14;
+constexpr std::size_t START = 256;
+
 }  // namespace
 
-BENCHMARK(benchmark_map_lookup_fresh<std::map<int, int>>)->Range(256, 8 << 14);
-BENCHMARK(benchmark_map_lookup_fresh<std::unordered_map<int, int>>)->Range(256, 8 << 14);
-BENCHMARK(benchmark_map_lookup_fresh<FixedMap<int, int, 8 << 14>>)->Range(256, 8 << 14);
-BENCHMARK(benchmark_map_lookup_fresh<FixedUnorderedMap<int, int, 8 << 14>>)->Range(256, 8 << 14);
-BENCHMARK(benchmark_map_lookup_shuffled<FixedMap<int, int, 8 << 14>>)->Range(256, 8 << 14);
-BENCHMARK(benchmark_map_lookup_shuffled<FixedUnorderedMap<int, int, 8 << 14>>)->Range(256, 8 << 14);
+BENCHMARK(benchmark_map_lookup_fresh<std::map<int, int>>)->Range(START, MAXIMUM_SIZE_LIMIT);
+BENCHMARK(benchmark_map_lookup_fresh<std::unordered_map<int, int>>)
+    ->Range(START, MAXIMUM_SIZE_LIMIT);
+BENCHMARK(benchmark_map_lookup_fresh<FixedMap<int, int, MAXIMUM_SIZE_LIMIT>>)
+    ->Range(START, MAXIMUM_SIZE_LIMIT);
+BENCHMARK(benchmark_map_lookup_fresh<FixedUnorderedMap<int, int, MAXIMUM_SIZE_LIMIT>>)
+    ->Range(START, MAXIMUM_SIZE_LIMIT);
+BENCHMARK(benchmark_map_lookup_shuffled<FixedMap<int, int, MAXIMUM_SIZE_LIMIT>>)
+    ->Range(START, MAXIMUM_SIZE_LIMIT);
+BENCHMARK(benchmark_map_lookup_shuffled<FixedUnorderedMap<int, int, MAXIMUM_SIZE_LIMIT>>)
+    ->Range(START, MAXIMUM_SIZE_LIMIT);
 
-BENCHMARK(benchmark_map_iterate_fresh<std::map<int, int>>)->Range(256, 8 << 14);
-BENCHMARK(benchmark_map_iterate_fresh<std::unordered_map<int, int>>)->Range(256, 8 << 14);
-BENCHMARK(benchmark_map_iterate_fresh<FixedMap<int, int, 8 << 14>>)->Range(256, 8 << 14);
-BENCHMARK(benchmark_map_iterate_fresh<FixedUnorderedMap<int, int, 8 << 14>>)->Range(256, 8 << 14);
-BENCHMARK(benchmark_map_iterate_shuffled<FixedMap<int, int, 8 << 14>>)->Range(256, 8 << 14);
-BENCHMARK(benchmark_map_iterate_shuffled<FixedUnorderedMap<int, int, 8 << 14>>)
-    ->Range(256, 8 << 14);
+BENCHMARK(benchmark_map_iterate_fresh<std::map<int, int>>)->Range(START, MAXIMUM_SIZE_LIMIT);
+BENCHMARK(benchmark_map_iterate_fresh<std::unordered_map<int, int>>)
+    ->Range(START, MAXIMUM_SIZE_LIMIT);
+BENCHMARK(benchmark_map_iterate_fresh<FixedMap<int, int, MAXIMUM_SIZE_LIMIT>>)
+    ->Range(START, MAXIMUM_SIZE_LIMIT);
+BENCHMARK(benchmark_map_iterate_fresh<FixedUnorderedMap<int, int, MAXIMUM_SIZE_LIMIT>>)
+    ->Range(START, MAXIMUM_SIZE_LIMIT);
+BENCHMARK(benchmark_map_iterate_shuffled<FixedMap<int, int, MAXIMUM_SIZE_LIMIT>>)
+    ->Range(START, MAXIMUM_SIZE_LIMIT);
+BENCHMARK(benchmark_map_iterate_shuffled<FixedUnorderedMap<int, int, MAXIMUM_SIZE_LIMIT>>)
+    ->Range(START, MAXIMUM_SIZE_LIMIT);
 
 }  // namespace fixed_containers
 
