@@ -95,21 +95,24 @@ void benchmark_map_iterate_copy_shuffled(benchmark::State& state)
         benchmark::DoNotOptimize(instance2);
     }
 }
+
+constexpr std::size_t MAXIMUM_SIZE_LIMIT = 8 << 14;
+constexpr std::size_t START = 512;
 }  // namespace
 
-BENCHMARK(
-    benchmark_map_copy_fresh<FixedUnorderedMap<int, MockNonTrivialCopyConstructible, 8 << 14>>)
-    ->DenseRange(1024, 8 << 14, 1024);
+BENCHMARK(benchmark_map_copy_fresh<
+              FixedUnorderedMap<int, MockNonTrivialCopyConstructible, MAXIMUM_SIZE_LIMIT>>)
+    ->Range(START, MAXIMUM_SIZE_LIMIT);
 BENCHMARK(benchmark_map_iterate_copy_fresh<
-              FixedUnorderedMap<int, MockNonTrivialCopyConstructible, 8 << 14>>)
-    ->DenseRange(1024, 8 << 14, 1024);
+              FixedUnorderedMap<int, MockNonTrivialCopyConstructible, MAXIMUM_SIZE_LIMIT>>)
+    ->Range(START, MAXIMUM_SIZE_LIMIT);
 
-BENCHMARK(
-    benchmark_map_copy_shuffled<FixedUnorderedMap<int, MockNonTrivialCopyConstructible, 8 << 14>>)
-    ->DenseRange(1024, 8 << 14, 1024);
+BENCHMARK(benchmark_map_copy_shuffled<
+              FixedUnorderedMap<int, MockNonTrivialCopyConstructible, MAXIMUM_SIZE_LIMIT>>)
+    ->Range(START, MAXIMUM_SIZE_LIMIT);
 BENCHMARK(benchmark_map_iterate_copy_shuffled<
-              FixedUnorderedMap<int, MockNonTrivialCopyConstructible, 8 << 14>>)
-    ->DenseRange(1024, 8 << 14, 1024);
+              FixedUnorderedMap<int, MockNonTrivialCopyConstructible, MAXIMUM_SIZE_LIMIT>>)
+    ->Range(START, MAXIMUM_SIZE_LIMIT);
 
 }  // namespace fixed_containers
 
