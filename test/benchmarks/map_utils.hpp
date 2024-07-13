@@ -7,7 +7,7 @@ namespace fixed_containers::map_benchmarks
 {
 
 template <typename MapType>
-[[maybe_unused]] static void del(MapType& map, int64_t divisor)
+constexpr void del(MapType& map, int64_t divisor)
 {
     auto iter = map.begin();
     while (iter != map.end())
@@ -24,7 +24,7 @@ template <typename MapType>
 }
 
 template <typename MapType>
-[[maybe_unused]] static void replace_low(MapType& map, std::size_t divisor)
+constexpr void replace_low(MapType& map, std::size_t divisor)
 {
     using KeyType = typename MapType::key_type;
     for (std::size_t i = 0; i < map.max_size(); i += divisor)
@@ -34,7 +34,7 @@ template <typename MapType>
 }
 
 template <typename MapType>
-[[maybe_unused]] static void replace_high(MapType& map, std::size_t divisor)
+constexpr void replace_high(MapType& map, std::size_t divisor)
 {
     using KeyType = typename MapType::key_type;
     // find the largest multiple smaller than `n`
@@ -49,10 +49,10 @@ template <typename MapType>
 // create a "well-used" map, so that new elements will be inserted into dispersed spots in the map
 // instead of spots with good memory locality
 template <typename MapType>
-[[maybe_unused]] static MapType make_shuffled_map()
+constexpr void make_shuffled_map(MapType& instance)
 {
     using KeyType = typename MapType::key_type;
-    MapType instance{};
+    instance.clear();
     // fill the map completely
     for (std::size_t i = 0; i < instance.max_size(); i++)
     {
@@ -83,8 +83,6 @@ template <typename MapType>
     del(instance, 1023);
     del(instance, 15);
     del(instance, 1);
-
-    return instance;
 }
 
 }  // namespace fixed_containers::map_benchmarks

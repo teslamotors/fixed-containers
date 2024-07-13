@@ -5,8 +5,10 @@
 
 #include <benchmark/benchmark.h>
 
+#include <cstddef>
 #include <cstdint>
 #include <map>
+#include <memory>
 #include <unordered_map>
 
 namespace fixed_containers
@@ -17,7 +19,8 @@ template <typename MapType>
 void benchmark_map_lookup_fresh(benchmark::State& state)
 {
     using KeyType = typename MapType::key_type;
-    MapType instance{};
+    const std::unique_ptr<MapType> instance_ptr = std::make_unique<MapType>();
+    MapType& instance = *instance_ptr.get();
     const int64_t nelem = state.range(0);
     for (int64_t i = 0; i < nelem; i++)
     {
@@ -38,7 +41,9 @@ template <typename MapType>
 void benchmark_map_lookup_shuffled(benchmark::State& state)
 {
     using KeyType = typename MapType::key_type;
-    auto instance = map_benchmarks::make_shuffled_map<MapType>();
+    const std::unique_ptr<MapType> instance_ptr = std::make_unique<MapType>();
+    MapType& instance = *instance_ptr.get();
+    map_benchmarks::make_shuffled_map<MapType>(instance);
     const int64_t nelem = state.range(0);
     for (int64_t i = 0; i < nelem; i++)
     {
@@ -59,7 +64,8 @@ template <typename MapType>
 void benchmark_map_iterate_fresh(benchmark::State& state)
 {
     using KeyType = typename MapType::key_type;
-    MapType instance{};
+    const std::unique_ptr<MapType> instance_ptr = std::make_unique<MapType>();
+    MapType& instance = *instance_ptr.get();
     const int64_t nelem = state.range(0);
     for (int64_t i = 0; i < nelem; i++)
     {
@@ -79,7 +85,9 @@ template <typename MapType>
 void benchmark_map_iterate_shuffled(benchmark::State& state)
 {
     using KeyType = typename MapType::key_type;
-    auto instance = map_benchmarks::make_shuffled_map<MapType>();
+    const std::unique_ptr<MapType> instance_ptr = std::make_unique<MapType>();
+    MapType& instance = *instance_ptr.get();
+    map_benchmarks::make_shuffled_map<MapType>(instance);
     const int64_t nelem = state.range(0);
     for (int64_t i = 0; i < nelem; i++)
     {

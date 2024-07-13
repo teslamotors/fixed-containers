@@ -1,5 +1,6 @@
 #include "fixed_containers/fixed_map.hpp"
 #include "fixed_containers/fixed_unordered_map.hpp"
+#include "fixed_containers/memory.hpp"
 
 #include <benchmark/benchmark.h>
 
@@ -7,6 +8,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <map>
+#include <memory>
 #include <unordered_map>
 
 namespace fixed_containers
@@ -18,7 +20,8 @@ template <typename MapType>
 void benchmark_map_copy(benchmark::State& state)
 {
     const int64_t nelem = state.range(0);
-    MapType instance = {};
+    const std::unique_ptr<MapType> instance_ptr = std::make_unique<MapType>();
+    MapType& instance = *instance_ptr.get();
 
     using KeyType = typename MapType::key_type;
     for (int64_t i = 0; i < nelem; i++)
@@ -26,9 +29,11 @@ void benchmark_map_copy(benchmark::State& state)
         instance.try_emplace(static_cast<KeyType>(i));
     }
 
+    const std::unique_ptr<MapType> instance_ptr2 = std::make_unique<MapType>();
+    MapType& instance2 = *instance_ptr2.get();
     for (auto _ : state)
     {
-        MapType instance2{instance};
+        memory::destroy_and_construct_at_address_of(instance2, instance);
         benchmark::DoNotOptimize(instance2);
     }
 }
@@ -37,16 +42,19 @@ template <typename MapType>
 void benchmark_map_copy_then_clear(benchmark::State& state)
 {
     using KeyType = typename MapType::key_type;
-    MapType instance{};
+    const std::unique_ptr<MapType> instance_ptr = std::make_unique<MapType>();
+    MapType& instance = *instance_ptr.get();
     const int64_t nelem = state.range(0);
     for (int64_t i = 0; i < nelem; i++)
     {
         instance.try_emplace(static_cast<KeyType>(i));
     }
 
+    const std::unique_ptr<MapType> instance_ptr2 = std::make_unique<MapType>();
+    MapType& instance2 = *instance_ptr2.get();
     for (auto _ : state)
     {
-        MapType instance2{instance};
+        memory::destroy_and_construct_at_address_of(instance2, instance);
         instance2.clear();
         benchmark::DoNotOptimize(instance2);
     }
@@ -56,17 +64,20 @@ template <typename MapType>
 void benchmark_map_copy_then_reconstruct(benchmark::State& state)
 {
     using KeyType = typename MapType::key_type;
-    MapType instance{};
+    const std::unique_ptr<MapType> instance_ptr = std::make_unique<MapType>();
+    MapType& instance = *instance_ptr.get();
     const int64_t nelem = state.range(0);
     for (int64_t i = 0; i < nelem; i++)
     {
         instance.try_emplace(static_cast<KeyType>(i));
     }
 
+    const std::unique_ptr<MapType> instance_ptr2 = std::make_unique<MapType>();
+    MapType& instance2 = *instance_ptr2.get();
     for (auto _ : state)
     {
-        MapType instance2{instance};
-        instance2 = {};
+        memory::destroy_and_construct_at_address_of(instance2, instance);
+        memory::destroy_and_construct_at_address_of(instance2);
         benchmark::DoNotOptimize(instance2);
     }
 }
@@ -74,7 +85,8 @@ void benchmark_map_copy_then_reconstruct(benchmark::State& state)
 template <typename ArrType>
 void benchmark_array_clear(benchmark::State& state)
 {
-    ArrType instance{};
+    const std::unique_ptr<ArrType> instance_ptr = std::make_unique<ArrType>();
+    ArrType& instance = *instance_ptr.get();
 
     for (auto _ : state)
     {
