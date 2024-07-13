@@ -205,6 +205,12 @@ TEST(SpecializedEnumAdapter, ToString)
                                   NonConformingTestRichEnum1::NC_TWO()));
 }
 
+TEST(BuiltinEnumAdapter, EnumWithNoConstants)
+{
+    static_assert(0 == EnumAdapter<EnumWithNoConstants>::count());
+    static_assert(EnumAdapter<EnumWithNoConstants>::values().empty());
+}
+
 TEST(RichEnum, Ordinal)
 {
     {
