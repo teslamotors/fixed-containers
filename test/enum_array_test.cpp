@@ -256,27 +256,18 @@ TEST(EnumArray, Empty)
 {
     constexpr EnumArray<TestEnum1, int> VAL1{};
     static_assert(!VAL1.empty());
-
-    constexpr EnumArray<EnumWithNoConstants, int> VAL2{};
-    static_assert(VAL2.empty());
 }
 
 TEST(EnumArray, Size)
 {
     constexpr EnumArray<TestEnum1, int> VAL1{};
     static_assert(consteval_compare::equal<4, VAL1.size()>);
-
-    constexpr EnumArray<EnumWithNoConstants, int> VAL2{};
-    static_assert(consteval_compare::equal<0, VAL2.size()>);
 }
 
 TEST(EnumArray, MaxSize)
 {
     constexpr EnumArray<TestEnum1, int> VAL1{};
     static_assert(consteval_compare::equal<4, VAL1.max_size()>);
-
-    constexpr EnumArray<EnumWithNoConstants, int> VAL2{};
-    static_assert(consteval_compare::equal<0, VAL2.max_size()>);
 }
 
 TEST(EnumArray, Labels)
@@ -405,6 +396,14 @@ TEST(EnumArray, NonAssignable)
         EnumArray<TestEnum1, MockNonAssignable> var{};
         var[TestEnum1::TWO];
     }
+}
+
+TEST(EnumArray, EnumWithNoConstants)
+{
+    constexpr EnumArray<EnumWithNoConstants, int> VAL1{};
+    static_assert(VAL1.empty());
+    static_assert(consteval_compare::equal<0, VAL1.size()>);
+    static_assert(consteval_compare::equal<0, VAL1.max_size()>);
 }
 
 TEST(EnumArray, ClassTemplateArgumentDeduction)
