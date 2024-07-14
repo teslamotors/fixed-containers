@@ -383,7 +383,7 @@ Since this is a header-only library, you can also:
 - Add the `include/` folder to your includes
 - Get the dependencies. For example, with [vcpkg](https://github.com/Microsoft/vcpkg):
 ```
-vcpkg install magic-enum range-v3
+vcpkg install magic-enum
 ```
 
 # Running the tests

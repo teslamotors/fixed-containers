@@ -16,10 +16,3 @@ http_archive(
     strip_prefix = "benchmark-447752540c71f34d5d71046e08192db181e9b02b",
     sha256 = "df1235e0e37297e990bb833c723cd3dec61fc95c4951f64bdd5c72d1cea7f4f9",
 )
-
-http_archive(
-    name = "com_github_ericniebler_range-v3",
-    urls = ["https://github.com/ericniebler/range-v3/archive/53c40dd628450c977ee1558285ff43e0613fa7a9.tar.gz"],
-    strip_prefix = "range-v3-53c40dd628450c977ee1558285ff43e0613fa7a9",
-    sha256 = "2a3e956cc0174ea883d36c51aded8549af10078558177e8f6d76c5e33de950c1",
-)

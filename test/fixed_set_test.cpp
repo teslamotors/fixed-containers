@@ -8,8 +8,6 @@
 #include "fixed_containers/max_size.hpp"
 
 #include <gtest/gtest.h>
-#include <range/v3/iterator/operations.hpp>
-#include <range/v3/view/filter.hpp>
 
 #include <algorithm>
 #include <array>
@@ -17,6 +15,7 @@
 #include <cstddef>
 #include <functional>
 #include <iterator>
+#include <ranges>
 #include <string>
 #include <type_traits>
 
@@ -713,9 +712,9 @@ TEST(FixedSet, Ranges)
 {
     FixedSet<int, 10> var1{1, 4};
     auto filtered =
-        var1 | ranges::views::filter([](const auto& entry) -> bool { return entry == 4; });
+        var1 | std::ranges::views::filter([](const auto& entry) -> bool { return entry == 4; });
 
-    EXPECT_EQ(1, ranges::distance(filtered));
+    EXPECT_EQ(1, std::ranges::distance(filtered));
     EXPECT_EQ(4, *filtered.begin());
 }
 

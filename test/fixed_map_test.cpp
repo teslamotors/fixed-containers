@@ -12,9 +12,6 @@
 #include "fixed_containers/memory.hpp"
 
 #include <gtest/gtest.h>
-#include <range/v3/iterator/concepts.hpp>
-#include <range/v3/iterator/operations.hpp>
-#include <range/v3/view/filter.hpp>
 
 #include <algorithm>
 #include <array>
@@ -24,6 +21,7 @@
 #include <iterator>
 #include <map>
 #include <memory>
+#include <ranges>
 #include <string>
 #include <string_view>
 #include <tuple>
@@ -73,8 +71,8 @@ static_assert(std::is_same_v<typename std::iterator_traits<ES_1::const_iterator>
 static_assert(std::is_same_v<ES_1::reference, ES_1::iterator::reference>);
 
 using STD_MAP_INT_INT = std::map<int, int>;
-static_assert(ranges::bidirectional_iterator<STD_MAP_INT_INT::iterator>);
-static_assert(ranges::bidirectional_iterator<STD_MAP_INT_INT::const_iterator>);
+static_assert(std::bidirectional_iterator<STD_MAP_INT_INT::iterator>);
+static_assert(std::bidirectional_iterator<STD_MAP_INT_INT::const_iterator>);
 
 }  // namespace
 
@@ -1406,13 +1404,11 @@ TEST(FixedMap, Equality)
 TEST(FixedMap, Ranges)
 {
     FixedMap<int, int, 10> var1{{1, 10}, {4, 40}};
-    auto filtered =
-        var1 | ranges::views::filter([](const auto& entry) -> bool { return entry.second == 10; });
+    auto filtered = var1 | std::ranges::views::filter([](const auto& entry) -> bool
+                                                      { return entry.second == 10; });
 
-    EXPECT_EQ(1, ranges::distance(filtered));
-    const int first_entry =
-        (*filtered.begin()).second;  // Can't use arrow with range-v3 because it
-                                     // requires l-value. Note that std::ranges works
+    EXPECT_EQ(1, std::ranges::distance(filtered));
+    const int first_entry = filtered.begin()->second;
     EXPECT_EQ(10, first_entry);
 }
 

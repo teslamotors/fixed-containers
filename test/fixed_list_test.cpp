@@ -10,10 +10,6 @@
 #include "fixed_containers/memory.hpp"
 
 #include <gtest/gtest.h>
-#include <range/v3/range/conversion.hpp>
-#include <range/v3/view/filter.hpp>
-#include <range/v3/view/remove_if.hpp>
-#include <range/v3/view/transform.hpp>
 
 #include <algorithm>
 #include <array>
@@ -1890,12 +1886,10 @@ TEST(FixedList, Ranges)
 {
     FixedList<int, 5> var1{10, 40};
     auto filtered = var1 |
-                    ranges::views::filter([](const auto& var) -> bool { return var == 10; }) |
-                    ranges::views::transform([](const auto& var) { return 2 * var; }) |
-                    ranges::views::remove_if([](const auto& var) -> bool { return var == 10; }) |
-                    ranges::to<FixedList<int, 10>>;
+                    std::ranges::views::filter([](const auto& var) -> bool { return var == 10; }) |
+                    std::ranges::views::transform([](const auto& var) { return 2 * var; });
 
-    EXPECT_EQ(1, filtered.size());
+    EXPECT_EQ(1, std::ranges::distance(filtered));
     const int first_entry = *filtered.begin();
     EXPECT_EQ(20, first_entry);
 }
