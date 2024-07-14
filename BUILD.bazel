@@ -1030,7 +1030,6 @@ cc_test(
         ":test_utilities_common",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
-        "@com_github_ericniebler_range-v3//:range-v3",
     ],
     copts = ["-std=c++20"],
 )
@@ -1047,7 +1046,6 @@ cc_test(
         ":max_size",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
-        "@com_github_ericniebler_range-v3//:range-v3",
     ],
     copts = ["-std=c++20"],
 )
@@ -1185,7 +1183,6 @@ cc_test(
         ":test_utilities_common",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
-        "@com_github_ericniebler_range-v3//:range-v3",
     ],
     copts = ["-std=c++20"],
 )
@@ -1206,7 +1203,6 @@ cc_test(
         ":test_utilities_common",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
-        "@com_github_ericniebler_range-v3//:range-v3",
     ],
     copts = ["-std=c++20"],
 )
@@ -1227,7 +1223,6 @@ cc_test(
         ":test_utilities_common",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
-        "@com_github_ericniebler_range-v3//:range-v3",
     ],
     copts = ["-std=c++20"],
 )
@@ -1260,7 +1255,6 @@ cc_test(
         ":mock_testing_types",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
-        "@com_github_ericniebler_range-v3//:range-v3",
     ],
     copts = ["-std=c++20"],
 )
@@ -1321,7 +1315,6 @@ cc_test(
         ":mock_testing_types",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
-        "@com_github_ericniebler_range-v3//:range-v3",
     ],
     copts = ["-std=c++20"],
 )
@@ -1336,7 +1329,6 @@ cc_test(
         ":test_utilities_common",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
-        "@com_github_ericniebler_range-v3//:range-v3",
     ],
     copts = ["-std=c++20",],
 )
@@ -1395,7 +1387,6 @@ cc_test(
         ":memory",
         ":mock_testing_types",
         ":test_utilities_common",
-        "@com_github_ericniebler_range-v3//:range-v3",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
