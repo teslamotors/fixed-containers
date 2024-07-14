@@ -1368,7 +1368,6 @@ TEST(FixedUnorderedMap, NonAssignable)
     }
 }
 
-
 TEST(FixedUnorderedMap, ComplexNontrivialCopies)
 {
     FixedUnorderedMap<int, MockNonTrivialCopyAssignable, 30> map_1{};
@@ -1378,7 +1377,7 @@ TEST(FixedUnorderedMap, ComplexNontrivialCopies)
     }
 
     auto map_2{map_1};
-    for(const auto& pair : map_1)
+    for (const auto& pair : map_1)
     {
         EXPECT_TRUE(map_2.contains(pair.first));
     }
@@ -1389,7 +1388,7 @@ TEST(FixedUnorderedMap, ComplexNontrivialCopies)
         map_2.try_emplace(i + 100);
     }
     auto map_3{map_1};
-    for(const auto& pair : map_1)
+    for (const auto& pair : map_1)
     {
         EXPECT_TRUE(map_3.contains(pair.first));
     }
@@ -1400,20 +1399,20 @@ TEST(FixedUnorderedMap, ComplexNontrivialCopies)
         map_3.try_emplace(i + 100);
     }
     auto map_4{map_1};
-    for(const auto& pair : map_1)
+    for (const auto& pair : map_1)
     {
         EXPECT_TRUE(map_4.contains(pair.first));
     }
     EXPECT_EQ(map_4.size(), map_1.size());
 
     map_1 = map_2;
-    for(const auto& pair : map_2)
+    for (const auto& pair : map_2)
     {
         EXPECT_TRUE(map_1.contains(pair.first));
     }
     map_1.clear();
     map_1 = map_3;
-    for(const auto& pair : map_3)
+    for (const auto& pair : map_3)
     {
         EXPECT_TRUE(map_1.contains(pair.first));
     }
@@ -1429,11 +1428,13 @@ TEST(FixedUnorderedMap, ComplexNontrivialCopies)
     EXPECT_EQ(map_1.size(), 30);
 
     // make sure the underlying storage agrees that we're full
-    EXPECT_TRUE(map_1.IMPLEMENTATION_DETAIL_DO_NOT_USE_table_.IMPLEMENTATION_DETAIL_DO_NOT_USE_value_storage_.IMPLEMENTATION_DETAIL_DO_NOT_USE_storage_.full());
+    EXPECT_TRUE(map_1.IMPLEMENTATION_DETAIL_DO_NOT_USE_table_
+                    .IMPLEMENTATION_DETAIL_DO_NOT_USE_value_storage_
+                    .IMPLEMENTATION_DETAIL_DO_NOT_USE_storage_.full());
 
     map_1.clear();
     map_1 = map_4;
-    for(const auto& pair : map_4)
+    for (const auto& pair : map_4)
     {
         EXPECT_TRUE(map_1.contains(pair.first));
     }
@@ -1452,7 +1453,7 @@ TEST(FixedUnorderedMap, ComplexNontrivialMoves)
     }
 
     FUM map_2{std::move(map_1)};
-    for(const auto& pair : map_1_orig)
+    for (const auto& pair : map_1_orig)
     {
         EXPECT_TRUE(map_2.contains(pair.first));
     }
@@ -1473,13 +1474,13 @@ TEST(FixedUnorderedMap, ComplexNontrivialMoves)
     }
 
     map_1 = std::move(map_2);
-    for(const auto& pair : map_2_orig)
+    for (const auto& pair : map_2_orig)
     {
         EXPECT_TRUE(map_1.contains(pair.first));
     }
     map_1.clear();
     map_1 = std::move(map_3);
-    for(const auto& pair : map_3_orig)
+    for (const auto& pair : map_3_orig)
     {
         EXPECT_TRUE(map_1.contains(pair.first));
     }
@@ -1495,7 +1496,9 @@ TEST(FixedUnorderedMap, ComplexNontrivialMoves)
     EXPECT_EQ(map_1.size(), 30);
 
     // make sure the underlying storage agrees that we're full
-    EXPECT_TRUE(map_1.IMPLEMENTATION_DETAIL_DO_NOT_USE_table_.IMPLEMENTATION_DETAIL_DO_NOT_USE_value_storage_.IMPLEMENTATION_DETAIL_DO_NOT_USE_storage_.full());
+    EXPECT_TRUE(map_1.IMPLEMENTATION_DETAIL_DO_NOT_USE_table_
+                    .IMPLEMENTATION_DETAIL_DO_NOT_USE_value_storage_
+                    .IMPLEMENTATION_DETAIL_DO_NOT_USE_storage_.full());
 
     map_1.clear();
 }
