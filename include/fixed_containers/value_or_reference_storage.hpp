@@ -14,7 +14,7 @@ struct ValueOrReferenceStorage
 
     template <class... Args>
     explicit constexpr ValueOrReferenceStorage(Args&&... args)
-      : value(std::forward<Args>(args)...)
+      : value{std::forward<Args>(args)...}
     {
     }
 
