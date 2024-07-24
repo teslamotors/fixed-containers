@@ -1584,6 +1584,11 @@ TEST(FixedStringTest, OStreamOperator)
     EXPECT_EQ(stream.str(), "hello");
 }
 
+TEST(FixedStringTest, PlusOperator)
+{
+    static_assert(make_fixed_string("hello world") == (make_fixed_string("hello ") + make_fixed_string("world")));
+}
+
 namespace
 {
 template <FixedString<5> /*MY_STR*/>

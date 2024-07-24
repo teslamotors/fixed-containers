@@ -506,6 +506,14 @@ template <std::size_t MAXIMUM_LENGTH_WITH_NULL_TERMINATOR>
         list, loc);
 }
 
+template <std::size_t N, std::size_t M>
+constexpr FixedString<N + M> operator+(const FixedString<N>& a, const FixedString<M>& b)
+{
+    FixedString<N + M> result(a);
+    result.append(b);
+    return result;
+}
+
 }  // namespace fixed_containers
 
 // Specializations
