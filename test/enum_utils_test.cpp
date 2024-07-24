@@ -25,14 +25,14 @@ static_assert(IsRichEnumStorage<RichEnumStorage<TestRichEnumBoolBackingEnum>>);
 TEST(RichEnum, DirectFieldAccess)
 {
     static_assert(
-        consteval_compare::equal<rich_enums::TestRichEnum1::C_ONE().detail_backing_enum.val,
+        consteval_compare::equal<rich_enums::TestRichEnum1::C_ONE->detail_backing_enum.val,
                                  TestRichEnum1BackingEnum::C_ONE>);
 }
 
 TEST(RichEnum, DirectFieldAccessBool)
 {
     static_assert(
-        consteval_compare::equal<rich_enums::TestRichEnumBool::TRUE_VALUE().detail_backing_enum.val,
+        consteval_compare::equal<rich_enums::TestRichEnumBool::TRUE_VALUE->detail_backing_enum.val,
                                  TestRichEnumBoolBackingEnum::TRUE_VALUE>);
 }
 
@@ -159,10 +159,10 @@ TEST(BuiltinEnumAdapter, Ordinal)
 TEST(RichEnumAdapter, Ordinal)
 {
     static_assert(4 == EnumAdapter<TestRichEnum1>::count());
-    static_assert(0 == EnumAdapter<TestRichEnum1>::ordinal(TestRichEnum1::C_ONE()));
-    static_assert(1 == EnumAdapter<TestRichEnum1>::ordinal(TestRichEnum1::C_TWO()));
-    static_assert(2 == EnumAdapter<TestRichEnum1>::ordinal(TestRichEnum1::C_THREE()));
-    static_assert(3 == EnumAdapter<TestRichEnum1>::ordinal(TestRichEnum1::C_FOUR()));
+    static_assert(0 == EnumAdapter<TestRichEnum1>::ordinal(TestRichEnum1::C_ONE));
+    static_assert(1 == EnumAdapter<TestRichEnum1>::ordinal(TestRichEnum1::C_TWO));
+    static_assert(2 == EnumAdapter<TestRichEnum1>::ordinal(TestRichEnum1::C_THREE));
+    static_assert(3 == EnumAdapter<TestRichEnum1>::ordinal(TestRichEnum1::C_FOUR));
 }
 
 TEST(SpecializedEnumAdapter, Ordinal)
@@ -190,10 +190,10 @@ TEST(BuiltinEnumAdapter, ToString)
 TEST(RichEnumAdapter, ToString)
 {
     static_assert(4 == EnumAdapter<TestRichEnum1>::count());
-    static_assert("C_ONE" == EnumAdapter<TestRichEnum1>::to_string(TestRichEnum1::C_ONE()));
-    static_assert("C_TWO" == EnumAdapter<TestRichEnum1>::to_string(TestRichEnum1::C_TWO()));
-    static_assert("C_THREE" == EnumAdapter<TestRichEnum1>::to_string(TestRichEnum1::C_THREE()));
-    static_assert("C_FOUR" == EnumAdapter<TestRichEnum1>::to_string(TestRichEnum1::C_FOUR()));
+    static_assert("C_ONE" == EnumAdapter<TestRichEnum1>::to_string(TestRichEnum1::C_ONE));
+    static_assert("C_TWO" == EnumAdapter<TestRichEnum1>::to_string(TestRichEnum1::C_TWO));
+    static_assert("C_THREE" == EnumAdapter<TestRichEnum1>::to_string(TestRichEnum1::C_THREE));
+    static_assert("C_FOUR" == EnumAdapter<TestRichEnum1>::to_string(TestRichEnum1::C_FOUR));
 }
 
 TEST(SpecializedEnumAdapter, ToString)
@@ -214,35 +214,35 @@ TEST(BuiltinEnumAdapter, EnumWithNoConstants)
 TEST(RichEnum, Ordinal)
 {
     {
-        static_assert(TestRichEnum1::C_ONE().ordinal() == 0);
-        static_assert(TestRichEnum1::C_TWO().ordinal() == 1);
-        static_assert(TestRichEnum1::C_THREE().ordinal() == 2);
-        static_assert(TestRichEnum1::C_FOUR().ordinal() == 3);
+        static_assert(TestRichEnum1::C_ONE->ordinal() == 0);
+        static_assert(TestRichEnum1::C_TWO->ordinal() == 1);
+        static_assert(TestRichEnum1::C_THREE->ordinal() == 2);
+        static_assert(TestRichEnum1::C_FOUR->ordinal() == 3);
     }
 
     {
-        static_assert(TestRichEnum2::C_ONE().ordinal() == 0);
-        static_assert(TestRichEnum2::C_TWO().ordinal() == 1);
-        static_assert(TestRichEnum2::C_THREE().ordinal() == 2);
-        static_assert(TestRichEnum2::C_FOUR().ordinal() == 3);
+        static_assert(TestRichEnum2::C_ONE->ordinal() == 0);
+        static_assert(TestRichEnum2::C_TWO->ordinal() == 1);
+        static_assert(TestRichEnum2::C_THREE->ordinal() == 2);
+        static_assert(TestRichEnum2::C_FOUR->ordinal() == 3);
     }
 }
 
 TEST(RichEnum, ValueOfName)
 {
     {
-        static_assert(TestRichEnum1::value_of("C_ONE") == TestRichEnum1::C_ONE());
-        static_assert(TestRichEnum1::value_of("C_TWO") == TestRichEnum1::C_TWO());
-        static_assert(TestRichEnum1::value_of("C_THREE") == TestRichEnum1::C_THREE());
-        static_assert(TestRichEnum1::value_of("C_FOUR") == TestRichEnum1::C_FOUR());
+        static_assert(TestRichEnum1::value_of("C_ONE") == TestRichEnum1::C_ONE);
+        static_assert(TestRichEnum1::value_of("C_TWO") == TestRichEnum1::C_TWO);
+        static_assert(TestRichEnum1::value_of("C_THREE") == TestRichEnum1::C_THREE);
+        static_assert(TestRichEnum1::value_of("C_FOUR") == TestRichEnum1::C_FOUR);
         static_assert(TestRichEnum1::value_of("INVALID") == std::nullopt);
     }
 
     {
         constexpr const TestRichEnum1& MY_VALUE = TestRichEnum1::value_of("C_ONE").value();
 
-        static_assert(MY_VALUE == TestRichEnum1::C_ONE());
-        static_assert(&MY_VALUE == &TestRichEnum1::C_ONE());
+        static_assert(MY_VALUE == TestRichEnum1::C_ONE);
+        static_assert(&MY_VALUE == &TestRichEnum1::C_ONE);
     }
 }
 
@@ -250,10 +250,10 @@ TEST(RichEnum, ValueOfBackingEnum)
 {
     {
         using BE = detail::TestRichEnum1BackingEnum;
-        static_assert(TestRichEnum1::value_of(BE::C_ONE) == TestRichEnum1::C_ONE());
-        static_assert(TestRichEnum1::value_of(BE::C_TWO) == TestRichEnum1::C_TWO());
-        static_assert(TestRichEnum1::value_of(BE::C_THREE) == TestRichEnum1::C_THREE());
-        static_assert(TestRichEnum1::value_of(BE::C_FOUR) == TestRichEnum1::C_FOUR());
+        static_assert(TestRichEnum1::value_of(BE::C_ONE) == TestRichEnum1::C_ONE);
+        static_assert(TestRichEnum1::value_of(BE::C_TWO) == TestRichEnum1::C_TWO);
+        static_assert(TestRichEnum1::value_of(BE::C_THREE) == TestRichEnum1::C_THREE);
+        static_assert(TestRichEnum1::value_of(BE::C_FOUR) == TestRichEnum1::C_FOUR);
         static_assert(TestRichEnum1::value_of(static_cast<BE>(29)) == std::nullopt);
     }
 
@@ -261,26 +261,26 @@ TEST(RichEnum, ValueOfBackingEnum)
         using BE = detail::TestRichEnum1BackingEnum;
         constexpr const TestRichEnum1& MY_VALUE = TestRichEnum1::value_of(BE::C_ONE).value();
 
-        static_assert(MY_VALUE == TestRichEnum1::C_ONE());
-        static_assert(&MY_VALUE == &TestRichEnum1::C_ONE());
+        static_assert(MY_VALUE == TestRichEnum1::C_ONE);
+        static_assert(&MY_VALUE == &TestRichEnum1::C_ONE);
     }
 }
 
 TEST(RichEnum, ValueOfUnderlyingInt)
 {
     {
-        static_assert(TestRichEnum1::value_of(19) == TestRichEnum1::C_ONE());
-        static_assert(TestRichEnum1::value_of(21) == TestRichEnum1::C_TWO());
-        static_assert(TestRichEnum1::value_of(23) == TestRichEnum1::C_THREE());
-        static_assert(TestRichEnum1::value_of(25) == TestRichEnum1::C_FOUR());
+        static_assert(TestRichEnum1::value_of(19) == TestRichEnum1::C_ONE);
+        static_assert(TestRichEnum1::value_of(21) == TestRichEnum1::C_TWO);
+        static_assert(TestRichEnum1::value_of(23) == TestRichEnum1::C_THREE);
+        static_assert(TestRichEnum1::value_of(25) == TestRichEnum1::C_FOUR);
         static_assert(TestRichEnum1::value_of(29) == std::nullopt);
     }
 
     {
         constexpr const TestRichEnum1& MY_VALUE = TestRichEnum1::value_of(19).value();
 
-        static_assert(MY_VALUE == TestRichEnum1::C_ONE());
-        static_assert(&MY_VALUE == &TestRichEnum1::C_ONE());
+        static_assert(MY_VALUE == TestRichEnum1::C_ONE);
+        static_assert(&MY_VALUE == &TestRichEnum1::C_ONE);
     }
 }
 
@@ -298,23 +298,23 @@ TEST(RichEnum, HasValue)
     constexpr TestRichEnum1 INVALID{};
     static_assert(!INVALID.has_value());
     static_assert(INVALID == TestRichEnum1{});
-    static_assert(INVALID != TestRichEnum1::C_ONE());
-    static_assert(INVALID != TestRichEnum1::C_TWO());
-    static_assert(INVALID != TestRichEnum1::C_THREE());
-    static_assert(INVALID != TestRichEnum1::C_FOUR());
+    static_assert(INVALID != TestRichEnum1::C_ONE);
+    static_assert(INVALID != TestRichEnum1::C_TWO);
+    static_assert(INVALID != TestRichEnum1::C_THREE);
+    static_assert(INVALID != TestRichEnum1::C_FOUR);
 }
 
 TEST(RichEnum, BoolNegate)
 {
     {
-        constexpr const TestRichEnumBool& F_VALUE = TestRichEnumBool::FALSE_VALUE();
+        constexpr const TestRichEnumBool& F_VALUE = TestRichEnumBool::FALSE_VALUE;
         static_assert(F_VALUE.has_value());
-        static_assert((!F_VALUE) == TestRichEnumBool::TRUE_VALUE());
+        static_assert((!F_VALUE) == TestRichEnumBool::TRUE_VALUE);
     }
     {
-        constexpr const TestRichEnumBool& T_VALUE = TestRichEnumBool::TRUE_VALUE();
+        constexpr const TestRichEnumBool& T_VALUE = TestRichEnumBool::TRUE_VALUE;
         static_assert(T_VALUE.has_value());
-        static_assert((!T_VALUE) == TestRichEnumBool::FALSE_VALUE());
+        static_assert((!T_VALUE) == TestRichEnumBool::FALSE_VALUE);
     }
 }
 
@@ -335,8 +335,8 @@ constexpr void rich_enum_constants_can_be_used_as_a_template_parameter()
 
 TEST(RichEnum, UsageAsTemplateParameter)
 {
-    rich_enum_constants_can_be_used_as_a_template_parameter<TestRichEnum1::C_TWO()>();
-    const RichEnumConstantsCanBeUsedAsATemplateParameter<TestRichEnum1::C_TWO()> my_struct{};
+    rich_enum_constants_can_be_used_as_a_template_parameter<TestRichEnum1::C_TWO>();
+    const RichEnumConstantsCanBeUsedAsATemplateParameter<TestRichEnum1::C_TWO> my_struct{};
     static_cast<void>(my_struct);
 }
 
@@ -346,16 +346,16 @@ TEST(RichEnum, UsageInSwitchCase)
     {
         switch (val)
         {
-        case TestRichEnum1::C_ONE():
+        case TestRichEnum1::C_ONE:
             return 11;
-        case TestRichEnum1::C_TWO():
+        case TestRichEnum1::C_TWO:
             return 22;
-        case TestRichEnum1::C_THREE():
+        case TestRichEnum1::C_THREE:
             return 33;
-        case TestRichEnum1::C_FOUR():
+        case TestRichEnum1::C_FOUR:
             return 44;
         }
-    }(TestRichEnum1::C_TWO());
+    }(TestRichEnum1::C_TWO);
 
     static_assert(22 == RESULT);
 }

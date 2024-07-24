@@ -5,6 +5,7 @@
 #include <magic_enum.hpp>
 
 #include <array>
+#include <compare>
 #include <concepts>
 #include <cstddef>
 #include <cstdlib>
@@ -383,14 +384,59 @@ public:  // Public so this type is a structural type and can thus be used in tem
 
 }  // namespace fixed_containers::rich_enums_detail
 
+template <typename RichEnumType>
+class RichEnumConstantProxy
+{
+private:
+    using BackingEnum = typename RichEnumType::BackingEnum;
+
+    BackingEnum backing_enum_{};
+
+public:
+    explicit(false) constexpr RichEnumConstantProxy(const BackingEnum& backing_enum)
+      : backing_enum_{backing_enum}
+    {
+    }
+
+    constexpr RichEnumConstantProxy(const RichEnumConstantProxy& original) noexcept = delete;
+    constexpr RichEnumConstantProxy(RichEnumConstantProxy&& RichEnumConstantProxy) noexcept =
+        delete;
+    constexpr RichEnumConstantProxy& operator=(const RichEnumConstantProxy& RichEnumConstantProxy) =
+        delete;
+    constexpr RichEnumConstantProxy& operator=(RichEnumConstantProxy&& original) = delete;
+
+    constexpr const RichEnumType& get() const
+    {
+        return ::fixed_containers::rich_enums_detail::value_of<RichEnumType>(backing_enum_)
+            .value()
+            .get();
+    }
+
+    explicit(false) constexpr operator BackingEnum() const { return get(); }
+    explicit(false) constexpr operator const RichEnumType&() const { return get(); }
+
+    // TRANSITION
+    constexpr const RichEnumType& operator()() const { return get(); }
+
+    constexpr bool operator==(const RichEnumType& other) const { return get() == other; }
+    constexpr std::strong_ordering operator<=>(const RichEnumType& other) const
+    {
+        return get() <=> other;
+    }
+
+    constexpr const RichEnumType* operator->() const { return std::addressof(get()); }
+    constexpr const RichEnumType& operator*() const noexcept { return get(); }
+    constexpr const RichEnumType* operator&() const noexcept  // NOLINT(google-runtime-operator)
+    {
+        return std::addressof(get());
+    }
+};
+
 // MACRO to reduce four lines into one and avoid bugs from potential discrepancy between the
 // BackingEnum::ENUM_CONSTANT and the rich enum ENUM_CONSTANT()
 // Must be used after the values() static function is declared in the rich enum.
 #define FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(RichEnumName, CONSTANT_NAME) \
-    static constexpr const RichEnumName& CONSTANT_NAME()                            \
-    {                                                                               \
-        return RichEnumName::value_of(BackingEnum::CONSTANT_NAME).value();          \
-    }
+    static constexpr RichEnumConstantProxy<RichEnumName> CONSTANT_NAME{BackingEnum::CONSTANT_NAME};
 
 namespace fixed_containers::rich_enums
 {
