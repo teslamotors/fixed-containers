@@ -212,14 +212,28 @@ constexpr auto field_names_of_impl(const T& instance)
 }
 
 template <typename T>
-inline constexpr auto FIELD_NAMES =
+inline constexpr auto FIELD_NAMES = nullptr;
+
+template <typename T>
+    requires(ConstexprDefaultConstructible<std::decay_t<T>>)
+inline constexpr auto FIELD_NAMES<T> =
     field_names_of_impl<field_count_of_impl(std::decay_t<T>{})>(std::decay_t<T>{});
+
+template <typename T>
+    requires(ConstexprUnitConstructible<std::decay_t<T>> &&
+             !ConstexprDefaultConstructible<std::decay_t<T>>)
+inline constexpr auto FIELD_NAMES<T> =
+    field_names_of_impl<field_count_of_impl(std::decay_t<T>{std::monostate{}})>(
+        std::decay_t<T>{std::monostate{}});
 }  // namespace fixed_containers::reflection_detail
 
 namespace fixed_containers::reflection
 {
 template <typename T>
-concept Reflectable = std::is_class_v<T> && ConstexprDefaultConstructible<T>;
+concept ReflectionConstructible = ConstexprDefaultConstructible<T> || ConstexprUnitConstructible<T>;
+
+template <typename T>
+concept Reflectable = std::is_class_v<T> && ReflectionConstructible<T>;
 
 template <typename T>
     requires(Reflectable<std::decay_t<T>>)

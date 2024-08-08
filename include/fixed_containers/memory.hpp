@@ -34,4 +34,15 @@ constexpr void destroy_and_construct_at_address_of(T& ref, Args&&... args)
     construct_at_address_of(ref, std::forward<Args>(args)...);
 }
 
+template <typename T>
+const std::byte* addressof_as_const_byte_ptr(T& ref)
+{
+    return reinterpret_cast<const std::byte*>(std::addressof(ref));
+}
+template <typename T>
+std::byte* addressof_as_mutable_byte_ptr(T& ref)
+{
+    return reinterpret_cast<std::byte*>(std::addressof(ref));
+}
+
 }  // namespace fixed_containers::memory
