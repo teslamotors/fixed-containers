@@ -3,6 +3,7 @@
 #include "fixed_containers/fixed_doubly_linked_list.hpp"
 #include "fixed_containers/map_entry.hpp"
 
+#include <algorithm>
 #include <array>
 #include <cstdint>
 #include <utility>
@@ -117,7 +118,8 @@ public:
                   "specified too many buckets for the current bucket memory layout");
 
     static constexpr std::size_t CAPACITY = MAXIMUM_VALUE_COUNT;
-    static constexpr std::size_t INTERNAL_TABLE_SIZE = BUCKET_COUNT;
+    // 0 size is problematic because it leads to modulo 0 (undefined behavior)
+    static constexpr std::size_t INTERNAL_TABLE_SIZE = std::max<std::size_t>(1, BUCKET_COUNT);
 
     fixed_doubly_linked_list_detail::FixedDoublyLinkedList<PairType, CAPACITY, SizeType>
         IMPLEMENTATION_DETAIL_DO_NOT_USE_value_storage_{};
