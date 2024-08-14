@@ -409,6 +409,21 @@ TEST(FixedUnorderedMap, InsertOrAssignExceedsCapacity)
     }
 }
 
+TEST(FixedUnorderedMap, ZeroCapacityBehavior)
+{
+    {
+        constexpr FixedUnorderedMap<int, int, 0> VAL1{};
+        static_assert(VAL1.empty());
+        static_assert(VAL1.max_size() == 0);
+
+        static_assert(VAL1.find(1) == VAL1.cend());
+    }
+    {
+        FixedUnorderedMap<int, int, 0> var1{};
+        EXPECT_DEATH(var1.insert_or_assign(1, 1), "");
+    }
+}
+
 TEST(FixedUnorderedMap, TryEmplace)
 {
     {
