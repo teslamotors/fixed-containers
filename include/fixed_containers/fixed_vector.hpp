@@ -822,6 +822,7 @@ public:
                               std_transition::source_location::current()) noexcept
       : Base(list, loc)
     {
+        static_assert(list.size() <= MAXIMUM_SIZE);
     }
 
     constexpr FixedVector(const FixedVector& other)

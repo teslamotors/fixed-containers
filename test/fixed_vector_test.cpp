@@ -434,6 +434,11 @@ TEST(FixedVector, CountConstructor)
         static_assert(VAL.size() == 1);
     }
 
+    {
+        FixedVector<int, 3> val{1, 2, 3, 4};
+        EXPECT_EQ(val.size(), 3);
+    }
+
     // Use parens to get the count ctor!
     {
         constexpr FixedVector<int, 8> VAL1(5);
