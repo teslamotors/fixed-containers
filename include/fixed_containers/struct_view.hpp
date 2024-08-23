@@ -568,38 +568,51 @@ public:
     }
 
     template <typename S>
-    void add_path(S&& instance, const PathNameChain& path)
+    bool add_path(S&& instance, const PathNameChain& path)
     {
         auto path_properties_map = extract_path_properties_of_filtered<S, 1, 1>(
             std::forward<S>(instance), std::optional<FixedSet<PathNameChain, 1>>({path}));
-        auto [_, was_inserted] = path_properties_.try_emplace(path, path_properties_map.at(path));
-        assert_or_abort(was_inserted);
+
+        const auto itr = path_properties_map.find(path);
+        if (itr == path_properties_map.cend())
+        {
+            return false;
+        }
+
+        path_properties_.emplace(path, itr->second);
+        return true;
     }
 
     template <typename S>
-    void add_path(const PathNameChain& path)
+    bool add_path(const PathNameChain& path)
     {
         S instance{};
-        add_path(instance, path);
+        return add_path(instance, path);
     }
 
     template <typename S, typename PathSet>
-    void add_paths(S&& instance, const PathSet& paths)
+    bool add_paths(S&& instance, const PathSet& paths)
     {
         auto path_properties_map =
             extract_path_properties_of_filtered(std::forward<S>(instance), paths);
+        if (path_properties_map.size() != paths.size())
+        {
+            return false;
+        }
+
         for (const auto& [path, path_properties] : path_properties_map)
         {
-            auto [_, was_inserted] = path_properties_.try_emplace(path, path_properties);
-            assert_or_abort(was_inserted);
+            path_properties_.emplace(path, path_properties);
         }
+
+        return true;
     }
 
     template <typename S, typename PathSet>
-    void add_paths(const PathSet& paths)
+    bool add_paths(const PathSet& paths)
     {
         S instance{};
-        add_paths(instance, paths);
+        return add_paths(instance, paths);
     }
 
     [[nodiscard]] PathProperties at(const PathNameChain& path) const
