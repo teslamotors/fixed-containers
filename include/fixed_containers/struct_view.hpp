@@ -568,7 +568,7 @@ public:
     }
 
     template <typename S>
-    bool add_path(S&& instance, const PathNameChain& path)
+    bool try_add_path(S&& instance, const PathNameChain& path)
     {
         auto path_properties_map = extract_path_properties_of_filtered<S, 1, 1>(
             std::forward<S>(instance), std::optional<FixedSet<PathNameChain, 1>>({path}));
@@ -584,14 +584,14 @@ public:
     }
 
     template <typename S>
-    bool add_path(const PathNameChain& path)
+    bool try_add_path(const PathNameChain& path)
     {
         S instance{};
-        return add_path(instance, path);
+        return try_add_path(instance, path);
     }
 
     template <typename S, typename PathSet>
-    bool add_paths(S&& instance, const PathSet& paths)
+    bool try_add_paths(S&& instance, const PathSet& paths)
     {
         auto path_properties_map =
             extract_path_properties_of_filtered(std::forward<S>(instance), paths);
@@ -609,10 +609,10 @@ public:
     }
 
     template <typename S, typename PathSet>
-    bool add_paths(const PathSet& paths)
+    bool try_add_paths(const PathSet& paths)
     {
         S instance{};
-        return add_paths(instance, paths);
+        return try_add_paths(instance, paths);
     }
 
     [[nodiscard]] PathProperties at(const PathNameChain& path) const

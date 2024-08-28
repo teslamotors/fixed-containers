@@ -49,6 +49,7 @@ struct FlatSuperStruct1
     std::int32_t ignore2{};
     std::int32_t retain2{};
     std::int16_t ignore3{};
+    unsigned char bigbuf[1024*1024];
 };
 
 struct FlatSubStruct1
@@ -118,7 +119,7 @@ TEST(StructView, ExtractPathPropertiesOfFlat)
 TEST(StructView, StructViewFlat)
 {
     auto super_struct_view = StructView();
-    bool success = super_struct_view.add_path<FlatSuperStruct1>(path_from_string("retain1"));
+    bool success = super_struct_view.try_add_path<FlatSuperStruct1>(path_from_string("retain1"));
     EXPECT_TRUE(success);
 }
 
