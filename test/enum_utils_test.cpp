@@ -318,6 +318,34 @@ TEST(RichEnum, BoolNegate)
     }
 }
 
+TEST(RichEnum, StdHash)
+{
+    {
+        std::size_t hash_value_of_backing_enum =
+            std::hash<detail::TestRichEnum1BackingEnum>{}(detail::TestRichEnum1BackingEnum::C_ONE);
+        std::size_t hash_value_of_rich_enum = std::hash<TestRichEnum1>{}(TestRichEnum1::C_ONE());
+        ASSERT_EQ(hash_value_of_backing_enum, hash_value_of_rich_enum);
+    }
+    {
+        std::size_t hash_value_of_backing_enum =
+            std::hash<detail::TestRichEnum1BackingEnum>{}(detail::TestRichEnum1BackingEnum::C_TWO);
+        std::size_t hash_value_of_rich_enum = std::hash<TestRichEnum1>{}(TestRichEnum1::C_TWO());
+        ASSERT_EQ(hash_value_of_backing_enum, hash_value_of_rich_enum);
+    }
+    {
+        std::size_t hash_value_of_backing_enum = std::hash<detail::TestRichEnum1BackingEnum>{}(
+            detail::TestRichEnum1BackingEnum::C_THREE);
+        std::size_t hash_value_of_rich_enum = std::hash<TestRichEnum1>{}(TestRichEnum1::C_THREE());
+        ASSERT_EQ(hash_value_of_backing_enum, hash_value_of_rich_enum);
+    }
+    {
+        std::size_t hash_value_of_backing_enum =
+            std::hash<detail::TestRichEnum1BackingEnum>{}(detail::TestRichEnum1BackingEnum::C_FOUR);
+        std::size_t hash_value_of_rich_enum = std::hash<TestRichEnum1>{}(TestRichEnum1::C_FOUR());
+        ASSERT_EQ(hash_value_of_backing_enum, hash_value_of_rich_enum);
+    }
+}
+
 static_assert(IsStructuralType<TestRichEnum1>);
 
 namespace

@@ -635,3 +635,13 @@ protected:
 };
 
 }  // namespace fixed_containers::rich_enums
+
+template <fixed_containers::rich_enums::is_rich_enum RichEnumType>
+struct std::hash<RichEnumType>
+{
+    // std::hash<BackingEnum> is not constexpr
+    /*constexpr*/ std::size_t operator()(const RichEnumType& val) const noexcept
+    {
+        return std::hash<typename RichEnumType::BackingEnum>{}(val.backing_enum());
+    }
+};
