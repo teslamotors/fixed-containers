@@ -74,6 +74,7 @@ Checks: >
   -bugprone-easily-swappable-parameters,
   -bugprone-switch-missing-default-case,
   -bugprone-unchecked-optional-access,
+  -performance-avoid-endl,
 
 # Turn all the warnings from the checks above into errors.
 WarningsAsErrors: "*"
