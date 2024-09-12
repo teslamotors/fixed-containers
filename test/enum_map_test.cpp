@@ -1429,6 +1429,7 @@ TEST(EnumMap, Equality)
 
 TEST(EnumMap, Ranges)
 {
+#if !defined(__clang__) || __clang_major__ >= 16
     EnumMap<TestRichEnum1, int> var1{{TestRichEnum1::C_ONE(), 10}, {TestRichEnum1::C_FOUR(), 40}};
     auto filtered =
         var1 | std::ranges::views::filter([](const auto& var) -> bool { return var.second == 10; });
@@ -1436,6 +1437,7 @@ TEST(EnumMap, Ranges)
     EXPECT_EQ(1, std::ranges::distance(filtered));
     const int first_entry = filtered.begin()->second;
     EXPECT_EQ(10, first_entry);
+#endif
 }
 
 TEST(EnumMap, OverloadedAddressOfOperator)

@@ -594,12 +594,14 @@ TEST(FixedUnorderedSet, Equality)
 
 TEST(FixedUnorderedSet, Ranges)
 {
+#if !defined(__clang__) || __clang_major__ >= 16
     FixedUnorderedSet<int, 10> var1{1, 4};
     auto filtered =
         var1 | std::ranges::views::filter([](const auto& entry) -> bool { return entry == 4; });
 
     EXPECT_EQ(1, std::ranges::distance(filtered));
     EXPECT_EQ(4, *filtered.begin());
+#endif
 }
 
 TEST(FixedUnorderedSet, OverloadedAddressOfOperator)

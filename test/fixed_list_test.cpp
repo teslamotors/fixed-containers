@@ -1884,6 +1884,7 @@ TEST(FixedList, BackEmptyContainer)
 
 TEST(FixedList, Ranges)
 {
+#if !defined(__clang__) || __clang_major__ >= 16
     FixedList<int, 5> var1{10, 40};
     auto filtered = var1 |
                     std::ranges::views::filter([](const auto& var) -> bool { return var == 10; }) |
@@ -1892,6 +1893,7 @@ TEST(FixedList, Ranges)
     EXPECT_EQ(1, std::ranges::distance(filtered));
     const int first_entry = *filtered.begin();
     EXPECT_EQ(20, first_entry);
+#endif
 }
 
 TEST(FixedList, MoveableButNotCopyable)

@@ -707,12 +707,14 @@ TEST(EnumSet, Equality)
 
 TEST(EnumSet, Ranges)
 {
+#if !defined(__clang__) || __clang_major__ >= 16
     EnumSet<TestRichEnum1> var{TestRichEnum1::C_ONE(), TestRichEnum1::C_FOUR()};
     auto filtered = var | std::ranges::views::filter([](const auto& entry) -> bool
                                                      { return entry == TestRichEnum1::C_FOUR(); });
 
     EXPECT_EQ(1, std::ranges::distance(filtered));
     EXPECT_EQ(TestRichEnum1::C_FOUR(), *filtered.begin());
+#endif
 }
 
 TEST(EnumSet, ClassTemplateArgumentDeduction)

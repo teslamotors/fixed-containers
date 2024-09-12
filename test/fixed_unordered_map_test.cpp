@@ -1278,6 +1278,7 @@ TEST(FixedUnorderedMap, Equality)
 
 TEST(FixedUnorderedMap, Ranges)
 {
+#if !defined(__clang__) || __clang_major__ >= 16
     FixedUnorderedMap<int, int, 10> var1{{1, 10}, {4, 40}};
     auto filtered = var1 | std::ranges::views::filter([](const auto& entry) -> bool
                                                       { return entry.second == 10; });
@@ -1285,6 +1286,7 @@ TEST(FixedUnorderedMap, Ranges)
     EXPECT_EQ(1, std::ranges::distance(filtered));
     const int first_entry = filtered.begin()->second;
     EXPECT_EQ(10, first_entry);
+#endif
 }
 
 TEST(FixedUnorderedMap, OverloadedAddressOfOperator)
