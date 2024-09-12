@@ -301,7 +301,11 @@ TEST(Reflection, FieldInfoStructWithNonAggregates)
     static_assert(FIELD_INFO.at(0).enclosing_field_name().empty());
     static_assert(!FIELD_INFO.at(0).providing_base_class_name().has_value());
 
+#if defined(__clang__) && __clang_major__ >= 16
     static_assert(FIELD_INFO.at(1).field_type_name() == "MockNonAggregate");
+#else
+    static_assert(FIELD_INFO.at(1).field_type_name() == "fixed_containers::MockNonAggregate");
+#endif
     static_assert(FIELD_INFO.at(1).field_name() == "non_aggregate");
     static_assert(FIELD_INFO.at(1).enclosing_field_type_name() ==
                   "fixed_containers::(anonymous namespace)::StructWithNonAggregates");
@@ -422,7 +426,11 @@ TEST(Reflection, FieldInfoStructWithNonAggregatesExhaustiveUntilNonAggregates)
     static_assert(FIELD_INFO.at(0).enclosing_field_name().empty());
     static_assert(!FIELD_INFO.at(0).providing_base_class_name().has_value());
 
+#if defined(__clang__) && __clang_major__ >= 16
     static_assert(FIELD_INFO.at(1).field_type_name() == "MockNonAggregate");
+#else
+    static_assert(FIELD_INFO.at(1).field_type_name() == "fixed_containers::MockNonAggregate");
+#endif
     static_assert(FIELD_INFO.at(1).field_name() == "non_aggregate");
     static_assert(FIELD_INFO.at(1).enclosing_field_type_name() ==
                   "fixed_containers::(anonymous namespace)::StructWithNonAggregates");
