@@ -49,7 +49,6 @@ struct FlatSuperStruct1
     std::int32_t ignore2{};
     std::int32_t retain2{};
     std::int16_t ignore3{};
-    unsigned char bigbuf[1024*1024];
 };
 
 struct FlatSubStruct1
