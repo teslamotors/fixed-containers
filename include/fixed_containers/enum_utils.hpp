@@ -474,9 +474,7 @@ class SkeletalRichEnumValues
         return wrap_array_impl(input, std::make_index_sequence<N>());
     }
 
-    friend RichEnumType;
-
-    using BackingEnum = typename RichEnumType::BackingEnum;
+public:
     static constexpr auto VALUES = wrap_array(magic_enum::enum_values<BackingEnumType>());
 };
 
@@ -595,6 +593,11 @@ class SkeletalRichEnum
 
 public:
     static constexpr std::size_t count() { return magic_enum::enum_count<BackingEnumType>(); }
+
+    static constexpr const std::array<RichEnumType, count()>& values()
+    {
+        return SkeletalRichEnumValues<RichEnumType>::VALUES;
+    }
 
 private:
     static constexpr std::string_view INVALID_TO_STRING = "INVALID";

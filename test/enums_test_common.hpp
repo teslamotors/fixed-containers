@@ -30,8 +30,6 @@ class Color : public fixed_containers::rich_enums::SkeletalRichEnum<Color, detai
     using SkeletalRichEnum::SkeletalRichEnum;
 
 public:
-    static constexpr const std::array<Color, count()>& values();
-
     static constexpr const Color& RED()  // NOLINT(readability-identifier-naming)
     {
         return ::fixed_containers::rich_enums_detail::value_of<Color>(BackingEnum::RED).value();
@@ -49,10 +47,6 @@ public:
                backing_enum() == detail::ColorBackingEnum::BLUE;
     }
 };
-constexpr const std::array<Color, Color::count()>& Color::values()
-{
-    return ::fixed_containers::rich_enums::SkeletalRichEnumValues<Color>::VALUES;
-}
 
 // USAGE
 static_assert(fixed_containers::rich_enums::is_rich_enum<Color>);  // Type-trait `concept`
@@ -112,8 +106,6 @@ class TestRichEnum1 : public SkeletalRichEnum<TestRichEnum1, detail::TestRichEnu
     using SkeletalRichEnum::SkeletalRichEnum;
 
 public:
-    static constexpr const std::array<TestRichEnum1, count()>& values();
-
     FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(TestRichEnum1, C_ONE)
     FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(TestRichEnum1, C_TWO)
     FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(TestRichEnum1, C_THREE)
@@ -130,11 +122,6 @@ public:
         return detail::TEST_RICH_ENUM_1_DATA.at(backing_enum()).double_value;
     }
 };
-
-constexpr const std::array<TestRichEnum1, TestRichEnum1::count()>& TestRichEnum1::values()
-{
-    return SkeletalRichEnumValues<TestRichEnum1>::VALUES;
-}
 
 // Example with infused data
 namespace detail
@@ -179,8 +166,6 @@ class TestRichEnum2
     using NonDefaultConstructibleSkeletalRichEnum::NonDefaultConstructibleSkeletalRichEnum;
 
 public:
-    static constexpr const std::array<TestRichEnum2, count()>& values();
-
     FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(TestRichEnum2, C_ONE)
     FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(TestRichEnum2, C_TWO)
     FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(TestRichEnum2, C_THREE)
@@ -189,11 +174,6 @@ public:
 public:
     [[nodiscard]] constexpr std::size_t value() const { return enum_data().value; }
 };
-
-constexpr const std::array<TestRichEnum2, TestRichEnum2::count()>& TestRichEnum2::values()
-{
-    return SkeletalRichEnumValues<TestRichEnum2>::VALUES;
-}
 
 // This class does not have ordinal() and count()
 // Instead it has differently named functions
@@ -391,15 +371,8 @@ class TestRichEnumBool
     using SkeletalRichEnum::SkeletalRichEnum;
 
 public:
-    static constexpr const std::array<TestRichEnumBool, count()>& values();
-
     FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(TestRichEnumBool, FALSE_VALUE)
     FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(TestRichEnumBool, TRUE_VALUE)
 };
-
-constexpr const std::array<TestRichEnumBool, TestRichEnumBool::count()>& TestRichEnumBool::values()
-{
-    return SkeletalRichEnumValues<TestRichEnumBool>::VALUES;
-}
 
 }  // namespace fixed_containers::rich_enums
