@@ -86,6 +86,16 @@ public:
         return *val();
     }
 
+    [[nodiscard]] constexpr reference value_or(reference default_value) const&
+    {
+        if (!has_value())
+        {
+            return default_value;
+        }
+
+        return *val();
+    }
+
     constexpr explicit operator bool() const noexcept { return has_value(); }
     [[nodiscard]] constexpr bool has_value() const noexcept { return val() != nullptr; }
 
