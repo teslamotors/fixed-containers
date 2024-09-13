@@ -118,7 +118,8 @@ TEST(StructView, ExtractPathPropertiesOfFlat)
 TEST(StructView, StructViewFlat)
 {
     auto super_struct_view = StructView();
-    bool success = super_struct_view.try_add_path<FlatSuperStruct1>(path_from_string("retain1"));
+    const bool success =
+        super_struct_view.try_add_path<FlatSuperStruct1>(path_from_string("retain1"));
     EXPECT_TRUE(success);
 }
 
