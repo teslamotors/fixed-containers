@@ -164,24 +164,24 @@ struct RichEnumAdapter
     static constexpr std::string_view to_string(const T& key) { return key.to_string(); }
 };
 
-template <class RichEnum>
-constexpr std::optional<std::reference_wrapper<const RichEnum>> value_of(
-    const std::string_view& name)
+template <typename RichEnum,
+          typename OptionalReferenceLike = std::optional<std::reference_wrapper<const RichEnum>>>
+constexpr OptionalReferenceLike value_of(const std::string_view& name)
 {
     for (const RichEnum& rich_enum_val : RichEnum::values())
     {
         if (rich_enum_val.to_string() == name)
         {
-            return rich_enum_val;
+            return OptionalReferenceLike{rich_enum_val};
         }
     }
 
     return std::nullopt;
 }
 
-template <class RichEnum>
-constexpr std::optional<std::reference_wrapper<const RichEnum>> value_of(
-    const typename RichEnum::BackingEnum& backing_enum)
+template <typename RichEnum,
+          typename OptionalReferenceLike = std::optional<std::reference_wrapper<const RichEnum>>>
+constexpr OptionalReferenceLike value_of(const typename RichEnum::BackingEnum& backing_enum)
 {
     const auto& rich_enum_values = RichEnum::values();
 
@@ -195,7 +195,7 @@ constexpr std::optional<std::reference_wrapper<const RichEnum>> value_of(
             const RichEnum& rich_enum_val = rich_enum_values.at(maybe_enum_index);
             if (rich_enum_val.backing_enum() == backing_enum)
             {
-                return rich_enum_val;
+                return OptionalReferenceLike{rich_enum_val};
             }
         }
     }
@@ -205,18 +205,19 @@ constexpr std::optional<std::reference_wrapper<const RichEnum>> value_of(
     {
         if (rich_enum_val.backing_enum() == backing_enum)
         {
-            return rich_enum_val;
+            return OptionalReferenceLike{rich_enum_val};
         }
     }
 
     return std::nullopt;
 }
 
-template <class RichEnum>
-constexpr std::optional<std::reference_wrapper<const RichEnum>> value_of(
+template <typename RichEnum,
+          typename OptionalReferenceLike = std::optional<std::reference_wrapper<const RichEnum>>>
+constexpr OptionalReferenceLike value_of(
     std::underlying_type_t<typename RichEnum::BackingEnum> enum_integer)
 {
-    return value_of<RichEnum>(typename RichEnum::BackingEnum(enum_integer));
+    return value_of<RichEnum, OptionalReferenceLike>(typename RichEnum::BackingEnum(enum_integer));
 }
 
 struct EmptyEnumData
