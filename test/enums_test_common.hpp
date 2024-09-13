@@ -30,11 +30,8 @@ class Color : public fixed_containers::rich_enums::SkeletalRichEnum<Color, detai
     using SkeletalRichEnum::SkeletalRichEnum;
 
 public:
-    static constexpr const Color& RED()  // NOLINT(readability-identifier-naming)
-    {
-        return ::fixed_containers::rich_enums_detail::value_of<Color>(BackingEnum::RED).value();
-    }
-    // Optionally use this macro to simplify defining rich enum constants
+    // Forwarders for the enum constants. Macro not strictly required, see subsequent examples.
+    FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(Color, RED)
     FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(Color, YELLOW)
     FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(Color, BLUE)
     FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(Color, GREEN)
