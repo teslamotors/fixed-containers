@@ -97,6 +97,29 @@ TEST(OptionalReference, Value)
     }
 }
 
+TEST(OptionalReference, ValueOr)
+{
+    {
+        int fallback_value = 99;
+
+        using T = OptionalReference<int>;
+        const T val1{};
+        int& result = val1.value_or(fallback_value);
+        EXPECT_EQ(99, result);
+        result = 88;
+        EXPECT_EQ(88, result);
+        EXPECT_EQ(88, fallback_value);
+    }
+    {
+        const int fallback_value = 77;
+
+        constexpr int ENTRY_1 = 5;
+        const OptionalReference<const int> val1(ENTRY_1);
+        const int& result = val1.value_or(fallback_value);
+        EXPECT_EQ(5, result);
+    }
+}
+
 TEST(OptionalReference, DereferenceOperator)
 {
     {
