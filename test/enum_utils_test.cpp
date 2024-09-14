@@ -392,35 +392,43 @@ static void do_stuff_with_plain_color(const Color& color)
         break;
     }
 
-    switch (color.plain_color())
-    {
-    case ColorBase::RED():
-    {
-        switch (ColorVariant<ColorBase::RED()>::from(color.color_variant()).value())
+    std::visit(
+        []<class T>(const T& arg)
         {
-        case ColorVariant<ColorBase::RED()>::PINK():
-            std::cout << "RED:PINK" << std::endl;
-            break;
-        case ColorVariant<ColorBase::RED()>::ORANGE():
-            std::cout << "RED:ORANGE" << std::endl;
-            break;
-        }
-        break;
-    }
-    case ColorBase::BLUE():
-    {
-        switch (ColorVariant<ColorBase::BLUE()>::from(color.color_variant()).value())
-        {
-        case ColorVariant<ColorBase::BLUE()>::CYAN():
-            std::cout << "BLUE:CYAN" << std::endl;
-            break;
-        case ColorVariant<ColorBase::BLUE()>::AZURE():
-            std::cout << "BLUE:AZURE" << std::endl;
-            break;
-        }
-        break;
-    }
-    }
+            if constexpr (std::same_as<T, ColorVariantRed>)
+            {
+                switch (arg)
+                {
+                case ColorVariantRed::PINK:
+                    std::cout << "RED:PINK" << std::endl;
+                    break;
+                case ColorVariantRed::ORANGE:
+                    std::cout << "RED:ORANGE" << std::endl;
+                    break;
+                }
+            }
+            else if constexpr (std::same_as<T, ColorVariantBlue>)
+            {
+                switch (arg)
+                {
+                case ColorVariantBlue::CYAN:
+                    std::cout << "BLUE:CYAN" << std::endl;
+                    break;
+                case ColorVariant<ColorBase::BLUE()>::AZURE():
+                    std::cout << "BLUE:AZURE" << std::endl;
+                    break;
+                }
+            }
+            else
+            {
+                // if-constexpr has better compilation errors but you have to remember to have this
+                // `static_assert`.
+                // `overloaded<...>` pattern has bad compilation errors, but you
+                // can't forget to put something. Syntax is also slightly convoluted.
+                static_assert(AlwaysFalseV<T>);
+            }
+        },
+        color.color_variant());
 }
 
 TEST(NestedEnums, Example)
