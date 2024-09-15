@@ -154,6 +154,12 @@ struct CompileTimeValuePrinter
 {
 };
 
+template <class... Ts>
+struct Overloaded : Ts...
+{
+    using Ts::operator()...;
+};
+
 // a "void-like" type, but without the hassle
 // e.g. EmptyValue& is a valid type
 struct EmptyValue
