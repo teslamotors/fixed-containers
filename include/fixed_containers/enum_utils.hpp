@@ -1,6 +1,7 @@
 #pragma once
 
 #include "fixed_containers/assert_or_abort.hpp"
+#include "fixed_containers/optional_reference.hpp"
 
 #include <magic_enum.hpp>
 
@@ -501,22 +502,23 @@ protected:
     using InfusedData = typename InfusedDataProvider::DataType;
 
 public:
-    static constexpr std::optional<std::reference_wrapper<const RichEnumType>> value_of(
-        const std::string_view& name)
+    static constexpr OptionalReference<const RichEnumType> value_of(const std::string_view& name)
     {
-        return rich_enums_detail::value_of<RichEnumType>(name);
+        return rich_enums_detail::value_of<RichEnumType, OptionalReference<const RichEnumType>>(
+            name);
     }
 
-    static constexpr std::optional<std::reference_wrapper<const RichEnumType>> value_of(
-        const BackingEnum& backing_enum)
+    static constexpr OptionalReference<const RichEnumType> value_of(const BackingEnum& backing_enum)
     {
-        return rich_enums_detail::value_of<RichEnumType>(backing_enum);
+        return rich_enums_detail::value_of<RichEnumType, OptionalReference<const RichEnumType>>(
+            backing_enum);
     }
 
-    static constexpr std::optional<std::reference_wrapper<const RichEnumType>> value_of(
+    static constexpr OptionalReference<const RichEnumType> value_of(
         std::underlying_type_t<BackingEnum> enum_integer)
     {
-        return rich_enums_detail::value_of<RichEnumType>(enum_integer);
+        return rich_enums_detail::value_of<RichEnumType, OptionalReference<const RichEnumType>>(
+            enum_integer);
     }
 
 protected:

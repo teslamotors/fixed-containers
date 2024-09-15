@@ -183,6 +183,7 @@ cc_library(
     strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":assert_or_abort",
+        ":optional_reference",
         "@com_github_neargye_magic_enum//:magic_enum",
     ],
     copts = ["-std=c++20"],
