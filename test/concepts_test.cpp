@@ -2,7 +2,10 @@
 
 #include "fixed_containers/assert_or_abort.hpp"
 
+#include <gtest/gtest.h>
+
 #include <functional>
+#include <variant>
 
 namespace fixed_containers
 {
@@ -51,4 +54,19 @@ static_assert(IsStructuralType<MockStructuralType>);
 static_assert(ConstexprDefaultConstructible<MockNonStructuralType>);
 static_assert(IsNotStructuralType<MockNonStructuralType>);
 
+TEST(Concepts, Overloaded)
+{
+    constexpr double RESULT = []()
+    {
+        Overloaded overloads{
+            [](double) -> double { return 3.0; },
+            [](const int&) -> double { return 5.0; },
+        };
+
+        std::variant<double, int> var1 = 9.0;
+        return std::visit(overloads, var1);
+    }();
+
+    static_assert(RESULT == 3.0);
+}
 }  // namespace fixed_containers
