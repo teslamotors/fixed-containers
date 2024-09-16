@@ -32,7 +32,7 @@ concept has_member_sizet_ordinal_void_const = requires(T instance) {
 template <typename T>
 concept has_backing_enum_typename_and_member_backing_enum_void_const = requires(T instance) {
     typename T::BackingEnum;
-    { instance.backing_enum() } -> std::same_as<const typename T::BackingEnum&>;
+    { instance.backing_enum() } -> std::same_as<typename T::BackingEnum>;
 };
 
 template <typename T>
@@ -338,7 +338,7 @@ using RichEnumStorage = std::conditional_t<std::is_same_v<std::underlying_type_t
 // BackingEnum::ENUM_CONSTANT and the rich enum ENUM_CONSTANT()
 // Must be used after the values() static function is declared in the rich enum.
 #define FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(RichEnumName, CONSTANT_NAME) \
-    static constexpr const RichEnumName& CONSTANT_NAME()                            \
+    static constexpr RichEnumName CONSTANT_NAME()                                   \
     {                                                                               \
         return RichEnumName::value_of(BackingEnum::CONSTANT_NAME).value();          \
     }
@@ -459,7 +459,7 @@ public:
     constexpr SkeletalRichEnumLite& operator=(const SkeletalRichEnumLite&) noexcept = default;
     constexpr SkeletalRichEnumLite& operator=(SkeletalRichEnumLite&&) noexcept = default;
 
-    [[nodiscard]] constexpr const BackingEnum& backing_enum() const
+    [[nodiscard]] constexpr BackingEnum backing_enum() const
     {
         return this->detail_backing_enum.value();
     }
@@ -473,7 +473,7 @@ public:
         return this->detail_backing_enum == other.detail_backing_enum;
     }
 
-    constexpr const RichEnumType& operator!() const
+    constexpr RichEnumType operator!() const
         requires std::is_same_v<bool, std::underlying_type_t<BackingEnum>>
     {
         if (*this == RichEnumType::values()[0])

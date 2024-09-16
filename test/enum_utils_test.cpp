@@ -6,6 +6,7 @@
 #include "fixed_containers/consteval_compare.hpp"
 
 #include <gtest/gtest.h>
+#include <magic_enum.hpp>
 
 #include <cstddef>
 #include <functional>
@@ -113,6 +114,64 @@ static_assert(consteval_compare::equal<1, sizeof(detail::TestRichEnumBoolBacking
 static_assert(consteval_compare::equal<2, sizeof(TestRichEnumBool)>);
 static_assert(consteval_compare::equal<sizeof(TestRichEnumBool),
                                        sizeof(detail::TestRichEnumBoolBackingEnum) + 1>);
+
+/*
+// These both fail
+static const auto& dangling_pointer_for_builtin_enum()
+{
+    const TestEnum1& builtin_enum_val = TestEnum1::ONE;
+    return builtin_enum_val;
+}
+static const auto& dangling_pointer_for_rich_enum()
+{
+    const TestRichEnum1& rich_enum_val = TestRichEnum1::C_ONE();
+    return rich_enum_val;
+}
+*/
+
+TEST(RichEnum, EnumConstantParityWithBuiltinEnums)
+{
+    {
+        static_assert(std::same_as<TestEnum1, decltype(TestEnum1::ONE)>);
+        static_assert(std::same_as<TestRichEnum1, decltype(TestRichEnum1::C_ONE())>);
+    }
+
+    // const value
+    {
+        static_assert(
+            []()
+            {
+                const TestEnum1 builtin_enum_val = TestEnum1::ONE;
+                return builtin_enum_val == TestEnum1::ONE;
+            }());
+        static_assert(
+            []()
+            {
+                const TestRichEnum1 rich_enum_val = TestRichEnum1::C_ONE();
+                return rich_enum_val == TestRichEnum1::C_ONE();
+            }());
+    }
+    // const reference
+    {
+        static_assert(
+            []()
+            {
+                const TestEnum1& builtin_enum_val = TestEnum1::ONE;
+                return builtin_enum_val == TestEnum1::ONE;
+            }());
+        static_assert(
+            []()
+            {
+                const TestRichEnum1& rich_enum_val = TestRichEnum1::C_ONE();
+                return rich_enum_val == TestRichEnum1::C_ONE();
+            }());
+    }
+    // Address-of does not work for either
+    {
+        // const auto* builtin_enum_val = &TestEnum1::ONE;
+        // const auto* rich_enum_val = &TestRichEnum1::C_ONE();
+    }
+}
 
 TEST(BuiltinEnumAdapter, Ordinal)
 {
@@ -240,7 +299,6 @@ TEST(RichEnum, ValueOfName)
         constexpr const TestRichEnum1& MY_VALUE = TestRichEnum1::value_of("C_ONE").value();
 
         static_assert(MY_VALUE == TestRichEnum1::C_ONE());
-        static_assert(&MY_VALUE == &TestRichEnum1::C_ONE());
     }
 }
 
@@ -260,7 +318,6 @@ TEST(RichEnum, ValueOfBackingEnum)
         constexpr const TestRichEnum1& MY_VALUE = TestRichEnum1::value_of(BE::C_ONE).value();
 
         static_assert(MY_VALUE == TestRichEnum1::C_ONE());
-        static_assert(&MY_VALUE == &TestRichEnum1::C_ONE());
     }
 }
 
@@ -278,7 +335,6 @@ TEST(RichEnum, ValueOfUnderlyingInt)
         constexpr const TestRichEnum1& MY_VALUE = TestRichEnum1::value_of(19).value();
 
         static_assert(MY_VALUE == TestRichEnum1::C_ONE());
-        static_assert(&MY_VALUE == &TestRichEnum1::C_ONE());
     }
 }
 
@@ -305,12 +361,12 @@ TEST(RichEnum, HasValue)
 TEST(RichEnum, BoolNegate)
 {
     {
-        constexpr const TestRichEnumBool& F_VALUE = TestRichEnumBool::FALSE_VALUE();
+        constexpr TestRichEnumBool F_VALUE = TestRichEnumBool::FALSE_VALUE();
         static_assert(F_VALUE.has_value());
         static_assert((!F_VALUE) == TestRichEnumBool::TRUE_VALUE());
     }
     {
-        constexpr const TestRichEnumBool& T_VALUE = TestRichEnumBool::TRUE_VALUE();
+        constexpr TestRichEnumBool T_VALUE = TestRichEnumBool::TRUE_VALUE();
         static_assert(T_VALUE.has_value());
         static_assert((!T_VALUE) == TestRichEnumBool::FALSE_VALUE());
     }

@@ -47,7 +47,7 @@ public:
 
 // USAGE
 static_assert(fixed_containers::rich_enums::is_rich_enum<Color>);  // Type-trait `concept`
-inline constexpr const Color& COLOR = Color::RED();                // Note the parens
+inline constexpr Color COLOR = Color::RED();                       // Note the parens
 static_assert("RED" == COLOR.to_string());                         // auto-provided member
 static_assert(COLOR.is_primary());                                 // Custom member
 static_assert(COLOR == Color::value_of("RED").value());            // auto-provided
@@ -189,19 +189,17 @@ public:
     all_values();
 
 private:
-    static constexpr const NonConformingTestRichEnum1& at(const BackingEnum& backing_enum)
+    static constexpr NonConformingTestRichEnum1 at(const BackingEnum& backing_enum)
     {
         return all_values().at(magic_enum::enum_index(backing_enum).value());
     }
 
 public:
-    static constexpr const NonConformingTestRichEnum1&
-    NC_ONE()  // NOLINT(readability-identifier-naming)
+    static constexpr NonConformingTestRichEnum1 NC_ONE()  // NOLINT(readability-identifier-naming)
     {
         return at(BackingEnum::NC_ONE);
     }
-    static constexpr const NonConformingTestRichEnum1&
-    NC_TWO()  // NOLINT(readability-identifier-naming)
+    static constexpr NonConformingTestRichEnum1 NC_TWO()  // NOLINT(readability-identifier-naming)
     {
         return at(BackingEnum::NC_TWO);
     }

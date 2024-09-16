@@ -53,7 +53,7 @@ The fixed-container types have identical APIs to their std:: equivalents, so you
 
 ```C++
 static_assert(fixed_containers::rich_enums::is_rich_enum<Color>);  // Type-trait `concept`
-inline constexpr const Color& COLOR = Color::RED();                // Note the parens
+inline constexpr Color COLOR = Color::RED();                // Note the parens
 static_assert("RED" == COLOR.to_string());                         // auto-provided member
 static_assert(COLOR.is_primary());                                 // Custom member
 static_assert(COLOR == Color::value_of("RED").value());            // auto-provided
