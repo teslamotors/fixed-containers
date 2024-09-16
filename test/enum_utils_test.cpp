@@ -296,8 +296,7 @@ TEST(RichEnum, ValueOfName)
     }
 
     {
-        constexpr const TestRichEnum1& MY_VALUE = TestRichEnum1::value_of("C_ONE").value();
-
+        constexpr TestRichEnum1 MY_VALUE = TestRichEnum1::value_of("C_ONE").value();
         static_assert(MY_VALUE == TestRichEnum1::C_ONE());
     }
 }
@@ -315,8 +314,7 @@ TEST(RichEnum, ValueOfBackingEnum)
 
     {
         using BE = detail::TestRichEnum1BackingEnum;
-        constexpr const TestRichEnum1& MY_VALUE = TestRichEnum1::value_of(BE::C_ONE).value();
-
+        constexpr TestRichEnum1 MY_VALUE = TestRichEnum1::value_of(BE::C_ONE).value();
         static_assert(MY_VALUE == TestRichEnum1::C_ONE());
     }
 }
@@ -332,9 +330,19 @@ TEST(RichEnum, ValueOfUnderlyingInt)
     }
 
     {
-        constexpr const TestRichEnum1& MY_VALUE = TestRichEnum1::value_of(19).value();
-
+        constexpr TestRichEnum1 MY_VALUE = TestRichEnum1::value_of(19).value();
         static_assert(MY_VALUE == TestRichEnum1::C_ONE());
+    }
+}
+
+TEST(RichEnum, ValueOfParityWithBuiltinEnums)
+{
+    // Optional values
+    {
+        static_assert(std::same_as<std::optional<TestEnum1>,
+                                   decltype(magic_enum::enum_cast<TestEnum1>("ONE"))>);
+        static_assert(
+            std::same_as<std::optional<TestRichEnum1>, decltype(TestRichEnum1::value_of("C_ONE"))>);
     }
 }
 

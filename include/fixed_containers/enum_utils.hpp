@@ -167,8 +167,7 @@ struct RichEnumAdapter
 };
 
 template <class RichEnum>
-constexpr std::optional<std::reference_wrapper<const RichEnum>> value_of(
-    const std::string_view& name)
+constexpr std::optional<RichEnum> value_of(const std::string_view& name)
 {
     for (const RichEnum& rich_enum_val : RichEnum::values())
     {
@@ -182,8 +181,7 @@ constexpr std::optional<std::reference_wrapper<const RichEnum>> value_of(
 }
 
 template <class RichEnum>
-constexpr std::optional<std::reference_wrapper<const RichEnum>> value_of(
-    const typename RichEnum::BackingEnum& backing_enum)
+constexpr std::optional<RichEnum> value_of(const typename RichEnum::BackingEnum& backing_enum)
 {
     const auto& rich_enum_values = RichEnum::values();
 
@@ -215,7 +213,7 @@ constexpr std::optional<std::reference_wrapper<const RichEnum>> value_of(
 }
 
 template <class RichEnum>
-constexpr std::optional<std::reference_wrapper<const RichEnum>> value_of(
+constexpr std::optional<RichEnum> value_of(
     std::underlying_type_t<typename RichEnum::BackingEnum> enum_integer)
 {
     return value_of<RichEnum>(typename RichEnum::BackingEnum(enum_integer));
@@ -420,19 +418,17 @@ protected:
     using ValuesFriend = SkeletalRichEnumValues<RichEnumType>;
 
 public:
-    static constexpr std::optional<std::reference_wrapper<const RichEnumType>> value_of(
-        const std::string_view& name)
+    static constexpr std::optional<RichEnumType> value_of(const std::string_view& name)
     {
         return rich_enums_detail::value_of<RichEnumType>(name);
     }
 
-    static constexpr std::optional<std::reference_wrapper<const RichEnumType>> value_of(
-        const BackingEnum& backing_enum)
+    static constexpr std::optional<RichEnumType> value_of(const BackingEnum& backing_enum)
     {
         return rich_enums_detail::value_of<RichEnumType>(backing_enum);
     }
 
-    static constexpr std::optional<std::reference_wrapper<const RichEnumType>> value_of(
+    static constexpr std::optional<RichEnumType> value_of(
         std::underlying_type_t<BackingEnum> enum_integer)
     {
         return rich_enums_detail::value_of<RichEnumType>(enum_integer);
