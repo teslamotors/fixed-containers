@@ -136,7 +136,7 @@ struct TestRichEnum2Data
     std::size_t value;
 };
 
-struct TestRichEnum2InfusedDataProvider
+struct TestRichEnum2InfusedData
 {
     using BE = TestRichEnum2BackingEnum;
     static constexpr auto VALUES = EnumMap<BE, TestRichEnum2Data>::create_with_all_entries({
@@ -145,19 +145,12 @@ struct TestRichEnum2InfusedDataProvider
         {BE::C_THREE, {3}},
         {BE::C_FOUR, {4}},
     });
-
-    using EnumType = TestRichEnum2BackingEnum;
-    using DataType = TestRichEnum2Data;
-
-    static constexpr const TestRichEnum2Data& get(const EnumType& key) { return VALUES.at(key); }
 };
 
 }  // namespace detail
 
 class TestRichEnum2
-  : public NonDefaultConstructibleSkeletalRichEnum<TestRichEnum2,
-                                                   detail::TestRichEnum2BackingEnum,
-                                                   detail::TestRichEnum2InfusedDataProvider>
+  : public NonDefaultConstructibleSkeletalRichEnum<TestRichEnum2, detail::TestRichEnum2BackingEnum>
 {
     friend SkeletalRichEnum::ValuesFriend;
     using NonDefaultConstructibleSkeletalRichEnum::NonDefaultConstructibleSkeletalRichEnum;
@@ -169,7 +162,10 @@ public:
     FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(TestRichEnum2, C_FOUR)
 
 public:
-    [[nodiscard]] constexpr std::size_t value() const { return enum_data().value; }
+    [[nodiscard]] constexpr std::size_t value() const
+    {
+        return detail::TestRichEnum2InfusedData::VALUES.at(backing_enum()).value;
+    }
 };
 
 // This class does not have ordinal() and count()
