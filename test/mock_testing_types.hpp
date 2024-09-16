@@ -150,6 +150,10 @@ struct MockMoveableButNotCopyable
     constexpr MockMoveableButNotCopyable& operator=(
         MockMoveableButNotCopyable&& /*other*/) noexcept = default;
 };
+// This still counts as trivially-copyable.
+static_assert(TriviallyCopyable<MockMoveableButNotCopyable>);
+static_assert(NotCopyAssignable<MockMoveableButNotCopyable>);
+static_assert(NotCopyConstructible<MockMoveableButNotCopyable>);
 
 // std::atomic<int> and std::mutex are examples of this
 struct MockTriviallyCopyableButNotCopyableOrMoveable

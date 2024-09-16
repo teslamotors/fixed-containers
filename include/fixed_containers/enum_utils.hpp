@@ -1,6 +1,7 @@
 #pragma once
 
 #include "fixed_containers/assert_or_abort.hpp"
+#include "fixed_containers/concepts.hpp"
 
 #include <magic_enum.hpp>
 
@@ -110,6 +111,7 @@ constexpr bool has_zero_based_and_sorted_contiguous_ordinal()
 
 template <class T>
 concept is_rich_enum =
+    TriviallyCopyable<T> && CopyConstructible<T> && CopyAssignable<T> &&
     has_static_sizet_count_void<T> && has_static_const_ref_array_values_void<T, T, T::count()> &&
     has_backing_enum_typename_and_member_backing_enum_void_const<T> &&
     has_member_sizet_ordinal_void_const<T> && has_member_std_string_view_to_string_void_const<T> &&

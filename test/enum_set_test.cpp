@@ -23,7 +23,6 @@ namespace
 using TestEnum1 = rich_enums::TestEnum1;
 using TestRichEnum1 = rich_enums::TestRichEnum1;
 using NonConformingTestRichEnum1 = rich_enums::NonConformingTestRichEnum1;
-using NonCopyableRichEnum = rich_enums::NonCopyableRichEnum;
 
 using ES_1 = EnumSet<TestEnum1>;
 using ES_2 = EnumSet<TestRichEnum1>;
@@ -131,33 +130,6 @@ TEST(EnumSet, BuilderInsert)
     static_assert(VAL1.contains(TestEnum1::TWO));
     static_assert(!VAL1.contains(TestEnum1::THREE));
     static_assert(VAL1.contains(TestEnum1::FOUR));
-}
-
-TEST(EnumSet, BuilderFluentSyntaxWithNoCopies)
-{
-    // Constructing like this to bypass the imposed non-copyability of this enum
-    constexpr std::array<NonCopyableRichEnum, 2> ENTRY_A{
-        NonCopyableRichEnum{NonCopyableRichEnum::BackingEnum::C_TWO},
-        NonCopyableRichEnum{NonCopyableRichEnum::BackingEnum::C_FOUR},
-    };
-    constexpr const NonCopyableRichEnum& ENTRY_B = NonCopyableRichEnum::C_TWO();
-
-    constexpr auto VAL1 =
-        EnumSet<NonCopyableRichEnum>::Builder{}
-            .insert(ENTRY_A.begin(), ENTRY_A.end())
-            .insert(ENTRY_B)
-            .insert(ENTRY_A)
-            .insert(ENTRY_B)
-            .insert({NonCopyableRichEnum{NonCopyableRichEnum::BackingEnum::C_TWO},
-                     NonCopyableRichEnum{NonCopyableRichEnum::BackingEnum::C_FOUR}})
-            .build();
-
-    static_assert(VAL1.size() == 2);
-
-    static_assert(!VAL1.contains(NonCopyableRichEnum::C_ONE()));
-    static_assert(VAL1.contains(NonCopyableRichEnum::C_TWO()));
-    static_assert(!VAL1.contains(NonCopyableRichEnum::C_THREE()));
-    static_assert(VAL1.contains(NonCopyableRichEnum::C_FOUR()));
 }
 
 TEST(EnumSet, BuilderMultipleOuts)
