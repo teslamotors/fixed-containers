@@ -55,6 +55,9 @@ public:
 public:
     [[nodiscard]] static constexpr std::size_t static_max_size() noexcept { return MAXIMUM_LENGTH; }
 
+    static constexpr size_type npos =  // NOLINT(readability-identifier-naming)
+        std::string_view::npos;
+
 public:  // Public so this type is a structural type and can thus be used in template parameters
     FixedVecStorage IMPLEMENTATION_DETAIL_DO_NOT_USE_data_;
 
@@ -344,6 +347,64 @@ public:
     constexpr FixedString& operator+=(const std::string_view& view)
     {
         return append(view, std_transition::source_location::current());
+    }
+
+    template <std::size_t MAXIMUM_LENGTH_2, customize::SequenceContainerChecking CheckingType2>
+    [[nodiscard]] constexpr size_type find(const FixedString<MAXIMUM_LENGTH_2, CheckingType2>& str,
+                                           const size_type pos = 0) const
+    {
+        return as_view().find(str, pos);
+    }
+    [[nodiscard]] constexpr size_type find(const CharT* char_ptr,
+                                           size_type pos,
+                                           size_type count) const
+    {
+        return as_view().find(char_ptr, pos, count);
+    }
+    [[nodiscard]] constexpr size_type find(const CharT* const str, const size_type pos = 0) const
+    {
+        return as_view().find(str, pos);
+    }
+    [[nodiscard]] constexpr size_type find(const CharT character, const size_type pos = 0) const
+    {
+        return as_view().find(character, pos);
+    }
+    template <class StringViewLike>
+        requires(std::is_convertible_v<const StringViewLike&, std::string_view> and
+                 not std::is_convertible_v<const StringViewLike&, const char*>)
+    [[nodiscard]] constexpr size_type find(const StringViewLike& str, const size_type pos = 0) const
+    {
+        return as_view().find(str, pos);
+    }
+
+    template <std::size_t MAXIMUM_LENGTH_2, customize::SequenceContainerChecking CheckingType2>
+    [[nodiscard]] constexpr size_type rfind(const FixedString<MAXIMUM_LENGTH_2, CheckingType2>& str,
+                                            const size_type pos = npos) const
+    {
+        return as_view().rfind(str, pos);
+    }
+    [[nodiscard]] constexpr size_type rfind(const CharT* char_ptr,
+                                            size_type pos,
+                                            size_type count) const
+    {
+        return as_view().rfind(char_ptr, pos, count);
+    }
+    [[nodiscard]] constexpr size_type rfind(const CharT* const str,
+                                            const size_type pos = npos) const
+    {
+        return as_view().rfind(str, pos);
+    }
+    [[nodiscard]] constexpr size_type rfind(const CharT character, const size_type pos = npos) const
+    {
+        return as_view().rfind(character, pos);
+    }
+    template <class StringViewLike>
+        requires(std::is_convertible_v<const StringViewLike&, std::string_view> and
+                 not std::is_convertible_v<const StringViewLike&, const char*>)
+    [[nodiscard]] constexpr size_type rfind(const StringViewLike& str,
+                                            const size_type pos = npos) const
+    {
+        return as_view().rfind(str, pos);
     }
 
     [[nodiscard]] constexpr int compare(std::string_view view) const

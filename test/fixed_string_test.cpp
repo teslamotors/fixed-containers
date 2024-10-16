@@ -34,6 +34,10 @@ static_assert(std::contiguous_iterator<FixedStringType::const_iterator>);
 void const_span_ref(const std::span<char>& /*unused*/) {}
 void const_span_of_const_ref(const std::span<const char>& /*unused*/) {}
 
+constexpr std::size_t NPOS = std::string_view::npos;
+static_assert(NPOS == FixedStringType::npos);
+static_assert(NPOS == std::string::npos);
+
 }  // namespace
 
 TEST(FixedString, DefaultConstructor)
@@ -1197,6 +1201,112 @@ TEST(FixedString, OperatorPlusEqual)
     static_assert(VAL1 == "012abcdefg");
     static_assert(VAL1.size() == 10);
     static_assert(VAL1.max_size() == 17);
+}
+
+TEST(FixedString, Find)
+{
+    {
+        const FixedString<20> var1{"abcdefg_abcdefg"};
+        const std::string non_present{"bbb"};
+        const std::string present{"cde"};
+
+        ASSERT_EQ(NPOS, var1.find(non_present));
+        ASSERT_EQ(2, var1.find(present));
+    }
+    {
+        constexpr FixedString<20> VAR1{"abcdefg_abcdefg"};
+        constexpr FixedString<9> NON_PRESENT{"bbb"};
+        constexpr FixedString<25> PRESENT{"cde"};
+
+        static_assert(NPOS == VAR1.find(NON_PRESENT));
+        static_assert(2 == VAR1.find(PRESENT));
+    }
+    {
+        constexpr FixedString<20> VAR1{"abcdefg_abcdefg"};
+        constexpr const char* NON_PRESENT{"bbb"};
+        constexpr const char* PRESENT{"cdeBLAHBLAH"};
+
+        static_assert(NPOS == VAR1.find(NON_PRESENT, 0, 3));
+        static_assert(2 == VAR1.find(PRESENT, 0, 3));
+        static_assert(NPOS == VAR1.find(PRESENT, 0, 4));
+    }
+    {
+        constexpr FixedString<20> VAR1{"abcdefg_abcdefg"};
+        constexpr const char* NON_PRESENT{"bbb"};
+        constexpr const char* PRESENT{"cde"};
+
+        static_assert(NPOS == VAR1.find(NON_PRESENT));
+        static_assert(2 == VAR1.find(PRESENT));
+    }
+    {
+        constexpr FixedString<20> VAR1{"abcdefg_abcdefg"};
+        constexpr const char NON_PRESENT_CHAR{'z'};
+        constexpr const char PRESENT_CHAR{'c'};
+
+        static_assert(NPOS == VAR1.find(NON_PRESENT_CHAR));
+        static_assert(2 == VAR1.find(PRESENT_CHAR));
+    }
+    {
+        constexpr FixedString<20> VAR1{"abcdefg_abcdefg"};
+        constexpr std::string_view NON_PRESENT{"bbb"};
+        constexpr std::string_view PRESENT{"cde"};
+
+        static_assert(NPOS == VAR1.find(NON_PRESENT));
+        static_assert(2 == VAR1.find(PRESENT));
+    }
+}
+
+TEST(FixedString, Rfind)
+{
+    {
+        const FixedString<20> var1{"abcdefg_abcdefg"};
+        const std::string non_present{"bbb"};
+        const std::string present{"cde"};
+
+        ASSERT_EQ(NPOS, var1.rfind(non_present));
+        ASSERT_EQ(10, var1.rfind(present));
+    }
+    {
+        constexpr FixedString<20> VAR1{"abcdefg_abcdefg"};
+        constexpr FixedString<9> NON_PRESENT{"bbb"};
+        constexpr FixedString<25> PRESENT{"cde"};
+
+        static_assert(NPOS == VAR1.rfind(NON_PRESENT));
+        static_assert(10 == VAR1.rfind(PRESENT));
+    }
+    {
+        constexpr FixedString<20> VAR1{"abcdefg_abcdefg"};
+        constexpr const char* NON_PRESENT{"bbb"};
+        constexpr const char* PRESENT{"cdeBLAHBLAH"};
+
+        static_assert(NPOS == VAR1.rfind(NON_PRESENT, 0, 3));
+        static_assert(10 == VAR1.rfind(PRESENT, NPOS, 3));
+        static_assert(NPOS == VAR1.rfind(PRESENT, 0, 4));
+    }
+    {
+        constexpr FixedString<20> VAR1{"abcdefg_abcdefg"};
+        constexpr const char* NON_PRESENT{"bbb"};
+        constexpr const char* PRESENT{"cde"};
+
+        static_assert(NPOS == VAR1.rfind(NON_PRESENT));
+        static_assert(10 == VAR1.rfind(PRESENT));
+    }
+    {
+        constexpr FixedString<20> VAR1{"abcdefg_abcdefg"};
+        constexpr const char NON_PRESENT_CHAR{'z'};
+        constexpr const char PRESENT_CHAR{'c'};
+
+        static_assert(NPOS == VAR1.rfind(NON_PRESENT_CHAR));
+        static_assert(10 == VAR1.rfind(PRESENT_CHAR));
+    }
+    {
+        constexpr FixedString<20> VAR1{"abcdefg_abcdefg"};
+        constexpr std::string_view NON_PRESENT{"bbb"};
+        constexpr std::string_view PRESENT{"cde"};
+
+        static_assert(NPOS == VAR1.rfind(NON_PRESENT));
+        static_assert(10 == VAR1.rfind(PRESENT));
+    }
 }
 
 TEST(FixedString, Equality)
