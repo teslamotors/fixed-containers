@@ -1309,6 +1309,218 @@ TEST(FixedString, Rfind)
     }
 }
 
+TEST(FixedString, FindFirstOf)
+{
+    {
+        const FixedString<20> var1{"abcdefg_abcdefg"};
+        const std::string non_present{"zzz"};
+        const std::string present{"zzzedczzz"};
+
+        ASSERT_EQ(NPOS, var1.find_first_of(non_present));
+        ASSERT_EQ(2, var1.find_first_of(present));
+    }
+    {
+        constexpr FixedString<20> VAR1{"abcdefg_abcdefg"};
+        constexpr FixedString<9> NON_PRESENT{"zzz"};
+        constexpr FixedString<25> PRESENT{"zzzedczzz"};
+
+        static_assert(NPOS == VAR1.find_first_of(NON_PRESENT));
+        static_assert(2 == VAR1.find_first_of(PRESENT));
+    }
+    {
+        constexpr FixedString<20> VAR1{"abcdefg_abcdefg"};
+        constexpr const char* NON_PRESENT{"zzz"};
+        constexpr const char* PRESENT{"zzzedczzzBLAHBLAH"};
+
+        static_assert(NPOS == VAR1.find_first_of(NON_PRESENT, 0, 3));
+        static_assert(2 == VAR1.find_first_of(PRESENT, 0, 6));
+        static_assert(NPOS == VAR1.find_first_of(PRESENT, 0, 3));
+    }
+    {
+        constexpr FixedString<20> VAR1{"abcdefg_abcdefg"};
+        constexpr const char* NON_PRESENT{"zzz"};
+        constexpr const char* PRESENT{"zzzedczzz"};
+
+        static_assert(NPOS == VAR1.find_first_of(NON_PRESENT));
+        static_assert(2 == VAR1.find_first_of(PRESENT));
+    }
+    {
+        constexpr FixedString<20> VAR1{"abcdefg_abcdefg"};
+        constexpr const char NON_PRESENT_CHAR{'z'};
+        constexpr const char PRESENT_CHAR{'c'};
+
+        static_assert(NPOS == VAR1.find_first_of(NON_PRESENT_CHAR));
+        static_assert(2 == VAR1.find_first_of(PRESENT_CHAR));
+    }
+    {
+        constexpr FixedString<20> VAR1{"abcdefg_abcdefg"};
+        constexpr std::string_view NON_PRESENT{"zzz"};
+        constexpr std::string_view PRESENT{"zzzedczzz"};
+
+        static_assert(NPOS == VAR1.find_first_of(NON_PRESENT));
+        static_assert(2 == VAR1.find_first_of(PRESENT));
+    }
+}
+
+TEST(FixedString, FindFirstNotOf)
+{
+    {
+        const FixedString<20> var1{"abcdefg_abcdefg"};
+        const std::string non_present{"abZdefg"};
+        const std::string present{"abcdefg_"};
+
+        ASSERT_EQ(2, var1.find_first_not_of(non_present));
+        ASSERT_EQ(NPOS, var1.find_first_not_of(present));
+    }
+    {
+        constexpr FixedString<20> VAR1{"abcdefg_abcdefg"};
+        constexpr FixedString<9> NON_PRESENT{"abZdefg"};
+        constexpr FixedString<25> PRESENT{"abcdefg_"};
+
+        static_assert(2 == VAR1.find_first_not_of(NON_PRESENT));
+        static_assert(NPOS == VAR1.find_first_not_of(PRESENT));
+    }
+    {
+        constexpr FixedString<20> VAR1{"abcdefg_abcdefg"};
+        constexpr const char* NON_PRESENT{"abZdefgBLAHBLAH"};
+        constexpr const char* PRESENT{"abcdefg_BLAHBLAH"};
+
+        static_assert(2 == VAR1.find_first_not_of(NON_PRESENT, 0, 3));
+        static_assert(2 == VAR1.find_first_not_of(NON_PRESENT, 0, 7));
+        static_assert(NPOS == VAR1.find_first_not_of(PRESENT, 0, 8));
+    }
+    {
+        constexpr FixedString<20> VAR1{"abcdefg_abcdefg"};
+        constexpr const char* NON_PRESENT{"abZdefg"};
+        constexpr const char* PRESENT{"abcdefg_"};
+
+        static_assert(2 == VAR1.find_first_not_of(NON_PRESENT));
+        static_assert(NPOS == VAR1.find_first_not_of(PRESENT));
+    }
+    {
+        constexpr FixedString<20> VAR1{"abcdefg_abcdefg"};
+        constexpr const char NON_PRESENT_CHAR{'z'};
+        constexpr const char PRESENT_CHAR{'a'};
+
+        static_assert(0 == VAR1.find_first_not_of(NON_PRESENT_CHAR));
+        static_assert(1 == VAR1.find_first_not_of(PRESENT_CHAR));
+    }
+    {
+        constexpr FixedString<20> VAR1{"abcdefg_abcdefg"};
+        constexpr std::string_view NON_PRESENT{"abZdefg"};
+        constexpr std::string_view PRESENT{"abcdefg_"};
+
+        static_assert(2 == VAR1.find_first_not_of(NON_PRESENT));
+        static_assert(NPOS == VAR1.find_first_not_of(PRESENT));
+    }
+}
+
+TEST(FixedString, FindLastOf)
+{
+    {
+        const FixedString<20> var1{"abcdefg_abcdefg"};
+        const std::string non_present{"zzz"};
+        const std::string present{"zzzcdezzz"};
+
+        ASSERT_EQ(NPOS, var1.find_last_of(non_present));
+        ASSERT_EQ(12, var1.find_last_of(present));
+    }
+    {
+        constexpr FixedString<20> VAR1{"abcdefg_abcdefg"};
+        constexpr FixedString<9> NON_PRESENT{"zzz"};
+        constexpr FixedString<25> PRESENT{"zzzcdezzz"};
+
+        static_assert(NPOS == VAR1.find_last_of(NON_PRESENT));
+        static_assert(12 == VAR1.find_last_of(PRESENT));
+    }
+    {
+        constexpr FixedString<20> VAR1{"abcdefg_abcdefg"};
+        constexpr const char* NON_PRESENT{"zzz"};
+        constexpr const char* PRESENT{"zzzcdezzzBLAHBLAH"};
+
+        static_assert(NPOS == VAR1.find_last_of(NON_PRESENT, NPOS, 3));
+        static_assert(12 == VAR1.find_last_of(PRESENT, NPOS, 6));
+        static_assert(NPOS == VAR1.find_last_of(PRESENT, NPOS, 3));
+    }
+    {
+        constexpr FixedString<20> VAR1{"abcdefg_abcdefg"};
+        constexpr const char* NON_PRESENT{"zzz"};
+        constexpr const char* PRESENT{"zzzcdezzz"};
+
+        static_assert(NPOS == VAR1.find_last_of(NON_PRESENT));
+        static_assert(12 == VAR1.find_last_of(PRESENT));
+    }
+    {
+        constexpr FixedString<20> VAR1{"abcdefg_abcdefg"};
+        constexpr const char NON_PRESENT_CHAR{'z'};
+        constexpr const char PRESENT_CHAR{'c'};
+
+        static_assert(NPOS == VAR1.find_last_of(NON_PRESENT_CHAR));
+        static_assert(10 == VAR1.find_last_of(PRESENT_CHAR));
+    }
+    {
+        constexpr FixedString<20> VAR1{"abcdefg_abcdefg"};
+        constexpr std::string_view NON_PRESENT{"zzz"};
+        constexpr std::string_view PRESENT{"zzzcdezzz"};
+
+        static_assert(NPOS == VAR1.find_last_of(NON_PRESENT));
+        static_assert(12 == VAR1.find_last_of(PRESENT));
+    }
+}
+
+TEST(FixedString, FindLastNotOf)
+{
+    {
+        const FixedString<20> var1{"abcdefg_abcdefg"};
+        const std::string non_present{"abZdefg"};
+        const std::string present{"abcdefg_"};
+
+        ASSERT_EQ(10, var1.find_last_not_of(non_present));
+        ASSERT_EQ(NPOS, var1.find_last_not_of(present));
+    }
+    {
+        constexpr FixedString<20> VAR1{"abcdefg_abcdefg"};
+        constexpr FixedString<9> NON_PRESENT{"abZdefg"};
+        constexpr FixedString<25> PRESENT{"abcdefg_"};
+
+        static_assert(10 == VAR1.find_last_not_of(NON_PRESENT));
+        static_assert(NPOS == VAR1.find_last_not_of(PRESENT));
+    }
+    {
+        constexpr FixedString<20> VAR1{"abcdefg_abcdefg"};
+        constexpr const char* NON_PRESENT{"abZdefgBLAHBLAH"};
+        constexpr const char* PRESENT{"abcdefg_BLAHBLAH"};
+
+        static_assert(14 == VAR1.find_last_not_of(NON_PRESENT, NPOS, 3));
+        static_assert(10 == VAR1.find_last_not_of(NON_PRESENT, NPOS, 7));
+        static_assert(NPOS == VAR1.find_last_not_of(PRESENT, NPOS, 8));
+    }
+    {
+        constexpr FixedString<20> VAR1{"abcdefg_abcdefg"};
+        constexpr const char* NON_PRESENT{"abZdefg"};
+        constexpr const char* PRESENT{"abcdefg_"};
+
+        static_assert(10 == VAR1.find_last_not_of(NON_PRESENT));
+        static_assert(NPOS == VAR1.find_last_not_of(PRESENT));
+    }
+    {
+        constexpr FixedString<20> VAR1{"abcdefg_abcdefg"};
+        constexpr const char NON_PRESENT_CHAR{'z'};
+        constexpr const char PRESENT_CHAR{'g'};
+
+        static_assert(14 == VAR1.find_last_not_of(NON_PRESENT_CHAR));
+        static_assert(13 == VAR1.find_last_not_of(PRESENT_CHAR));
+    }
+    {
+        constexpr FixedString<20> VAR1{"abcdefg_abcdefg"};
+        constexpr std::string_view NON_PRESENT{"abZdefg"};
+        constexpr std::string_view PRESENT{"abcdefg_"};
+
+        static_assert(10 == VAR1.find_last_not_of(NON_PRESENT));
+        static_assert(NPOS == VAR1.find_last_not_of(PRESENT));
+    }
+}
+
 TEST(FixedString, Equality)
 {
     constexpr auto VAL1 = FixedString<12>{"012"};

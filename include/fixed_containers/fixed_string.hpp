@@ -407,6 +407,130 @@ public:
         return as_view().rfind(str, pos);
     }
 
+    template <std::size_t MAXIMUM_LENGTH_2, customize::SequenceContainerChecking CheckingType2>
+    [[nodiscard]] constexpr size_type find_first_of(
+        const FixedString<MAXIMUM_LENGTH_2, CheckingType2>& str, const size_type pos = 0) const
+    {
+        return as_view().find_first_of(str, pos);
+    }
+    [[nodiscard]] constexpr size_type find_first_of(const CharT* char_ptr,
+                                                    size_type pos,
+                                                    size_type count) const
+    {
+        return as_view().find_first_of(char_ptr, pos, count);
+    }
+    [[nodiscard]] constexpr size_type find_first_of(const CharT* const str,
+                                                    const size_type pos = 0) const
+    {
+        return as_view().find_first_of(str, pos);
+    }
+    [[nodiscard]] constexpr size_type find_first_of(const CharT character,
+                                                    const size_type pos = 0) const
+    {
+        return as_view().find_first_of(character, pos);
+    }
+    template <class StringViewLike>
+        requires(std::is_convertible_v<const StringViewLike&, std::string_view> and
+                 not std::is_convertible_v<const StringViewLike&, const char*>)
+    [[nodiscard]] constexpr size_type find_first_of(const StringViewLike& str,
+                                                    const size_type pos = 0) const
+    {
+        return as_view().find_first_of(str, pos);
+    }
+
+    template <std::size_t MAXIMUM_LENGTH_2, customize::SequenceContainerChecking CheckingType2>
+    [[nodiscard]] constexpr size_type find_first_not_of(
+        const FixedString<MAXIMUM_LENGTH_2, CheckingType2>& str, const size_type pos = 0) const
+    {
+        return as_view().find_first_not_of(str, pos);
+    }
+    [[nodiscard]] constexpr size_type find_first_not_of(const CharT* char_ptr,
+                                                        size_type pos,
+                                                        size_type count) const
+    {
+        return as_view().find_first_not_of(char_ptr, pos, count);
+    }
+    [[nodiscard]] constexpr size_type find_first_not_of(const CharT* const str,
+                                                        const size_type pos = 0) const
+    {
+        return as_view().find_first_not_of(str, pos);
+    }
+    [[nodiscard]] constexpr size_type find_first_not_of(const CharT character,
+                                                        const size_type pos = 0) const
+    {
+        return as_view().find_first_not_of(character, pos);
+    }
+    template <class StringViewLike>
+        requires(std::is_convertible_v<const StringViewLike&, std::string_view> and
+                 not std::is_convertible_v<const StringViewLike&, const char*>)
+    [[nodiscard]] constexpr size_type find_first_not_of(const StringViewLike& str,
+                                                        const size_type pos = 0) const
+    {
+        return as_view().find_first_not_of(str, pos);
+    }
+
+    template <std::size_t MAXIMUM_LENGTH_2, customize::SequenceContainerChecking CheckingType2>
+    [[nodiscard]] constexpr size_type find_last_of(
+        const FixedString<MAXIMUM_LENGTH_2, CheckingType2>& str, const size_type pos = npos) const
+    {
+        return as_view().find_last_of(str, pos);
+    }
+    [[nodiscard]] constexpr size_type find_last_of(const CharT* char_ptr,
+                                                   size_type pos,
+                                                   size_type count) const
+    {
+        return as_view().find_last_of(char_ptr, pos, count);
+    }
+    [[nodiscard]] constexpr size_type find_last_of(const CharT* const str,
+                                                   const size_type pos = npos) const
+    {
+        return as_view().find_last_of(str, pos);
+    }
+    [[nodiscard]] constexpr size_type find_last_of(const CharT character,
+                                                   const size_type pos = npos) const
+    {
+        return as_view().find_last_of(character, pos);
+    }
+    template <class StringViewLike>
+        requires(std::is_convertible_v<const StringViewLike&, std::string_view> and
+                 not std::is_convertible_v<const StringViewLike&, const char*>)
+    [[nodiscard]] constexpr size_type find_last_of(const StringViewLike& str,
+                                                   const size_type pos = npos) const
+    {
+        return as_view().find_last_of(str, pos);
+    }
+
+    template <std::size_t MAXIMUM_LENGTH_2, customize::SequenceContainerChecking CheckingType2>
+    [[nodiscard]] constexpr size_type find_last_not_of(
+        const FixedString<MAXIMUM_LENGTH_2, CheckingType2>& str, const size_type pos = npos) const
+    {
+        return as_view().find_last_not_of(str, pos);
+    }
+    [[nodiscard]] constexpr size_type find_last_not_of(const CharT* char_ptr,
+                                                       size_type pos,
+                                                       size_type count) const
+    {
+        return as_view().find_last_not_of(char_ptr, pos, count);
+    }
+    [[nodiscard]] constexpr size_type find_last_not_of(const CharT* const str,
+                                                       const size_type pos = npos) const
+    {
+        return as_view().find_last_not_of(str, pos);
+    }
+    [[nodiscard]] constexpr size_type find_last_not_of(const CharT character,
+                                                       const size_type pos = npos) const
+    {
+        return as_view().find_last_not_of(character, pos);
+    }
+    template <class StringViewLike>
+        requires(std::is_convertible_v<const StringViewLike&, std::string_view> and
+                 not std::is_convertible_v<const StringViewLike&, const char*>)
+    [[nodiscard]] constexpr size_type find_last_not_of(const StringViewLike& str,
+                                                       const size_type pos = npos) const
+    {
+        return as_view().find_last_not_of(str, pos);
+    }
+
     [[nodiscard]] constexpr int compare(std::string_view view) const
     {
         return std::string_view(*this).compare(view);
