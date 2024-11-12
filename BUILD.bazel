@@ -263,6 +263,20 @@ cc_library(
 )
 
 cc_library(
+    name = "fixed_deque_raw_view",
+    hdrs = ["include/fixed_containers/fixed_deque_raw_view.hpp"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
+    deps = [
+        ":fixed_deque",
+        ":forward_iterator",
+        ":integer_range",
+    ],
+    copts = ["-std=c++20"],
+)
+
+
+cc_library(
     name = "fixed_doubly_linked_list",
     hdrs = ["include/fixed_containers/fixed_doubly_linked_list.hpp"],
     includes = includes_config(),
@@ -432,7 +446,6 @@ cc_library(
     ],
     copts = ["-std=c++20"],
 )
-
 cc_library(
     name = "fixed_queue",
     hdrs = ["include/fixed_containers/fixed_queue.hpp"],
@@ -1183,6 +1196,20 @@ cc_test(
     ],
     copts = ["-std=c++20"],
 )
+
+cc_test(
+    name = "fixed_deque_raw_view_test",
+    srcs = ["test/fixed_deque_raw_view_test.cpp"],
+    deps = [
+        ":fixed_deque",
+        ":fixed_deque_raw_view",
+        ":mock_testing_types",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
+    ],
+    copts = ["-std=c++20"],
+)
+
 
 cc_test(
     name = "fixed_doubly_linked_list_test",
