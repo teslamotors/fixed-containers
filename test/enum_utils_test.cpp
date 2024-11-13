@@ -4,14 +4,20 @@
 
 #include "fixed_containers/concepts.hpp"
 #include "fixed_containers/consteval_compare.hpp"
+#include "fixed_containers/enum_map.hpp"
+#include "fixed_containers/enum_set.hpp"
+#include "fixed_containers/fixed_map.hpp"
+#include "fixed_containers/pair.hpp"
 
 #include <gtest/gtest.h>
 #include <magic_enum.hpp>
 
 #include <cstddef>
 #include <functional>
+#include <iostream>
 #include <optional>
 #include <type_traits>
+#include <variant>
 
 namespace fixed_containers::rich_enums_detail
 {
@@ -172,6 +178,278 @@ TEST(RichEnum, EnumConstantParityWithBuiltinEnums)
         // const auto* rich_enum_val = &TestRichEnum1::C_ONE();
     }
 }
+
+namespace nested_enums
+{
+
+enum class ColorBaseBackingEnum
+{
+    RED,
+    BLUE,
+};
+
+class ColorBase : public SkeletalRichEnum<ColorBase, ColorBaseBackingEnum>
+{
+    friend SkeletalRichEnum::ValuesFriend;
+    using SkeletalRichEnum::SkeletalRichEnum;
+
+public:
+    FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(ColorBase, RED)
+    FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(ColorBase, BLUE)
+};
+
+enum class ColorVariantRed
+{
+    PINK,
+    ORANGE,
+};
+enum class ColorVariantBlue
+{
+    CYAN,
+    AZURE,
+};
+
+enum class ColorVariantAll
+{
+    INVALID,
+};
+
+inline constexpr std::size_t MAXIMUM_COLOR_VARIANT_COUNT =
+    std::max(magic_enum::enum_count<ColorVariantRed>(), magic_enum::enum_count<ColorVariantBlue>());
+
+template <auto COLOR = ColorVariantAll{}>
+class ColorVariant;
+
+// This rich enum specialization is not strictly needed, but it gets us:
+// - Optional semantics
+// - Ability to reference to variants with the original color via ColorVariant<U>
+// This is show-cased with RED, whereas BLUE uses a normal enum.
+template <>
+class ColorVariant<ColorBase::RED()>
+  : public SkeletalRichEnum<ColorVariant<ColorBase::RED()>, ColorVariantRed>
+{
+    friend SkeletalRichEnum::ValuesFriend;
+    using SkeletalRichEnum::SkeletalRichEnum;
+
+public:
+    FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(ColorVariant<ColorBase::RED()>, PINK)
+    FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(ColorVariant<ColorBase::RED()>, ORANGE)
+};
+template <>
+class ColorVariant<ColorBase::BLUE()>
+  : public SkeletalRichEnum<ColorVariant<ColorBase::BLUE()>, ColorVariantBlue>
+{
+    friend SkeletalRichEnum::ValuesFriend;
+    using SkeletalRichEnum::SkeletalRichEnum;
+
+public:
+    FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(ColorVariant<ColorBase::BLUE()>, CYAN)
+    FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(ColorVariant<ColorBase::BLUE()>, AZURE)
+};
+
+template <>
+class ColorVariant<ColorVariantAll{}>
+{
+public:
+    using ColorStdVariant =
+        std::variant<ColorVariant<ColorBase::RED()>, ColorVariant<ColorBase::BLUE()>>;
+
+private:
+    ColorStdVariant variant_{};
+
+public:
+    template <typename... Args>
+    constexpr ColorVariant(Args&&... args)
+      : variant_{std::forward<Args>(args)...}
+    {
+    }
+
+    constexpr bool operator==(const ColorVariant<>& other) const = default;
+    constexpr auto operator<=>(const ColorVariant<>& other) const = default;
+
+    [[nodiscard]] const ColorStdVariant& as_std_variant() const { return variant_; }
+    ColorStdVariant& as_std_variant() { return variant_; }
+
+    template <typename U>
+    constexpr std::optional<U> to()
+    {
+        if (const U* valid_variant = std::get_if<U>(&as_std_variant()); valid_variant != nullptr)
+        {
+            return std::optional<U>{*valid_variant};
+        }
+        return std::nullopt;
+    }
+};
+
+enum class ColorBackingEnum
+{
+    RED_PINK,
+    RED_ORANGE,
+    BLUE_CYAN,
+    BLUE_AZURE,
+};
+
+struct ColorData
+{
+    ColorBase plain_color{};
+    ColorVariant<> color_variant{};
+};
+
+struct ColorValues
+{
+    using BE = ColorBackingEnum;
+    static constexpr auto VALUES = EnumMap<BE, ColorData>::create_with_all_entries({
+        Pair<BE, ColorData>{BE::RED_PINK,
+                            {ColorBase::RED(), ColorVariant<ColorBase::RED()>::PINK()}},
+        Pair<BE, ColorData>{BE::RED_ORANGE,
+                            ColorData{ColorBase::RED(), ColorVariant<ColorBase::RED()>::ORANGE()}},
+        Pair<BE, ColorData>{BE::BLUE_CYAN,
+                            ColorData{ColorBase::BLUE(), ColorVariant<ColorBase::BLUE()>::CYAN()}},
+        Pair<BE, ColorData>{BE::BLUE_AZURE,
+                            ColorData{ColorBase::BLUE(), ColorVariant<ColorBase::BLUE()>::AZURE()}},
+    });
+
+    static constexpr EnumMap<ColorBase, FixedMap<ColorVariant<>, BE, MAXIMUM_COLOR_VARIANT_COUNT>>
+        REVERSE_MAP = []()
+    {
+        EnumMap<ColorBase, FixedMap<ColorVariant<>, BE, MAXIMUM_COLOR_VARIANT_COUNT>> output{};
+
+        for (const auto& [backing_enum, v] : VALUES)
+        {
+            output[v.plain_color][v.color_variant] = backing_enum;
+        }
+
+        return output;
+    }();
+};
+
+class Color : public SkeletalRichEnum<Color, ColorBackingEnum>
+{
+private:
+    friend SkeletalRichEnum::ValuesFriend;
+    using SkeletalRichEnum::SkeletalRichEnum;
+
+public:
+    FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(Color, RED_PINK)
+    FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(Color, RED_ORANGE)
+    FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(Color, BLUE_CYAN)
+    FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(Color, BLUE_AZURE)
+
+    static constexpr std::optional<Color> from(const ColorBase& plain_color,
+                                               const ColorVariant<>& color_variant)
+    {
+        auto it1 = ColorValues::REVERSE_MAP.find(plain_color);
+        if (it1 == ColorValues::REVERSE_MAP.end())
+        {
+            return std::nullopt;
+        }
+
+        const FixedMap<ColorVariant<>, BackingEnum, MAXIMUM_COLOR_VARIANT_COUNT>& variant_map =
+            it1->second;
+        auto it2 = variant_map.find(color_variant);
+        if (it2 == variant_map.end())
+        {
+            return std::nullopt;
+        }
+
+        return value_of(it2->second);
+    }
+
+public:
+    [[nodiscard]] constexpr ColorBase plain_color() const
+    {
+        return ColorValues::VALUES.at(backing_enum()).plain_color;
+    }
+    [[nodiscard]] constexpr ColorVariant<> color_variant() const
+    {
+        return ColorValues::VALUES.at(backing_enum()).color_variant;
+    }
+
+    template <typename... Args>
+    constexpr void variant_switch(Args&&... args) const
+    {
+        std::visit(Overloaded{std::forward<Args>(args)...}, color_variant().as_std_variant());
+    }
+};
+
+static constexpr EnumSet<Color> ALL_RED_VARIANTS = []()
+{
+    EnumSet<Color> out{};
+    for (const auto& color : Color::values())
+    {
+        if (color.plain_color() == ColorBase::RED())
+        {
+            out.insert(color);
+        }
+    }
+    return out;
+}();
+
+static_assert(ALL_RED_VARIANTS.size() == 2);
+static_assert(ALL_RED_VARIANTS.contains(Color::RED_ORANGE()));
+static_assert(ALL_RED_VARIANTS.contains(Color::RED_PINK()));
+
+namespace
+{
+void flat_switch(const Color& color)
+{
+    switch (color)
+    {
+    case Color::RED_PINK():
+        std::cout << "RED_PINK" << std::endl;
+        break;
+    case Color::RED_ORANGE():
+        std::cout << color.to_string() << std::endl;
+        break;
+    case Color::BLUE_CYAN():
+        std::cout << "BLUE_CYAN" << std::endl;
+        break;
+    case Color::BLUE_AZURE():
+        std::cout << "BLUE_AZURE" << std::endl;
+        break;
+    }
+}
+
+void automatic_hierarchical_switch(const Color& color)
+{
+    color.variant_switch(
+        [](const ColorVariant<ColorBase::RED()>& variant)
+        {
+            switch (variant)
+            {
+            case ColorVariant<ColorBase::RED()>::PINK():
+                std::cout << "RED:PINK2" << std::endl;
+                break;
+            case ColorVariant<ColorBase::RED()>::ORANGE():
+                std::cout << "RED:ORANGE2" << std::endl;
+                break;
+            }
+        },
+        [](const ColorVariant<ColorBase::BLUE()>& variant)
+        {
+            switch (variant)
+            {
+            case ColorVariant<ColorBase::BLUE()>::CYAN():
+                std::cout << "BLUE:CYAN2" << std::endl;
+                break;
+            case ColorVariant<ColorBase::BLUE()>::AZURE():
+                std::cout << "BLUE:AZURE2" << std::endl;
+                break;
+            }
+        });
+}
+
+}  // namespace
+
+TEST(NestedEnums, Example)
+{
+    const Color color =
+        Color::from(ColorBase::BLUE(), ColorVariant<ColorBase::BLUE()>::AZURE()).value();
+    flat_switch(color);
+    automatic_hierarchical_switch(color);
+}
+
+}  // namespace nested_enums
 
 TEST(BuiltinEnumAdapter, Ordinal)
 {
