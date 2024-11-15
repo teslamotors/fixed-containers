@@ -24,12 +24,17 @@
 
 namespace fixed_containers::fixed_deque_detail
 {
+
+inline constexpr std::size_t FIXED_DEQUE_STARTING_OFFSET =
+    (std::numeric_limits<std::size_t>::max)() / static_cast<std::size_t>(2);
+
 // FixedDeque<T> should carry the properties of T. For example, if T fulfils
 // std::is_trivially_copy_assignable<T>, then so should FixedDeque<T>.
 // This is done with concepts. However, at the time of writing there is a compiler bug
 // that is preventing usage of concepts for destructors: https://bugs.llvm.org/show_bug.cgi?id=46269
 // [WORKAROUND-1] due to destructors: manually do the split with template specialization.
 // FixedDequeBase is only used for avoiding too much duplication for the destructor split
+
 template <typename T, std::size_t MAXIMUM_SIZE, customize::SequenceContainerChecking CheckingType>
 class FixedDequeBase
 {
@@ -43,8 +48,6 @@ class FixedDequeBase
     static constexpr StartingIntegerAndDistance FULL_STARTING_INDEX_AND_SIZE{
         .start = 0, .distance = MAXIMUM_SIZE};
     static constexpr IntegerRange FULL_RANGE = FULL_STARTING_INDEX_AND_SIZE.to_range();
-    static constexpr std::size_t STARTING_OFFSET =
-        (std::numeric_limits<std::size_t>::max)() / static_cast<std::size_t>(2);
 
     static constexpr std::size_t increment_index_with_wraparound(std::size_t index,
                                                                  std::size_t n = 1)
@@ -112,7 +115,7 @@ private:
         {
             assert_or_abort(starting_index_and_distance_->to_range().contains(current_index_));
             const std::size_t index =
-                decrement_index_with_wraparound(current_index_, STARTING_OFFSET);
+                decrement_index_with_wraparound(current_index_, FIXED_DEQUE_STARTING_OFFSET);
             return optional_storage_detail::get(array_->at(index));
         }
 
@@ -174,8 +177,8 @@ public:
 
 public:
     constexpr FixedDequeBase() noexcept
-      : IMPLEMENTATION_DETAIL_DO_NOT_USE_starting_index_and_size_{.start = STARTING_OFFSET,
-                                                                  .distance = 0}
+      : IMPLEMENTATION_DETAIL_DO_NOT_USE_starting_index_and_size_{
+            .start = FIXED_DEQUE_STARTING_OFFSET, .distance = 0}
     // Don't initialize the array
     {
     }
@@ -445,7 +448,7 @@ public:
     constexpr void clear() noexcept
     {
         destroy_range(begin(), end());
-        set_start(STARTING_OFFSET);
+        set_start(FIXED_DEQUE_STARTING_OFFSET);
         set_size(0);
     }
 
@@ -691,7 +694,8 @@ private:
 
     [[nodiscard]] constexpr std::size_t front_index() const
     {
-        return decrement_index_with_wraparound(starting_index_and_size().start, STARTING_OFFSET);
+        return decrement_index_with_wraparound(starting_index_and_size().start,
+                                               FIXED_DEQUE_STARTING_OFFSET);
     }
     [[nodiscard]] constexpr std::size_t back_index() const
     {
