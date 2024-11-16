@@ -159,6 +159,8 @@ struct Overloaded : Ts...
 {
     using Ts::operator()...;
 };
+template <class... Ts>
+Overloaded(Ts...) -> Overloaded<Ts...>;
 
 // a "void-like" type, but without the hassle
 // e.g. EmptyValue& is a valid type
