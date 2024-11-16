@@ -21,7 +21,8 @@
 
 namespace fixed_containers::recursive_reflection
 {
-
+namespace
+{
 template <typename S>
 constexpr std::size_t path_count_of(S&& instance = {})
 {
@@ -46,7 +47,7 @@ constexpr auto extract_paths_of(S&& instance = {})
         [&]<typename F>(const PathNameChain&, F&& /*field*/) {});
     return paths;
 }
-
+}  // namespace
 }  // namespace fixed_containers::recursive_reflection
 
 namespace fixed_containers::recursive_reflection
