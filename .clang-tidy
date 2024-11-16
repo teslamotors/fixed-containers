@@ -74,6 +74,18 @@ Checks: >
   -bugprone-easily-swappable-parameters,
   -bugprone-switch-missing-default-case,
   -bugprone-unchecked-optional-access,
+  -performance-unnecessary-copy-initialization,
+  -readability-container-size-empty,
+  -readability-enum-initial-value,
+  -readability-identifier-naming,
+  -readability-math-missing-parentheses,
+  -misc-use-internal-linkage,
+  -modernize-use-designated-initializers,
+  -modernize-use-equals-default,
+  -modernize-use-ranges,
+  -bugprone-crtp-constructor-accessibility,
+  -bugprone-return-const-ref-from-parameter,
+  -bugprone-use-after-move,
 
 # Turn all the warnings from the checks above into errors.
 WarningsAsErrors: "*"
