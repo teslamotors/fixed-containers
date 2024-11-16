@@ -8,6 +8,7 @@
 #include <gtest/gtest.h>
 #include <magic_enum.hpp>
 
+#include <concepts>
 #include <cstddef>
 #include <functional>
 #include <optional>
