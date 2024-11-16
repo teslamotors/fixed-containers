@@ -79,7 +79,6 @@ Checks: >
   -readability-identifier-naming,
   -readability-math-missing-parentheses,
   -modernize-use-designated-initializers,
-  -modernize-use-equals-default,
   -modernize-use-ranges,
   -bugprone-crtp-constructor-accessibility,
   -bugprone-return-const-ref-from-parameter,

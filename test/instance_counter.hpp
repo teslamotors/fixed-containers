@@ -13,6 +13,7 @@ class InstanceCounterNonTrivialAssignment
 {
 public:
     static int counter;  // NOLINT(readability-identifier-naming)
+    static int ignored_field_to_make_constructors_and_assignment_ops_non_trivial_;
     using Self = InstanceCounterNonTrivialAssignment;
 
 private:
@@ -37,11 +38,13 @@ public:
     InstanceCounterNonTrivialAssignment& operator=(const Self& other)
     {
         value_ = other.value_;
+        ignored_field_to_make_constructors_and_assignment_ops_non_trivial_++;
         return *this;
     }
     InstanceCounterNonTrivialAssignment& operator=(Self&& other) noexcept
     {
         value_ = other.value_;
+        ignored_field_to_make_constructors_and_assignment_ops_non_trivial_++;
         return *this;
     }
     ~InstanceCounterNonTrivialAssignment() { counter--; }
@@ -53,6 +56,9 @@ public:
 };
 template <class UniqueDifferentiator>
 int InstanceCounterNonTrivialAssignment<UniqueDifferentiator>::counter = 0;
+template <class UniqueDifferentiator>
+int InstanceCounterNonTrivialAssignment<
+    UniqueDifferentiator>::ignored_field_to_make_constructors_and_assignment_ops_non_trivial_ = 0;
 
 template <class /*UniqueDifferentiator*/>
 class InstanceCounterTrivialAssignment
