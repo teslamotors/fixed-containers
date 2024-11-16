@@ -76,7 +76,6 @@ Checks: >
   -bugprone-unchecked-optional-access,
   -performance-unnecessary-copy-initialization,
   -readability-container-size-empty,
-  -readability-enum-initial-value,
   -readability-identifier-naming,
   -readability-math-missing-parentheses,
   -misc-use-internal-linkage,

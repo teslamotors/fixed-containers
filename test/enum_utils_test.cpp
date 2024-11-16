@@ -43,7 +43,7 @@ namespace fixed_containers::rich_enums
 enum class CustomValuesTestEnum1
 {
     ONE = 7,
-    TWO,
+    TWO = 8,
     FOUR = 12,
     THREE = 10,
 };
