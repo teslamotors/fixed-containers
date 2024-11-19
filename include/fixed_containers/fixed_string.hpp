@@ -651,7 +651,7 @@ private:
 template <std::size_t MAXIMUM_LENGTH, typename CheckingType>
 std::istream& operator>>(std::istream& stream, FixedString<MAXIMUM_LENGTH, CheckingType>& str)
 {
-    // static constexpr std::size_t MAXIMUM_LENGTH_WITH_NULL_TERMINATOR = MAXIMUM_LENGTH + 1;
+    static constexpr std::size_t MAXIMUM_LENGTH_WITH_NULL_TERMINATOR = MAXIMUM_LENGTH + 1;
     str.clear();
 
     // Skip leading whitespace (`std::istream >> std::string` behaves the same way)
@@ -683,7 +683,8 @@ std::istream& operator>>(std::istream& stream, FixedString<MAXIMUM_LENGTH, Check
     const bool has_exceeded_capacity = string_is_full && !stream_eof;
     if (preconditions::test(!has_exceeded_capacity))
     {
-        CheckingType::length_error(MAXIMUM_LENGTH + 1, std_transition::source_location::current());
+        CheckingType::length_error(MAXIMUM_LENGTH_WITH_NULL_TERMINATOR,
+                                   std_transition::source_location::current());
     }
 
     return stream;
