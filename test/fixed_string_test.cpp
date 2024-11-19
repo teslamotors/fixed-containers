@@ -1896,7 +1896,7 @@ TEST(FixedString, ClassTemplateArgumentDeduction)
     (void)var1;
 }
 
-TEST(FixedStringTest, OStreamOperator)
+TEST(FixedString, OStreamOperator)
 {
     const FixedString<5> str{"hello"};
 
