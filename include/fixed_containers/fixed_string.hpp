@@ -10,6 +10,7 @@
 #include <array>
 #include <cstddef>
 #include <cstdlib>
+#include <istream>
 #include <string_view>
 
 namespace fixed_containers
@@ -647,6 +648,46 @@ private:
     constexpr FixedVecStorage& vec() { return IMPLEMENTATION_DETAIL_DO_NOT_USE_data_; }
 };
 
+template <std::size_t MAXIMUM_LENGTH, typename CheckingType>
+std::istream& operator>>(std::istream& stream, FixedString<MAXIMUM_LENGTH, CheckingType>& str)
+{
+    // static constexpr std::size_t MAXIMUM_LENGTH_WITH_NULL_TERMINATOR = MAXIMUM_LENGTH + 1;
+    str.clear();
+
+    // Skip leading whitespace (`std::istream >> std::string` behaves the same way)
+    stream >> std::ws;
+
+    char character{};
+    stream.get(character);
+
+    // If EOF/error, put the character back and return
+    if (stream.eof() || stream.fail())
+    {
+        return stream.putback(character);
+    }
+
+    for (; !std::isspace(character) && !is_full(str) && !stream.eof() && !stream.fail();
+         stream.get(character))
+    {
+        str.push_back(character);
+    }
+
+    if (stream.fail())
+    {
+        stream.setstate(std::ios::failbit);
+        return stream;
+    }
+
+    const bool string_is_full = is_full(str);
+    const bool stream_eof = stream.eof();
+    const bool has_exceeded_capacity = string_is_full && !stream_eof;
+    if (preconditions::test(!has_exceeded_capacity))
+    {
+        CheckingType::length_error(MAXIMUM_LENGTH + 1, std_transition::source_location::current());
+    }
+
+    return stream;
+}
 template <std::size_t MAXIMUM_LENGTH, typename CheckingType>
 std::ostream& operator<<(std::ostream& stream, const FixedString<MAXIMUM_LENGTH, CheckingType>& str)
 {

@@ -1896,6 +1896,83 @@ TEST(FixedString, ClassTemplateArgumentDeduction)
     (void)var1;
 }
 
+TEST(FixedString, IStreamOperator)
+{
+    // With whitespaces
+    {
+        static constexpr std::string_view ORIGINAL_CONTENT = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        static constexpr std::string_view INPUT_STRING = " 23 567 ";
+        static_assert(ORIGINAL_CONTENT.size() > INPUT_STRING.size());
+
+        auto run_test = []<typename StringType>(StringType&&)
+        {
+            StringType str{ORIGINAL_CONTENT};
+            const std::string input_as_std_string{INPUT_STRING};
+            std::istringstream input(input_as_std_string);
+            input >> str;
+
+            EXPECT_EQ(2, str.size());
+            EXPECT_EQ("23", str);
+            EXPECT_EQ(*std::next(str.data(), 2), '\0');
+        };
+
+        run_test(std::string{});
+        run_test(FixedString<32>{});
+    }
+
+    // With newline
+    {
+        static constexpr std::string_view ORIGINAL_CONTENT = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        static constexpr std::string_view INPUT_STRING = "abcdefg\n123";
+
+        auto run_test = []<typename StringType>(StringType&&)
+        {
+            StringType str{ORIGINAL_CONTENT};
+            const std::string input_as_std_string{INPUT_STRING};
+            std::istringstream input(input_as_std_string);
+            input >> str;
+
+            EXPECT_EQ(7, str.size());
+            EXPECT_EQ("abcdefg", str);
+            EXPECT_EQ(*std::next(str.data(), 7), '\0');
+        };
+
+        run_test(std::string{});
+        run_test(FixedString<32>{});
+    }
+
+    // Exact fit
+    {
+        static constexpr std::string_view INPUT_STRING = "12345678";
+
+        auto run_test = []<typename StringType>(StringType&&)
+        {
+            StringType str{};
+            const std::string input_as_std_string{INPUT_STRING};
+            std::istringstream input(input_as_std_string);
+            input >> str;
+
+            EXPECT_EQ(8, str.size());
+            EXPECT_EQ("12345678", str);
+            EXPECT_EQ(*std::next(str.data(), 8), '\0');
+        };
+
+        run_test(std::string{});
+        run_test(FixedString<32>{});
+    }
+}
+
+TEST(FixedString, IStreamOperatorExceedsMaxSize)
+{
+    static constexpr std::string_view INPUT_STRING = "1234567890";
+
+    FixedString<8> str{};
+    const std::string input_as_std_string{INPUT_STRING};
+    std::istringstream input(input_as_std_string);
+
+    EXPECT_DEATH((input >> str), "");
+}
+
 TEST(FixedString, OStreamOperator)
 {
     const FixedString<5> str{"hello"};
