@@ -77,7 +77,6 @@ Checks: >
   -performance-unnecessary-copy-initialization,
   -readability-container-size-empty,
   -readability-identifier-naming,
-  -readability-math-missing-parentheses,
   -modernize-use-ranges,
   -bugprone-crtp-constructor-accessibility,
   -bugprone-return-const-ref-from-parameter,

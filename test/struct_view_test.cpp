@@ -510,11 +510,11 @@ TEST(StructView, GetPointerDistanceRecursiveWithArray)
     EXPECT_EQ(8 + 8,
               struct_view_detail::get_pointer_distance(array_test_super_struct_1,
                                                        array_test_super_struct_1.arr));
-    EXPECT_EQ(8 + 8 + TEST_ARRAY_SIZE * sizeof(ArrayTestSuperStructLayer2) + 8,
+    EXPECT_EQ(8 + 8 + (TEST_ARRAY_SIZE * sizeof(ArrayTestSuperStructLayer2)) + 8,
               struct_view_detail::get_pointer_distance(array_test_super_struct_1,
                                                        array_test_super_struct_1.vec));
-    EXPECT_EQ(8 + 8 + TEST_ARRAY_SIZE * sizeof(ArrayTestSuperStructLayer2) + 8 +
-                  (8 + TEST_ARRAY_SIZE * sizeof(ArrayTestSuperStructLayer2)),
+    EXPECT_EQ(8 + 8 + (TEST_ARRAY_SIZE * sizeof(ArrayTestSuperStructLayer2)) + 8 +
+                  (8 + (TEST_ARRAY_SIZE * sizeof(ArrayTestSuperStructLayer2))),
               struct_view_detail::get_pointer_distance(array_test_super_struct_1,
                                                        array_test_super_struct_1.matrix));
 }
