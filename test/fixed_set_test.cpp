@@ -776,11 +776,8 @@ TEST(FixedSet, SetIntersection)
         const FixedSet<int, 10> var2{1};
 
         FixedSet<int, 10> v_intersection;
-        std::set_intersection(var1.begin(),
-                              var1.end(),
-                              var2.begin(),
-                              var2.end(),
-                              std::inserter(v_intersection, v_intersection.begin()));
+        std::ranges::set_intersection(
+            var1, var2, std::inserter(v_intersection, v_intersection.begin()));
         return v_intersection;
     }();
 
