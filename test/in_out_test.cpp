@@ -52,7 +52,7 @@ TEST(InOut, Usage2)
     {
         constexpr SomeStruct RESULT = []()
         {
-            SomeStruct instance{10, 20};
+            SomeStruct instance{.a = 10, .b = 20};
             increment_struct(in_out{instance});
             return instance;
         }();
@@ -62,7 +62,7 @@ TEST(InOut, Usage2)
     }
 
     {
-        SomeStruct instance{10, 20};
+        SomeStruct instance{.a = 10, .b = 20};
         increment_struct(in_out{instance});
         EXPECT_EQ(11, instance.a);
         EXPECT_EQ(22, instance.b);

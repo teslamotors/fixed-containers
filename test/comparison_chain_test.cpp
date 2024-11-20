@@ -68,8 +68,8 @@ TEST(ComparisonChain, SimpleTest)
 }
 TEST(ComparisonChain, ComparatorUsage)
 {
-    constexpr MyCompoundStruct STRUCT1{1, 2, 3, 4};
-    constexpr MyCompoundStruct STRUCT2{1, 2, 5, 4};
+    constexpr MyCompoundStruct STRUCT1{.a = 1, .b = 2, .c = 3, .d = 4};
+    constexpr MyCompoundStruct STRUCT2{.a = 1, .b = 2, .c = 5, .d = 4};
 
     static_assert(STRUCT1 < STRUCT2);
 }

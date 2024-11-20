@@ -43,7 +43,7 @@ TEST(IntegerRange, CompileTimeIntegerRange)
 
 TEST(StartingIntegerAndDistance, Simple)
 {
-    static constexpr StartingIntegerAndDistance VAL{3, 7};
+    static constexpr StartingIntegerAndDistance VAL{.start = 3, .distance = 7};
     static_assert(3 == VAL.start);
     static_assert(7 == VAL.distance);
     static_assert(3 == VAL.to_range().start_inclusive());

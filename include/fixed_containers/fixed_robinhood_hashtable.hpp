@@ -89,12 +89,14 @@ struct Bucket
 
     [[nodiscard]] constexpr Bucket plus_dist() const
     {
-        return {increment_dist(dist_and_fingerprint_), value_index_};
+        return {.dist_and_fingerprint_ = increment_dist(dist_and_fingerprint_),
+                .value_index_ = value_index_};
     }
 
     [[nodiscard]] constexpr Bucket minus_dist() const
     {
-        return {decrement_dist(dist_and_fingerprint_), value_index_};
+        return {.dist_and_fingerprint_ = decrement_dist(dist_and_fingerprint_),
+                .value_index_ = value_index_};
     }
 };
 
