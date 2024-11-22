@@ -76,7 +76,6 @@ Checks: >
   -bugprone-unchecked-optional-access,
   -performance-unnecessary-copy-initialization,
   -readability-container-size-empty,
-  -readability-identifier-naming,
   -bugprone-crtp-constructor-accessibility,
   -bugprone-return-const-ref-from-parameter,
   -bugprone-use-after-move,
