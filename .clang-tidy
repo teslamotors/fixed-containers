@@ -78,7 +78,6 @@ Checks: >
   -readability-container-size-empty,
   -bugprone-crtp-constructor-accessibility,
   -bugprone-return-const-ref-from-parameter,
-  -bugprone-use-after-move,
 
 # Turn all the warnings from the checks above into errors.
 WarningsAsErrors: "*"

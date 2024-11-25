@@ -28,7 +28,7 @@ template <typename Tuple, typename Func>
                        std::add_lvalue_reference_t<std::tuple_element_t<0, std::decay_t<Tuple>>>>)
 constexpr void for_each_entry(Tuple&& tuple, Func&& func)
 {
-    std::apply([&func](auto&&... tuple_entries) { (std::forward<Func>(func)(tuple_entries), ...); },
+    std::apply([&func](auto&&... tuple_entries) { (func(tuple_entries), ...); },
                std::forward<Tuple>(tuple));
 }
 
@@ -43,7 +43,7 @@ constexpr void for_each_entry(Tuple&& tuple, Func&& func)
     for_each_entry(std::forward<Tuple>(tuple),
                    [&func, index = static_cast<std::size_t>(0)](auto& entry) mutable
                    {
-                       std::forward<Func>(func)(index, entry);
+                       func(index, entry);
                        ++index;
                    });
 }

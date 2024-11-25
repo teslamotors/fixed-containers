@@ -264,14 +264,12 @@ struct ReflectionHandler<S>
                                        PostFunction&& post_fn,
                                        in_out<PathNameChain> chain)
     {
-        std::forward<PreFunction>(pre_fn)(std::as_const(*chain), std::forward<T>(instance));
+        pre_fn(std::as_const(*chain), instance);
         chain->push_back("a_");
-        recursive_reflection::for_each_path_dfs_helper(std::forward<Type>(instance).get_a(),
-                                                       std::forward<PreFunction>(pre_fn),
-                                                       std::forward<PostFunction>(post_fn),
-                                                       fixed_containers::in_out{*chain});
+        recursive_reflection::for_each_path_dfs_helper(
+            instance.get_a(), pre_fn, post_fn, fixed_containers::in_out{*chain});
         chain->pop_back();
-        std::forward<PostFunction>(post_fn)(std::as_const(*chain), std::forward<T>(instance));
+        post_fn(std::as_const(*chain), instance);
     }
 };
 

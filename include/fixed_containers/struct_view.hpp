@@ -657,7 +657,7 @@ void for_each_field(const StructView<MAXIMUM_SIZE>& struct_view,
 {
     for (const auto& [path, path_properties] : struct_view.get_path_map_ref())
     {
-        for_each_index_of_path(base_pointer, path, path_properties, std::forward<Function>(func));
+        for_each_index_of_path(base_pointer, path, path_properties, func);
     }
 }
 
