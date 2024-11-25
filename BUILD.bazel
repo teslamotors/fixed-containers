@@ -217,6 +217,19 @@ cc_library(
 )
 
 cc_library(
+    name = "fixed_bitset",
+    hdrs = ["include/fixed_containers/fixed_bitset.hpp"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
+    deps = [
+        ":concepts",
+        ":sequence_container_checking",
+        ":source_location",
+    ],
+    copts = ["-std=c++20"],
+)
+
+cc_library(
     name = "fixed_circular_deque",
     hdrs = ["include/fixed_containers/fixed_circular_deque.hpp"],
     includes = includes_config(),
@@ -1190,6 +1203,17 @@ cc_test(
         ":integer_range",
         ":iterator_utils",
         ":filtered_integer_range_iterator",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
+    ],
+    copts = ["-std=c++20"],
+)
+
+cc_test(
+    name = "fixed_bitset_test",
+    srcs = ["test/fixed_bitset_test.cpp"],
+    deps = [
+        ":fixed_bitset",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],

@@ -72,6 +72,7 @@ if(${USING_CLANG})
 
         -Wno-padded
         -Wno-poison-system-directories
+        -Wno-reserved-identifier
     )
 elseif(MSVC)
     SET(DIAGNOSTIC_FLAGS ${DIAGNOSTIC_FLAGS}
@@ -153,6 +154,8 @@ if(BUILD_TESTS)
     add_test_dependencies(enum_utils_test)
     add_executable(filtered_integer_range_iterator_test test/filtered_integer_range_iterator_test.cpp)
     add_test_dependencies(filtered_integer_range_iterator_test)
+    add_executable(fixed_bitset_test test/fixed_bitset_test.cpp)
+    add_test_dependencies(fixed_bitset_test)
     add_executable(fixed_circular_deque_test test/fixed_circular_deque_test.cpp)
     add_test_dependencies(fixed_circular_deque_test)
     add_executable(fixed_circular_queue_test test/fixed_circular_queue_test.cpp)
