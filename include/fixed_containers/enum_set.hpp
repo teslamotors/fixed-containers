@@ -358,6 +358,11 @@ public:
         return contains_at(EnumAdapterType::ordinal(key));
     }
 
+    [[nodiscard]] constexpr bool contains(const EnumSet<K>& other) const SNAP_NOEXCEPT
+    {
+        return ((other.array_set() & array_set()) == other.array_set());
+    }
+    
     constexpr bool operator==(const EnumSet<K>& other) const
     {
         return array_set() == other.array_set();
@@ -388,7 +393,10 @@ private:
     {
         IMPLEMENTATION_DETAIL_DO_NOT_USE_size_ -= n;
     }
-
+    constexpr void set_size(const std::size_t n)
+    {
+        IMPLEMENTATION_DETAIL_DO_NOT_USE_size_ = n;
+    }
     [[nodiscard]] constexpr const_iterator create_const_iterator(
         const std::size_t start_index) const noexcept
     {
@@ -410,6 +418,32 @@ private:
         assert_or_abort(contains_at(index));
         array_set_unchecked_at(index) = false;
         decrement_size();
+    }
+
+    constexpr EnumSet &operator+=(const K e) noexcept
+    {
+        insert(e);
+        return *this;
+    }
+
+    constexpr EnumSet &operator-=(const K e) noexcept
+    {
+        erase(e);
+        return *this;
+    }
+
+    constexpr EnumSet &operator+=(const EnumSet<K> &rhs) noexcept
+    {
+        array_set() |= rhs.array_set();
+        set_size(array_set().count());
+        return *this;
+    }
+
+    constexpr EnumSet &operator-=(const EnumSet<K> &rhs) noexcept
+    {
+        array_set() &= ~rhs.array_set();
+        set_size(array_set().count());
+        return *this;
     }
 };
 

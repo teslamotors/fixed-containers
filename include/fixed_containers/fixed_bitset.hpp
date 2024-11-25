@@ -48,7 +48,7 @@
 namespace fixed_containers {
 
 template <size_t _Bits, customize::SequenceContainerChecking CheckingType =
-              customize::SequenceContainerAbortChecking<bool, _Bits>>
+    customize::SequenceContainerAbortChecking<bool, _Bits>>
 class FixedBitSet {  // store fixed-length sequence of Boolean elements
  public:
     using size_type = std::size_t;
@@ -498,7 +498,7 @@ class FixedBitSet {  // store fixed-length sequence of Boolean elements
     }
 
 public:
-    std::array<_Ty,_Words + 1> _Data; // Make _Data public to satisfy IsStructural requirement
+    _Ty _Data[_Words + 1];
 };
 
 template <size_t _Bits>
