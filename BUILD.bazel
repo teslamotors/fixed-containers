@@ -1238,20 +1238,6 @@ cc_test(
 )
 
 cc_test(
-    name = "fixed_map_perf_test",
-    srcs = ["test/fixed_map_perf_test.cpp"],
-    deps = [
-        ":consteval_compare",
-        ":fixed_index_based_storage",
-        ":fixed_map",
-        ":fixed_red_black_tree",
-        "@com_google_googletest//:gtest_main",
-        "@com_google_benchmark//:benchmark_main",
-    ],
-    copts = ["-std=c++20"],
-)
-
-cc_test(
     name = "fixed_list_test",
     srcs = ["test/fixed_list_test.cpp"],
     deps = [
@@ -1732,6 +1718,57 @@ cc_test(
     copts = ["-std=c++20"],
 )
 
+cc_library(
+    name = "benchmark_map_utils",
+    hdrs = ["test/benchmarks/map_utils.hpp"],
+)
+
+cc_test(
+    name = "map_copy_bench",
+    srcs = ["test/benchmarks/map_copy.cpp"],
+    deps = [
+        ":consteval_compare",
+        ":fixed_map",
+        ":fixed_unordered_map",
+        ":mock_testing_types",
+        ":benchmark_map_utils",
+        "@com_google_benchmark//:benchmark_main",
+    ],
+    copts = ["-std=c++20"],
+    tags = ["benchmark"],
+)
+
+cc_test(
+    name = "map_lookup_bench",
+    srcs = ["test/benchmarks/map_lookup.cpp"],
+    deps = [
+        ":consteval_compare",
+        ":fixed_map",
+        ":fixed_unordered_map",
+        ":mock_testing_types",
+        ":benchmark_map_utils",
+        "@com_google_benchmark//:benchmark_main",
+    ],
+    copts = ["-std=c++20"],
+    tags = ["benchmark"],
+)
+
+cc_test(
+    name = "map_clear_bench",
+    srcs = ["test/benchmarks/map_clear.cpp"],
+    deps = [
+        ":consteval_compare",
+        ":fixed_map",
+        ":fixed_unordered_map",
+        ":mock_testing_types",
+        ":benchmark_map_utils",
+        "@com_google_benchmark//:benchmark_main",
+    ],
+    copts = ["-std=c++20"],
+    tags = ["benchmark"],
+)
+
 test_suite(
     name = "all_tests",
+    tags = ["-benchmark"],
 )
