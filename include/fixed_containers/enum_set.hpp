@@ -358,11 +358,11 @@ public:
         return contains_at(EnumAdapterType::ordinal(key));
     }
 
-    [[nodiscard]] constexpr bool contains(const EnumSet<K>& other) const SNAP_NOEXCEPT
+    [[nodiscard]] constexpr bool contains(const EnumSet<K>& other) const noexcept
     {
         return ((other.array_set() & array_set()) == other.array_set());
     }
-    
+
     constexpr bool operator==(const EnumSet<K>& other) const
     {
         return array_set() == other.array_set();
