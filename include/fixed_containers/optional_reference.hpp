@@ -7,6 +7,7 @@
 #include <compare>
 #include <memory>
 #include <optional>
+#include <type_traits>
 
 namespace fixed_containers
 {
@@ -86,11 +87,13 @@ public:
         return *val();
     }
 
-    [[nodiscard]] constexpr reference value_or(reference default_value) const&
+    template <class U>
+    [[nodiscard]] constexpr reference value_or(U&& default_value) const&
+        requires(std::is_lvalue_reference_v<U>)
     {
         if (!has_value())
         {
-            return default_value;
+            return std::forward<U>(default_value);
         }
 
         return *val();
