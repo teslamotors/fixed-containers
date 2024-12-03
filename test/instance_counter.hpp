@@ -51,6 +51,10 @@ public:
 
     [[nodiscard]] int get() const { return value_; }
 
+    // To counter diagnostics like unused, variable can be const (`misc-const-correctness`),
+    // `performance-unnecessary-copy-initialization`
+    void mock_mutator() {}
+
     bool operator==(const Self& other) const { return value_ == other.value_; }
     std::strong_ordering operator<=>(const Self& other) const { return value_ <=> other.value_; }
 };
@@ -91,6 +95,10 @@ public:
     ~InstanceCounterTrivialAssignment() { counter--; }
 
     [[nodiscard]] int get() const { return value_; }
+
+    // To counter diagnostics like unused, variable can be const (`misc-const-correctness`),
+    // `performance-unnecessary-copy-initialization`
+    void mock_mutator() {}
 
     bool operator==(const Self& other) const { return value_ == other.value_; }
     std::strong_ordering operator<=>(const Self& other) const { return value_ <=> other.value_; }
