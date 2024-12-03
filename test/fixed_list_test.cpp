@@ -2200,8 +2200,8 @@ TYPED_TEST_P(FixedListInstanceCheckFixture, FixedListInstanceCheck)
     ASSERT_EQ(2, InstanceCounterType::counter);
 
     {  // IMPORTANT SCOPE, don't remove.
-        const ListOfInstanceCounterType var2{var1};
-        (void)var2;
+        ListOfInstanceCounterType var2{var1};
+        var2.back().mock_mutator();
         ASSERT_EQ(4, InstanceCounterType::counter);
     }
     ASSERT_EQ(2, InstanceCounterType::counter);

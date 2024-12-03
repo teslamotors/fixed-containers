@@ -74,7 +74,6 @@ Checks: >
   -bugprone-easily-swappable-parameters,
   -bugprone-switch-missing-default-case,
   -bugprone-unchecked-optional-access,
-  -performance-unnecessary-copy-initialization,
   -readability-container-size-empty,
   -bugprone-crtp-constructor-accessibility,
   -bugprone-return-const-ref-from-parameter,
