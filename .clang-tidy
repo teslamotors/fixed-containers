@@ -76,7 +76,6 @@ Checks: >
   -bugprone-unchecked-optional-access,
   -readability-container-size-empty,
   -bugprone-crtp-constructor-accessibility,
-  -bugprone-return-const-ref-from-parameter,
 
 # Turn all the warnings from the checks above into errors.
 WarningsAsErrors: "*"
