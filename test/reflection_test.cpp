@@ -605,4 +605,29 @@ TEST(Reflection, MockFailingAddressOfOperator)
 
 }  // namespace fixed_containers
 
+struct MyCustomStruct
+{
+    int a{};
+    int b{};
+    int c{};
+    double d{};  // Customization will ignore this field to show the customization is applied
+};
+
+template <>
+constexpr auto fixed_containers::tuples::customize::as_tuple_view<3, MyCustomStruct>(
+    MyCustomStruct& data)
+{
+    return std::tie(data.a, data.b, data.c);
+}
+
+template <>
+inline constexpr auto fixed_containers::reflection::customize::FIELD_NAMES<MyCustomStruct> =
+    make_fixed_vector<std::string_view>({
+        "a",
+        "b",
+        "c",
+    });
+
+static_assert(fixed_containers::reflection::field_names_of<MyCustomStruct>().size() == 3);
+
 #endif
