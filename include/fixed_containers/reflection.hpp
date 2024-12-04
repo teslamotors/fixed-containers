@@ -211,10 +211,15 @@ constexpr auto field_names_of_impl(const T& instance)
     return output;
 }
 
-template <typename T>
-inline constexpr auto FIELD_NAMES =
-    field_names_of_impl<field_count_of_impl(std::decay_t<T>{})>(std::decay_t<T>{});
 }  // namespace fixed_containers::reflection_detail
+
+namespace fixed_containers::reflection::customize
+{
+template <typename T>
+inline constexpr auto FIELD_NAMES = fixed_containers::reflection_detail::field_names_of_impl<
+    fixed_containers::reflection_detail::field_count_of_impl(std::decay_t<T>{})>(std::decay_t<T>{});
+
+}  // namespace fixed_containers::reflection::customize
 
 namespace fixed_containers::reflection
 {
@@ -225,14 +230,14 @@ template <typename T>
     requires(Reflectable<std::decay_t<T>>)
 constexpr std::size_t field_count_of()
 {
-    return reflection_detail::FIELD_NAMES<std::decay_t<T>>.size();
+    return fixed_containers::reflection::customize::FIELD_NAMES<std::decay_t<T>>.size();
 }
 
 template <typename T>
     requires(Reflectable<std::decay_t<T>>)
 constexpr const auto& field_names_of()
 {
-    return reflection_detail::FIELD_NAMES<std::decay_t<T>>;
+    return fixed_containers::reflection::customize::FIELD_NAMES<std::decay_t<T>>;
 }
 
 template <typename T, typename Func>

@@ -7,12 +7,21 @@
 #include <tuple>
 #include <utility>
 
-namespace fixed_containers::tuples
+namespace fixed_containers::tuples::customize
 {
 template <std::size_t FIELD_COUNT, typename T>
 constexpr auto as_tuple_view(T& data)
 {
     return as_tuple_view_detail::as_tuple_view<FIELD_COUNT, T>(data);
+}
+}  // namespace fixed_containers::tuples::customize
+
+namespace fixed_containers::tuples
+{
+template <std::size_t FIELD_COUNT, typename T>
+constexpr auto as_tuple_view(T& data)
+{
+    return fixed_containers::tuples::customize::as_tuple_view<FIELD_COUNT, T>(data);
 }
 
 template <typename Tuple, typename Func>
