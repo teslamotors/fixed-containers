@@ -1831,8 +1831,8 @@ TYPED_TEST_P(FixedUnorderedMapInstanceCheckFixture, FixedUnorderedMapInstanceChe
     ASSERT_EQ(4, InstanceCounterType::counter);
 
     {  // IMPORTANT SCOPE, don't remove.
-        const MapOfInstanceCounterType var2{var1};
-        (void)var2;
+        MapOfInstanceCounterType var2{var1};
+        var2.begin()->second.mock_mutator();
         ASSERT_EQ(8, InstanceCounterType::counter);
     }
     ASSERT_EQ(4, InstanceCounterType::counter);

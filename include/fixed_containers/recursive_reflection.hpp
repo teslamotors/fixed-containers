@@ -136,8 +136,8 @@ struct ReflectionHandler<S>
                                        PostFunction&& post_fn,
                                        in_out<PathNameChain> chain)
     {
-        std::forward<PreFunction>(pre_fn)(std::as_const(*chain), std::forward<T>(instance));
-        std::forward<PostFunction>(post_fn)(std::as_const(*chain), std::forward<T>(instance));
+        std::forward<PreFunction>(pre_fn)(std::as_const(*chain), instance);
+        std::forward<PostFunction>(post_fn)(std::as_const(*chain), instance);
     }
 };
 
@@ -155,7 +155,7 @@ struct ReflectionHandler<S>
                                        PostFunction&& post_fn,
                                        in_out<PathNameChain> chain)
     {
-        std::forward<PreFunction>(pre_fn)(std::as_const(*chain), std::forward<T>(instance));
+        pre_fn(std::as_const(*chain), instance);
         chain->push_back(OPTIONAL_PATH_NAME);
         bool constructed{false};
         if (!instance.has_value())
@@ -163,16 +163,14 @@ struct ReflectionHandler<S>
             instance.emplace();
             constructed = true;
         }
-        recursive_reflection::for_each_path_dfs_helper(instance.value(),
-                                                       std::forward<PreFunction>(pre_fn),
-                                                       std::forward<PostFunction>(post_fn),
-                                                       in_out{*chain});
+        recursive_reflection::for_each_path_dfs_helper(
+            instance.value(), pre_fn, post_fn, in_out{*chain});
         if (constructed)
         {
             instance.reset();
         }
         chain->pop_back();
-        std::forward<PostFunction>(post_fn)(std::as_const(*chain), std::forward<T>(instance));
+        post_fn(std::as_const(*chain), instance);
     }
 };
 
@@ -190,7 +188,7 @@ struct ReflectionHandler<S>
                                        PostFunction&& post_fn,
                                        in_out<PathNameChain> chain)
     {
-        std::forward<PreFunction>(pre_fn)(std::as_const(*chain), std::forward<T>(instance));
+        pre_fn(std::as_const(*chain), instance);
         chain->push_back(ITERABLE_PATH_NAME);
         bool constructed{false};
         if (std::ranges::empty(instance))
@@ -198,16 +196,14 @@ struct ReflectionHandler<S>
             std::ranges::construct_at(std::ranges::data(instance));
             constructed = true;
         }
-        recursive_reflection::for_each_path_dfs_helper(*std::ranges::data(instance),
-                                                       std::forward<PreFunction>(pre_fn),
-                                                       std::forward<PostFunction>(post_fn),
-                                                       in_out{*chain});
+        recursive_reflection::for_each_path_dfs_helper(
+            *std::ranges::data(instance), pre_fn, post_fn, in_out{*chain});
         if (constructed)
         {
             std::ranges::destroy_at(std::ranges::data(instance));
         }
         chain->pop_back();
-        std::forward<PostFunction>(post_fn)(std::as_const(*chain), std::forward<T>(instance));
+        post_fn(std::as_const(*chain), instance);
     }
 };
 
@@ -225,19 +221,17 @@ struct ReflectionHandler<S>
                                        PostFunction&& post_fn,
                                        in_out<PathNameChain> chain)
     {
-        std::forward<PreFunction>(pre_fn)(std::as_const(*chain), std::forward<T>(instance));
+        pre_fn(std::as_const(*chain), instance);
         reflection::for_each_field(
-            std::forward<T>(instance),
+            instance,
             [&pre_fn, &post_fn, &chain]<typename F>(const std::string_view& name, F& field)
             {
                 chain->push_back(name);
-                recursive_reflection::for_each_path_dfs_helper(field,
-                                                               std::forward<PreFunction>(pre_fn),
-                                                               std::forward<PostFunction>(post_fn),
-                                                               fixed_containers::in_out{*chain});
+                recursive_reflection::for_each_path_dfs_helper(
+                    field, pre_fn, post_fn, fixed_containers::in_out{*chain});
                 chain->pop_back();
             });
-        std::forward<PostFunction>(post_fn)(std::as_const(*chain), std::forward<T>(instance));
+        post_fn(std::as_const(*chain), instance);
     }
 };
 

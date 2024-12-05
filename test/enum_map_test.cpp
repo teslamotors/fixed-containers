@@ -1846,8 +1846,8 @@ TYPED_TEST_P(EnumMapInstanceCheckFixture, EnumMapInstanceCheck)
     ASSERT_EQ(2, InstanceCounterType::counter);
 
     {  // IMPORTANT SCOPE, don't remove.
-        const MapOfInstanceCounterType var2{var1};
-        (void)var2;
+        MapOfInstanceCounterType var2{var1};
+        var2.begin()->second.mock_mutator();
         ASSERT_EQ(4, InstanceCounterType::counter);
     }
     ASSERT_EQ(2, InstanceCounterType::counter);

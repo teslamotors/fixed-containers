@@ -88,13 +88,13 @@ TEST(FixedDoublyLinkedListRawView, ViewOfStructList)
     FixedDoublyLinkedList<StructThatContainsPadding, 5> list;
 
     const std::size_t first =
-        list.emplace_back_and_return_index(StructThatContainsPadding{'a', 123});
-    list.emplace_back_and_return_index(StructThatContainsPadding{'b', 234});
-    list.emplace_back_and_return_index(StructThatContainsPadding{'c', 345});
-    list.emplace_front_and_return_index(StructThatContainsPadding{'Z', 321});
+        list.emplace_back_and_return_index(StructThatContainsPadding{.a = 'a', .b = 123});
+    list.emplace_back_and_return_index(StructThatContainsPadding{.a = 'b', .b = 234});
+    list.emplace_back_and_return_index(StructThatContainsPadding{.a = 'c', .b = 345});
+    list.emplace_front_and_return_index(StructThatContainsPadding{.a = 'Z', .b = 321});
     list.delete_at_and_return_next_index(first);
-    list.emplace_front_and_return_index(StructThatContainsPadding{'Y', 432});
-    list.emplace_back_and_return_index(StructThatContainsPadding{'d', 456});
+    list.emplace_front_and_return_index(StructThatContainsPadding{.a = 'Y', .b = 432});
+    list.emplace_back_and_return_index(StructThatContainsPadding{.a = 'd', .b = 456});
     // list is Y, Z, b, c, d
 
     auto view = FixedDoublyLinkedListRawView(reinterpret_cast<void*>(&list),
@@ -112,19 +112,19 @@ TEST(FixedDoublyLinkedListRawView, ViewOfStructList)
 
     auto iter = view.begin();
     EXPECT_EQ(get_from_ptr<StructThatContainsPadding>(*iter),
-              (StructThatContainsPadding{'Y', 432}));
+              (StructThatContainsPadding{.a = 'Y', .b = 432}));
     iter = std::next(iter);
     EXPECT_EQ(get_from_ptr<StructThatContainsPadding>(*iter),
-              (StructThatContainsPadding{'Z', 321}));
+              (StructThatContainsPadding{.a = 'Z', .b = 321}));
     iter = std::next(iter);
     EXPECT_EQ(get_from_ptr<StructThatContainsPadding>(*iter),
-              (StructThatContainsPadding{'b', 234}));
+              (StructThatContainsPadding{.a = 'b', .b = 234}));
     iter = std::next(iter);
     EXPECT_EQ(get_from_ptr<StructThatContainsPadding>(*iter),
-              (StructThatContainsPadding{'c', 345}));
+              (StructThatContainsPadding{.a = 'c', .b = 345}));
     iter = std::next(iter);
     EXPECT_EQ(get_from_ptr<StructThatContainsPadding>(*iter),
-              (StructThatContainsPadding{'d', 456}));
+              (StructThatContainsPadding{.a = 'd', .b = 456}));
     iter = std::next(iter);
     EXPECT_EQ(iter, view.end());
 }

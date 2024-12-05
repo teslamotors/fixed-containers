@@ -89,12 +89,14 @@ struct Bucket
 
     [[nodiscard]] constexpr Bucket plus_dist() const
     {
-        return {increment_dist(dist_and_fingerprint_), value_index_};
+        return {.dist_and_fingerprint_ = increment_dist(dist_and_fingerprint_),
+                .value_index_ = value_index_};
     }
 
     [[nodiscard]] constexpr Bucket minus_dist() const
     {
-        return {decrement_dist(dist_and_fingerprint_), value_index_};
+        return {.dist_and_fingerprint_ = decrement_dist(dist_and_fingerprint_),
+                .value_index_ = value_index_};
     }
 };
 
@@ -385,23 +387,7 @@ public:
     = default;
 
     constexpr FixedRobinhoodHashtable(FixedRobinhoodHashtable&& other) = default;
-
-    constexpr FixedRobinhoodHashtable& operator=(const FixedRobinhoodHashtable& other)
-        requires IsReference<V>
-    {
-        IMPLEMENTATION_DETAIL_DO_NOT_USE_value_storage_ =
-            other.IMPLEMENTATION_DETAIL_DO_NOT_USE_value_storage_;
-        IMPLEMENTATION_DETAIL_DO_NOT_USE_bucket_array_ =
-            other.IMPLEMENTATION_DETAIL_DO_NOT_USE_bucket_array_;
-        IMPLEMENTATION_DETAIL_DO_NOT_USE_hash_ = other.IMPLEMENTATION_DETAIL_DO_NOT_USE_hash_;
-        IMPLEMENTATION_DETAIL_DO_NOT_USE_key_equal_ =
-            other.IMPLEMENTATION_DETAIL_DO_NOT_USE_key_equal_;
-        return *this;
-    }
-    constexpr FixedRobinhoodHashtable& operator=(const FixedRobinhoodHashtable& other)
-        requires(!IsReference<V>)
-    = default;
-
+    constexpr FixedRobinhoodHashtable& operator=(const FixedRobinhoodHashtable& other) = default;
     constexpr FixedRobinhoodHashtable& operator=(FixedRobinhoodHashtable&& other) = default;
 };
 

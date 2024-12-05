@@ -119,7 +119,7 @@ constexpr auto& get(OptionalStorage<T>& value)
 template <typename T>
 constexpr T&& get(T&& value)
 {
-    return value;
+    return std::forward<T>(value);
 }
 
 // "Transparent" here means there will be no wrapping for simple types.

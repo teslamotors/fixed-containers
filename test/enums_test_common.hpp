@@ -89,10 +89,10 @@ struct TestRichEnum1Data
 
 inline constexpr auto TEST_RICH_ENUM_1_DATA =
     EnumMap<TestRichEnum1BackingEnum, TestRichEnum1Data>::create_with_all_entries({
-        {TestRichEnum1BackingEnum::C_ONE, {1, 1.0}},
-        {TestRichEnum1BackingEnum::C_TWO, {2, 2.0}},
-        {TestRichEnum1BackingEnum::C_THREE, {3, 3.0}},
-        {TestRichEnum1BackingEnum::C_FOUR, {4, 4.0}},
+        {TestRichEnum1BackingEnum::C_ONE, {.value = 1, .double_value = 1.0}},
+        {TestRichEnum1BackingEnum::C_TWO, {.value = 2, .double_value = 2.0}},
+        {TestRichEnum1BackingEnum::C_THREE, {.value = 3, .double_value = 3.0}},
+        {TestRichEnum1BackingEnum::C_FOUR, {.value = 4, .double_value = 4.0}},
     });
 
 }  // namespace detail

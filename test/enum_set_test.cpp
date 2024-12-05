@@ -704,11 +704,8 @@ TEST(EnumSet, SetIntersection)
         const EnumSet<TestEnum1> var2{TestEnum1::ONE};
 
         EnumSet<TestEnum1> v_intersection;
-        std::set_intersection(var1.begin(),
-                              var1.end(),
-                              var2.begin(),
-                              var2.end(),
-                              std::inserter(v_intersection, v_intersection.begin()));
+        std::ranges::set_intersection(
+            var1, var2, std::inserter(v_intersection, v_intersection.begin()));
         return v_intersection;
     }();
 

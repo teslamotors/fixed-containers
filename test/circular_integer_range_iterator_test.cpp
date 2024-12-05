@@ -34,9 +34,9 @@ TEST(CircularIntegerRangeIterator, StartAndFinishAreTheSameAsRange)
     {
         using ItType = CircularIntegerRangeIterator<IteratorDirection::FORWARD>;
         static constexpr ItType IT1{IntegerRange::closed_open(0, 3),
-                                    StartingIntegerAndDistance{0, 0}};
+                                    StartingIntegerAndDistance{.start = 0, .distance = 0}};
         static constexpr ItType IT_END{IntegerRange::closed_open(0, 3),
-                                       StartingIntegerAndDistance{0, 3}};
+                                       StartingIntegerAndDistance{.start = 0, .distance = 3}};
         static_assert(2 == *std::prev(IT1, 1));
         static_assert(0 == *std::next(IT1, 0));
         static_assert(1 == *std::next(IT1, 1));
@@ -48,9 +48,9 @@ TEST(CircularIntegerRangeIterator, StartAndFinishAreTheSameAsRange)
     {
         using ItType = CircularIntegerRangeIterator<IteratorDirection::FORWARD>;
         static constexpr ItType IT1{IntegerRange::closed_open(3, 6),
-                                    StartingIntegerAndDistance{3, 0}};
+                                    StartingIntegerAndDistance{.start = 3, .distance = 0}};
         static constexpr ItType IT_END{IntegerRange::closed_open(3, 6),
-                                       StartingIntegerAndDistance{3, 3}};
+                                       StartingIntegerAndDistance{.start = 3, .distance = 3}};
         static_assert(5 == *std::prev(IT1, 1));
         static_assert(3 == *std::next(IT1, 0));
         static_assert(4 == *std::next(IT1, 1));
@@ -66,9 +66,9 @@ TEST(CircularIntegerRangeIterator, WrapAround)
     {
         using ItType = CircularIntegerRangeIterator<IteratorDirection::FORWARD>;
         static constexpr ItType IT1{IntegerRange::closed_open(0, 3),
-                                    StartingIntegerAndDistance{2, 0}};
+                                    StartingIntegerAndDistance{.start = 2, .distance = 0}};
         static constexpr ItType IT_END{IntegerRange::closed_open(0, 3),
-                                       StartingIntegerAndDistance{2, 3}};
+                                       StartingIntegerAndDistance{.start = 2, .distance = 3}};
         static_assert(1 == *std::prev(IT1, 1));
         static_assert(2 == *std::next(IT1, 0));
         static_assert(0 == *std::next(IT1, 1));
@@ -80,9 +80,9 @@ TEST(CircularIntegerRangeIterator, WrapAround)
     {
         using ItType = CircularIntegerRangeIterator<IteratorDirection::FORWARD>;
         static constexpr ItType IT1{IntegerRange::closed_open(3, 6),
-                                    StartingIntegerAndDistance{5, 0}};
+                                    StartingIntegerAndDistance{.start = 5, .distance = 0}};
         static constexpr ItType IT_END{IntegerRange::closed_open(3, 6),
-                                       StartingIntegerAndDistance{5, 3}};
+                                       StartingIntegerAndDistance{.start = 5, .distance = 3}};
         static_assert(4 == *std::prev(IT1, 1));
         static_assert(5 == *std::next(IT1, 0));
         static_assert(3 == *std::next(IT1, 1));
@@ -97,9 +97,9 @@ TEST(CircularIntegerRangeIterator, CurrentIndexNotAtStart)
     {
         using ItType = CircularIntegerRangeIterator<IteratorDirection::FORWARD>;
         static constexpr ItType IT1{IntegerRange::closed_open(0, 3),
-                                    StartingIntegerAndDistance{2, 1}};
+                                    StartingIntegerAndDistance{.start = 2, .distance = 1}};
         static constexpr ItType IT_END{IntegerRange::closed_open(0, 3),
-                                       StartingIntegerAndDistance{2, 3}};
+                                       StartingIntegerAndDistance{.start = 2, .distance = 3}};
         static_assert(1 == *std::prev(IT1, 2));
         static_assert(2 == *std::prev(IT1, 1));
         static_assert(0 == *std::next(IT1, 0));
@@ -111,9 +111,9 @@ TEST(CircularIntegerRangeIterator, CurrentIndexNotAtStart)
     {
         using ItType = CircularIntegerRangeIterator<IteratorDirection::FORWARD>;
         static constexpr ItType IT1{IntegerRange::closed_open(3, 6),
-                                    StartingIntegerAndDistance{5, 2}};
+                                    StartingIntegerAndDistance{.start = 5, .distance = 2}};
         static constexpr ItType IT_END{IntegerRange::closed_open(3, 6),
-                                       StartingIntegerAndDistance{5, 3}};
+                                       StartingIntegerAndDistance{.start = 5, .distance = 3}};
         static_assert(4 == *std::prev(IT1, 3));
         static_assert(5 == *std::prev(IT1, 2));
         static_assert(3 == *std::prev(IT1, 1));
@@ -128,9 +128,9 @@ TEST(CircularIntegerRangeIterator, PartialAndWrapAroundAndCurrentIndexNotAtStart
     {
         using ItType = CircularIntegerRangeIterator<IteratorDirection::FORWARD>;
         static constexpr ItType IT1{IntegerRange::closed_open(0, 11),
-                                    StartingIntegerAndDistance{10, 1}};
+                                    StartingIntegerAndDistance{.start = 10, .distance = 1}};
         static constexpr ItType IT_END{IntegerRange::closed_open(0, 11),
-                                       StartingIntegerAndDistance{10, 3}};
+                                       StartingIntegerAndDistance{.start = 10, .distance = 3}};
         static_assert(9 == *std::prev(IT1, 2));
         static_assert(10 == *std::prev(IT1, 1));
         static_assert(0 == *std::next(IT1, 0));
@@ -142,9 +142,9 @@ TEST(CircularIntegerRangeIterator, PartialAndWrapAroundAndCurrentIndexNotAtStart
     {
         using ItType = CircularIntegerRangeIterator<IteratorDirection::FORWARD>;
         static constexpr ItType IT1{IntegerRange::closed_open(3, 11),
-                                    StartingIntegerAndDistance{10, 2}};
+                                    StartingIntegerAndDistance{.start = 10, .distance = 2}};
         static constexpr ItType IT_END{IntegerRange::closed_open(3, 11),
-                                       StartingIntegerAndDistance{10, 3}};
+                                       StartingIntegerAndDistance{.start = 10, .distance = 3}};
         static_assert(9 == *std::prev(IT1, 3));
         static_assert(10 == *std::prev(IT1, 2));
         static_assert(3 == *std::prev(IT1, 1));
@@ -159,14 +159,14 @@ TEST(CircularIntegerRangeIterator, RandomAccess)
     {
         using ItType = CircularIntegerRangeIterator<IteratorDirection::FORWARD>;
         static constexpr ItType IT1{IntegerRange::closed_open(0, 3),
-                                    StartingIntegerAndDistance{2, 0}};
+                                    StartingIntegerAndDistance{.start = 2, .distance = 0}};
         static_assert(0 == IT1[1]);
     }
 
     {
         using ItType = CircularIntegerRangeIterator<IteratorDirection::FORWARD>;
         static constexpr ItType IT1{IntegerRange::closed_open(3, 11),
-                                    StartingIntegerAndDistance{4, 2}};
+                                    StartingIntegerAndDistance{.start = 4, .distance = 2}};
         static_assert(8 == IT1[2]);
     }
 }
@@ -177,10 +177,10 @@ TEST(CircularIntegerRangeIterator, Equality)
     {
         // Range
         static constexpr IntegerRange RANGE = IntegerRange::closed_open(0, 11);
-        static constexpr ItType IT1{RANGE, StartingIntegerAndDistance{10, 1}};
-        static constexpr ItType IT2{RANGE, StartingIntegerAndDistance{10, 1}};
+        static constexpr ItType IT1{RANGE, StartingIntegerAndDistance{.start = 10, .distance = 1}};
+        static constexpr ItType IT2{RANGE, StartingIntegerAndDistance{.start = 10, .distance = 1}};
         static constexpr ItType IT3{IntegerRange::closed_open(0, 999),
-                                    StartingIntegerAndDistance{10, 1}};
+                                    StartingIntegerAndDistance{.start = 10, .distance = 1}};
 
         static_assert(IT1 == IT2);
         EXPECT_DEATH(void(IT1 != IT3), "");  // Hard error if attempting to compare unrelated ranges
@@ -188,10 +188,10 @@ TEST(CircularIntegerRangeIterator, Equality)
     {
         // Index
         static constexpr IntegerRange RANGE = IntegerRange::closed_open(0, 11);
-        static constexpr ItType IT1{RANGE, StartingIntegerAndDistance{10, 1}};
-        static constexpr ItType IT2{RANGE, StartingIntegerAndDistance{9, 2}};
-        static constexpr ItType IT3{RANGE, StartingIntegerAndDistance{0, 0}};
-        static constexpr ItType IT4{RANGE, StartingIntegerAndDistance{0, 99}};
+        static constexpr ItType IT1{RANGE, StartingIntegerAndDistance{.start = 10, .distance = 1}};
+        static constexpr ItType IT2{RANGE, StartingIntegerAndDistance{.start = 9, .distance = 2}};
+        static constexpr ItType IT3{RANGE, StartingIntegerAndDistance{.start = 0, .distance = 0}};
+        static constexpr ItType IT4{RANGE, StartingIntegerAndDistance{.start = 0, .distance = 99}};
 
         static_assert(*IT1 == 0);
         static_assert(*IT2 == 0);
@@ -201,7 +201,8 @@ TEST(CircularIntegerRangeIterator, Equality)
         static_assert(IT1 != IT3);  // Same index, but it wraps around, so not equal
         static_assert(IT1 != IT4);
 
-        static constexpr ItType IT_END{RANGE, StartingIntegerAndDistance{10, 3}};
+        static constexpr ItType IT_END{RANGE,
+                                       StartingIntegerAndDistance{.start = 10, .distance = 3}};
         static_assert(IT1 != IT_END);
         static_assert(std::next(IT1, 2) == IT_END);
     }
@@ -213,10 +214,14 @@ TEST(CircularIntegerRangeIterator, Comparison)
         using ItType = CircularIntegerRangeIterator<IteratorDirection::FORWARD>;
         {
             static constexpr IntegerRange RANGE = IntegerRange::closed_open(0, 11);
-            static constexpr ItType IT1{RANGE, StartingIntegerAndDistance{10, 1}};
-            static constexpr ItType IT2{RANGE, StartingIntegerAndDistance{9, 2}};
-            static constexpr ItType IT3{RANGE, StartingIntegerAndDistance{0, 0}};
-            static constexpr ItType IT4{RANGE, StartingIntegerAndDistance{0, 100}};
+            static constexpr ItType IT1{RANGE,
+                                        StartingIntegerAndDistance{.start = 10, .distance = 1}};
+            static constexpr ItType IT2{RANGE,
+                                        StartingIntegerAndDistance{.start = 9, .distance = 2}};
+            static constexpr ItType IT3{RANGE,
+                                        StartingIntegerAndDistance{.start = 0, .distance = 0}};
+            static constexpr ItType IT4{RANGE,
+                                        StartingIntegerAndDistance{.start = 0, .distance = 100}};
 
             static_assert(*IT1 == 0);
             static_assert(*IT2 == 0);
@@ -238,10 +243,14 @@ TEST(CircularIntegerRangeIterator, Comparison)
         using ItType = CircularIntegerRangeIterator<IteratorDirection::REVERSE>;
         {
             static constexpr IntegerRange RANGE = IntegerRange::closed_open(0, 11);
-            static constexpr ItType IT1{RANGE, StartingIntegerAndDistance{10, 1}};
-            static constexpr ItType IT2{RANGE, StartingIntegerAndDistance{9, 2}};
-            static constexpr ItType IT3{RANGE, StartingIntegerAndDistance{0, 0}};
-            static constexpr ItType IT4{RANGE, StartingIntegerAndDistance{0, 100}};
+            static constexpr ItType IT1{RANGE,
+                                        StartingIntegerAndDistance{.start = 10, .distance = 1}};
+            static constexpr ItType IT2{RANGE,
+                                        StartingIntegerAndDistance{.start = 9, .distance = 2}};
+            static constexpr ItType IT3{RANGE,
+                                        StartingIntegerAndDistance{.start = 0, .distance = 0}};
+            static constexpr ItType IT4{RANGE,
+                                        StartingIntegerAndDistance{.start = 0, .distance = 100}};
 
             static_assert(*IT1 == 10);
             static_assert(*IT2 == 10);
@@ -266,10 +275,14 @@ TEST(CircularIntegerRangeIterator, OperatorMinus)
         using ItType = CircularIntegerRangeIterator<IteratorDirection::FORWARD>;
         {
             static constexpr IntegerRange RANGE = IntegerRange::closed_open(0, 11);
-            static constexpr ItType IT1{RANGE, StartingIntegerAndDistance{10, 1}};
-            static constexpr ItType IT2{RANGE, StartingIntegerAndDistance{9, 2}};
-            static constexpr ItType IT3{RANGE, StartingIntegerAndDistance{0, 0}};
-            static constexpr ItType IT4{RANGE, StartingIntegerAndDistance{0, 99}};
+            static constexpr ItType IT1{RANGE,
+                                        StartingIntegerAndDistance{.start = 10, .distance = 1}};
+            static constexpr ItType IT2{RANGE,
+                                        StartingIntegerAndDistance{.start = 9, .distance = 2}};
+            static constexpr ItType IT3{RANGE,
+                                        StartingIntegerAndDistance{.start = 0, .distance = 0}};
+            static constexpr ItType IT4{RANGE,
+                                        StartingIntegerAndDistance{.start = 0, .distance = 99}};
 
             static_assert(*IT1 == 0);
             static_assert(*IT2 == 0);
@@ -281,7 +294,7 @@ TEST(CircularIntegerRangeIterator, OperatorMinus)
             static_assert(99 == IT4 - IT3);
 
             static constexpr ItType IT_END{IntegerRange::closed_open(0, 11),
-                                           StartingIntegerAndDistance{10, 3}};
+                                           StartingIntegerAndDistance{.start = 10, .distance = 3}};
             static_assert(2 == IT_END - IT1);
         }
     }
@@ -290,10 +303,14 @@ TEST(CircularIntegerRangeIterator, OperatorMinus)
         using ItType = CircularIntegerRangeIterator<IteratorDirection::REVERSE>;
         {
             static constexpr IntegerRange RANGE = IntegerRange::closed_open(0, 11);
-            static constexpr ItType IT1{RANGE, StartingIntegerAndDistance{10, 1}};
-            static constexpr ItType IT2{RANGE, StartingIntegerAndDistance{9, 2}};
-            static constexpr ItType IT3{RANGE, StartingIntegerAndDistance{0, 0}};
-            static constexpr ItType IT4{RANGE, StartingIntegerAndDistance{0, 99}};
+            static constexpr ItType IT1{RANGE,
+                                        StartingIntegerAndDistance{.start = 10, .distance = 1}};
+            static constexpr ItType IT2{RANGE,
+                                        StartingIntegerAndDistance{.start = 9, .distance = 2}};
+            static constexpr ItType IT3{RANGE,
+                                        StartingIntegerAndDistance{.start = 0, .distance = 0}};
+            static constexpr ItType IT4{RANGE,
+                                        StartingIntegerAndDistance{.start = 0, .distance = 99}};
 
             static_assert(*IT1 == 10);
             static_assert(*IT2 == 10);
@@ -305,7 +322,7 @@ TEST(CircularIntegerRangeIterator, OperatorMinus)
             static_assert(-99 == IT4 - IT3);
 
             static constexpr ItType IT_REND{IntegerRange::closed_open(0, 11),
-                                            StartingIntegerAndDistance{10, 0}};
+                                            StartingIntegerAndDistance{.start = 10, .distance = 0}};
             static_assert(1 == IT_REND - IT1);
         }
     }

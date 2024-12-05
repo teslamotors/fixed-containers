@@ -1618,6 +1618,23 @@ cc_test(
     copts = ["-std=c++20"],
 )
 
+cc_library(
+    name = "noisy_class",
+    srcs = ["test/noisy_class.hpp"],
+    copts = ["-std=c++20"],
+)
+
+cc_test(
+    name = "noisy_class_test",
+    srcs = ["test/noisy_class_test.cpp"],
+    deps = [
+        ":noisy_class",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
+    ],
+    copts = ["-std=c++20"],
+)
+
 cc_test(
     name = "optional_reference_test",
     srcs = ["test/optional_reference_test.cpp"],

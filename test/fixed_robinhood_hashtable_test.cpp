@@ -41,8 +41,6 @@ static_assert(TriviallyCopyAssignable<IntIntMap10>);
 static_assert(TriviallyMoveAssignable<IntIntMap10>);
 static_assert(StandardLayout<IntIntMap10>);
 
-}  // namespace
-
 template <typename T>
 [[maybe_unused]] void print_map_state(const T& map)
 {
@@ -65,6 +63,8 @@ template <typename T>
         }
     }
 }
+
+}  // namespace
 
 TEST(BucketOperations, DistAndFingerprint)
 {

@@ -2305,8 +2305,8 @@ TYPED_TEST_P(FixedDequeInstanceCheckFixture, FixedDequeInstanceCheck)
     ASSERT_EQ(2, InstanceCounterType::counter);
 
     {  // IMPORTANT SCOPE, don't remove.
-        const DequeOfInstanceCounterType var2{var1};
-        (void)var2;
+        DequeOfInstanceCounterType var2{var1};
+        var2.back().mock_mutator();
         ASSERT_EQ(4, InstanceCounterType::counter);
     }
     ASSERT_EQ(2, InstanceCounterType::counter);

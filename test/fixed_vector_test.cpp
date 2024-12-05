@@ -1719,7 +1719,9 @@ TEST(FixedVector, EraseEmpty)
         FixedVector<int, 3> var1{};
 
         // Don't Expect Death
-        var1.erase(std::remove_if(var1.begin(), var1.end(), [&](const auto&) { return true; }),
+        var1.erase(std::remove_if(var1.begin(),  // NOLINT(modernize-use-ranges)
+                                  var1.end(),
+                                  [&](const auto&) { return true; }),
                    var1.end());
 
         EXPECT_DEATH(var1.erase(var1.begin()), "");
@@ -1729,7 +1731,9 @@ TEST(FixedVector, EraseEmpty)
         std::vector<int> var1{};
 
         // Don't Expect Death
-        var1.erase(std::remove_if(var1.begin(), var1.end(), [&](const auto&) { return true; }),
+        var1.erase(std::remove_if(var1.begin(),  // NOLINT(modernize-use-ranges)
+                                  var1.end(),
+                                  [&](const auto&) { return true; }),
                    var1.end());
 
         // The iterator pos must be valid and dereferenceable. Thus the end() iterator (which is
@@ -2191,8 +2195,8 @@ TYPED_TEST_P(FixedVectorInstanceCheckFixture, FixedVectorInstanceCheck)
     ASSERT_EQ(2, InstanceCounterType::counter);
 
     {  // IMPORTANT SCOPE, don't remove.
-        const VectorOfInstanceCounterType var2{var1};
-        (void)var2;
+        VectorOfInstanceCounterType var2{var1};
+        var2.back().mock_mutator();
         ASSERT_EQ(4, InstanceCounterType::counter);
     }
     ASSERT_EQ(2, InstanceCounterType::counter);

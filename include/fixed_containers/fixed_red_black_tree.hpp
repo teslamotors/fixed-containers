@@ -638,7 +638,7 @@ private:
             tree_storage().delete_at_and_return_repositioned_index(index);
             set_root_index(NULL_INDEX);
             set_size(0);
-            return {NULL_INDEX, NULL_INDEX};
+            return {.successor = NULL_INDEX, .repositioned = NULL_INDEX};
         }
 
         decrement_size();
@@ -730,7 +730,8 @@ private:
         const NodeIndex repositioned_index =
             tree_storage().delete_at_and_return_repositioned_index(index_to_delete);
 
-        SuccessorIndexAndRepositionedIndex ret{successor_index, repositioned_index};
+        SuccessorIndexAndRepositionedIndex ret{.successor = successor_index,
+                                               .repositioned = repositioned_index};
 
         if (repositioned_index != index_to_delete)
         {

@@ -17,9 +17,10 @@ constexpr std::pair<typename Container::iterator, bool> emplace_in_terms_of_try_
         if constexpr (sizeof...(Rest) == 0 && IsStdPair<First>)
         {
             // Lambda to avoid compilation errors with .first/.second when passing a non-pair
-            return [&container]<typename Pair>(Pair&& pair) {
-                return container.try_emplace(std::forward<Pair>(pair).first,
-                                             std::forward<Pair>(pair).second);
+            return [&container]<typename Pair>(Pair&& pair)
+            {
+                return container.try_emplace(std::forward<decltype(pair.first)>(pair.first),
+                                             std::forward<decltype(pair.second)>(pair.second));
             }(std::forward<First>(first));
         }
         else if constexpr (sizeof...(Rest) == 2 &&

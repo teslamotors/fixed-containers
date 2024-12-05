@@ -2543,8 +2543,8 @@ TYPED_TEST_P(FixedCircularDequeInstanceCheckFixture, FixedCircularDequeInstanceC
     ASSERT_EQ(2, InstanceCounterType::counter);
 
     {  // IMPORTANT SCOPE, don't remove.
-        const CircularDequeOfInstanceCounterType var2{var1};
-        (void)var2;
+        CircularDequeOfInstanceCounterType var2{var1};
+        var2.back().mock_mutator();
         ASSERT_EQ(4, InstanceCounterType::counter);
     }
     ASSERT_EQ(2, InstanceCounterType::counter);

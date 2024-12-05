@@ -74,6 +74,8 @@ Checks: >
   -bugprone-easily-swappable-parameters,
   -bugprone-switch-missing-default-case,
   -bugprone-unchecked-optional-access,
+  -readability-container-size-empty,
+  -bugprone-crtp-constructor-accessibility,
 
 # Turn all the warnings from the checks above into errors.
 WarningsAsErrors: "*"

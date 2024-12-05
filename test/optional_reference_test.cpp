@@ -97,6 +97,15 @@ TEST(OptionalReference, Value)
     }
 }
 
+namespace
+{
+template <typename T, typename Parameter>
+constexpr bool value_or_is_callable_with_rvalue()
+{
+    return requires(T instance) { instance.value_or(Parameter{}); };
+}
+}  // namespace
+
 TEST(OptionalReference, ValueOr)
 {
     {
@@ -117,6 +126,17 @@ TEST(OptionalReference, ValueOr)
         const OptionalReference<const int> val1(ENTRY_1);
         const int& result = val1.value_or(fallback_value);
         EXPECT_EQ(5, result);
+    }
+    {
+        /*
+        constexpr int ENTRY_1 = 5;
+        const OptionalReference<const int> val1(ENTRY_1);
+        const int& result = val1.value_or(77);  // This should fail to compile
+        EXPECT_EQ(5, result);
+        */
+
+        static_assert(!value_or_is_callable_with_rvalue<OptionalReference<const int>, int>(),
+                      "`value_or() should not be callable with r-values");
     }
 }
 

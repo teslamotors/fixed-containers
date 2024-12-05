@@ -89,7 +89,7 @@ public:
     {
         // the full PoolStorage will be aligned to the alignment of the element, which matters if it
         // aligns bigger than alignof(size_t)
-        std::size_t raw_size = max_elem_count_ * elem_size_bytes_ + sizeof(std::size_t);
+        std::size_t raw_size = (max_elem_count_ * elem_size_bytes_) + sizeof(std::size_t);
         if (raw_size % elem_align_bytes_ != 0)
         {
             raw_size += elem_align_bytes_ - (raw_size % elem_align_bytes_);

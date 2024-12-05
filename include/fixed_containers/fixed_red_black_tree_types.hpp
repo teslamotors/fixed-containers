@@ -26,7 +26,7 @@ constexpr NodeColor COLOR_RED = true;
 // care about values 0 to MAXIMUM_SIZE. Furthermore, NULL_INDEX is at max().
 class NodeIndexWithColorEmbeddedInTheMostSignificantBit
 {
-    static constexpr std::size_t SHIFT_TO_MOST_SIGNIFICANT_BIT = sizeof(NodeIndex) * 8ULL - 1ULL;
+    static constexpr std::size_t SHIFT_TO_MOST_SIGNIFICANT_BIT = (sizeof(NodeIndex) * 8ULL) - 1ULL;
     static constexpr NodeIndex MASK = 1ULL << SHIFT_TO_MOST_SIGNIFICANT_BIT;
     static constexpr NodeIndex LOCAL_NULL_INDEX = NULL_INDEX >> 1;
 

@@ -52,7 +52,7 @@ TEST(Out, Usage2)
     {
         constexpr SomeStruct RESULT = []()
         {
-            SomeStruct instance{0, 0};
+            SomeStruct instance{.a = 0, .b = 0};
             set_struct(out{instance});
             return instance;
         }();
@@ -62,7 +62,7 @@ TEST(Out, Usage2)
     }
 
     {
-        SomeStruct instance{0, 0};
+        SomeStruct instance{.a = 0, .b = 0};
         set_struct(out{instance});
         EXPECT_EQ(1, instance.a);
         EXPECT_EQ(2, instance.b);

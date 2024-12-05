@@ -56,9 +56,9 @@ TEST(Tuples, AsTupleViewCodegenBranches)
         std::cout << "    // clang-format off \n";
         for (std::size_t group_id = 0; group_id < GROUP_COUNT; group_id++)
         {
-            const std::size_t starting_i = group_id * GROUP_SIZE + 1;
+            const std::size_t starting_i = (group_id * GROUP_SIZE) + 1;
             const std::size_t ending_i =
-                std::min(MAX_VARIABLE_COUNT, group_id * GROUP_SIZE + GROUP_SIZE);
+                std::min(MAX_VARIABLE_COUNT, (group_id * GROUP_SIZE) + GROUP_SIZE);
 
             std::cout << "    else if constexpr(FIELD_COUNT <= " << ending_i << ") {\n";
 

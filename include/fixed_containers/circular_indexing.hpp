@@ -40,7 +40,7 @@ constexpr CyclesAndInteger increment_index_with_wraparound(const IntegerRangeTyp
         int_math::safe_subtract(new_index_unwrapped, range.start_inclusive())
             .template cast<std::size_t>();
     const std::size_t quotient = adjust_to_zero / range_size;
-    const std::size_t remainder = adjust_to_zero - quotient * range_size;
+    const std::size_t remainder = adjust_to_zero - (quotient * range_size);
     return {.cycles = static_cast<int64_t>(quotient),
             .integer = remainder + range.start_inclusive()};
 }

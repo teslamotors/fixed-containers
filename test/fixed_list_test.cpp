@@ -1696,7 +1696,9 @@ TEST(FixedList, EraseEmpty)
         FixedList<int, 3> var1{};
 
         // Don't Expect Death
-        var1.erase(std::remove_if(var1.begin(), var1.end(), [&](const auto&) { return true; }),
+        var1.erase(std::remove_if(var1.begin(),  // NOLINT(modernize-use-ranges)
+                                  var1.end(),
+                                  [&](const auto&) { return true; }),
                    var1.end());
 
         EXPECT_DEATH(var1.erase(var1.begin()), "");
@@ -1706,7 +1708,9 @@ TEST(FixedList, EraseEmpty)
         std::list<int> var1{};
 
         // Don't Expect Death
-        var1.erase(std::remove_if(var1.begin(), var1.end(), [&](const auto&) { return true; }),
+        var1.erase(std::remove_if(var1.begin(),  // NOLINT(modernize-use-ranges)
+                                  var1.end(),
+                                  [&](const auto&) { return true; }),
                    var1.end());
 
         // The iterator pos must be valid and dereferenceable. Thus the end() iterator (which is
@@ -2196,8 +2200,8 @@ TYPED_TEST_P(FixedListInstanceCheckFixture, FixedListInstanceCheck)
     ASSERT_EQ(2, InstanceCounterType::counter);
 
     {  // IMPORTANT SCOPE, don't remove.
-        const ListOfInstanceCounterType var2{var1};
-        (void)var2;
+        ListOfInstanceCounterType var2{var1};
+        var2.back().mock_mutator();
         ASSERT_EQ(4, InstanceCounterType::counter);
     }
     ASSERT_EQ(2, InstanceCounterType::counter);

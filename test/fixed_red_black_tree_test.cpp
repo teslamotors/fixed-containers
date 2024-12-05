@@ -1851,7 +1851,7 @@ TEST(FixedRedBlackTree, TreeMaxHeight)
     }
 
     // Descending Insertion
-    std::reverse(insertion_order.begin(), insertion_order.end());
+    std::ranges::reverse(insertion_order);
     for (std::size_t i = 0; i < MAXIMUM_SIZE; i++)
     {
         bst[insertion_order[i]] = insertion_order[i];

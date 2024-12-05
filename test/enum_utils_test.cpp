@@ -8,6 +8,7 @@
 #include <gtest/gtest.h>
 #include <magic_enum.hpp>
 
+#include <concepts>
 #include <cstddef>
 #include <functional>
 #include <optional>
@@ -42,7 +43,7 @@ namespace fixed_containers::rich_enums
 enum class CustomValuesTestEnum1
 {
     ONE = 7,
-    TWO,
+    TWO = 8,
     FOUR = 12,
     THREE = 10,
 };

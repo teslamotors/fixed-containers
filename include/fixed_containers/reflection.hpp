@@ -158,7 +158,7 @@ constexpr void for_each_parsed_field_entry(const T& instance, Func func)
                                                const char* const fmt,
                                                Args&&... args)
     {
-        layer_tracker->update_layer(fmt, std::forward<Args>(args)...);
+        layer_tracker->update_layer(fmt, args...);
         if constexpr (sizeof...(args) >= 3)
         {
             auto as_tuple = std::forward_as_tuple(std::forward<Args>(args)...);
@@ -211,10 +211,15 @@ constexpr auto field_names_of_impl(const T& instance)
     return output;
 }
 
-template <typename T>
-inline constexpr auto FIELD_NAMES =
-    field_names_of_impl<field_count_of_impl(std::decay_t<T>{})>(std::decay_t<T>{});
 }  // namespace fixed_containers::reflection_detail
+
+namespace fixed_containers::reflection::customize
+{
+template <typename T>
+inline constexpr auto FIELD_NAMES = fixed_containers::reflection_detail::field_names_of_impl<
+    fixed_containers::reflection_detail::field_count_of_impl(std::decay_t<T>{})>(std::decay_t<T>{});
+
+}  // namespace fixed_containers::reflection::customize
 
 namespace fixed_containers::reflection
 {
@@ -225,14 +230,14 @@ template <typename T>
     requires(Reflectable<std::decay_t<T>>)
 constexpr std::size_t field_count_of()
 {
-    return reflection_detail::FIELD_NAMES<std::decay_t<T>>.size();
+    return fixed_containers::reflection::customize::FIELD_NAMES<std::decay_t<T>>.size();
 }
 
 template <typename T>
     requires(Reflectable<std::decay_t<T>>)
 constexpr const auto& field_names_of()
 {
-    return reflection_detail::FIELD_NAMES<std::decay_t<T>>;
+    return fixed_containers::reflection::customize::FIELD_NAMES<std::decay_t<T>>;
 }
 
 template <typename T, typename Func>
@@ -241,10 +246,9 @@ constexpr void for_each_field(T&& instance, Func&& func)
 {
     constexpr const auto& FIELD_NAMES = field_names_of<T>();
     auto tuple_view = tuples::as_tuple_view<FIELD_NAMES.size()>(instance);
-    tuples::for_each_entry(
-        tuple_view,
-        [&func]<typename Field>(std::size_t index, Field&& field)
-        { std::forward<Func>(func)(FIELD_NAMES.at(index), std::forward<Field>(field)); });
+    tuples::for_each_entry(tuple_view,
+                           [&func]<typename Field>(std::size_t index, Field&& field)
+                           { func(FIELD_NAMES.at(index), std::forward<Field>(field)); });
 }
 
 }  // namespace fixed_containers::reflection

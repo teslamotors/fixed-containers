@@ -16,7 +16,7 @@ template <class M, class N>
 constexpr std::common_type_t<M, N> align_up(M m_val, N n_val)
 {
     assert_or_abort(n_val > 0);
-    return m_val + n_val - 1 - (m_val + n_val - 1) % n_val;
+    return m_val + n_val - 1 - ((m_val + n_val - 1) % n_val);
 }
 
 class FixedRedBlackTreeRawView

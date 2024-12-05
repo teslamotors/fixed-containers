@@ -62,7 +62,7 @@ TEST(StringLiteral, CopyandMoveConstructor)
         StringLiteral b;
     };
 
-    constexpr MyStruct VAL1{"foo", "bar"};
+    constexpr MyStruct VAL1{.a = "foo", .b = "bar"};
 
     static_assert(VAL1.a.as_view() == "foo");
     static_assert(VAL1.b.as_view() == "bar");
