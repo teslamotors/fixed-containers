@@ -2,8 +2,21 @@
   "name": "fixed-containers",
   "version-string": "0.0.0",
   "dependencies": [
-    "magic-enum",
-    "benchmark",
-    "gtest"
-  ]
+    {
+      "name": "magic-enum"
+    },
+    {
+      "name": "benchmark"
+    },
+    {
+      "name": "gtest"
+    }
+  ],
+  "overrides": [
+    {
+      "name": "magic-enum",
+      "version": "0.9.6#1"
+    }
+  ],
+  "builtin-baseline": "a345bbdc68cdfda65603e24413b21afb28f110fb"
 }
