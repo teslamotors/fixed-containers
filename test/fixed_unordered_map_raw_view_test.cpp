@@ -5,6 +5,7 @@
 
 #include "fixed_containers/fixed_unordered_map.hpp"
 #include "fixed_containers/map_entry.hpp"
+#include "fixed_containers/map_entry_raw_view.hpp"
 
 #include <gtest/gtest.h>
 
