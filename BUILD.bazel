@@ -1124,6 +1124,7 @@ cc_test(
     deps = [
         ":concepts",
         ":consteval_compare",
+        ":enum_set",
         ":enum_utils",
         ":enums_test_common",
         "@com_google_googletest//:gtest",
