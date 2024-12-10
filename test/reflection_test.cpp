@@ -628,6 +628,41 @@ inline constexpr auto fixed_containers::reflection::customize::FIELD_NAMES<MyCus
         "c",
     });
 
+template <>
+struct fixed_containers::reflection::customize::ReflectionHelper<MyCustomStruct>
+{
+    template <typename T2, typename Func>
+        requires std::same_as<std::decay_t<T2>, MyCustomStruct>
+    static constexpr void for_each_field(T2&& instance, Func&& func)
+    {
+        // Apply it twice for unit testing purposes
+        func(FIELD_NAMES<MyCustomStruct>.at(0), instance.a);
+        func(FIELD_NAMES<MyCustomStruct>.at(1), instance.b);
+        func(FIELD_NAMES<MyCustomStruct>.at(2), instance.c);
+
+        func(FIELD_NAMES<MyCustomStruct>.at(0), instance.a);
+        func(FIELD_NAMES<MyCustomStruct>.at(1), instance.b);
+        func(FIELD_NAMES<MyCustomStruct>.at(2), instance.c);
+    }
+};
+
 static_assert(fixed_containers::reflection::field_names_of<MyCustomStruct>().size() == 3);
 
+namespace fixed_containers
+{
+
+TEST(Reflection, Customization)
+{
+    constexpr auto RESULT = []()
+    {
+        MyCustomStruct instance{};
+        std::size_t counter = 0;
+        reflection::for_each_field(
+            instance, [&]<typename T>(const std::string_view& /*name*/, const T&) { counter++; });
+        return counter;
+    }();
+
+    static_assert(6 == RESULT);
+}
+}  // namespace fixed_containers
 #endif
