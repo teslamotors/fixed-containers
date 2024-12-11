@@ -20,7 +20,7 @@ TEST(Tuples, AsTupleViewCodegenBranches)
     // so using this instead.
     if constexpr ((false))
     {
-        static constexpr std::size_t MAX_VARIABLE_COUNT = 400;
+        static constexpr std::size_t MAX_VARIABLE_COUNT = 1024;
         static constexpr std::size_t GROUP_SIZE = 32;
         static constexpr std::size_t GROUP_COUNT =
             int_math::divide_integers_rounding_up(MAX_VARIABLE_COUNT, GROUP_SIZE);

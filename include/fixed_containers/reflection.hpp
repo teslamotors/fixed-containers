@@ -211,10 +211,29 @@ constexpr auto field_names_of_impl(const T& instance)
     return output;
 }
 
-template <typename T>
-inline constexpr auto FIELD_NAMES =
-    field_names_of_impl<field_count_of_impl(std::decay_t<T>{})>(std::decay_t<T>{});
 }  // namespace fixed_containers::reflection_detail
+
+namespace fixed_containers::reflection::customize
+{
+template <typename T>
+inline constexpr auto FIELD_NAMES = fixed_containers::reflection_detail::field_names_of_impl<
+    fixed_containers::reflection_detail::field_count_of_impl(std::decay_t<T>{})>(std::decay_t<T>{});
+
+template <typename T>
+struct ReflectionHelper
+{
+    template <typename T2, typename Func>
+    static constexpr void for_each_field(T2&& instance, Func&& func)
+    {
+        auto tuple_view = tuples::as_tuple_view<FIELD_NAMES<std::decay_t<T2>>.size()>(instance);
+        tuples::for_each_entry(
+            tuple_view,
+            [&func]<typename Field>(std::size_t index, Field&& field)
+            { func(FIELD_NAMES<std::decay_t<T2>>.at(index), std::forward<Field>(field)); });
+    }
+};
+
+}  // namespace fixed_containers::reflection::customize
 
 namespace fixed_containers::reflection
 {
@@ -225,25 +244,22 @@ template <typename T>
     requires(Reflectable<std::decay_t<T>>)
 constexpr std::size_t field_count_of()
 {
-    return reflection_detail::FIELD_NAMES<std::decay_t<T>>.size();
+    return fixed_containers::reflection::customize::FIELD_NAMES<std::decay_t<T>>.size();
 }
 
 template <typename T>
     requires(Reflectable<std::decay_t<T>>)
 constexpr const auto& field_names_of()
 {
-    return reflection_detail::FIELD_NAMES<std::decay_t<T>>;
+    return fixed_containers::reflection::customize::FIELD_NAMES<std::decay_t<T>>;
 }
 
 template <typename T, typename Func>
     requires(Reflectable<std::decay_t<T>>)
 constexpr void for_each_field(T&& instance, Func&& func)
 {
-    constexpr const auto& FIELD_NAMES = field_names_of<T>();
-    auto tuple_view = tuples::as_tuple_view<FIELD_NAMES.size()>(instance);
-    tuples::for_each_entry(tuple_view,
-                           [&func]<typename Field>(std::size_t index, Field&& field)
-                           { func(FIELD_NAMES.at(index), std::forward<Field>(field)); });
+    fixed_containers::reflection::customize::ReflectionHelper<std::decay_t<T>>::for_each_field(
+        std::forward<T>(instance), std::forward<Func>(func));
 }
 
 }  // namespace fixed_containers::reflection
