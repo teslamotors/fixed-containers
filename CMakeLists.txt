@@ -235,6 +235,8 @@ if(BUILD_TESTS)
     add_test_dependencies(tuples_test)
     add_executable(type_name_test test/type_name_test.cpp)
     add_test_dependencies(type_name_test)
+    add_executable(variadic_templates_test test/variadic_templates_test.cpp)
+    add_test_dependencies(variadic_templates_test)
 endif()
 
 option(FIXED_CONTAINERS_OPT_INSTALL "Enable install target" ${PROJECT_IS_TOP_LEVEL})

@@ -980,6 +980,14 @@ cc_library(
 )
 
 cc_library(
+    name = "variadic_templates",
+    hdrs = ["include/fixed_containers/variadic_templates.hpp"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
+    copts = ["-std=c++20"],
+)
+
+cc_library(
     name = "enums_test_common",
     hdrs = ["test/enums_test_common.hpp"],
     deps = [
