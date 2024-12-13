@@ -969,10 +969,7 @@ cc_library(
 
 cc_library(
     name = "tuples",
-    hdrs = [
-        "include/fixed_containers/tuples.hpp",
-        "include/fixed_containers/tuples_as_tuple_view.hpp"
-    ],
+    hdrs = ["include/fixed_containers/tuples.hpp"],
     includes = includes_config(),
     strip_include_prefix = strip_include_prefix_config(),
     deps = [
