@@ -857,7 +857,8 @@ cc_library(
         ":fixed_stack",
         ":fixed_vector",
         ":in_out",
-        ":tuples",
+        ":struct_decomposition",
+        ":variadic_templates",
     ],
     copts = ["-std=c++20"],
 )
@@ -920,7 +921,12 @@ cc_library(
 
 cc_library(
     name = "struct_decomposition",
-    hdrs = ["include/fixed_containers/struct_decomposition.hpp"],
+    hdrs = [
+        "include/fixed_containers/struct_decomposition.hpp",
+        "include/fixed_containers/struct_decomposition_129_to_512.hpp",
+        "include/fixed_containers/struct_decomposition_513_to_768.hpp",
+        "include/fixed_containers/struct_decomposition_769_to_1024.hpp",
+    ],
     includes = includes_config(),
     strip_include_prefix = strip_include_prefix_config(),
     deps = [

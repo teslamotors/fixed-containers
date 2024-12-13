@@ -22,8 +22,6 @@ int main()
     using ScratchSpaceStringType = fixed_containers::FixedString<4 * NAME_POOL_SIZE>;
 
     fixed_containers::FixedVector<VariableNameType, NAME_POOL_SIZE> variable_name_pool{};
-    variable_name_pool.reserve((AVAILABLE_CHARS.size() * AVAILABLE_CHARS.size()) +
-                               AVAILABLE_CHARS.size());
     for (const char char1 : AVAILABLE_CHARS)
     {
         variable_name_pool.emplace_back(1, char1);
@@ -39,7 +37,6 @@ int main()
     }
 
     static constexpr std::size_t MAX_VARIABLE_COUNT = 1024;
-    static constexpr std::size_t CLANG_TIDY_THRESHOLD = 128;
     static constexpr std::size_t GROUP_SIZE = 32;
     static constexpr std::size_t GROUP_COUNT =
         fixed_containers::int_math::divide_integers_rounding_up(MAX_VARIABLE_COUNT, GROUP_SIZE);
@@ -55,7 +52,7 @@ int main()
             {
                 structured_binding += ",";
             }
-            const VariableNameType& unique_name = variable_name_pool.at(i);
+            const VariableNameType& unique_name = variable_name_pool.at(i - 1);
             const VariableNameType m_name = VariableNameType{"m"}.append(unique_name);
             structured_binding += m_name;
             if (!evaluation.empty())
@@ -89,20 +86,10 @@ int main()
         const std::size_t ending_i =
             std::min(MAX_VARIABLE_COUNT, (group_id * GROUP_SIZE) + GROUP_SIZE);
 
-        if (starting_i <= CLANG_TIDY_THRESHOLD + 1 && CLANG_TIDY_THRESHOLD < ending_i)
-        {
-            std::cout << "#if !defined(FIXED_CONTAINERS_CLANG_TIDY_SKIP_ANALYSIS) || "
-                         "FIXED_CONTAINERS_CLANG_TIDY_SKIP_ANALYSIS == 0\n";
-        }
-
         std::cout << "    else if constexpr(C <= " << ending_i << ") {\n";
 
         do_group(starting_i, ending_i, structured_binding, evaluation);
         std::cout << "    }\n";
-    }
-    if (CLANG_TIDY_THRESHOLD < MAX_VARIABLE_COUNT)
-    {
-        std::cout << "#endif  // FIXED_CONTAINERS_CLANG_TIDY_SKIP_ANALYSIS\n";
     }
 
     std::cout << "    // clang-format on\n";
