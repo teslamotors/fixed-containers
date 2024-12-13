@@ -308,6 +308,13 @@ public:
 
     template <class InputIt>
     constexpr FixedString& append(
+        const CharT* char_ptr,
+        const std_transition::source_location& loc = std_transition::source_location::current())
+    {
+        return append(std::string_view{char_ptr}, loc);
+    }
+    template <class InputIt>
+    constexpr FixedString& append(
         InputIt first,
         InputIt last,
         const std_transition::source_location& loc = std_transition::source_location::current())
@@ -339,7 +346,7 @@ public:
     }
     constexpr FixedString& operator+=(const CharT* char_ptr)
     {
-        return append(std::string_view{char_ptr}, std_transition::source_location::current());
+        return append(char_ptr, std_transition::source_location::current());
     }
     constexpr FixedString& operator+=(std::initializer_list<CharT> ilist)
     {

@@ -1068,6 +1068,23 @@ TEST(FixedString, PopBackEmpty)
     EXPECT_DEATH(var1.pop_back(), "");
 }
 
+TEST(FixedString, AppendConstCharPointer)
+{
+    constexpr auto VAL1 = []()
+    {
+        FixedString<17> var{"012"};
+        var.append("abc");
+        var.append({'d', 'e'});
+        const std::string_view entry_sv = "fg";
+        var.append(entry_sv);
+        return var;
+    }();
+
+    static_assert(VAL1 == "012abcdefg");
+    static_assert(VAL1.size() == 10);
+    static_assert(VAL1.max_size() == 17);
+}
+
 TEST(FixedString, AppendIterator)
 {
     {
