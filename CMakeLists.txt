@@ -29,7 +29,7 @@ if(MSVC)
     target_compile_options(project_options INTERFACE /wd4530)  # due to ostream, exception handler
     target_compile_options(project_options INTERFACE /wd4324)  # a test intentionally creates this type
 else()
-    target_compile_options(project_options INTERFACE -Werror -fno-exceptions -ftemplate-backtrace-limit=0)
+    target_compile_options(project_options INTERFACE -Werror -fno-exceptions -ftemplate-backtrace-limit=0 -fbracket-depth=1024)
 endif()
 if(${USING_CLANG})
     target_compile_options(project_options INTERFACE -ftrivial-auto-var-init=pattern)
