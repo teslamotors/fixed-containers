@@ -919,6 +919,22 @@ cc_library(
 )
 
 cc_library(
+    name = "struct_decomposition",
+    hdrs = [
+        "include/fixed_containers/struct_decomposition.hpp",
+        "include/fixed_containers/struct_decomposition_129_to_512.hpp",
+        "include/fixed_containers/struct_decomposition_513_to_768.hpp",
+        "include/fixed_containers/struct_decomposition_769_to_1024.hpp",
+    ],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
+    deps = [
+        ":concepts",
+    ],
+    copts = ["-std=c++20"],
+)
+
+cc_library(
     name = "struct_view",
     hdrs = ["include/fixed_containers/struct_view.hpp"],
     includes = includes_config(),
@@ -1747,6 +1763,18 @@ cc_test(
         ":string_literal",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
+    ],
+    copts = ["-std=c++20"],
+)
+
+cc_test(
+    name = "struct_decomposition_codegen",
+    srcs = ["test/struct_decomposition_codegen.cpp"],
+    deps = [
+        ":fixed_string",
+        ":fixed_vector",
+        ":int_math",
+        ":struct_decomposition",
     ],
     copts = ["-std=c++20"],
 )

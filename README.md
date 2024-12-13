@@ -423,6 +423,13 @@ CC=g++-11 bazel build --config=gcc ...
 CC=g++-11 bazel test --config=gcc :all_tests
 ```
 
+### clang-tidy
+Run with:
+```
+run-clang-tidy -p . -extra-arg-before="-DFIXED_CONTAINERS_CLANG_TIDY_RUNNING"
+```
+The macro is needed to avoid analysis on some particularly slow places.
+
 ## Tested Compilers
 
 - Clang  13
