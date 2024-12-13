@@ -18,6 +18,11 @@ config_setting(
     define_values = {"enable_strip_include_prefix_instead_of_includes": "true"},
 )
 
+config_setting(
+    name = "is_clang_build",
+    define_values = {"using_clang": "true"},
+)
+
 cc_library(
     name = "algorithm",
     hdrs = ["include/fixed_containers/algorithm.hpp"],
@@ -1728,6 +1733,21 @@ cc_test(
         "@com_google_googletest//:gtest_main",
     ],
     copts = ["-std=c++20"],
+)
+
+cc_test(
+    name = "reflection_big_struct_test",
+    srcs = ["test/reflection_big_struct_test.cpp"],
+    deps = [
+        ":reflection",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
+    ],
+    copts = ["-std=c++20"] +
+        select({
+        "//conditions:default": [],
+        ":is_clang_build": ["-fbracket-depth=1024"],
+    }),
 )
 
 cc_test(

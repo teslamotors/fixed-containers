@@ -1,5 +1,6 @@
 ### CXX_FLAGS
 build --per_file_copt external/.*@-g0,-O3,-fno-sanitize=all,-fexceptions
+build:clang --define=using_clang=true
 build:clang --per_file_copt external/.*@-Wno-everything,-ftrivial-auto-var-init=uninitialized
 build --copt -Werror
 build --copt -fno-exceptions
