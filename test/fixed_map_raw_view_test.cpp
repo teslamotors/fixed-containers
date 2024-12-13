@@ -10,6 +10,7 @@
 #include <cstddef>
 #include <iterator>
 #include <ranges>
+#include <type_traits>
 
 namespace fixed_containers
 {
@@ -49,7 +50,8 @@ FixedMapRawView get_view_of_map(const Map& map)
         fixed_red_black_tree_detail::RedBlackTreeStorageType::FIXED_INDEX_POOL);
 }
 
-auto check = [](auto &map) {
+auto check = [](auto& map)
+{
     using MapType = typename std::remove_reference_t<decltype(map)>;
     using K = typename MapType::key_type;
     using V = typename MapType::mapped_type;
@@ -82,18 +84,28 @@ TEST(FixedMapRawView, PaddingMap)
     check(map2);
 }
 
-struct ObjectArgs { std::size_t size; std::size_t align; };
-template<ObjectArgs ARGS>
-struct alignas(ARGS.align) Object { 
+struct ObjectArgs
+{
+    std::size_t size;
+    std::size_t align;
+};
+template <ObjectArgs ARGS>
+struct alignas(ARGS.align) Object
+{
     std::array<char, ARGS.size> array;
-    Object(std::size_t start) {
-        for (std::size_t i = 0; i < size(array); ++i) {
+    Object(std::size_t start)
+    {
+        for (std::size_t i = 0; i < size(array); ++i)
+        {
             array[i] = static_cast<char>((start + i) % (1 << sizeof(char)));
         }
     }
-    bool operator==(const Object& other) const {
-        for (std::size_t i = 0; i < size(array); ++i) {
-            if (array[i] != other.array[i]) {
+    bool operator==(const Object& other) const
+    {
+        for (std::size_t i = 0; i < size(array); ++i)
+        {
+            if (array[i] != other.array[i])
+            {
                 return false;
             }
         }
@@ -105,46 +117,26 @@ struct alignas(ARGS.align) Object {
 TEST(FixedMapRawView, BigMap)
 {
     {
-        using Obj = Object<{.size=32, .align=8}>;
-        FixedMap<char, Obj, 10> map{
-            {'a', Obj{0}},
-            {'b', Obj{32}},
-            {'c', Obj{64}},
-            {'d', Obj{96}}
-        };
+        using Obj = Object<{.size = 32, .align = 8}>;
+        FixedMap<char, Obj, 10> map{{'a', Obj{0}}, {'b', Obj{32}}, {'c', Obj{64}}, {'d', Obj{96}}};
         check(map);
     }
 
     {
-        using Obj = Object<{.size=32, .align=8}>;
-        FixedMap<int, Obj, 10> map{
-            {0, Obj{0}},
-            {1, Obj{32}},
-            {2, Obj{64}},
-            {3, Obj{96}}
-        };
+        using Obj = Object<{.size = 32, .align = 8}>;
+        FixedMap<int, Obj, 10> map{{0, Obj{0}}, {1, Obj{32}}, {2, Obj{64}}, {3, Obj{96}}};
         check(map);
     }
 
     {
-        using Obj = Object<{.size=128, .align=4}>;
-        FixedMap<char, Obj, 10> map{
-            {'a', Obj{0}},
-            {'b', Obj{32}},
-            {'c', Obj{64}},
-            {'d', Obj{96}}
-        };
+        using Obj = Object<{.size = 128, .align = 4}>;
+        FixedMap<char, Obj, 10> map{{'a', Obj{0}}, {'b', Obj{32}}, {'c', Obj{64}}, {'d', Obj{96}}};
         check(map);
     }
 
     {
-        using Obj = Object<{.size=128, .align=4}>;
-        FixedMap<int, Obj, 10> map{
-            {0, Obj{0}},
-            {1, Obj{32}},
-            {2, Obj{64}},
-            {3, Obj{96}}
-        };
+        using Obj = Object<{.size = 128, .align = 4}>;
+        FixedMap<int, Obj, 10> map{{0, Obj{0}}, {1, Obj{32}}, {2, Obj{64}}, {3, Obj{96}}};
         check(map);
     }
 }
@@ -154,24 +146,14 @@ TEST(FixedMapRawView, BigMap)
 TEST(FixedMapRawView, OddMap)
 {
     {
-        using Obj = Object<{.size=32, .align=4}>;
-        FixedMap<char, Obj, 5> map{
-            {'a', Obj{0}},
-            {'b', Obj{32}},
-            {'c', Obj{64}},
-            {'d', Obj{96}}
-        };
+        using Obj = Object<{.size = 32, .align = 4}>;
+        FixedMap<char, Obj, 5> map{{'a', Obj{0}}, {'b', Obj{32}}, {'c', Obj{64}}, {'d', Obj{96}}};
         check(map);
     }
 
     {
-        using Obj = Object<{.size=32, .align=4}>;
-        FixedMap<char, Obj, 7> map{
-            {'a', Obj{0}},
-            {'b', Obj{32}},
-            {'c', Obj{64}},
-            {'d', Obj{96}}
-        };
+        using Obj = Object<{.size = 32, .align = 4}>;
+        FixedMap<char, Obj, 7> map{{'a', Obj{0}}, {'b', Obj{32}}, {'c', Obj{64}}, {'d', Obj{96}}};
         check(map);
     }
 }

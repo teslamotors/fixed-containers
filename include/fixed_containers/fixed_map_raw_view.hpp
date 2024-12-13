@@ -21,11 +21,10 @@ public:
     class Iterator
     {
     public:
-
         // I use Entry so we can match UnorderedMapRawView's API where,
         // *it returns an object with .key() and .value() methods.
-        class Entry {
-        
+        class Entry
+        {
         private:
             FixedRedBlackTreeRawView::Iterator base_iterator_;
             std::size_t value_offset_;
@@ -38,16 +37,18 @@ public:
                   std::size_t max_size_bytes,
                   Compactness compactness,
                   StorageType storage_type,
-                  bool end = false) noexcept:
-                    base_iterator_(ptr,
-                            element_size_bytes,
-                            max_size_bytes,
-                            compactness,
-                            storage_type,
-                            end),
-                    value_offset_(value_offset_bytes) {}
+                  bool end = false) noexcept
+              : base_iterator_(
+                    ptr, element_size_bytes, max_size_bytes, compactness, storage_type, end)
+              , value_offset_(value_offset_bytes)
+            {
+            }
 
-            Entry(): base_iterator_(), value_offset_(0) {}
+            Entry()
+              : base_iterator_()
+              , value_offset_(0)
+            {
+            }
 
             [[nodiscard]] const std::byte* key() const { return *base_iterator_; }
 
@@ -55,7 +56,6 @@ public:
             {
                 return std::next(*base_iterator_, static_cast<std::ptrdiff_t>(value_offset_));
             }
-
         };
 
     private:
@@ -82,7 +82,8 @@ public:
                  bool end = false) noexcept
           : entry_(ptr,
                    align_up(key_size_bytes, value_align_bytes),
-                   align_up(align_up(key_size_bytes, value_align_bytes) + value_size_bytes, key_align_bytes),
+                   align_up(align_up(key_size_bytes, value_align_bytes) + value_size_bytes,
+                            key_align_bytes),
                    max_size_bytes,
                    compactness,
                    storage_type,
@@ -90,7 +91,10 @@ public:
         {
         }
 
-        Iterator() noexcept: entry_() {}
+        Iterator() noexcept
+          : entry_()
+        {
+        }
         Iterator(const Iterator&) noexcept = default;
         Iterator(Iterator&&) noexcept = default;
         Iterator& operator=(const Iterator&) noexcept = default;
