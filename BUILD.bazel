@@ -857,7 +857,8 @@ cc_library(
         ":fixed_stack",
         ":fixed_vector",
         ":in_out",
-        ":tuples",
+        ":struct_decomposition",
+        ":variadic_templates",
     ],
     copts = ["-std=c++20"],
 )
