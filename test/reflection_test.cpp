@@ -596,6 +596,20 @@ TEST(Reflection, ForEachFieldEmptyStruct)
     static_assert(COUNTER == 0);
 }
 
+TEST(Reflection, RValue)
+{
+    constexpr auto RESULT = []()
+    {
+        std::size_t counter = 0;
+        reflection::for_each_field(StructWithNestedStructs{},
+                                   [&]<typename T>(const std::string_view& /*name*/, const T&)
+                                   { counter++; });
+        return counter;
+    }();
+
+    static_assert(4 == RESULT);
+}
+
 TEST(Reflection, MockFailingAddressOfOperator)
 {
     MockFailingAddressOfOperator instance{};
