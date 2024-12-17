@@ -857,7 +857,8 @@ cc_library(
         ":fixed_stack",
         ":fixed_vector",
         ":in_out",
-        ":tuples",
+        ":struct_decomposition",
+        ":variadic_templates",
     ],
     copts = ["-std=c++20"],
 )
@@ -919,6 +920,17 @@ cc_library(
 )
 
 cc_library(
+    name = "struct_decomposition",
+    hdrs = ["include/fixed_containers/struct_decomposition.hpp"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
+    deps = [
+        ":concepts",
+    ],
+    copts = ["-std=c++20"],
+)
+
+cc_library(
     name = "struct_view",
     hdrs = ["include/fixed_containers/struct_view.hpp"],
     includes = includes_config(),
@@ -947,10 +959,7 @@ cc_library(
 
 cc_library(
     name = "tuples",
-    hdrs = [
-        "include/fixed_containers/tuples.hpp",
-        "include/fixed_containers/tuples_as_tuple_view.hpp"
-    ],
+    hdrs = ["include/fixed_containers/tuples.hpp"],
     includes = includes_config(),
     strip_include_prefix = strip_include_prefix_config(),
     deps = [
@@ -976,6 +985,14 @@ cc_library(
         ":concepts",
         ":reference_storage",
     ],
+    copts = ["-std=c++20"],
+)
+
+cc_library(
+    name = "variadic_templates",
+    hdrs = ["include/fixed_containers/variadic_templates.hpp"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
     copts = ["-std=c++20"],
 )
 
@@ -1739,6 +1756,18 @@ cc_test(
         ":string_literal",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
+    ],
+    copts = ["-std=c++20"],
+)
+
+cc_test(
+    name = "struct_decomposition_codegen",
+    srcs = ["test/struct_decomposition_codegen.cpp"],
+    deps = [
+        ":fixed_string",
+        ":fixed_vector",
+        ":int_math",
+        ":struct_decomposition",
     ],
     copts = ["-std=c++20"],
 )
