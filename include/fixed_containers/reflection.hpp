@@ -242,7 +242,7 @@ constexpr void for_each_field(T&& instance, Func&& func)
 {
     constexpr const auto& FIELD_NAMES = field_names_of<T>();
     struct_decomposition::to_parameter_pack<FIELD_NAMES.size()>(
-        std::forward<T>(instance),
+        instance,
         [&func]<typename... Args>(Args&&... args) -> bool
         {
             variadic_templates::for_each_entry(
