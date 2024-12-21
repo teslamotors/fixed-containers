@@ -5,7 +5,8 @@
 #include "fixed_containers/fixed_stack.hpp"
 #include "fixed_containers/fixed_vector.hpp"
 #include "fixed_containers/in_out.hpp"
-#include "fixed_containers/tuples.hpp"
+#include "fixed_containers/struct_decomposition.hpp"
+#include "fixed_containers/variadic_templates.hpp"
 
 #include <concepts>
 #include <memory>
@@ -240,10 +241,16 @@ template <typename T, typename Func>
 constexpr void for_each_field(T&& instance, Func&& func)
 {
     constexpr const auto& FIELD_NAMES = field_names_of<T>();
-    auto tuple_view = tuples::as_tuple_view<FIELD_NAMES.size()>(instance);
-    tuples::for_each_entry(tuple_view,
-                           [&func]<typename Field>(std::size_t index, Field&& field)
-                           { func(FIELD_NAMES.at(index), std::forward<Field>(field)); });
+    struct_decomposition::to_parameter_pack<FIELD_NAMES.size()>(
+        instance,
+        [&func]<typename... Args>(Args&&... args) -> bool
+        {
+            variadic_templates::for_each_entry(
+                [&]<typename Field>(std::size_t index, Field&& field)
+                { func(FIELD_NAMES.at(index), std::forward<Field>(field)); },
+                std::forward<Args>(args)...);
+            return true;
+        });
 }
 
 }  // namespace fixed_containers::reflection
