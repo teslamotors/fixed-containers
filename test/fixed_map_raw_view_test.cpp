@@ -117,25 +117,25 @@ struct alignas(ARGS.align) Object
 TEST(FixedMapRawView, BigMap)
 {
     {
-        using Obj = Object<{.size = 32, .align = 8}>;
+        using Obj = Object<ObjectArgs{.size = 32, .align = 8}>;
         FixedMap<char, Obj, 10> map{{'a', Obj{0}}, {'b', Obj{32}}, {'c', Obj{64}}, {'d', Obj{96}}};
         check(map);
     }
 
     {
-        using Obj = Object<{.size = 32, .align = 8}>;
+        using Obj = Object<ObjectArgs{.size = 32, .align = 8}>;
         FixedMap<int, Obj, 10> map{{0, Obj{0}}, {1, Obj{32}}, {2, Obj{64}}, {3, Obj{96}}};
         check(map);
     }
 
     {
-        using Obj = Object<{.size = 128, .align = 4}>;
+        using Obj = Object<ObjectArgs{.size = 128, .align = 4}>;
         FixedMap<char, Obj, 10> map{{'a', Obj{0}}, {'b', Obj{32}}, {'c', Obj{64}}, {'d', Obj{96}}};
         check(map);
     }
 
     {
-        using Obj = Object<{.size = 128, .align = 4}>;
+        using Obj = Object<ObjectArgs{.size = 128, .align = 4}>;
         FixedMap<int, Obj, 10> map{{0, Obj{0}}, {1, Obj{32}}, {2, Obj{64}}, {3, Obj{96}}};
         check(map);
     }
@@ -146,13 +146,13 @@ TEST(FixedMapRawView, BigMap)
 TEST(FixedMapRawView, OddMap)
 {
     {
-        using Obj = Object<{.size = 32, .align = 4}>;
+        using Obj = Object<ObjectArgs{.size = 32, .align = 4}>;
         FixedMap<char, Obj, 5> map{{'a', Obj{0}}, {'b', Obj{32}}, {'c', Obj{64}}, {'d', Obj{96}}};
         check(map);
     }
 
     {
-        using Obj = Object<{.size = 32, .align = 4}>;
+        using Obj = Object<ObjectArgs{.size = 32, .align = 4}>;
         FixedMap<char, Obj, 7> map{{'a', Obj{0}}, {'b', Obj{32}}, {'c', Obj{64}}, {'d', Obj{96}}};
         check(map);
     }
