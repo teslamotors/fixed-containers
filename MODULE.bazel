@@ -5,9 +5,9 @@ module(
 bazel_dep(name = "magic_enum", repo_name = "com_github_neargye_magic_enum")
 archive_override(
     module_name = "magic_enum",
-    integrity = "sha256-mysXiN1lH+q4i8/7Cyrj3tTCcUKildbt6ILI/IoyejU=",
-    strip_prefix = "magic_enum-d63a9d63717640705c6c9654d68fa6575d39bab8",
-    urls = ["https://github.com/Neargye/magic_enum/archive/d63a9d63717640705c6c9654d68fa6575d39bab8.tar.gz"],
+    integrity = "sha256-1jP+MRSwNFb5ruXno+qXhXMfyiS2X7qVfHke0WwS8nk=",
+    strip_prefix = "magic_enum-1a1824df7ac798177a521eed952720681b0bf482",
+    urls = ["https://github.com/Neargye/magic_enum/archive/1a1824df7ac798177a521eed952720681b0bf482.tar.gz"],
 )
 
 bazel_dep(name = "googletest", dev_dependency = True, repo_name = "com_google_googletest")

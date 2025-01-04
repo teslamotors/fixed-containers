@@ -15,7 +15,7 @@
   "overrides": [
     {
       "name": "magic-enum",
-      "version": "0.9.6#1"
+      "version": "0.9.7"
     }
   ],
   "builtin-baseline": "a345bbdc68cdfda65603e24413b21afb28f110fb"
