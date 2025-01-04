@@ -3,7 +3,11 @@
 #include "fixed_containers/enum_map.hpp"
 #include "fixed_containers/enum_utils.hpp"
 
+#if __has_include(<magic_enum/magic_enum.hpp>)
+#include <magic_enum/magic_enum.hpp>
+#else
 #include <magic_enum.hpp>
+#endif
 
 #include <array>
 #include <cstddef>

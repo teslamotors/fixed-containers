@@ -6,7 +6,11 @@
 #include "fixed_containers/consteval_compare.hpp"
 
 #include <gtest/gtest.h>
+#if __has_include(<magic_enum/magic_enum.hpp>)
+#include <magic_enum/magic_enum.hpp>
+#else
 #include <magic_enum.hpp>
+#endif
 
 #include <concepts>
 #include <cstddef>
