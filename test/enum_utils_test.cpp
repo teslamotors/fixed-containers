@@ -4,6 +4,8 @@
 
 #include "fixed_containers/concepts.hpp"
 #include "fixed_containers/consteval_compare.hpp"
+#include "fixed_containers/enum_set.hpp"
+#include "fixed_containers/fixed_map.hpp"
 
 #include <gtest/gtest.h>
 #if __has_include(<magic_enum/magic_enum.hpp>)
@@ -17,6 +19,7 @@
 #include <functional>
 #include <optional>
 #include <type_traits>
+#include <variant>
 
 namespace fixed_containers::rich_enums_detail
 {
@@ -177,6 +180,269 @@ TEST(RichEnum, EnumConstantParityWithBuiltinEnums)
         // const auto* rich_enum_val = &TestRichEnum1::C_ONE();
     }
 }
+
+namespace nested_enums
+{
+
+enum class ColorBaseBackingEnum
+{
+    RED,
+    BLUE,
+};
+
+class ColorBase : public SkeletalRichEnum<ColorBase, ColorBaseBackingEnum>
+{
+    friend SkeletalRichEnum::ValuesFriend;
+    using SkeletalRichEnum::SkeletalRichEnum;
+
+public:
+    FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(ColorBase, RED)
+    FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(ColorBase, BLUE)
+};
+
+enum class ColorVariantRed
+{
+    PINK,
+    ORANGE,
+};
+enum class ColorVariantBlue
+{
+    CYAN,
+    AZURE,
+};
+
+enum class ColorVariantAll
+{
+    INVALID,
+};
+
+template <auto COLOR = ColorVariantAll{}>
+class ColorVariant : public std::variant<ColorVariantRed, ColorVariantBlue>
+{
+public:
+    using variant::variant;
+};
+
+enum class ColorBackingEnum
+{
+    RED_PINK,
+    RED_ORANGE,
+    BLUE_CYAN,
+    BLUE_AZURE,
+};
+
+struct ColorData
+{
+    ColorBase plain_color{};
+    ColorVariant<> color_variant{};
+};
+
+struct ColorValues
+{
+    using BE = ColorBackingEnum;
+    static constexpr auto VALUES = EnumMap<BE, ColorData>::create_with_all_entries({
+        Pair<BE, ColorData>{BE::RED_PINK, {ColorBase::RED(), ColorVariantRed::PINK}},
+        Pair<BE, ColorData>{BE::RED_ORANGE, ColorData{ColorBase::RED(), ColorVariantRed::ORANGE}},
+        Pair<BE, ColorData>{BE::BLUE_CYAN, ColorData{ColorBase::BLUE(), ColorVariantBlue::CYAN}},
+        Pair<BE, ColorData>{BE::BLUE_AZURE, ColorData{ColorBase::BLUE(), ColorVariantBlue::AZURE}},
+    });
+
+    static constexpr EnumMap<ColorBase, FixedMap<ColorVariant<>, BE, 15>> REVERSE_MAP = []()
+    {
+        EnumMap<ColorBase, FixedMap<ColorVariant<>, BE, 15>> output{};
+
+        for (const auto& [backing_enum, v] : VALUES)
+        {
+            output[v.plain_color][v.color_variant] = backing_enum;
+        }
+
+        return output;
+    }();
+};
+
+class Color : public SkeletalRichEnum<Color, ColorBackingEnum>
+{
+private:
+    friend SkeletalRichEnum::ValuesFriend;
+    using SkeletalRichEnum::SkeletalRichEnum;
+
+public:
+    FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(Color, RED_PINK)
+    FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(Color, RED_ORANGE)
+    FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(Color, BLUE_CYAN)
+    FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(Color, BLUE_AZURE)
+
+    static constexpr std::optional<Color> from(const ColorBase& plain_color,
+                                               const ColorVariant<>& color_variant)
+    {
+        auto it1 = ColorValues::REVERSE_MAP.find(plain_color);
+        if (it1 == ColorValues::REVERSE_MAP.end())
+        {
+            return std::nullopt;
+        }
+
+        const FixedMap<ColorVariant<>, BackingEnum, 15>& variant_map = it1->second;
+        auto it2 = variant_map.find(color_variant);
+        if (it2 == variant_map.end())
+        {
+            return std::nullopt;
+        }
+
+        return value_of(it2->second);
+    }
+
+public:
+    [[nodiscard]] constexpr ColorBase plain_color() const
+    {
+        return ColorValues::VALUES.at(backing_enum()).plain_color;
+    }
+    [[nodiscard]] constexpr ColorVariant<> color_variant() const
+    {
+        return ColorValues::VALUES.at(backing_enum()).color_variant;
+    }
+};
+
+static constexpr EnumSet<Color> ALL_RED_VARIANTS = []()
+{
+    EnumSet<Color> out{};
+    for (const auto& color : Color::values())
+    {
+        if (color.plain_color() == ColorBase::RED())
+        {
+            out.insert(color);
+        }
+    }
+    return out;
+}();
+
+static_assert(ALL_RED_VARIANTS.size() == 2);
+static_assert(ALL_RED_VARIANTS.contains(Color::RED_ORANGE()));
+static_assert(ALL_RED_VARIANTS.contains(Color::RED_PINK()));
+
+template <>
+class ColorVariant<ColorBase::RED()>
+  : public SkeletalRichEnum<ColorVariant<ColorBase::RED()>, ColorVariantRed>
+{
+    friend SkeletalRichEnum::ValuesFriend;
+    using SkeletalRichEnum::SkeletalRichEnum;
+
+public:
+    FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(ColorVariant<ColorBase::RED()>, PINK)
+    FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(ColorVariant<ColorBase::RED()>, ORANGE)
+
+    static constexpr std::optional<ColorVariant<ColorBase::RED()>> from(
+        const ColorVariant<>& flat_variant)
+    {
+        if (const ColorVariantRed* valid_variant = std::get_if<ColorVariantRed>(&flat_variant);
+            valid_variant != nullptr)
+        {
+            switch (std::get<ColorVariantRed>(flat_variant))
+            {
+            case ColorVariantRed::PINK:
+                return std::optional{PINK()};
+            case ColorVariantRed::ORANGE:
+                return std::optional{ORANGE()};
+            }
+        }
+
+        return std::nullopt;
+    }
+};
+
+template <>
+class ColorVariant<ColorBase::BLUE()>
+  : public SkeletalRichEnum<ColorVariant<ColorBase::BLUE()>, ColorVariantBlue>
+{
+    friend SkeletalRichEnum::ValuesFriend;
+    using SkeletalRichEnum::SkeletalRichEnum;
+
+public:
+    FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(ColorVariant<ColorBase::BLUE()>, CYAN)
+    FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(ColorVariant<ColorBase::BLUE()>, AZURE)
+
+    static constexpr std::optional<ColorVariant<ColorBase::BLUE()>> from(
+        const ColorVariant<>& flat_variant)
+    {
+        if (const ColorVariantBlue* valid_variant = std::get_if<ColorVariantBlue>(&flat_variant);
+            valid_variant != nullptr)
+        {
+            switch (std::get<ColorVariantBlue>(flat_variant))
+            {
+            case ColorVariantBlue::CYAN:
+                return std::optional{CYAN()};
+            case ColorVariantBlue::AZURE:
+                return std::optional{AZURE()};
+            }
+        }
+
+        return std::nullopt;
+    }
+};
+
+static void do_stuff_with_plain_color(const Color& color)
+{
+    switch (color)
+    {
+    case Color::RED_PINK():
+        std::cout << "RED:PINK" << std::endl;
+        break;
+    case Color::RED_ORANGE():
+        std::cout << color.to_string() << std::endl;
+        break;
+    case Color::BLUE_CYAN():
+        std::cout << "BLUE:CYAN" << std::endl;
+        break;
+    case Color::BLUE_AZURE():
+        std::cout << "BLUE:AZURE" << std::endl;
+        break;
+    }
+
+    std::visit(
+        []<class T>(const T& arg)
+        {
+            if constexpr (std::same_as<T, ColorVariantRed>)
+            {
+                switch (arg)
+                {
+                case ColorVariantRed::PINK:
+                    std::cout << "RED:PINK" << std::endl;
+                    break;
+                case ColorVariantRed::ORANGE:
+                    std::cout << "RED:ORANGE" << std::endl;
+                    break;
+                }
+            }
+            else if constexpr (std::same_as<T, ColorVariantBlue>)
+            {
+                switch (arg)
+                {
+                case ColorVariantBlue::CYAN:
+                    std::cout << "BLUE:CYAN" << std::endl;
+                    break;
+                case ColorVariant<ColorBase::BLUE()>::AZURE():
+                    std::cout << "BLUE:AZURE" << std::endl;
+                    break;
+                }
+            }
+            else
+            {
+                // if-constexpr has better compilation errors but you have to remember to have this
+                // `static_assert`.
+                // `overloaded<...>` pattern has bad compilation errors, but you
+                // can't forget to put something. Syntax is also slightly convoluted.
+                static_assert(AlwaysFalseV<T>);
+            }
+        },
+        color.color_variant());
+}
+
+TEST(NestedEnums, Example)
+{
+    Color color = Color::from(ColorBase::BLUE(), ColorVariant<ColorBase::BLUE()>::AZURE()).value();
+    do_stuff_with_plain_color(color);
+}
+
+}  // namespace nested_enums
 
 TEST(BuiltinEnumAdapter, Ordinal)
 {
