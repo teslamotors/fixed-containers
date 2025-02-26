@@ -779,7 +779,7 @@ TEST(FixedSet, ClassTemplateArgumentDeduction)
     (void)var1;
 }
 
-TEST(FixedSet, SetIntersection)
+TEST(FixedSet, StdRangesIntersection)
 {
     constexpr FixedSet<int, 10> VAL1 = []()
     {
@@ -794,6 +794,42 @@ TEST(FixedSet, SetIntersection)
 
     static_assert(consteval_compare::equal<1, VAL1.size()>);
     static_assert(VAL1.contains(1));
+    static_assert(!VAL1.contains(4));
+}
+
+TEST(FixedSet, StdRangesDifference)
+{
+    constexpr FixedSet<int, 10> VAL1 = []()
+    {
+        const FixedSet<int, 10> var1{1, 4};
+        const FixedSet<int, 10> var2{1};
+
+        FixedSet<int, 10> v_difference;
+        std::ranges::set_difference(var1, var2, std::inserter(v_difference, v_difference.begin()));
+        return v_difference;
+    }();
+    static_assert(consteval_compare::equal<1, VAL1.size()>);
+    static_assert(!VAL1.contains(1));
+    static_assert(!VAL1.contains(2));
+    static_assert(!VAL1.contains(3));
+    static_assert(VAL1.contains(4));
+}
+
+TEST(FixedSet, StdRangesUnion)
+{
+    constexpr FixedSet<int, 10> VAL1 = []()
+    {
+        const FixedSet<int, 10> var1{1, 2};
+        const FixedSet<int, 10> var2{3};
+
+        FixedSet<int, 10> v_union;
+        std::ranges::set_union(var1, var2, std::inserter(v_union, v_union.begin()));
+        return v_union;
+    }();
+    static_assert(consteval_compare::equal<3, VAL1.size()>);
+    static_assert(VAL1.contains(1));
+    static_assert(VAL1.contains(2));
+    static_assert(VAL1.contains(3));
     static_assert(!VAL1.contains(4));
 }
 

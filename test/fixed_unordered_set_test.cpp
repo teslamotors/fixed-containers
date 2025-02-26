@@ -659,7 +659,7 @@ TEST(FixedUnorderedSet, ClassTemplateArgumentDeduction)
     (void)var1;
 }
 
-TEST(FixedUnorderedSet, SetIntersection)
+TEST(FixedUnorderedSet, StdRangesRangesIntersection)
 {
     constexpr FixedUnorderedSet<int, 10> VAL1 = []()
     {
@@ -674,6 +674,42 @@ TEST(FixedUnorderedSet, SetIntersection)
 
     static_assert(consteval_compare::equal<1, VAL1.size()>);
     static_assert(VAL1.contains(1));
+    static_assert(!VAL1.contains(4));
+}
+
+TEST(FixedUnorderedSet, StdRangesDifference)
+{
+    constexpr FixedUnorderedSet<int, 10> VAL1 = []()
+    {
+        const FixedUnorderedSet<int, 10> var1{1, 4};
+        const FixedUnorderedSet<int, 10> var2{1};
+
+        FixedUnorderedSet<int, 10> v_difference;
+        std::ranges::set_difference(var1, var2, std::inserter(v_difference, v_difference.begin()));
+        return v_difference;
+    }();
+    static_assert(consteval_compare::equal<1, VAL1.size()>);
+    static_assert(!VAL1.contains(1));
+    static_assert(!VAL1.contains(2));
+    static_assert(!VAL1.contains(3));
+    static_assert(VAL1.contains(4));
+}
+
+TEST(FixedUnorderedSet, StdRangesUnion)
+{
+    constexpr FixedUnorderedSet<int, 10> VAL1 = []()
+    {
+        const FixedUnorderedSet<int, 10> var1{1, 2};
+        const FixedUnorderedSet<int, 10> var2{3};
+
+        FixedUnorderedSet<int, 10> v_union;
+        std::ranges::set_union(var1, var2, std::inserter(v_union, v_union.begin()));
+        return v_union;
+    }();
+    static_assert(consteval_compare::equal<3, VAL1.size()>);
+    static_assert(VAL1.contains(1));
+    static_assert(VAL1.contains(2));
+    static_assert(VAL1.contains(3));
     static_assert(!VAL1.contains(4));
 }
 
