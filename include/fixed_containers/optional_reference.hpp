@@ -44,6 +44,16 @@ public:
     }
 
     // ctors is explicit to highlight the fact we are creating long living reference
+    explicit constexpr OptionalReference(pointer ptr) noexcept
+      : IMPLEMENTION_DETAIL_DO_NOT_USE_underlying_val_{ptr}
+    {
+    }
+
+    explicit constexpr OptionalReference(const std::unique_ptr<T>& ptr)
+      : OptionalReference(ptr.get())
+    {
+    }
+
     explicit constexpr OptionalReference(T& val) noexcept
       : IMPLEMENTION_DETAIL_DO_NOT_USE_underlying_val_(std::addressof(val))
     {
