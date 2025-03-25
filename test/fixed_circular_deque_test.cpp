@@ -2371,6 +2371,16 @@ TEST(FixedCircularDeque, OverloadedAddressOfOperator)
     }
 }
 
+TEST(FixedCircularDeque, StorageDataPointer)
+{
+    FixedCircularDeque<uint8_t, 2> var{};
+    ASSERT_NE(var.data(), nullptr);
+
+    var.push_front(1);
+    var.push_front(1);
+    ASSERT_EQ(var.data()[0], 1U);
+}
+
 TEST(FixedCircularDeque, ClassTemplateArgumentDeduction)
 {
     // Compile-only test
