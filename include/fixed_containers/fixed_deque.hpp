@@ -579,6 +579,15 @@ public:
         return unchecked_at(back_index());
     }
 
+    constexpr value_type* data() noexcept
+    {
+        return std::addressof(optional_storage_detail::get(*array().data()));
+    }
+    [[nodiscard]] constexpr const value_type* data() const noexcept
+    {
+        return std::addressof(optional_storage_detail::get(*array().data()));
+    }
+
 private:
     constexpr iterator advance_all_after_iterator_by_n(const const_iterator pos,
                                                        const std::size_t n)

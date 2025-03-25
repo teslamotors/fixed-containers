@@ -335,6 +335,15 @@ public:
         return deque().back(loc);
     }
 
+    constexpr value_type* data() noexcept
+    {
+        return deque().data();
+    }
+    [[nodiscard]] constexpr const value_type* data() const noexcept
+    {
+        return deque().data();
+    }
+
 private:
     template <InputIterator InputIt>
     constexpr iterator insert_internal(std::forward_iterator_tag /*unused*/,
