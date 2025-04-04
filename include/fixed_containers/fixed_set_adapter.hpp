@@ -320,7 +320,7 @@ private:
         return create_const_iterator(index);
     }
 
-    constexpr iterator create_const_iterator(const TableIndex& start_index) noexcept
+    constexpr iterator create_const_iterator(const TableIndex& start_index) const noexcept
     {
         return iterator{
             ReferenceProvider{std::addressof(table()), table().iterated_index_from(start_index)}};

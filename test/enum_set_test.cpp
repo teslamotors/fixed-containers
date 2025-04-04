@@ -211,6 +211,17 @@ TEST(EnumSet, InitializerConstructor)
     static_assert(VAL2.size() == 1);
 }
 
+TEST(EnumSet, Find)
+{
+    constexpr EnumSet<TestEnum1> VAL1{TestEnum1::TWO, TestEnum1::FOUR};
+    static_assert(VAL1.size() == 2);
+
+    static_assert(VAL1.find(TestEnum1::ONE) == VAL1.cend());
+    static_assert(VAL1.find(TestEnum1::TWO) != VAL1.cend());
+    static_assert(VAL1.find(TestEnum1::THREE) == VAL1.cend());
+    static_assert(VAL1.find(TestEnum1::FOUR) != VAL1.cend());
+}
+
 TEST(EnumSet, Contains)
 {
     constexpr EnumSet<TestEnum1> VAL1{TestEnum1::TWO, TestEnum1::FOUR};
