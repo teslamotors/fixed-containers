@@ -696,7 +696,7 @@ TEST(EnumSet, ClassTemplateArgumentDeduction)
     (void)var1;
 }
 
-TEST(EnumSet, SetIntersection)
+TEST(EnumSet, StdRangesIntersection)
 {
     constexpr EnumSet<TestEnum1> VAL1 = []()
     {
@@ -713,6 +713,44 @@ TEST(EnumSet, SetIntersection)
     static_assert(VAL1.contains(TestEnum1::ONE));
     static_assert(!VAL1.contains(TestEnum1::TWO));
     static_assert(!VAL1.contains(TestEnum1::THREE));
+    static_assert(!VAL1.contains(TestEnum1::FOUR));
+}
+
+TEST(EnumSet, StdRangesDifference)
+{
+    constexpr EnumSet<TestEnum1> VAL1 = []()
+    {
+        const EnumSet<TestEnum1> var1{TestEnum1::ONE, TestEnum1::FOUR};
+        const EnumSet<TestEnum1> var2{TestEnum1::ONE};
+
+        EnumSet<TestEnum1> v_difference;
+        std::ranges::set_difference(
+            var1, var2, std::inserter(v_difference, v_difference.begin()));
+        return v_difference;
+    }();
+    static_assert(consteval_compare::equal<1, VAL1.size()>);
+    static_assert(!VAL1.contains(TestEnum1::ONE));
+    static_assert(!VAL1.contains(TestEnum1::TWO));
+    static_assert(!VAL1.contains(TestEnum1::THREE));
+    static_assert(VAL1.contains(TestEnum1::FOUR));
+}
+
+TEST(EnumSet, StdRangesUnion)
+{
+    constexpr EnumSet<TestEnum1> VAL1 = []()
+    {
+        const EnumSet<TestEnum1> var1{TestEnum1::ONE, TestEnum1::TWO};
+        const EnumSet<TestEnum1> var2{TestEnum1::THREE};
+        
+        EnumSet<TestEnum1> v_union;
+        std::ranges::set_union(
+            var1, var2, std::inserter(v_union, v_union.begin()));
+        return v_union;
+    }();
+    static_assert(consteval_compare::equal<3, VAL1.size()>);
+    static_assert(VAL1.contains(TestEnum1::ONE));
+    static_assert(VAL1.contains(TestEnum1::TWO));
+    static_assert(VAL1.contains(TestEnum1::THREE));
     static_assert(!VAL1.contains(TestEnum1::FOUR));
 }
 
