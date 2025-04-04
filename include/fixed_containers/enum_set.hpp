@@ -351,6 +351,17 @@ public:
         return 1;
     }
 
+    [[nodiscard]] constexpr const_iterator find(const K& key) const noexcept
+    {
+        const std::size_t ordinal = EnumAdapterType::ordinal(key);
+        if (!this->contains_at(ordinal))
+        {
+            return this->cend();
+        }
+
+        return create_const_iterator(ordinal);
+    }
+
     [[nodiscard]] constexpr bool contains(const K& key) const noexcept
     {
         return contains_at(EnumAdapterType::ordinal(key));

@@ -78,6 +78,17 @@ TEST(FixedUnorderedSet, Initializer)
     static_assert(VAL2.size() == 1);
 }
 
+TEST(FixedUnorderedSet, Find)
+{
+    constexpr FixedUnorderedSet<int, 10> VAL1{2, 4};
+    static_assert(VAL1.size() == 2);
+
+    static_assert(VAL1.find(1) == VAL1.cend());
+    static_assert(VAL1.find(2) != VAL1.cend());
+    static_assert(VAL1.find(3) == VAL1.cend());
+    static_assert(VAL1.find(4) != VAL1.cend());
+}
+
 // TEST(FixedUnorderedSet, Find_TransparentComparator)
 // {
 //     constexpr FixedUnorderedSet<MockAComparableToB, 3, std::less<>> var{};
