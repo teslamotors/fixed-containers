@@ -688,6 +688,141 @@ TEST(EnumSet, Equality)
     static_assert(VAL4 != VAL1);
 }
 
+TEST(EnumSet, Comparison)
+{
+    // Using ASSERT_TRUE for symmetry with static_assert
+
+    // Equal size, left < right
+    {
+        const std::set<TestEnum1> left{TestEnum1::ONE, TestEnum1::TWO, TestEnum1::THREE};
+        const std::set<TestEnum1> right{TestEnum1::ONE, TestEnum1::TWO, TestEnum1::FOUR};
+
+        ASSERT_TRUE(left < right);
+        ASSERT_TRUE(left <= right);
+        ASSERT_TRUE(!(left > right));
+        ASSERT_TRUE(!(left >= right));
+    }
+
+    {
+        constexpr EnumSet<TestEnum1> LEFT{TestEnum1::ONE, TestEnum1::TWO, TestEnum1::THREE};
+        constexpr EnumSet<TestEnum1> RIGHT{TestEnum1::ONE, TestEnum1::TWO, TestEnum1::FOUR};
+
+        static_assert(LEFT < RIGHT);
+        static_assert(LEFT <= RIGHT);
+        static_assert(!(LEFT > RIGHT));
+        static_assert(!(LEFT >= RIGHT));
+
+        ASSERT_TRUE(LEFT < RIGHT);
+        ASSERT_TRUE(LEFT <= RIGHT);
+        ASSERT_TRUE(!(LEFT > RIGHT));
+        ASSERT_TRUE(!(LEFT >= RIGHT));
+    }
+
+    // Left has fewer elements, left > right
+    {
+        const std::set<TestEnum1> left{TestEnum1::ONE, TestEnum1::FOUR};
+        const std::set<TestEnum1> right{TestEnum1::ONE, TestEnum1::TWO, TestEnum1::FOUR};
+
+        ASSERT_TRUE(!(left < right));
+        ASSERT_TRUE(!(left <= right));
+        ASSERT_TRUE(left > right);
+        ASSERT_TRUE(left >= right);
+    }
+
+    {
+        constexpr EnumSet<TestEnum1> LEFT{TestEnum1::ONE, TestEnum1::FOUR};
+        constexpr EnumSet<TestEnum1> RIGHT{TestEnum1::ONE, TestEnum1::TWO, TestEnum1::FOUR};
+
+        static_assert(!(LEFT < RIGHT));
+        static_assert(!(LEFT <= RIGHT));
+        static_assert(LEFT > RIGHT);
+        static_assert(LEFT >= RIGHT);
+
+        ASSERT_TRUE(!(LEFT < RIGHT));
+        ASSERT_TRUE(!(LEFT <= RIGHT));
+        ASSERT_TRUE(LEFT > RIGHT);
+        ASSERT_TRUE(LEFT >= RIGHT);
+    }
+
+    // Right has fewer elements, left < right
+    {
+        const std::set<TestEnum1> left{TestEnum1::ONE, TestEnum1::TWO, TestEnum1::THREE};
+        const std::set<TestEnum1> right{TestEnum1::ONE, TestEnum1::FOUR};
+
+        ASSERT_TRUE(left < right);
+        ASSERT_TRUE(left <= right);
+        ASSERT_TRUE(!(left > right));
+        ASSERT_TRUE(!(left >= right));
+    }
+
+    {
+        constexpr EnumSet<TestEnum1> LEFT{TestEnum1::ONE, TestEnum1::TWO, TestEnum1::THREE};
+        constexpr EnumSet<TestEnum1> RIGHT{TestEnum1::ONE, TestEnum1::FOUR};
+
+        static_assert(LEFT < RIGHT);
+        static_assert(LEFT <= RIGHT);
+        static_assert(!(LEFT > RIGHT));
+        static_assert(!(LEFT >= RIGHT));
+
+        ASSERT_TRUE(LEFT < RIGHT);
+        ASSERT_TRUE(LEFT <= RIGHT);
+        ASSERT_TRUE(!(LEFT > RIGHT));
+        ASSERT_TRUE(!(LEFT >= RIGHT));
+    }
+
+    // Left has one additional element
+    {
+        const std::set<TestEnum1> left{TestEnum1::ONE, TestEnum1::TWO, TestEnum1::THREE};
+        const std::set<TestEnum1> right{TestEnum1::ONE, TestEnum1::TWO};
+
+        ASSERT_TRUE(!(left < right));
+        ASSERT_TRUE(!(left <= right));
+        ASSERT_TRUE(left > right);
+        ASSERT_TRUE(left >= right);
+    }
+
+    {
+        constexpr EnumSet<TestEnum1> LEFT{TestEnum1::ONE, TestEnum1::TWO, TestEnum1::THREE};
+        constexpr EnumSet<TestEnum1> RIGHT{TestEnum1::ONE, TestEnum1::TWO};
+
+        static_assert(!(LEFT < RIGHT));
+        static_assert(!(LEFT <= RIGHT));
+        static_assert(LEFT > RIGHT);
+        static_assert(LEFT >= RIGHT);
+
+        ASSERT_TRUE(!(LEFT < RIGHT));
+        ASSERT_TRUE(!(LEFT <= RIGHT));
+        ASSERT_TRUE(LEFT > RIGHT);
+        ASSERT_TRUE(LEFT >= RIGHT);
+    }
+
+    // Right has one addititonal element
+    {
+        const std::set<TestEnum1> left{TestEnum1::ONE, TestEnum1::TWO};
+        const std::set<TestEnum1> right{TestEnum1::ONE, TestEnum1::TWO, TestEnum1::THREE};
+
+        ASSERT_TRUE(left < right);
+        ASSERT_TRUE(left <= right);
+        ASSERT_TRUE(!(left > right));
+        ASSERT_TRUE(!(left >= right));
+    }
+
+    {
+        constexpr EnumSet<TestEnum1> LEFT{TestEnum1::ONE, TestEnum1::TWO};
+        constexpr EnumSet<TestEnum1> RIGHT{TestEnum1::ONE, TestEnum1::TWO, TestEnum1::THREE};
+
+        static_assert(LEFT < RIGHT);
+        static_assert(LEFT <= RIGHT);
+        static_assert(!(LEFT > RIGHT));
+        static_assert(!(LEFT >= RIGHT));
+
+        ASSERT_TRUE(LEFT < RIGHT);
+        ASSERT_TRUE(LEFT <= RIGHT);
+        ASSERT_TRUE(!(LEFT > RIGHT));
+        ASSERT_TRUE(!(LEFT >= RIGHT));
+    }
+}
+
 TEST(EnumSet, Ranges)
 {
 #if !defined(__clang__) || __clang_major__ >= 16

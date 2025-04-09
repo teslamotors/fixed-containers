@@ -719,6 +719,141 @@ TEST(FixedSet, Equality)
     static_assert(VAL4 != VAL1);
 }
 
+TEST(FixedSet, Comparison)
+{
+    // Using ASSERT_TRUE for symmetry with static_assert
+
+    // Equal size, left < right
+    {
+        const std::set<int> left{1, 2, 3};
+        const std::set<int> right{1, 2, 4};
+
+        ASSERT_TRUE(left < right);
+        ASSERT_TRUE(left <= right);
+        ASSERT_TRUE(!(left > right));
+        ASSERT_TRUE(!(left >= right));
+    }
+
+    {
+        constexpr FixedSet<int, 5> LEFT{1, 2, 3};
+        constexpr FixedSet<int, 5> RIGHT{1, 2, 4};
+
+        static_assert(LEFT < RIGHT);
+        static_assert(LEFT <= RIGHT);
+        static_assert(!(LEFT > RIGHT));
+        static_assert(!(LEFT >= RIGHT));
+
+        ASSERT_TRUE(LEFT < RIGHT);
+        ASSERT_TRUE(LEFT <= RIGHT);
+        ASSERT_TRUE(!(LEFT > RIGHT));
+        ASSERT_TRUE(!(LEFT >= RIGHT));
+    }
+
+    // Left has fewer elements, left > right
+    {
+        const std::set<int> left{1, 5};
+        const std::set<int> right{1, 2, 4};
+
+        ASSERT_TRUE(!(left < right));
+        ASSERT_TRUE(!(left <= right));
+        ASSERT_TRUE(left > right);
+        ASSERT_TRUE(left >= right);
+    }
+
+    {
+        constexpr FixedSet<int, 5> LEFT{1, 5};
+        constexpr FixedSet<int, 5> RIGHT{1, 2, 4};
+
+        static_assert(!(LEFT < RIGHT));
+        static_assert(!(LEFT <= RIGHT));
+        static_assert(LEFT > RIGHT);
+        static_assert(LEFT >= RIGHT);
+
+        ASSERT_TRUE(!(LEFT < RIGHT));
+        ASSERT_TRUE(!(LEFT <= RIGHT));
+        ASSERT_TRUE(LEFT > RIGHT);
+        ASSERT_TRUE(LEFT >= RIGHT);
+    }
+
+    // Right has fewer elements, left < right
+    {
+        const std::set<int> left{1, 2, 3};
+        const std::set<int> right{1, 5};
+
+        ASSERT_TRUE(left < right);
+        ASSERT_TRUE(left <= right);
+        ASSERT_TRUE(!(left > right));
+        ASSERT_TRUE(!(left >= right));
+    }
+
+    {
+        constexpr FixedSet<int, 5> LEFT{1, 2, 3};
+        constexpr FixedSet<int, 5> RIGHT{1, 5};
+
+        static_assert(LEFT < RIGHT);
+        static_assert(LEFT <= RIGHT);
+        static_assert(!(LEFT > RIGHT));
+        static_assert(!(LEFT >= RIGHT));
+
+        ASSERT_TRUE(LEFT < RIGHT);
+        ASSERT_TRUE(LEFT <= RIGHT);
+        ASSERT_TRUE(!(LEFT > RIGHT));
+        ASSERT_TRUE(!(LEFT >= RIGHT));
+    }
+
+    // Left has one additional element
+    {
+        const std::set<int> left{1, 2, 3};
+        const std::set<int> right{1, 2};
+
+        ASSERT_TRUE(!(left < right));
+        ASSERT_TRUE(!(left <= right));
+        ASSERT_TRUE(left > right);
+        ASSERT_TRUE(left >= right);
+    }
+
+    {
+        constexpr FixedSet<int, 5> LEFT{1, 2, 3};
+        constexpr FixedSet<int, 5> RIGHT{1, 2};
+
+        static_assert(!(LEFT < RIGHT));
+        static_assert(!(LEFT <= RIGHT));
+        static_assert(LEFT > RIGHT);
+        static_assert(LEFT >= RIGHT);
+
+        ASSERT_TRUE(!(LEFT < RIGHT));
+        ASSERT_TRUE(!(LEFT <= RIGHT));
+        ASSERT_TRUE(LEFT > RIGHT);
+        ASSERT_TRUE(LEFT >= RIGHT);
+    }
+
+    // Right has one addititonal element
+    {
+        const std::set<int> left{1, 2};
+        const std::set<int> right{1, 2, 3};
+
+        ASSERT_TRUE(left < right);
+        ASSERT_TRUE(left <= right);
+        ASSERT_TRUE(!(left > right));
+        ASSERT_TRUE(!(left >= right));
+    }
+
+    {
+        constexpr FixedSet<int, 5> LEFT{1, 2};
+        constexpr FixedSet<int, 5> RIGHT{1, 2, 3};
+
+        static_assert(LEFT < RIGHT);
+        static_assert(LEFT <= RIGHT);
+        static_assert(!(LEFT > RIGHT));
+        static_assert(!(LEFT >= RIGHT));
+
+        ASSERT_TRUE(LEFT < RIGHT);
+        ASSERT_TRUE(LEFT <= RIGHT);
+        ASSERT_TRUE(!(LEFT > RIGHT));
+        ASSERT_TRUE(!(LEFT >= RIGHT));
+    }
+}
+
 TEST(FixedSet, Ranges)
 {
 #if !defined(__clang__) || __clang_major__ >= 16

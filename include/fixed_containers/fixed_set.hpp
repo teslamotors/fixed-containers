@@ -402,6 +402,23 @@ public:
         return std::ranges::equal(*this, other);
     }
 
+    template <std::size_t MAXIMUM_SIZE_2,
+              class Compare2,
+              fixed_red_black_tree_detail::RedBlackTreeNodeColorCompactness COMPACTNESS_2,
+              template <class /*Would be IsFixedIndexBasedStorage but gcc doesn't like the
+                                 constraints here. clang accepts it */
+                        ,
+                        std::size_t>
+              typename StorageTemplate2,
+              customize::SetChecking<K> CheckingType2>
+    constexpr auto operator<=>(
+        const FixedSet<K, MAXIMUM_SIZE_2, Compare2, COMPACTNESS_2, StorageTemplate2, CheckingType2>&
+            other) const
+    {
+        return std::lexicographical_compare_three_way(
+            cbegin(), cend(), other.cbegin(), other.cend());
+    }
+
 private:
     constexpr Tree& tree() { return IMPLEMENTATION_DETAIL_DO_NOT_USE_tree_; }
     [[nodiscard]] constexpr const Tree& tree() const

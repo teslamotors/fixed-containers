@@ -372,6 +372,12 @@ public:
         return array_set() == other.array_set();
     }
 
+    constexpr auto operator<=>(const EnumSet<K>& other) const
+    {
+        return std::lexicographical_compare_three_way(
+            cbegin(), cend(), other.cbegin(), other.cend());
+    }
+
 private:
     [[nodiscard]] constexpr const std::array<bool, ENUM_COUNT>& array_set() const
     {
