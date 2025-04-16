@@ -137,6 +137,16 @@ template <is_enum T>
 struct BuiltinEnumAdapter<T>
 {
     using Enum = T;
+
+    static constexpr std::optional<Enum> value_of(const std::string_view& name)
+    {
+        return magic_enum::enum_cast<Enum>(name);
+    }
+    static constexpr std::optional<Enum> value_of(std::underlying_type_t<Enum> enum_integer)
+    {
+        return magic_enum::enum_cast<Enum>(enum_integer);
+    }
+
     static constexpr std::size_t count() { return magic_enum::enum_count<T>(); }
     static constexpr const std::array<T, count()>& values() { return magic_enum::enum_values<T>(); }
     static constexpr std::size_t ordinal(const T& key)
@@ -154,6 +164,16 @@ private:
 
 public:
     using Enum = T;
+
+    static constexpr std::optional<Enum> value_of(const std::string_view& /*name*/)
+    {
+        return std::nullopt;
+    }
+    static constexpr std::optional<Enum> value_of(std::underlying_type_t<Enum> /*enum_integer*/)
+    {
+        return std::nullopt;
+    }
+
     static constexpr std::size_t count() { return 0; }
     static constexpr const std::array<T, 0>& values() { return ZERO_SIZED_ARRAY; }
     [[noreturn]] static /*constexpr*/ std::size_t ordinal(const T& /*key*/) { std::abort(); }
@@ -164,6 +184,17 @@ template <is_rich_enum T>
 struct RichEnumAdapter
 {
     using Enum = T;
+
+    static constexpr std::optional<Enum> value_of(const std::string_view& name)
+    {
+        return T::value_of(name);
+    }
+    static constexpr std::optional<Enum> value_of(
+        std::underlying_type_t<typename Enum::BackingEnum> enum_integer)
+    {
+        return T::value_of(enum_integer);
+    }
+
     static constexpr std::size_t count() { return T::count(); }
     static constexpr const std::array<T, count()>& values() { return T::values(); }
     static constexpr std::size_t ordinal(const T& key) { return key.ordinal(); }

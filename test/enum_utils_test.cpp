@@ -178,6 +178,38 @@ TEST(RichEnum, EnumConstantParityWithBuiltinEnums)
     }
 }
 
+TEST(BuiltinEnumAdapter, ValueOfName)
+{
+    static_assert(TestEnum1::ONE == EnumAdapter<TestEnum1>::value_of("ONE"));
+    static_assert(TestEnum1::TWO == EnumAdapter<TestEnum1>::value_of("TWO"));
+    static_assert(TestEnum1::THREE == EnumAdapter<TestEnum1>::value_of("THREE"));
+    static_assert(TestEnum1::FOUR == EnumAdapter<TestEnum1>::value_of("FOUR"));
+}
+
+TEST(RichEnumAdapter, ValueOfName)
+{
+    static_assert(TestRichEnum1::C_ONE() == EnumAdapter<TestRichEnum1>::value_of("C_ONE"));
+    static_assert(TestRichEnum1::C_TWO() == EnumAdapter<TestRichEnum1>::value_of("C_TWO"));
+    static_assert(TestRichEnum1::C_THREE() == EnumAdapter<TestRichEnum1>::value_of("C_THREE"));
+    static_assert(TestRichEnum1::C_FOUR() == EnumAdapter<TestRichEnum1>::value_of("C_FOUR"));
+}
+
+TEST(BuiltinEnumAdapter, ValueOfUnderlyingInt)
+{
+    static_assert(TestEnum1::ONE == EnumAdapter<TestEnum1>::value_of(0));
+    static_assert(TestEnum1::TWO == EnumAdapter<TestEnum1>::value_of(1));
+    static_assert(TestEnum1::THREE == EnumAdapter<TestEnum1>::value_of(2));
+    static_assert(TestEnum1::FOUR == EnumAdapter<TestEnum1>::value_of(3));
+}
+
+TEST(RichEnumAdapter, ValueOfUnderlyingInt)
+{
+    static_assert(TestRichEnum1::C_ONE() == EnumAdapter<TestRichEnum1>::value_of(19));
+    static_assert(TestRichEnum1::C_TWO() == EnumAdapter<TestRichEnum1>::value_of(21));
+    static_assert(TestRichEnum1::C_THREE() == EnumAdapter<TestRichEnum1>::value_of(23));
+    static_assert(TestRichEnum1::C_FOUR() == EnumAdapter<TestRichEnum1>::value_of(25));
+}
+
 TEST(BuiltinEnumAdapter, Ordinal)
 {
     {
@@ -271,6 +303,8 @@ TEST(BuiltinEnumAdapter, EnumWithNoConstants)
 {
     static_assert(0 == EnumAdapter<EnumWithNoConstants>::count());
     static_assert(EnumAdapter<EnumWithNoConstants>::values().empty());
+    static_assert(!EnumAdapter<EnumWithNoConstants>::value_of("A").has_value());
+    static_assert(!EnumAdapter<EnumWithNoConstants>::value_of(1).has_value());
 }
 
 TEST(RichEnum, Ordinal)
