@@ -4,9 +4,9 @@
 
 namespace fixed_containers
 {
-TEST(FixedBitSet, DefaultConstructor)
+TEST(FixedBitset, DefaultConstructor)
 {
-    constexpr FixedBitSet<8> VAL1{};
+    constexpr FixedBitset<8> VAL1{};
     (void)VAL1;
 }
 
