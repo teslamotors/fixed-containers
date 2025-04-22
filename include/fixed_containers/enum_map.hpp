@@ -7,6 +7,7 @@
 #include "fixed_containers/enum_utils.hpp"
 #include "fixed_containers/erase_if.hpp"
 #include "fixed_containers/filtered_integer_range_iterator.hpp"
+#include "fixed_containers/fixed_bitset.hpp"
 #include "fixed_containers/fixed_vector.hpp"
 #include "fixed_containers/memory.hpp"
 #include "fixed_containers/optional_storage.hpp"
@@ -137,15 +138,15 @@ protected:  // [WORKAROUND-1] - Needed by the non-trivially-copyable flavor of E
     using Checking = CheckingType;
     using EnumAdapterType = rich_enums::EnumAdapter<K>;
     static constexpr std::size_t ENUM_COUNT = EnumAdapterType::count();
-    using KeyArrayType = std::array<K, ENUM_COUNT>;
+    using KeyArrayType = FixedBitset<ENUM_COUNT>;
     using OptionalV = optional_storage_detail::OptionalStorage<V>;
     using ValueArrayType = std::array<OptionalV, ENUM_COUNT>;
-    static constexpr const KeyArrayType& ENUM_VALUES = EnumAdapterType::values();
+    static constexpr const auto& ENUM_VALUES = EnumAdapterType::values();
 
 private:
     struct IndexPredicate
     {
-        const std::array<bool, ENUM_COUNT>* array_set_;
+        const KeyArrayType* array_set_;
         constexpr bool operator()(const std::size_t index) const { return (*array_set_)[index]; }
         constexpr bool operator==(const IndexPredicate&) const = default;
     };
@@ -168,7 +169,7 @@ private:
         {
         }
 
-        constexpr PairProvider(const std::array<bool, ENUM_COUNT>* array_set,
+        constexpr PairProvider(const KeyArrayType* array_set,
                                ConstOrMutableValueArray* const values,
                                const std::size_t current_index) noexcept
           : present_indices_{CompileTimeIntegerRange<0, ENUM_COUNT>{},
@@ -316,7 +317,7 @@ public:
 
 public:  // Public so this type is a structural type and can thus be used in template parameters
     ValueArrayType IMPLEMENTATION_DETAIL_DO_NOT_USE_values_;
-    std::array<bool, ENUM_COUNT> IMPLEMENTATION_DETAIL_DO_NOT_USE_array_set_;
+    KeyArrayType IMPLEMENTATION_DETAIL_DO_NOT_USE_array_set_;
     std::size_t IMPLEMENTATION_DETAIL_DO_NOT_USE_size_;
 
 public:
@@ -674,19 +675,16 @@ private:
     }
 
 protected:  // [WORKAROUND-1]
-    [[nodiscard]] constexpr const std::array<bool, ENUM_COUNT>& array_set() const
+    [[nodiscard]] constexpr const KeyArrayType& array_set() const
     {
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_set_;
     }
-    constexpr std::array<bool, ENUM_COUNT>& array_set()
-    {
-        return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_set_;
-    }
-    [[nodiscard]] constexpr const bool& array_set_unchecked_at(const std::size_t index) const
+    constexpr KeyArrayType& array_set() { return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_set_; }
+    [[nodiscard]] constexpr bool array_set_unchecked_at(const std::size_t index) const
     {
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_set_[index];
     }
-    constexpr bool& array_set_unchecked_at(const std::size_t index)
+    constexpr typename KeyArrayType::reference array_set_unchecked_at(const std::size_t index)
     {
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_set_[index];
     }
