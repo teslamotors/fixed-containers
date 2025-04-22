@@ -275,7 +275,7 @@ public:
 
     [[nodiscard]] constexpr const_iterator find(const K& key) const noexcept
     {
-        TableIndex idx = table().opaque_index_of(key);
+        const TableIndex idx = table().opaque_index_of(key);
         if (!table().exists(idx))
         {
             return cend();
@@ -320,7 +320,8 @@ private:
         return create_const_iterator(index);
     }
 
-    constexpr iterator create_const_iterator(const TableIndex& start_index) const noexcept
+    [[nodiscard]] constexpr iterator create_const_iterator(
+        const TableIndex& start_index) const noexcept
     {
         return iterator{
             ReferenceProvider{std::addressof(table()), table().iterated_index_from(start_index)}};

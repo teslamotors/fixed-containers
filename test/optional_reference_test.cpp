@@ -7,6 +7,7 @@
 #include <gtest/gtest.h>
 
 #include <compare>
+#include <memory>
 #include <optional>
 #include <utility>
 
@@ -376,21 +377,21 @@ TEST(OptionalReference, NulloptCtor)
 
 TEST(OptionalReference, PtrCtor)
 {
-    int i = 42;
-    int* iptr = &i;
-    OptionalReference<int> iref{iptr};
+    int iii = 42;
+    int* iptr = &iii;
+    const OptionalReference<int> iref{iptr};
     ASSERT_TRUE(iref.has_value());
 
     int* emptyptr = nullptr;
-    OptionalReference<int> emptyref{emptyptr};
+    const OptionalReference<int> emptyref{emptyptr};
     ASSERT_FALSE(emptyref.has_value());
 
-    std::unique_ptr<int> uniqptr = std::make_unique<int>(69);
-    OptionalReference<int> uniqref{uniqptr};
+    const std::unique_ptr<int> uniqptr = std::make_unique<int>(69);
+    const OptionalReference<int> uniqref{uniqptr};
     ASSERT_TRUE(uniqref.has_value());
 
-    std::unique_ptr<int> uniqnull{};
-    OptionalReference<int> uniqnullref{uniqnull};
+    const std::unique_ptr<int> uniqnull{};
+    const OptionalReference<int> uniqnullref{uniqnull};
     ASSERT_FALSE(uniqnullref.has_value());
 }
 

@@ -14,6 +14,7 @@
 #include <cstddef>
 #include <iterator>
 #include <ranges>
+#include <set>
 #include <type_traits>
 
 namespace fixed_containers
