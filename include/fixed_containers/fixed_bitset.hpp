@@ -31,7 +31,7 @@
 // * memcmp in FixedBitSet::operator==
 // * reinterpret_cast in FixedBitSet::count
 //
-// Orignal code from https://github.com/neargye-wg21/bitset-constexpr-proposal
+// Original code from https://github.com/neargye-wg21/bitset-constexpr-proposal
 
 #include "fixed_containers/assert_or_abort.hpp"
 #include "fixed_containers/sequence_container_checking.hpp"
@@ -48,9 +48,9 @@
 namespace fixed_containers
 {
 
-template <size_t _Bits,
+template <size_t BIT_COUNT,
           customize::SequenceContainerChecking CheckingType =
-              customize::SequenceContainerAbortChecking<bool, _Bits>>
+              customize::SequenceContainerAbortChecking<bool, BIT_COUNT>>
 class FixedBitSet
 {  // store fixed-length sequence of Boolean elements
 public:
@@ -62,8 +62,9 @@ public:
 #pragma warning(disable : 4296)  // expression is always true (/Wall)
 #endif
 
-    using _Ty = std::
-        conditional_t<_Bits <= sizeof(unsigned long) * CHAR_BIT, unsigned long, unsigned long long>;
+    using Ty = std::conditional_t<BIT_COUNT <= sizeof(unsigned long) * CHAR_BIT,
+                                  unsigned long,
+                                  unsigned long long>;
 
 #if defined(_MSC_VER)
 #pragma warning(pop)
@@ -71,415 +72,415 @@ public:
 
     class reference
     {  // proxy for an element
-        friend FixedBitSet<_Bits>;
+        friend FixedBitSet<BIT_COUNT>;
 
     public:
         constexpr ~reference() noexcept {}  // TRANSITION, ABI
 
-        constexpr reference& operator=(bool _Val) noexcept
+        constexpr reference& operator=(bool val) noexcept
         {
-            _Pbitset->_Set_unchecked(_Mypos, _Val);
+            p_bitset_->set_unchecked(my_pos_, val);
             return *this;
         }
 
-        constexpr reference& operator=(const reference& _Bitref) noexcept
+        constexpr reference& operator=(const reference& bitref) noexcept
         {
-            _Pbitset->_Set_unchecked(_Mypos, static_cast<bool>(_Bitref));
+            p_bitset_->set_unchecked(my_pos_, static_cast<bool>(bitref));
             return *this;
         }
 
         constexpr reference& flip() noexcept
         {
-            _Pbitset->_Flip_unchecked(_Mypos);
+            p_bitset_->flip_unchecked(my_pos_);
             return *this;
         }
 
-        constexpr bool operator~() const noexcept { return !_Pbitset->_Subscript(_Mypos); }
+        constexpr bool operator~() const noexcept { return !p_bitset_->subscript(my_pos_); }
 
-        constexpr operator bool() const noexcept { return _Pbitset->_Subscript(_Mypos); }
+        constexpr operator bool() const noexcept { return p_bitset_->subscript(my_pos_); }
 
     private:
         constexpr reference() noexcept
-          : _Pbitset(nullptr)
-          , _Mypos(0)
+          : p_bitset_(nullptr)
+          , my_pos_(0)
         {
         }
 
-        constexpr reference(FixedBitSet<_Bits>& _Bitset, size_t _Pos)
-          : _Pbitset(&_Bitset)
-          , _Mypos(_Pos)
+        constexpr reference(FixedBitSet<BIT_COUNT>& bitset, size_t pos)
+          : p_bitset_(&bitset)
+          , my_pos_(pos)
         {
         }
 
-        FixedBitSet<_Bits>* _Pbitset;
-        size_t _Mypos;  // position of element in FixedBitSet
+        FixedBitSet<BIT_COUNT>* p_bitset_;
+        size_t my_pos_;  // position of element in FixedBitSet
     };
 
-    static constexpr void _Validate(size_t _Pos)
+    static constexpr void validate(size_t pos)
     {  // verify that _Pos is within bounds
-        assert_or_abort(_Pos < _Bits && "FixedBitSet index outside range");
+        assert_or_abort(pos < BIT_COUNT && "FixedBitSet index outside range");
     }
 
-    constexpr bool _Subscript(size_t _Pos) const
+    constexpr bool subscript(size_t pos) const
     {
-        return (_Data[_Pos / _Bitsperword] & (_Ty{1} << _Pos % _Bitsperword)) != 0;
+        return (data[pos / BITS_PER_WORD] & (Ty{1} << pos % BITS_PER_WORD)) != 0;
     }
 
-    constexpr bool operator[](size_t _Pos) const
+    constexpr bool operator[](size_t pos) const
     {
-        _Validate(_Pos);
-        return _Subscript(_Pos);
+        validate(pos);
+        return subscript(pos);
     }
 
-    constexpr reference operator[](size_t _Pos)
+    constexpr reference operator[](size_t pos)
     {
-        _Validate(_Pos);
-        return reference(*this, _Pos);
+        validate(pos);
+        return reference(*this, pos);
     }
 
     constexpr FixedBitSet() noexcept
-      : _Data()
+      : data()
     {
     }  // construct with all false values
 
-    static constexpr bool _Need_mask = _Bits < CHAR_BIT * sizeof(unsigned long long);
+    static constexpr bool NEED_MASK = BIT_COUNT < CHAR_BIT * sizeof(unsigned long long);
 
-    static constexpr unsigned long long _Mask = (1ULL << (_Need_mask ? _Bits : 0)) - 1ULL;
+    static constexpr unsigned long long MASK = (1ULL << (NEED_MASK ? BIT_COUNT : 0)) - 1ULL;
 
-    constexpr FixedBitSet(unsigned long long _Val) noexcept
-      : _Data{static_cast<_Ty>(_Need_mask ? _Val & _Mask : _Val)}
+    constexpr FixedBitSet(unsigned long long val) noexcept
+      : data{static_cast<Ty>(NEED_MASK ? val & MASK : val)}
     {
     }
 
-    template <class _Traits, class _Elem>
-    constexpr void _Construct(const _Elem* const _Ptr,
-                              size_t _Count,
-                              const _Elem _Elem0,
-                              const _Elem _Elem1)
+    template <class Traits, class Elem>
+    constexpr void construct(const Elem* const ptr,
+                             size_t count,
+                             const Elem elem0,
+                             const Elem elem1)
     {
-        if (_Count > _Bits)
+        if (count > BIT_COUNT)
         {
-            for (size_t _Idx = _Bits; _Idx < _Count; ++_Idx)
+            for (size_t idx = BIT_COUNT; idx < count; ++idx)
             {
-                const auto _Ch = _Ptr[_Idx];
-                if (!_Traits::eq(_Elem1, _Ch) && !_Traits::eq(_Elem0, _Ch))
+                const auto character = ptr[idx];
+                if (!Traits::eq(elem1, character) && !Traits::eq(elem0, character))
                 {
-                    _Xinv();
+                    x_inv();
                 }
             }
 
-            _Count = _Bits;
+            count = BIT_COUNT;
         }
 
-        size_t _Wpos = 0;
-        if (_Count != 0)
+        size_t w_pos = 0;
+        if (count != 0)
         {
-            size_t _Bits_used_in_word = 0;
-            auto _Last = _Ptr + _Count;
-            _Ty _This_word = 0;
+            size_t bits_used_in_word = 0;
+            auto last = ptr + count;
+            Ty this_word = 0;
             do
             {
-                --_Last;
-                const auto _Ch = *_Last;
-                _This_word |= static_cast<_Ty>(_Traits::eq(_Elem1, _Ch)) << _Bits_used_in_word;
-                if (!_Traits::eq(_Elem1, _Ch) && !_Traits::eq(_Elem0, _Ch))
+                --last;
+                const auto character = *last;
+                this_word |= static_cast<Ty>(Traits::eq(elem1, character)) << bits_used_in_word;
+                if (!Traits::eq(elem1, character) && !Traits::eq(elem0, character))
                 {
-                    _Xinv();
+                    x_inv();
                 }
 
-                if (++_Bits_used_in_word == _Bitsperword)
+                if (++bits_used_in_word == BITS_PER_WORD)
                 {
-                    _Data[_Wpos] = _This_word;
-                    ++_Wpos;
-                    _This_word = 0;
-                    _Bits_used_in_word = 0;
+                    data[w_pos] = this_word;
+                    ++w_pos;
+                    this_word = 0;
+                    bits_used_in_word = 0;
                 }
-            } while (_Ptr != _Last);
+            } while (ptr != last);
 
-            if (_Bits_used_in_word != 0)
+            if (bits_used_in_word != 0)
             {
-                _Data[_Wpos] = _This_word;
-                ++_Wpos;
+                data[w_pos] = this_word;
+                ++w_pos;
             }
         }
 
-        for (; _Wpos <= _Words; ++_Wpos)
+        for (; w_pos <= WORD_COUNT; ++w_pos)
         {
-            _Data[_Wpos] = 0;
+            data[w_pos] = 0;
         }
     }
 
-    template <class _Elem, class _Traits, class _Alloc>
+    template <class Elem, class Traits, class Alloc>
     constexpr explicit FixedBitSet(
-        const std::basic_string<_Elem, _Traits, _Alloc>& _Str,
-        typename std::basic_string<_Elem, _Traits, _Alloc>::size_type _Pos = 0,
-        typename std::basic_string<_Elem, _Traits, _Alloc>::size_type _Count =
-            std::basic_string<_Elem, _Traits, _Alloc>::npos,
-        _Elem _Elem0 = static_cast<_Elem>('0'),
-        _Elem _Elem1 = static_cast<_Elem>('1'))
+        const std::basic_string<Elem, Traits, Alloc>& str,
+        typename std::basic_string<Elem, Traits, Alloc>::size_type pos = 0,
+        typename std::basic_string<Elem, Traits, Alloc>::size_type count =
+            std::basic_string<Elem, Traits, Alloc>::npos,
+        Elem elem0 = static_cast<Elem>('0'),
+        Elem elem1 = static_cast<Elem>('1'))
     {
         // construct from [_Pos, _Pos + _Count) elements in string
-        if (_Str.size() < _Pos)
+        if (str.size() < pos)
         {
-            _Xran();  // _Pos off end
+            x_ran();  // _Pos off end
         }
 
-        if (_Str.size() - _Pos < _Count)
+        if (str.size() - pos < count)
         {
-            _Count = _Str.size() - _Pos;  // trim _Count to size
+            count = str.size() - pos;  // trim _Count to size
         }
 
-        _Construct<_Traits>(_Str._Data() + _Pos, _Count, _Elem0, _Elem1);
+        construct<Traits>(str._Data() + pos, count, elem0, elem1);
     }
 
-    template <class _Elem>
+    template <class Elem>
     constexpr explicit FixedBitSet(
-        const _Elem* _Ntcts,
-        typename std::basic_string<_Elem>::size_type _Count = std::basic_string<_Elem>::npos,
-        _Elem _Elem0 = static_cast<_Elem>('0'),
-        _Elem _Elem1 = static_cast<_Elem>('1'))
+        const Elem* ntcts,
+        typename std::basic_string<Elem>::size_type count = std::basic_string<Elem>::npos,
+        Elem elem0 = static_cast<Elem>('0'),
+        Elem elem1 = static_cast<Elem>('1'))
     {
-        if (_Count == std::basic_string<_Elem>::npos)
+        if (count == std::basic_string<Elem>::npos)
         {
-            _Count = std::char_traits<_Elem>::length(_Ntcts);
+            count = std::char_traits<Elem>::length(ntcts);
         }
 
-        _Construct<std::char_traits<_Elem>>(_Ntcts, _Count, _Elem0, _Elem1);
+        construct<std::char_traits<Elem>>(ntcts, count, elem0, elem1);
     }
 
-    constexpr FixedBitSet& operator&=(const FixedBitSet& _Right) noexcept
+    constexpr FixedBitSet& operator&=(const FixedBitSet& right) noexcept
     {
-        for (size_t _Wpos = 0; _Wpos <= _Words; ++_Wpos)
+        for (size_t w_pos = 0; w_pos <= WORD_COUNT; ++w_pos)
         {
-            _Data[_Wpos] &= _Right._Data[_Wpos];
-        }
-
-        return *this;
-    }
-
-    constexpr FixedBitSet& operator|=(const FixedBitSet& _Right) noexcept
-    {
-        for (size_t _Wpos = 0; _Wpos <= _Words; ++_Wpos)
-        {
-            _Data[_Wpos] |= _Right._Data[_Wpos];
+            data[w_pos] &= right.data[w_pos];
         }
 
         return *this;
     }
 
-    constexpr FixedBitSet& operator^=(const FixedBitSet& _Right) noexcept
+    constexpr FixedBitSet& operator|=(const FixedBitSet& right) noexcept
     {
-        for (size_t _Wpos = 0; _Wpos <= _Words; ++_Wpos)
+        for (size_t w_pos = 0; w_pos <= WORD_COUNT; ++w_pos)
         {
-            _Data[_Wpos] ^= _Right._Data[_Wpos];
+            data[w_pos] |= right.data[w_pos];
         }
 
         return *this;
     }
 
-    constexpr FixedBitSet& operator<<=(size_t _Pos) noexcept
+    constexpr FixedBitSet& operator^=(const FixedBitSet& right) noexcept
+    {
+        for (size_t w_pos = 0; w_pos <= WORD_COUNT; ++w_pos)
+        {
+            data[w_pos] ^= right.data[w_pos];
+        }
+
+        return *this;
+    }
+
+    constexpr FixedBitSet& operator<<=(size_t pos) noexcept
     {  // shift left by _Pos, first by words then by bits
-        const auto _Wordshift = static_cast<ptrdiff_t>(_Pos / _Bitsperword);
-        if (_Wordshift != 0)
+        const auto wordshift = static_cast<ptrdiff_t>(pos / BITS_PER_WORD);
+        if (wordshift != 0)
         {
-            for (ptrdiff_t _Wpos = _Words; 0 <= _Wpos; --_Wpos)
+            for (ptrdiff_t w_pos = WORD_COUNT; 0 <= w_pos; --w_pos)
             {
-                _Data[_Wpos] = _Wordshift <= _Wpos ? _Data[_Wpos - _Wordshift] : 0;
+                data[w_pos] = wordshift <= w_pos ? data[w_pos - wordshift] : 0;
             }
         }
 
-        if ((_Pos %= _Bitsperword) != 0)
+        if ((pos %= BITS_PER_WORD) != 0)
         {  // 0 < _Pos < _Bitsperword, shift by bits
-            for (ptrdiff_t _Wpos = _Words; 0 < _Wpos; --_Wpos)
+            for (ptrdiff_t w_pos = WORD_COUNT; 0 < w_pos; --w_pos)
             {
-                _Data[_Wpos] = (_Data[_Wpos] << _Pos) | (_Data[_Wpos - 1] >> (_Bitsperword - _Pos));
+                data[w_pos] = (data[w_pos] << pos) | (data[w_pos - 1] >> (BITS_PER_WORD - pos));
             }
 
-            _Data[0] <<= _Pos;
+            data[0] <<= pos;
         }
-        _Trim();
+        trim();
         return *this;
     }
 
-    constexpr FixedBitSet& operator>>=(size_t _Pos) noexcept
+    constexpr FixedBitSet& operator>>=(size_t pos) noexcept
     {  // shift right by _Pos, first by words then by bits
-        const auto _Wordshift = static_cast<ptrdiff_t>(_Pos / _Bitsperword);
-        if (_Wordshift != 0)
+        const auto wordshift = static_cast<ptrdiff_t>(pos / BITS_PER_WORD);
+        if (wordshift != 0)
         {
-            for (ptrdiff_t _Wpos = 0; _Wpos <= _Words; ++_Wpos)
+            for (ptrdiff_t w_pos = 0; w_pos <= WORD_COUNT; ++w_pos)
             {
-                _Data[_Wpos] = _Wordshift <= _Words - _Wpos ? _Data[_Wpos + _Wordshift] : 0;
+                data[w_pos] = wordshift <= WORD_COUNT - w_pos ? data[w_pos + wordshift] : 0;
             }
         }
 
-        if ((_Pos %= _Bitsperword) != 0)
+        if ((pos %= BITS_PER_WORD) != 0)
         {  // 0 < _Pos < _Bitsperword, shift by bits
-            for (ptrdiff_t _Wpos = 0; _Wpos < _Words; ++_Wpos)
+            for (ptrdiff_t w_pos = 0; w_pos < WORD_COUNT; ++w_pos)
             {
-                _Data[_Wpos] = (_Data[_Wpos] >> _Pos) | (_Data[_Wpos + 1] << (_Bitsperword - _Pos));
+                data[w_pos] = (data[w_pos] >> pos) | (data[w_pos + 1] << (BITS_PER_WORD - pos));
             }
 
-            _Data[_Words] >>= _Pos;
+            data[WORD_COUNT] >>= pos;
         }
         return *this;
     }
 
     constexpr FixedBitSet& set() noexcept
     {  // set all bits true
-        _Data.set();
-        _Trim();
+        data.set();
+        trim();
         return *this;
     }
 
-    constexpr FixedBitSet& set(size_t _Pos, bool _Val = true)
+    constexpr FixedBitSet& set(size_t pos, bool val = true)
     {  // set bit at _Pos to _Val
-        if (_Bits <= _Pos)
+        if (BIT_COUNT <= pos)
         {
-            _Xran();  // _Pos off end
+            x_ran();  // _Pos off end
         }
 
-        return _Set_unchecked(_Pos, _Val);
+        return set_unchecked(pos, val);
     }
 
     constexpr FixedBitSet& reset() noexcept
     {  // set all bits false
-        for (size_t _Wpos = 0; _Wpos <= _Words; ++_Wpos)
+        for (size_t w_pos = 0; w_pos <= WORD_COUNT; ++w_pos)
         {
-            _Data[_Wpos] = 0;
+            data[w_pos] = 0;
         }
         // std::memset(&_Array, 0, sizeof(_Array));
 
         return *this;
     }
 
-    constexpr FixedBitSet& reset(size_t _Pos)
+    constexpr FixedBitSet& reset(size_t pos)
     {  // set bit at _Pos to false
-        return set(_Pos, false);
+        return set(pos, false);
     }
 
     constexpr FixedBitSet operator~() const noexcept
     {  // flip all bits
-        FixedBitSet _Tmp = *this;
-        _Tmp.flip();
-        return _Tmp;
+        FixedBitSet tmp = *this;
+        tmp.flip();
+        return tmp;
     }
 
     constexpr FixedBitSet& flip() noexcept
     {  // flip all bits
-        for (size_t _Wpos = 0; _Wpos <= _Words; ++_Wpos)
+        for (size_t w_pos = 0; w_pos <= WORD_COUNT; ++w_pos)
         {
-            _Data[_Wpos] = ~_Data[_Wpos];
+            data[w_pos] = ~data[w_pos];
         }
 
-        _Trim();
+        trim();
         return *this;
     }
 
-    constexpr FixedBitSet& flip(size_t _Pos)
+    constexpr FixedBitSet& flip(size_t pos)
     {  // flip bit at _Pos
-        if (_Bits <= _Pos)
+        if (BIT_COUNT <= pos)
         {
-            _Xran();  // _Pos off end
+            x_ran();  // _Pos off end
         }
 
-        return _Flip_unchecked(_Pos);
+        return flip_unchecked(pos);
     }
 
     constexpr unsigned long to_ulong() const
     {
-        constexpr bool _Bits_zero = _Bits == 0;
-        constexpr bool _Bits_small = _Bits <= 32;
-        constexpr bool _Bits_large = _Bits > 64;
-        if constexpr (_Bits_zero)
+        constexpr bool BITS_ZERO = BIT_COUNT == 0;
+        constexpr bool BITS_SMALL = BIT_COUNT <= 32;
+        constexpr bool BITS_LARGE = BIT_COUNT > 64;
+        if constexpr (BITS_ZERO)
         {
             return 0;
         }
-        else if constexpr (_Bits_small)
+        else if constexpr (BITS_SMALL)
         {
-            return static_cast<unsigned long>(_Data[0]);
+            return static_cast<unsigned long>(data[0]);
         }
         else
         {
-            if constexpr (_Bits_large)
+            if constexpr (BITS_LARGE)
             {
-                for (size_t _Idx = 1; _Idx <= _Words; ++_Idx)
+                for (size_t idx = 1; idx <= WORD_COUNT; ++idx)
                 {
-                    if (_Data[_Idx] != 0)
+                    if (data[idx] != 0)
                     {
-                        _Xoflo();  // fail if any high-order words are nonzero
+                        x_oflo();  // fail if any high-order words are nonzero
                     }
                 }
             }
 
-            if (_Data[0] > ULONG_MAX)
+            if (data[0] > ULONG_MAX)
             {
-                _Xoflo();
+                x_oflo();
             }
 
-            return static_cast<unsigned long>(_Data[0]);
+            return static_cast<unsigned long>(data[0]);
         }
     }
 
     constexpr unsigned long long to_ullong() const
     {
-        constexpr bool _Bits_zero = _Bits == 0;
-        constexpr bool _Bits_large = _Bits > 64;
-        if constexpr (_Bits_zero)
+        constexpr bool BITS_ZERO = BIT_COUNT == 0;
+        constexpr bool BITS_LARGE = BIT_COUNT > 64;
+        if constexpr (BITS_ZERO)
         {
             return 0;
         }
         else
         {
-            if constexpr (_Bits_large)
+            if constexpr (BITS_LARGE)
             {
-                for (size_t _Idx = 1; _Idx <= _Words; ++_Idx)
+                for (size_t idx = 1; idx <= WORD_COUNT; ++idx)
                 {
-                    if (_Data[_Idx] != 0)
+                    if (data[idx] != 0)
                     {
-                        _Xoflo();  // fail if any high-order words are nonzero
+                        x_oflo();  // fail if any high-order words are nonzero
                     }
                 }
             }
 
-            return _Data[0];
+            return data[0];
         }
     }
 
-    template <class _Elem = char,
-              class _Tr = std::char_traits<_Elem>,
-              class _Alloc = std::allocator<_Elem>>
-    constexpr std::basic_string<_Elem, _Tr, _Alloc> to_string(
-        _Elem _Elem0 = static_cast<_Elem>('0'), _Elem _Elem1 = static_cast<_Elem>('1')) const
+    template <class Elem = char,
+              class CharTraits = std::char_traits<Elem>,
+              class Alloc = std::allocator<Elem>>
+    constexpr std::basic_string<Elem, CharTraits, Alloc> to_string(
+        Elem elem0 = static_cast<Elem>('0'), Elem elem1 = static_cast<Elem>('1')) const
     {
         // convert FixedBitSet to string
-        std::basic_string<_Elem, _Tr, _Alloc> _Str;
-        _Str.reserve(_Bits);
+        std::basic_string<Elem, CharTraits, Alloc> str;
+        str.reserve(BIT_COUNT);
 
-        for (auto _Pos = _Bits; 0 < _Pos;)
+        for (auto pos = BIT_COUNT; 0 < pos;)
         {
-            _Str.push_back(_Subscript(--_Pos) ? _Elem1 : _Elem0);
+            str.push_back(subscript(--pos) ? elem1 : elem0);
         }
 
-        return _Str;
+        return str;
     }
 
     constexpr size_t count() const noexcept
     {  // count number of set bits
         size_t result = 0;
-        for (size_t _Wpos = 0; _Wpos <= _Words; ++_Wpos)
+        for (size_t w_pos = 0; w_pos <= WORD_COUNT; ++w_pos)
         {
-            result += std::popcount(_Data[_Wpos]);
+            result += std::popcount(data[w_pos]);
         }
         return result;
     }
 
-    constexpr size_t size() const noexcept { return _Bits; }
+    constexpr size_t size() const noexcept { return BIT_COUNT; }
 
-    constexpr bool operator==(const FixedBitSet& _Right) const noexcept
+    constexpr bool operator==(const FixedBitSet& right) const noexcept
     {
-        for (size_t _Wpos = 0; _Wpos <= _Words; ++_Wpos)
+        for (size_t w_pos = 0; w_pos <= WORD_COUNT; ++w_pos)
         {
-            if (_Data[_Wpos] != _Right._Data[_Wpos])
+            if (data[w_pos] != right.data[w_pos])
             {
                 return false;
             }
@@ -487,26 +488,23 @@ public:
         return true;
     }
 
-    constexpr bool operator!=(const FixedBitSet& _Right) const noexcept
-    {
-        return !(*this == _Right);
-    }
+    constexpr bool operator!=(const FixedBitSet& right) const noexcept { return !(*this == right); }
 
-    constexpr bool test(size_t _Pos) const
+    constexpr bool test(size_t pos) const
     {
-        if (_Bits <= _Pos)
+        if (BIT_COUNT <= pos)
         {
-            _Xran();  // _Pos off end
+            x_ran();  // _Pos off end
         }
 
-        return _Subscript(_Pos);
+        return subscript(pos);
     }
 
     constexpr bool any() const noexcept
     {
-        for (size_t _Wpos = 0; _Wpos <= _Words; ++_Wpos)
+        for (size_t w_pos = 0; w_pos <= WORD_COUNT; ++w_pos)
         {
-            if (_Data[_Wpos] != 0)
+            if (data[w_pos] != 0)
             {
                 return true;
             }
@@ -519,140 +517,142 @@ public:
 
     constexpr bool all() const noexcept
     {
-        constexpr bool _Zero_length = _Bits == 0;
-        if constexpr (_Zero_length)
+        constexpr bool ZERO_LENGTH = BIT_COUNT == 0;
+        if constexpr (ZERO_LENGTH)
         {  // must test for this, otherwise would count one full word
             return true;
         }
 
-        constexpr bool _No_padding = _Bits % _Bitsperword == 0;
-        for (size_t _Wpos = 0; _Wpos < _Words + _No_padding; ++_Wpos)
+        constexpr bool NO_PADDING = BIT_COUNT % BITS_PER_WORD == 0;
+        for (size_t w_pos = 0; w_pos < WORD_COUNT + NO_PADDING; ++w_pos)
         {
-            if (_Data[_Wpos] != ~static_cast<_Ty>(0))
+            if (data[w_pos] != ~static_cast<Ty>(0))
             {
                 return false;
             }
         }
 
-        return _No_padding || _Data[_Words] == (static_cast<_Ty>(1) << (_Bits % _Bitsperword)) - 1;
+        return NO_PADDING ||
+               data[WORD_COUNT] == (static_cast<Ty>(1) << (BIT_COUNT % BITS_PER_WORD)) - 1;
     }
 
-    constexpr FixedBitSet operator<<(size_t _Pos) const noexcept
+    constexpr FixedBitSet operator<<(size_t pos) const noexcept
     {
-        FixedBitSet _Tmp = *this;
-        _Tmp <<= _Pos;
-        return _Tmp;
+        FixedBitSet tmp = *this;
+        tmp <<= pos;
+        return tmp;
     }
 
-    constexpr FixedBitSet operator>>(size_t _Pos) const noexcept
+    constexpr FixedBitSet operator>>(size_t pos) const noexcept
     {
-        FixedBitSet _Tmp = *this;
-        _Tmp >>= _Pos;
-        return _Tmp;
+        FixedBitSet tmp = *this;
+        tmp >>= pos;
+        return tmp;
     }
 
-    constexpr _Ty _Getword(size_t _Wpos) const noexcept
+    constexpr Ty get_word(size_t w_pos) const noexcept
     {  // nonstandard extension; get underlying word
-        return _Data[_Wpos];
+        return data[w_pos];
     }
 
 private:
-    friend std::hash<FixedBitSet<_Bits>>;
+    friend std::hash<FixedBitSet<BIT_COUNT>>;
 
-    static constexpr ptrdiff_t _Bitsperword = CHAR_BIT * sizeof(_Ty);
-    static constexpr ptrdiff_t _Words =
-        _Bits == 0 ? 0 : (_Bits - 1) / _Bitsperword;  // NB: number of words - 1
+    static constexpr ptrdiff_t BITS_PER_WORD = CHAR_BIT * sizeof(Ty);
+    static constexpr ptrdiff_t WORD_COUNT =
+        BIT_COUNT == 0 ? 0 : (BIT_COUNT - 1) / BITS_PER_WORD;  // NB: number of words - 1
 
-    constexpr void _Trim() noexcept
+    constexpr void trim() noexcept
     {  // clear any trailing bits in last word
-        constexpr bool _Work_to_do = _Bits == 0 || _Bits % _Bitsperword != 0;
-        if constexpr (_Work_to_do)
+        constexpr bool WORK_TO_DO = BIT_COUNT == 0 || BIT_COUNT % BITS_PER_WORD != 0;
+        if constexpr (WORK_TO_DO)
         {
-            _Data[_Words] &= (_Ty{1} << _Bits % _Bitsperword) - 1;
+            data[WORD_COUNT] &= (Ty{1} << BIT_COUNT % BITS_PER_WORD) - 1;
         }
     }
 
-    constexpr FixedBitSet& _Set_unchecked(size_t _Pos, bool _Val) noexcept
+    constexpr FixedBitSet& set_unchecked(size_t pos, bool val) noexcept
     {  // set bit at _Pos to _Val, no checking
-        auto& _Selected_word = _Data[_Pos / _Bitsperword];
-        const auto _Bit = _Ty{1} << _Pos % _Bitsperword;
-        if (_Val)
+        auto& selected_word = data[pos / BITS_PER_WORD];
+        const auto bit = Ty{1} << pos % BITS_PER_WORD;
+        if (val)
         {
-            _Selected_word |= _Bit;
+            selected_word |= bit;
         }
         else
         {
-            _Selected_word &= ~_Bit;
+            selected_word &= ~bit;
         }
 
         return *this;
     }
 
-    constexpr FixedBitSet& _Flip_unchecked(size_t _Pos) noexcept
+    constexpr FixedBitSet& flip_unchecked(size_t pos) noexcept
     {  // flip bit at _Pos, no checking
-        _Data[_Pos / _Bitsperword] ^= _Ty{1} << _Pos % _Bitsperword;
+        data[pos / BITS_PER_WORD] ^= Ty{1} << pos % BITS_PER_WORD;
         return *this;
     }
 
-    [[noreturn]] constexpr void _Xinv(const std_transition::source_location& loc =
+    [[noreturn]] constexpr void x_inv(const std_transition::source_location& loc =
                                           std_transition::source_location::current()) const
     {
         CheckingType::invalid_argument("invalid FixedBitSet char", loc);
     }
 
-    [[noreturn]] constexpr void _Xoflo(const std_transition::source_location& loc =
+    [[noreturn]] constexpr void x_oflo(const std_transition::source_location& loc =
                                            std_transition::source_location::current()) const
     {
         CheckingType::std::overflow_error("FixedBitSet overflow", loc);
     }
 
-    [[noreturn]] constexpr void _Xran(const std_transition::source_location& loc =
+    [[noreturn]] constexpr void x_ran(const std_transition::source_location& loc =
                                           std_transition::source_location::current()) const
     {
         CheckingType::std::out_of_range("invalid FixedBitSet position", loc);
     }
 
 public:
-    std::array<_Ty, _Words + 1> _Data;  // Make _Data public to satisfy IsStructural requirement
+    std::array<Ty, WORD_COUNT + 1> data;  // Make _Data public to satisfy IsStructural requirement
 };
 
-template <size_t _Bits>
-constexpr FixedBitSet<_Bits> operator&(const FixedBitSet<_Bits>& _Left,
-                                       const FixedBitSet<_Bits>& _Right) noexcept
+template <size_t BIT_COUNT>
+constexpr FixedBitSet<BIT_COUNT> operator&(const FixedBitSet<BIT_COUNT>& left,
+                                           const FixedBitSet<BIT_COUNT>& right) noexcept
 {
-    FixedBitSet<_Bits> _Ans = _Left;
-    _Ans &= _Right;
-    return _Ans;
+    FixedBitSet<BIT_COUNT> ans = left;
+    ans &= right;
+    return ans;
 }
 
-template <size_t _Bits>
-constexpr FixedBitSet<_Bits> operator|(const FixedBitSet<_Bits>& _Left,
-                                       const FixedBitSet<_Bits>& _Right) noexcept
+template <size_t BIT_COUNT>
+constexpr FixedBitSet<BIT_COUNT> operator|(const FixedBitSet<BIT_COUNT>& left,
+                                           const FixedBitSet<BIT_COUNT>& right) noexcept
 {
-    FixedBitSet<_Bits> _Ans = _Left;
-    _Ans |= _Right;
-    return _Ans;
+    FixedBitSet<BIT_COUNT> ans = left;
+    ans |= right;
+    return ans;
 }
 
-template <size_t _Bits>
-constexpr FixedBitSet<_Bits> operator^(const FixedBitSet<_Bits>& _Left,
-                                       const FixedBitSet<_Bits>& _Right) noexcept
+template <size_t BIT_COUNT>
+constexpr FixedBitSet<BIT_COUNT> operator^(const FixedBitSet<BIT_COUNT>& left,
+                                           const FixedBitSet<BIT_COUNT>& right) noexcept
 {
-    FixedBitSet<_Bits> _Ans = _Left;
-    _Ans ^= _Right;
-    return _Ans;
+    FixedBitSet<BIT_COUNT> ans = left;
+    ans ^= right;
+    return ans;
 }
 }  // namespace fixed_containers
 
-template <size_t _Bits>
-struct std::hash<fixed_containers::FixedBitSet<_Bits>>
+template <size_t BIT_COUNT>
+struct std::hash<fixed_containers::FixedBitSet<BIT_COUNT>>
 {
-    constexpr size_t operator()(const fixed_containers::FixedBitSet<_Bits>& _BitSet) const noexcept
+    constexpr size_t operator()(
+        const fixed_containers::FixedBitSet<BIT_COUNT>& bitset) const noexcept
     {
         std::size_t result = 0;
-        for (size_t i = 0; i <= _BitSet._Words; ++i)
+        for (size_t i = 0; i <= bitset._Words; ++i)
         {
-            result ^= _BitSet._Data[i];
+            result ^= bitset._Data[i];
         }
         return result;
     }
