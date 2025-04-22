@@ -40,8 +40,8 @@
 #include <bit>
 #include <cassert>
 #include <climits>
+#include <cstddef>
 #include <functional>
-#include <iostream>
 #include <string>
 #include <type_traits>
 
@@ -53,6 +53,11 @@ template <size_t BIT_COUNT,
               customize::SequenceContainerAbortChecking<bool, BIT_COUNT>>
 class FixedBitset
 {  // store fixed-length sequence of Boolean elements
+
+private:
+    using UnsignedLong = unsigned long;           // NOLINT(google-runtime-int)
+    using UnsignedLongLong = unsigned long long;  // NOLINT(google-runtime-int)
+
 public:
     using size_type = std::size_t;
     using difference_type = std::ptrdiff_t;
@@ -62,34 +67,38 @@ public:
 #pragma warning(disable : 4296)  // expression is always true (/Wall)
 #endif
 
-    using Ty = std::conditional_t<BIT_COUNT <= sizeof(unsigned long) * CHAR_BIT,
-                                  unsigned long,
-                                  unsigned long long>;
+    using Ty = std::
+        conditional_t<BIT_COUNT <= sizeof(UnsignedLong) * CHAR_BIT, UnsignedLong, UnsignedLongLong>;
 
 #if defined(_MSC_VER)
 #pragma warning(pop)
 #endif
 
-    class reference
+    class Reference
     {  // proxy for an element
         friend FixedBitset<BIT_COUNT>;
 
     public:
-        constexpr ~reference() noexcept {}  // TRANSITION, ABI
+        constexpr ~Reference() noexcept = default;
 
-        constexpr reference& operator=(bool val) noexcept
+        constexpr Reference& operator=(bool val) noexcept
         {
             p_bitset_->set_unchecked(my_pos_, val);
             return *this;
         }
 
-        constexpr reference& operator=(const reference& bitref) noexcept
+        constexpr Reference& operator=(const Reference& bitref) noexcept
         {
+            if (this == &bitref)
+            {
+                return *this;
+            }
+
             p_bitset_->set_unchecked(my_pos_, static_cast<bool>(bitref));
             return *this;
         }
 
-        constexpr reference& flip() noexcept
+        constexpr Reference& flip() noexcept
         {
             p_bitset_->flip_unchecked(my_pos_);
             return *this;
@@ -100,13 +109,13 @@ public:
         constexpr operator bool() const noexcept { return p_bitset_->subscript(my_pos_); }
 
     private:
-        constexpr reference() noexcept
+        constexpr Reference() noexcept
           : p_bitset_(nullptr)
           , my_pos_(0)
         {
         }
 
-        constexpr reference(FixedBitset<BIT_COUNT>& bitset, size_t pos)
+        constexpr Reference(FixedBitset<BIT_COUNT>& bitset, size_t pos)
           : p_bitset_(&bitset)
           , my_pos_(pos)
         {
@@ -116,12 +125,14 @@ public:
         size_t my_pos_;  // position of element in FixedBitSet
     };
 
+    using reference = Reference;
+
     static constexpr void validate(size_t pos)
     {  // verify that _Pos is within bounds
-        assert_or_abort(pos < BIT_COUNT && "FixedBitSet index outside range");
+        assert_or_abort(pos < BIT_COUNT && static_cast<bool>("FixedBitSet index outside range"));
     }
 
-    constexpr bool subscript(size_t pos) const
+    [[nodiscard]] constexpr bool subscript(size_t pos) const
     {
         return (data[pos / BITS_PER_WORD] & (Ty{1} << pos % BITS_PER_WORD)) != 0;
     }
@@ -143,11 +154,11 @@ public:
     {
     }  // construct with all false values
 
-    static constexpr bool NEED_MASK = BIT_COUNT < CHAR_BIT * sizeof(unsigned long long);
+    static constexpr bool NEED_MASK = BIT_COUNT < CHAR_BIT * sizeof(UnsignedLongLong);
 
-    static constexpr unsigned long long MASK = (1ULL << (NEED_MASK ? BIT_COUNT : 0)) - 1ULL;
+    static constexpr UnsignedLongLong MASK = (1ULL << (NEED_MASK ? BIT_COUNT : 0)) - 1ULL;
 
-    constexpr FixedBitset(unsigned long long val) noexcept
+    constexpr FixedBitset(UnsignedLongLong val) noexcept
       : data{static_cast<Ty>(NEED_MASK ? val & MASK : val)}
     {
     }
@@ -289,7 +300,8 @@ public:
             }
         }
 
-        if ((pos %= BITS_PER_WORD) != 0)
+        pos %= BITS_PER_WORD;
+        if (pos != 0)
         {  // 0 < _Pos < _Bitsperword, shift by bits
             for (ptrdiff_t w_pos = WORD_COUNT; 0 < w_pos; --w_pos)
             {
@@ -313,7 +325,8 @@ public:
             }
         }
 
-        if ((pos %= BITS_PER_WORD) != 0)
+        pos %= BITS_PER_WORD;
+        if (pos != 0)
         {  // 0 < _Pos < _Bitsperword, shift by bits
             for (ptrdiff_t w_pos = 0; w_pos < WORD_COUNT; ++w_pos)
             {
@@ -386,7 +399,7 @@ public:
         return flip_unchecked(pos);
     }
 
-    constexpr unsigned long to_ulong() const
+    [[nodiscard]] constexpr UnsignedLong to_ulong() const
     {
         constexpr bool BITS_ZERO = BIT_COUNT == 0;
         constexpr bool BITS_SMALL = BIT_COUNT <= 32;
@@ -397,7 +410,7 @@ public:
         }
         else if constexpr (BITS_SMALL)
         {
-            return static_cast<unsigned long>(data[0]);
+            return static_cast<UnsignedLong>(data[0]);
         }
         else
         {
@@ -417,11 +430,11 @@ public:
                 x_oflo();
             }
 
-            return static_cast<unsigned long>(data[0]);
+            return static_cast<UnsignedLong>(data[0]);
         }
     }
 
-    constexpr unsigned long long to_ullong() const
+    [[nodiscard]] constexpr UnsignedLongLong to_ullong() const
     {
         constexpr bool BITS_ZERO = BIT_COUNT == 0;
         constexpr bool BITS_LARGE = BIT_COUNT > 64;
@@ -464,7 +477,7 @@ public:
         return str;
     }
 
-    constexpr size_t count() const noexcept
+    [[nodiscard]] constexpr size_t count() const noexcept
     {  // count number of set bits
         size_t result = 0;
         for (size_t w_pos = 0; w_pos <= WORD_COUNT; ++w_pos)
@@ -474,7 +487,7 @@ public:
         return result;
     }
 
-    constexpr size_t size() const noexcept { return BIT_COUNT; }
+    [[nodiscard]] constexpr size_t size() const noexcept { return BIT_COUNT; }
 
     constexpr bool operator==(const FixedBitset& right) const noexcept
     {
@@ -490,7 +503,7 @@ public:
 
     constexpr bool operator!=(const FixedBitset& right) const noexcept { return !(*this == right); }
 
-    constexpr bool test(size_t pos) const
+    [[nodiscard]] constexpr bool test(size_t pos) const
     {
         if (BIT_COUNT <= pos)
         {
@@ -500,7 +513,7 @@ public:
         return subscript(pos);
     }
 
-    constexpr bool any() const noexcept
+    [[nodiscard]] constexpr bool any() const noexcept
     {
         for (size_t w_pos = 0; w_pos <= WORD_COUNT; ++w_pos)
         {
@@ -513,9 +526,9 @@ public:
         return false;
     }
 
-    constexpr bool none() const noexcept { return !any(); }
+    [[nodiscard]] constexpr bool none() const noexcept { return !any(); }
 
-    constexpr bool all() const noexcept
+    [[nodiscard]] constexpr bool all() const noexcept
     {
         constexpr bool ZERO_LENGTH = BIT_COUNT == 0;
         if constexpr (ZERO_LENGTH)
@@ -524,7 +537,7 @@ public:
         }
 
         constexpr bool NO_PADDING = BIT_COUNT % BITS_PER_WORD == 0;
-        for (size_t w_pos = 0; w_pos < WORD_COUNT + NO_PADDING; ++w_pos)
+        for (size_t w_pos = 0; w_pos < WORD_COUNT + static_cast<ptrdiff_t>(NO_PADDING); ++w_pos)
         {
             if (data[w_pos] != ~static_cast<Ty>(0))
             {
@@ -550,7 +563,7 @@ public:
         return tmp;
     }
 
-    constexpr Ty get_word(size_t w_pos) const noexcept
+    [[nodiscard]] constexpr Ty get_word(size_t w_pos) const noexcept
     {  // nonstandard extension; get underlying word
         return data[w_pos];
     }
