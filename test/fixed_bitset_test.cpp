@@ -242,4 +242,67 @@ TEST(FixedBitset, TestOutOfBounds)
     EXPECT_DEATH((void)val1.test(15), "");
 }
 
+TEST(FixedBitset, All)
+{
+    constexpr FixedBitset<4> VAL1("0000");
+    constexpr FixedBitset<4> VAL2("0101");
+    constexpr FixedBitset<4> VAL3("1111");
+
+    static_assert(!VAL1.all());
+    static_assert(!VAL2.all());
+    static_assert(VAL3.all());
+}
+
+TEST(FixedBitset, Any)
+{
+    constexpr FixedBitset<4> VAL1("0000");
+    constexpr FixedBitset<4> VAL2("0101");
+    constexpr FixedBitset<4> VAL3("1111");
+
+    static_assert(!VAL1.any());
+    static_assert(VAL2.any());
+    static_assert(VAL3.any());
+}
+
+TEST(FixedBitset, None)
+{
+    constexpr FixedBitset<4> VAL1("0000");
+    constexpr FixedBitset<4> VAL2("0101");
+    constexpr FixedBitset<4> VAL3("1111");
+
+    static_assert(VAL1.none());
+    static_assert(!VAL2.none());
+    static_assert(!VAL3.none());
+}
+
+TEST(FixedBitset, Count)
+{
+    {
+        constexpr FixedBitset<8> VAL1{42};  // [0,0,1,0,1,0,1,0]
+        static_assert(8 == VAL1.size());
+        static_assert(3 == VAL1.count());
+    }
+
+    {
+        constexpr FixedBitset<8> VAL1{0xfff0};  // [1,1,1,1,0,0,0,0]
+        static_assert(8 == VAL1.size());
+        static_assert(4 == VAL1.count());
+    }
+}
+
+TEST(FixedBitset, Size)
+{
+    {
+        constexpr FixedBitset<8> VAL1{42};  // [0,0,1,0,1,0,1,0]
+        static_assert(8 == VAL1.size());
+        static_assert(3 == VAL1.count());
+    }
+
+    {
+        constexpr FixedBitset<8> VAL1{0xfff0};  // [1,1,1,1,0,0,0,0]
+        static_assert(8 == VAL1.size());
+        static_assert(4 == VAL1.count());
+    }
+}
+
 }  // namespace fixed_containers

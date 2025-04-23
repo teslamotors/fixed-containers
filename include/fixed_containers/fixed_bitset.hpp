@@ -279,6 +279,54 @@ public:
         return subscript(pos);
     }
 
+    [[nodiscard]] constexpr bool any() const noexcept
+    {
+        for (size_t w_pos = 0; w_pos <= WORD_COUNT; ++w_pos)
+        {
+            if (data[w_pos] != 0)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    [[nodiscard]] constexpr bool none() const noexcept { return !any(); }
+
+    [[nodiscard]] constexpr bool all() const noexcept
+    {
+        constexpr bool ZERO_LENGTH = BIT_COUNT == 0;
+        if constexpr (ZERO_LENGTH)
+        {  // must test for this, otherwise would count one full word
+            return true;
+        }
+
+        constexpr bool NO_PADDING = BIT_COUNT % BITS_PER_WORD == 0;
+        for (size_t w_pos = 0; w_pos < WORD_COUNT + static_cast<ptrdiff_t>(NO_PADDING); ++w_pos)
+        {
+            if (data[w_pos] != ~static_cast<Ty>(0))
+            {
+                return false;
+            }
+        }
+
+        return NO_PADDING ||
+               data[WORD_COUNT] == (static_cast<Ty>(1) << (BIT_COUNT % BITS_PER_WORD)) - 1;
+    }
+
+    [[nodiscard]] constexpr size_t count() const noexcept
+    {  // count number of set bits
+        size_t result = 0;
+        for (size_t w_pos = 0; w_pos <= WORD_COUNT; ++w_pos)
+        {
+            result += static_cast<std::size_t>(std::popcount(data[w_pos]));
+        }
+        return result;
+    }
+
+    [[nodiscard]] constexpr size_t size() const noexcept { return BIT_COUNT; }
+
     constexpr FixedBitset& operator&=(const FixedBitset& right) noexcept
     {
         for (size_t w_pos = 0; w_pos <= WORD_COUNT; ++w_pos)
@@ -497,18 +545,6 @@ public:
         return str;
     }
 
-    [[nodiscard]] constexpr size_t count() const noexcept
-    {  // count number of set bits
-        size_t result = 0;
-        for (size_t w_pos = 0; w_pos <= WORD_COUNT; ++w_pos)
-        {
-            result += static_cast<std::size_t>(std::popcount(data[w_pos]));
-        }
-        return result;
-    }
-
-    [[nodiscard]] constexpr size_t size() const noexcept { return BIT_COUNT; }
-
     constexpr bool operator==(const FixedBitset& right) const noexcept
     {
         for (size_t w_pos = 0; w_pos <= WORD_COUNT; ++w_pos)
@@ -519,42 +555,6 @@ public:
             }
         }
         return true;
-    }
-
-    [[nodiscard]] constexpr bool any() const noexcept
-    {
-        for (size_t w_pos = 0; w_pos <= WORD_COUNT; ++w_pos)
-        {
-            if (data[w_pos] != 0)
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    [[nodiscard]] constexpr bool none() const noexcept { return !any(); }
-
-    [[nodiscard]] constexpr bool all() const noexcept
-    {
-        constexpr bool ZERO_LENGTH = BIT_COUNT == 0;
-        if constexpr (ZERO_LENGTH)
-        {  // must test for this, otherwise would count one full word
-            return true;
-        }
-
-        constexpr bool NO_PADDING = BIT_COUNT % BITS_PER_WORD == 0;
-        for (size_t w_pos = 0; w_pos < WORD_COUNT + static_cast<ptrdiff_t>(NO_PADDING); ++w_pos)
-        {
-            if (data[w_pos] != ~static_cast<Ty>(0))
-            {
-                return false;
-            }
-        }
-
-        return NO_PADDING ||
-               data[WORD_COUNT] == (static_cast<Ty>(1) << (BIT_COUNT % BITS_PER_WORD)) - 1;
     }
 
     constexpr FixedBitset operator<<(size_t pos) const noexcept
