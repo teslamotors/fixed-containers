@@ -411,7 +411,7 @@ public:
     {  // set all bits true
         for (size_t w_pos = 0; w_pos <= WORD_COUNT; ++w_pos)
         {
-            data[w_pos] = std::numeric_limits<Ty>::max();
+            data[w_pos] = (std::numeric_limits<Ty>::max)();
         }
         // std::memset(&_Array, 0xFF, sizeof(_Array));
         trim();

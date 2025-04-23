@@ -1619,6 +1619,7 @@ cc_test(
         ":enum_map",
         ":enum_set",
         ":enum_utils",
+        ":fixed_bitset",
         ":fixed_circular_deque",
         ":fixed_circular_queue",
         ":fixed_deque",

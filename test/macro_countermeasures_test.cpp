@@ -22,6 +22,7 @@ error: expected unqualified-id if (const auto __len = std::min(__d1, __d2))
 #include "fixed_containers/enum_map.hpp"
 #include "fixed_containers/enum_set.hpp"
 #include "fixed_containers/enum_utils.hpp"
+#include "fixed_containers/fixed_bitset.hpp"
 #include "fixed_containers/fixed_circular_deque.hpp"
 #include "fixed_containers/fixed_circular_queue.hpp"
 #include "fixed_containers/fixed_deque.hpp"
@@ -80,6 +81,10 @@ TEST(MacroCountermeasures, DummyUsagesOfContainers)
     }
     {
         const EnumSet<Color> instance{};
+        (void)instance;
+    }
+    {
+        const FixedBitset<5> instance{};
         (void)instance;
     }
     {
