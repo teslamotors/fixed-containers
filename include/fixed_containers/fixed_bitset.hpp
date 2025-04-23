@@ -22,9 +22,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE  OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-// Copyright (c) Microsoft Corporation.
-// SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
-
+// The Microsoft C++ Standard Library is under the Apache License v2.0 with LLVM Exception.
 // Original code from https://github.com/neargye-wg21/bitset-constexpr-proposal
 
 #include "fixed_containers/preconditions.hpp"
