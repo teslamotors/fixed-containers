@@ -36,6 +36,7 @@
 #include "fixed_containers/preconditions.hpp"
 #include "fixed_containers/sequence_container_checking.hpp"
 
+#include <algorithm>
 #include <array>
 #include <bit>
 #include <cassert>
@@ -408,16 +409,24 @@ public:
 
     constexpr FixedBitset& set() noexcept
     {  // set all bits true
-        data.set();
+        for (size_t w_pos = 0; w_pos <= WORD_COUNT; ++w_pos)
+        {
+            data[w_pos] = std::numeric_limits<Ty>::max();
+        }
+        // std::memset(&_Array, 0xFF, sizeof(_Array));
         trim();
         return *this;
     }
 
-    constexpr FixedBitset& set(size_t pos, bool val = true)
+    constexpr FixedBitset& set(
+        size_t pos,
+        bool val = true,
+        const std_transition::source_location& loc = std_transition::source_location::current())
     {  // set bit at _Pos to _Val
-        if (BIT_COUNT <= pos)
+
+        if (preconditions::test(pos < size()))
         {
-            x_ran();  // _Pos off end
+            Checking::out_of_range(pos, size(), loc);
         }
 
         return set_unchecked(pos, val);
@@ -434,9 +443,11 @@ public:
         return *this;
     }
 
-    constexpr FixedBitset& reset(size_t pos)
+    constexpr FixedBitset& reset(
+        size_t pos,
+        const std_transition::source_location& loc = std_transition::source_location::current())
     {  // set bit at _Pos to false
-        return set(pos, false);
+        return set(pos, false, loc);
     }
 
     constexpr FixedBitset operator~() const noexcept
@@ -457,11 +468,13 @@ public:
         return *this;
     }
 
-    constexpr FixedBitset& flip(size_t pos)
+    constexpr FixedBitset& flip(
+        size_t pos,
+        const std_transition::source_location& loc = std_transition::source_location::current())
     {  // flip bit at _Pos
-        if (BIT_COUNT <= pos)
+        if (preconditions::test(pos < size()))
         {
-            x_ran();  // _Pos off end
+            Checking::out_of_range(pos, size(), loc);
         }
 
         return flip_unchecked(pos);
@@ -629,12 +642,6 @@ private:
                                            std_transition::source_location::current()) const
     {
         CheckingType::invalid_argument("FixedBitSet overflow", loc);
-    }
-
-    [[noreturn]] constexpr void x_ran(const std_transition::source_location& loc =
-                                          std_transition::source_location::current()) const
-    {
-        CheckingType::invalid_argument("invalid FixedBitSet position", loc);
     }
 
 public:

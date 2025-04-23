@@ -305,4 +305,141 @@ TEST(FixedBitset, Size)
     }
 }
 
+TEST(FixedBitset, OperatorBitwiseAnd)
+{
+    constexpr FixedBitset<4> LEFT{"1101"};
+    constexpr FixedBitset<4> RIGHT{"1011"};
+    constexpr FixedBitset<4> EXPECTED{"1001"};
+
+    static_assert(EXPECTED == (LEFT & RIGHT));
+}
+
+TEST(FixedBitset, OperatorBitwiseOr)
+{
+    constexpr FixedBitset<4> LEFT{"0101"};
+    constexpr FixedBitset<4> RIGHT{"0011"};
+    constexpr FixedBitset<4> EXPECTED{"0111"};
+
+    static_assert(EXPECTED == (LEFT | RIGHT));
+}
+
+TEST(FixedBitset, OperatorBitwiseXor)
+{
+    constexpr FixedBitset<4> LEFT{"1100"};
+    constexpr FixedBitset<4> RIGHT{"1010"};
+    constexpr FixedBitset<4> EXPECTED{"0110"};
+
+    static_assert(EXPECTED == (LEFT ^ RIGHT));
+}
+
+TEST(FixedBitset, OperatorBitwiseNot)
+{
+    constexpr FixedBitset<4> INPUT{"0101"};
+    constexpr FixedBitset<4> EXPECTED{"1010"};
+
+    static_assert(EXPECTED == (~INPUT));
+}
+
+TEST(FixedBitset, Set)
+{
+    {
+        constexpr FixedBitset<4> RESULT = []()
+        {
+            FixedBitset<4> input{"0101"};
+            input.set();
+            return input;
+        }();
+        constexpr FixedBitset<4> EXPECTED{"1111"};
+
+        static_assert(EXPECTED == RESULT);
+    }
+
+    {
+        constexpr FixedBitset<4> RESULT = []()
+        {
+            FixedBitset<4> input{"0101"};
+            input.set(0);
+            input.set(1);
+            return input;
+        }();
+        constexpr FixedBitset<4> EXPECTED{"0111"};
+
+        static_assert(EXPECTED == RESULT);
+    }
+}
+
+TEST(FixedBitset, SetOutOfBounds)
+{
+    FixedBitset<8> val1{0xfff0};  // [1,1,1,1,0,0,0,0]
+    EXPECT_DEATH((void)val1.set(15), "");
+}
+
+TEST(FixedBitset, Reset)
+{
+    {
+        constexpr FixedBitset<4> RESULT = []()
+        {
+            FixedBitset<4> input{"0101"};
+            input.reset();
+            return input;
+        }();
+        constexpr FixedBitset<4> EXPECTED{"0000"};
+
+        static_assert(EXPECTED == RESULT);
+    }
+
+    {
+        constexpr FixedBitset<4> RESULT = []()
+        {
+            FixedBitset<4> input{"0101"};
+            input.reset(0);
+            input.reset(1);
+            return input;
+        }();
+        constexpr FixedBitset<4> EXPECTED{"0100"};
+
+        static_assert(EXPECTED == RESULT);
+    }
+}
+
+TEST(FixedBitset, ResetOutOfBounds)
+{
+    FixedBitset<8> val1{0xfff0};  // [1,1,1,1,0,0,0,0]
+    EXPECT_DEATH((void)val1.reset(15), "");
+}
+
+TEST(FixedBitset, Flip)
+{
+    {
+        constexpr FixedBitset<4> RESULT = []()
+        {
+            FixedBitset<4> input{"0101"};
+            input.flip();
+            return input;
+        }();
+        constexpr FixedBitset<4> EXPECTED{"1010"};
+
+        static_assert(EXPECTED == RESULT);
+    }
+
+    {
+        constexpr FixedBitset<4> RESULT = []()
+        {
+            FixedBitset<4> input{"0101"};
+            input.flip(0);
+            input.flip(1);
+            return input;
+        }();
+        constexpr FixedBitset<4> EXPECTED{"0110"};
+
+        static_assert(EXPECTED == RESULT);
+    }
+}
+
+TEST(FixedBitset, FlipOutOfBounds)
+{
+    FixedBitset<8> val1{0xfff0};  // [1,1,1,1,0,0,0,0]
+    EXPECT_DEATH((void)val1.flip(15), "");
+}
+
 }  // namespace fixed_containers
