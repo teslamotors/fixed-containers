@@ -46,6 +46,23 @@
 #include <string>
 #include <type_traits>
 
+namespace fixed_containers::fixed_bitset_detail
+{
+template <std::size_t BIT_COUNT>
+struct FixedBitsetHelper
+{
+    using UnsignedLong = unsigned long;           // NOLINT(google-runtime-int)
+    using UnsignedLongLong = unsigned long long;  // NOLINT(google-runtime-int)
+
+    using Ty = std::
+        conditional_t<BIT_COUNT <= sizeof(UnsignedLong) * CHAR_BIT, UnsignedLong, UnsignedLongLong>;
+
+    static constexpr ptrdiff_t BITS_PER_WORD = CHAR_BIT * sizeof(Ty);
+    static constexpr ptrdiff_t WORD_COUNT =
+        BIT_COUNT == 0 ? 0 : (BIT_COUNT - 1) / BITS_PER_WORD;  // NB: number of words - 1
+};
+}  // namespace fixed_containers::fixed_bitset_detail
+
 namespace fixed_containers
 {
 
@@ -56,8 +73,13 @@ class FixedBitset
 {  // store fixed-length sequence of Boolean elements
 
 private:
-    using UnsignedLong = unsigned long;           // NOLINT(google-runtime-int)
-    using UnsignedLongLong = unsigned long long;  // NOLINT(google-runtime-int)
+    using Helper = fixed_bitset_detail::FixedBitsetHelper<BIT_COUNT>;
+    using UnsignedLong = typename Helper::UnsignedLong;
+    using UnsignedLongLong = typename Helper::UnsignedLongLong;
+
+    static constexpr ptrdiff_t BITS_PER_WORD = Helper::BITS_PER_WORD;
+    static constexpr ptrdiff_t WORD_COUNT = Helper::WORD_COUNT;
+
     using Checking = CheckingType;
 
 public:
@@ -65,17 +87,7 @@ public:
     using difference_type = std::ptrdiff_t;
 
 private:
-#if defined(_MSC_VER)
-#pragma warning(push)
-#pragma warning(disable : 4296)  // expression is always true (/Wall)
-#endif
-
-    using Ty = std::
-        conditional_t<BIT_COUNT <= sizeof(UnsignedLong) * CHAR_BIT, UnsignedLong, UnsignedLongLong>;
-
-#if defined(_MSC_VER)
-#pragma warning(pop)
-#endif
+    using Ty = typename fixed_bitset_detail::FixedBitsetHelper<BIT_COUNT>::Ty;
 
     class Reference
     {  // proxy for an element
@@ -601,12 +613,6 @@ public:
     }
 
 private:
-    friend std::hash<FixedBitset<BIT_COUNT>>;
-
-    static constexpr ptrdiff_t BITS_PER_WORD = CHAR_BIT * sizeof(Ty);
-    static constexpr ptrdiff_t WORD_COUNT =
-        BIT_COUNT == 0 ? 0 : (BIT_COUNT - 1) / BITS_PER_WORD;  // NB: number of words - 1
-
     [[nodiscard]] constexpr bool subscript(size_t pos) const
     {
         return (data[pos / BITS_PER_WORD] & (Ty{1} << pos % BITS_PER_WORD)) != 0;
@@ -684,13 +690,22 @@ constexpr FixedBitset<BIT_COUNT> operator^(const FixedBitset<BIT_COUNT>& left,
 template <size_t BIT_COUNT>
 struct std::hash<fixed_containers::FixedBitset<BIT_COUNT>>
 {
+private:
+    using Helper = fixed_containers::fixed_bitset_detail::FixedBitsetHelper<BIT_COUNT>;
+    using UnsignedLong = typename Helper::UnsignedLong;
+    using UnsignedLongLong = typename Helper::UnsignedLongLong;
+
+    static constexpr ptrdiff_t BITS_PER_WORD = Helper::BITS_PER_WORD;
+    static constexpr ptrdiff_t WORD_COUNT = Helper::WORD_COUNT;
+
+public:
     constexpr size_t operator()(
         const fixed_containers::FixedBitset<BIT_COUNT>& bitset) const noexcept
     {
         std::size_t result = 0;
-        for (size_t i = 0; i <= bitset._Words; ++i)
+        for (size_t i = 0; i <= WORD_COUNT; ++i)
         {
-            result ^= bitset._Data[i];
+            result ^= bitset.data[i];
         }
         return result;
     }

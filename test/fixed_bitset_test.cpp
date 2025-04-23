@@ -5,6 +5,7 @@
 #include <gtest/gtest.h>
 
 #include <bitset>
+#include <functional>
 #include <string>
 
 namespace fixed_containers
@@ -473,6 +474,12 @@ TEST(FixedBitset, ToUllongOverflow)
     FixedBitset<128> val1{42};
     val1.flip();
     EXPECT_DEATH((void)val1.to_ullong(), "");
+}
+
+TEST(FixedBitset, StdHash)
+{
+    const FixedBitset<8> val1{"00101010"};
+    ASSERT_EQ(42, std::hash<FixedBitset<8>>{}(val1));
 }
 
 }  // namespace fixed_containers
