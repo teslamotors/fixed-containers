@@ -36,7 +36,6 @@
 #include "fixed_containers/preconditions.hpp"
 #include "fixed_containers/sequence_container_checking.hpp"
 
-#include <algorithm>
 #include <array>
 #include <bit>
 #include <cassert>
@@ -88,6 +87,7 @@ public:
 
 private:
     using Ty = typename fixed_bitset_detail::FixedBitsetHelper<BIT_COUNT>::Ty;
+    using Array = std::array<Ty, WORD_COUNT + 1>;
 
     class Reference
     {  // proxy for an element
@@ -182,7 +182,7 @@ private:
 
                 if (++bits_used_in_word == BITS_PER_WORD)
                 {
-                    data[w_pos] = this_word;
+                    data_at(w_pos) = this_word;
                     ++w_pos;
                     this_word = 0;
                     bits_used_in_word = 0;
@@ -191,22 +191,26 @@ private:
 
             if (bits_used_in_word != 0)
             {
-                data[w_pos] = this_word;
+                data_at(w_pos) = this_word;
                 ++w_pos;
             }
         }
 
         for (; w_pos <= WORD_COUNT; ++w_pos)
         {
-            data[w_pos] = 0;
+            data_at(w_pos) = 0;
         }
     }
 
 public:
     using reference = Reference;
 
+public:  // Public so this type is a structural type and can thus be used in template parameters
+    Array IMPLEMENTATION_DETAIL_DO_NOT_USE_data_;
+
+public:
     constexpr FixedBitset() noexcept
-      : data()
+      : IMPLEMENTATION_DETAIL_DO_NOT_USE_data_()
     {
     }  // construct with all false values
 
@@ -215,7 +219,7 @@ public:
     static constexpr UnsignedLongLong MASK = (1ULL << (NEED_MASK ? BIT_COUNT : 0)) - 1ULL;
 
     constexpr FixedBitset(UnsignedLongLong val) noexcept
-      : data{static_cast<Ty>(NEED_MASK ? val & MASK : val)}
+      : IMPLEMENTATION_DETAIL_DO_NOT_USE_data_{static_cast<Ty>(NEED_MASK ? val & MASK : val)}
     {
     }
 
@@ -296,7 +300,7 @@ public:
     {
         for (size_t w_pos = 0; w_pos <= WORD_COUNT; ++w_pos)
         {
-            if (data[w_pos] != 0)
+            if (data_at(w_pos) != 0)
             {
                 return true;
             }
@@ -318,14 +322,14 @@ public:
         constexpr bool NO_PADDING = BIT_COUNT % BITS_PER_WORD == 0;
         for (size_t w_pos = 0; w_pos < WORD_COUNT + static_cast<ptrdiff_t>(NO_PADDING); ++w_pos)
         {
-            if (data[w_pos] != ~static_cast<Ty>(0))
+            if (data_at(w_pos) != ~static_cast<Ty>(0))
             {
                 return false;
             }
         }
 
         return NO_PADDING ||
-               data[WORD_COUNT] == (static_cast<Ty>(1) << (BIT_COUNT % BITS_PER_WORD)) - 1;
+               data_at(WORD_COUNT) == (static_cast<Ty>(1) << (BIT_COUNT % BITS_PER_WORD)) - 1;
     }
 
     [[nodiscard]] constexpr size_t count() const noexcept
@@ -333,7 +337,7 @@ public:
         size_t result = 0;
         for (size_t w_pos = 0; w_pos <= WORD_COUNT; ++w_pos)
         {
-            result += static_cast<std::size_t>(std::popcount(data[w_pos]));
+            result += static_cast<std::size_t>(std::popcount(data_at(w_pos)));
         }
         return result;
     }
@@ -344,7 +348,7 @@ public:
     {
         for (size_t w_pos = 0; w_pos <= WORD_COUNT; ++w_pos)
         {
-            data[w_pos] &= right.data[w_pos];
+            data_at(w_pos) &= right.data_at(w_pos);
         }
 
         return *this;
@@ -354,7 +358,7 @@ public:
     {
         for (size_t w_pos = 0; w_pos <= WORD_COUNT; ++w_pos)
         {
-            data[w_pos] |= right.data[w_pos];
+            data_at(w_pos) |= right.data_at(w_pos);
         }
 
         return *this;
@@ -364,7 +368,7 @@ public:
     {
         for (size_t w_pos = 0; w_pos <= WORD_COUNT; ++w_pos)
         {
-            data[w_pos] ^= right.data[w_pos];
+            data_at(w_pos) ^= right.data_at(w_pos);
         }
 
         return *this;
@@ -377,7 +381,7 @@ public:
         {
             for (ptrdiff_t w_pos = WORD_COUNT; 0 <= w_pos; --w_pos)
             {
-                data[w_pos] = wordshift <= w_pos ? data[w_pos - wordshift] : 0;
+                data_at(w_pos) = wordshift <= w_pos ? data_at(w_pos - wordshift) : 0;
             }
         }
 
@@ -386,10 +390,11 @@ public:
         {  // 0 < _Pos < _Bitsperword, shift by bits
             for (ptrdiff_t w_pos = WORD_COUNT; 0 < w_pos; --w_pos)
             {
-                data[w_pos] = (data[w_pos] << pos) | (data[w_pos - 1] >> (BITS_PER_WORD - pos));
+                data_at(w_pos) =
+                    (data_at(w_pos) << pos) | (data_at(w_pos - 1) >> (BITS_PER_WORD - pos));
             }
 
-            data[0] <<= pos;
+            data_at(0) <<= pos;
         }
         trim();
         return *this;
@@ -402,7 +407,7 @@ public:
         {
             for (ptrdiff_t w_pos = 0; w_pos <= WORD_COUNT; ++w_pos)
             {
-                data[w_pos] = wordshift <= WORD_COUNT - w_pos ? data[w_pos + wordshift] : 0;
+                data_at(w_pos) = wordshift <= WORD_COUNT - w_pos ? data_at(w_pos + wordshift) : 0;
             }
         }
 
@@ -411,10 +416,11 @@ public:
         {  // 0 < _Pos < _Bitsperword, shift by bits
             for (ptrdiff_t w_pos = 0; w_pos < WORD_COUNT; ++w_pos)
             {
-                data[w_pos] = (data[w_pos] >> pos) | (data[w_pos + 1] << (BITS_PER_WORD - pos));
+                data_at(w_pos) =
+                    (data_at(w_pos) >> pos) | (data_at(w_pos + 1) << (BITS_PER_WORD - pos));
             }
 
-            data[WORD_COUNT] >>= pos;
+            data_at(WORD_COUNT) >>= pos;
         }
         return *this;
     }
@@ -423,7 +429,7 @@ public:
     {  // set all bits true
         for (size_t w_pos = 0; w_pos <= WORD_COUNT; ++w_pos)
         {
-            data[w_pos] = (std::numeric_limits<Ty>::max)();
+            data_at(w_pos) = (std::numeric_limits<Ty>::max)();
         }
         // std::memset(&_Array, 0xFF, sizeof(_Array));
         trim();
@@ -448,7 +454,7 @@ public:
     {  // set all bits false
         for (size_t w_pos = 0; w_pos <= WORD_COUNT; ++w_pos)
         {
-            data[w_pos] = 0;
+            data_at(w_pos) = 0;
         }
         // std::memset(&_Array, 0, sizeof(_Array));
 
@@ -473,7 +479,7 @@ public:
     {  // flip all bits
         for (size_t w_pos = 0; w_pos <= WORD_COUNT; ++w_pos)
         {
-            data[w_pos] = ~data[w_pos];
+            data_at(w_pos) = ~data_at(w_pos);
         }
 
         trim();
@@ -505,7 +511,7 @@ public:
         }
         else if constexpr (BITS_SMALL)
         {
-            return static_cast<UnsignedLong>(data[0]);
+            return static_cast<UnsignedLong>(data_at(0));
         }
         else
         {
@@ -514,7 +520,7 @@ public:
                 for (size_t idx = 1; idx <= WORD_COUNT; ++idx)
                 {
                     // fail if any high-order words are nonzero
-                    if (preconditions::test(data[idx] == 0))
+                    if (preconditions::test(data_at(idx) == 0))
                     {
                         CheckingType::invalid_argument("FixedBitSet to_ulong overflow error (1)",
                                                        loc);
@@ -522,12 +528,12 @@ public:
                 }
             }
 
-            if (preconditions::test(data[0] <= ULONG_MAX))
+            if (preconditions::test(data_at(0) <= ULONG_MAX))
             {
                 CheckingType::invalid_argument("FixedBitSet to_ulong overflow error (2)", loc);
             }
 
-            return static_cast<UnsignedLong>(data[0]);
+            return static_cast<UnsignedLong>(data_at(0));
         }
     }
 
@@ -547,10 +553,10 @@ public:
             {
                 for (size_t idx = 1; idx <= WORD_COUNT; ++idx)
                 {
-                    if (data[idx] != 0)
+                    if (data_at(idx) != 0)
                     {
                         // fail if any high-order words are nonzero
-                        if (preconditions::test(data[idx] == 0))
+                        if (preconditions::test(data_at(idx) == 0))
                         {
                             CheckingType::invalid_argument("FixedBitSet to_ullong overflow error",
                                                            loc);
@@ -559,7 +565,7 @@ public:
                 }
             }
 
-            return data[0];
+            return data_at(0);
         }
     }
 
@@ -585,7 +591,7 @@ public:
     {
         for (size_t w_pos = 0; w_pos <= WORD_COUNT; ++w_pos)
         {
-            if (data[w_pos] != right.data[w_pos])
+            if (data_at(w_pos) != right.data_at(w_pos))
             {
                 return false;
             }
@@ -607,15 +613,12 @@ public:
         return tmp;
     }
 
-    [[nodiscard]] constexpr Ty get_word(size_t w_pos) const noexcept
-    {  // nonstandard extension; get underlying word
-        return data[w_pos];
-    }
-
 private:
+    [[nodiscard]] constexpr Ty get_word(size_t w_pos) const noexcept { return data_at(w_pos); }
+
     [[nodiscard]] constexpr bool subscript(size_t pos) const
     {
-        return (data[pos / BITS_PER_WORD] & (Ty{1} << pos % BITS_PER_WORD)) != 0;
+        return (data_at(pos / BITS_PER_WORD) & (Ty{1} << pos % BITS_PER_WORD)) != 0;
     }
 
     constexpr void trim() noexcept
@@ -623,13 +626,13 @@ private:
         constexpr bool WORK_TO_DO = BIT_COUNT == 0 || BIT_COUNT % BITS_PER_WORD != 0;
         if constexpr (WORK_TO_DO)
         {
-            data[WORD_COUNT] &= (Ty{1} << BIT_COUNT % BITS_PER_WORD) - 1;
+            data_at(WORD_COUNT) &= (Ty{1} << BIT_COUNT % BITS_PER_WORD) - 1;
         }
     }
 
     constexpr FixedBitset& set_unchecked(size_t pos, bool val) noexcept
     {  // set bit at _Pos to _Val, no checking
-        auto& selected_word = data[pos / BITS_PER_WORD];
+        auto& selected_word = data_at(pos / BITS_PER_WORD);
         const auto bit = Ty{1} << pos % BITS_PER_WORD;
         if (val)
         {
@@ -645,7 +648,7 @@ private:
 
     constexpr FixedBitset& flip_unchecked(size_t pos) noexcept
     {  // flip bit at _Pos, no checking
-        data[pos / BITS_PER_WORD] ^= Ty{1} << pos % BITS_PER_WORD;
+        data_at(pos / BITS_PER_WORD) ^= Ty{1} << pos % BITS_PER_WORD;
         return *this;
     }
 
@@ -655,8 +658,17 @@ private:
         CheckingType::invalid_argument("invalid FixedBitSet char", loc);
     }
 
-public:
-    std::array<Ty, WORD_COUNT + 1> data;  // Make _Data public to satisfy IsStructural requirement
+    [[nodiscard]] constexpr const Array& data() const
+    {
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_data_;
+    }
+    constexpr Array& data() { return IMPLEMENTATION_DETAIL_DO_NOT_USE_data_; }
+
+    [[nodiscard]] constexpr const Ty& data_at(const std::size_t index) const
+    {
+        return data()[index];
+    }
+    constexpr Ty& data_at(const std::size_t index) { return data()[index]; }
 };
 
 template <size_t BIT_COUNT>
@@ -705,7 +717,7 @@ public:
         std::size_t result = 0;
         for (size_t i = 0; i <= WORD_COUNT; ++i)
         {
-            result ^= bitset.data[i];
+            result ^= bitset.IMPLEMENTATION_DETAIL_DO_NOT_USE_data_[i];
         }
         return result;
     }
