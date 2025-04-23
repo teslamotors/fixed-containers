@@ -119,9 +119,12 @@ private:
             return *this;
         }
 
-        constexpr bool operator~() const noexcept { return !p_bitset_->subscript(my_pos_); }
+        constexpr bool operator~() const noexcept
+        {
+            return !p_bitset_->subscript_unchecked(my_pos_);
+        }
 
-        constexpr operator bool() const noexcept { return p_bitset_->subscript(my_pos_); }
+        constexpr operator bool() const noexcept { return p_bitset_->subscript_unchecked(my_pos_); }
 
     private:
         constexpr Reference() noexcept
@@ -293,7 +296,7 @@ public:
             Checking::out_of_range(pos, size(), loc);
         }
 
-        return subscript(pos);
+        return subscript_unchecked(pos);
     }
 
     [[nodiscard]] constexpr bool any() const noexcept
@@ -589,7 +592,7 @@ public:
 
         for (auto pos = BIT_COUNT; 0 < pos;)
         {
-            str.push_back(subscript(--pos) ? elem1 : elem0);
+            str.push_back(subscript_unchecked(--pos) ? elem1 : elem0);
         }
 
         return str;
@@ -624,7 +627,7 @@ public:
 private:
     [[nodiscard]] constexpr Ty get_word(std::size_t w_pos) const noexcept { return data_at(w_pos); }
 
-    [[nodiscard]] constexpr bool subscript(std::size_t pos) const
+    [[nodiscard]] constexpr bool subscript_unchecked(std::size_t pos) const
     {
         return (data_at(pos / BITS_PER_WORD) & (Ty{1} << pos % BITS_PER_WORD)) != 0;
     }
