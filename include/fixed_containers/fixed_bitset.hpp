@@ -25,12 +25,6 @@
 // Copyright (c) Microsoft Corporation.
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
-// Changes:
-// * added constexpr modifiers to all functions, except iosteam operators
-// * memset in FixedBitSet::set/FixedBitSet::reset
-// * memcmp in FixedBitSet::operator==
-// * reinterpret_cast in FixedBitSet::count
-//
 // Original code from https://github.com/neargye-wg21/bitset-constexpr-proposal
 
 #include "fixed_containers/preconditions.hpp"
