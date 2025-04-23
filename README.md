@@ -29,6 +29,7 @@ The fixed-container types have identical APIs to their std:: equivalents, so you
    | `FixedStack`         | `std::stack`                                    |
    | `FixedCircularDeque` | `std::deque` API with Circular Buffer semantics |
    | `FixedCircularQueue` | `std::queue` API with Circular Buffer semantics |
+   | `FixedBitset`        | `std::bitset`                                   |
    | `FixedString`        | `std::string`                                   |
    | `FixedMap`           | `std::map`                                      |
    | `FixedSet`           | `std::set`                                      |
@@ -177,6 +178,21 @@ More examples can be found [here](test/enums_test_common.hpp).
     static_assert(s1.front() == 77);
     static_assert(s1.back() == 99);
     static_assert(s1.size() == 3);
+    ```
+
+- FixedBitset
+    ```C++
+    constexpr auto s1 = []()
+    {
+        FixedBitset<4> v1{"0101"};
+        v1.flip(0);
+        return v1;
+    }();
+
+    static_assert(s1.test(0) == 0);
+    static_assert(s1.test(1) == 0);
+    static_assert(s1.test(2) == 1);
+    static_assert(s1.test(3) == 0);
     ```
 
 - FixedString
