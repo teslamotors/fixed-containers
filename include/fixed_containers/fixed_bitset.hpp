@@ -233,7 +233,7 @@ public:
         Elem elem1 = static_cast<Elem>('1'),
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
-        // construct from [_Pos, _Pos + _Count) elements in string
+        // construct from [pos, pos + count) elements in string
 
         if (preconditions::test(pos <= size()))
         {
@@ -242,7 +242,7 @@ public:
 
         if (str.size() - pos < count)
         {
-            count = str.size() - pos;  // trim _Count to size
+            count = str.size() - pos;  // trim count to size
         }
 
         construct<Traits>(
@@ -376,7 +376,7 @@ public:
     }
 
     constexpr FixedBitset& operator<<=(std::size_t pos) noexcept
-    {  // shift left by _Pos, first by words then by bits
+    {  // shift left by pos, first by words then by bits
         const auto wordshift = static_cast<std::ptrdiff_t>(pos / BITS_PER_WORD);
         if (wordshift != 0)
         {
@@ -388,7 +388,7 @@ public:
 
         pos %= BITS_PER_WORD;
         if (pos != 0)
-        {  // 0 < _Pos < _Bitsperword, shift by bits
+        {  // 0 < pos < BITS_PER_WORD, shift by bits
             for (std::ptrdiff_t w_pos = WORD_COUNT; 0 < w_pos; --w_pos)
             {
                 data_at(w_pos) =
@@ -402,7 +402,7 @@ public:
     }
 
     constexpr FixedBitset& operator>>=(std::size_t pos) noexcept
-    {  // shift right by _Pos, first by words then by bits
+    {  // shift right by pos, first by words then by bits
         const auto wordshift = static_cast<std::ptrdiff_t>(pos / BITS_PER_WORD);
         if (wordshift != 0)
         {
@@ -414,7 +414,7 @@ public:
 
         pos %= BITS_PER_WORD;
         if (pos != 0)
-        {  // 0 < _Pos < _Bitsperword, shift by bits
+        {  // 0 < pos < BITS_PER_WORD, shift by bits
             for (std::ptrdiff_t w_pos = 0; w_pos < WORD_COUNT; ++w_pos)
             {
                 data_at(w_pos) =
@@ -432,7 +432,7 @@ public:
         {
             data_at(w_pos) = (std::numeric_limits<Ty>::max)();
         }
-        // std::memset(&_Array, 0xFF, sizeof(_Array));
+        // std::memset(&array, 0xFF, sizeof(array));
         trim();
         return *this;
     }
@@ -441,7 +441,7 @@ public:
         std::size_t pos,
         bool val = true,
         const std_transition::source_location& loc = std_transition::source_location::current())
-    {  // set bit at _Pos to _Val
+    {  // set bit at pos to val
 
         if (preconditions::test(pos < size()))
         {
@@ -457,7 +457,7 @@ public:
         {
             data_at(w_pos) = 0;
         }
-        // std::memset(&_Array, 0, sizeof(_Array));
+        // std::memset(&array, 0, sizeof(array));
 
         return *this;
     }
@@ -465,7 +465,7 @@ public:
     constexpr FixedBitset& reset(
         std::size_t pos,
         const std_transition::source_location& loc = std_transition::source_location::current())
-    {  // set bit at _Pos to false
+    {  // set bit at pos to false
         return set(pos, false, loc);
     }
 
@@ -490,7 +490,7 @@ public:
     constexpr FixedBitset& flip(
         std::size_t pos,
         const std_transition::source_location& loc = std_transition::source_location::current())
-    {  // flip bit at _Pos
+    {  // flip bit at pos
         if (preconditions::test(pos < size()))
         {
             Checking::out_of_range(pos, size(), loc);
@@ -632,7 +632,7 @@ private:
     }
 
     constexpr FixedBitset& set_unchecked(std::size_t pos, bool val) noexcept
-    {  // set bit at _Pos to _Val, no checking
+    {  // set bit at pos to val, no checking
         auto& selected_word = data_at(pos / BITS_PER_WORD);
         const auto bit = Ty{1} << pos % BITS_PER_WORD;
         if (val)
@@ -648,7 +648,7 @@ private:
     }
 
     constexpr FixedBitset& flip_unchecked(std::size_t pos) noexcept
-    {  // flip bit at _Pos, no checking
+    {  // flip bit at pos, no checking
         data_at(pos / BITS_PER_WORD) ^= Ty{1} << pos % BITS_PER_WORD;
         return *this;
     }
