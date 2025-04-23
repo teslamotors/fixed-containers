@@ -480,7 +480,9 @@ public:
         return flip_unchecked(pos);
     }
 
-    [[nodiscard]] constexpr UnsignedLong to_ulong() const
+    [[nodiscard]] constexpr UnsignedLong to_ulong(
+        const std_transition::source_location& loc =
+            std_transition::source_location::current()) const
     {
         constexpr bool BITS_ZERO = BIT_COUNT == 0;
         constexpr bool BITS_SMALL = BIT_COUNT <= 32;
@@ -499,23 +501,27 @@ public:
             {
                 for (size_t idx = 1; idx <= WORD_COUNT; ++idx)
                 {
-                    if (data[idx] != 0)
+                    // fail if any high-order words are nonzero
+                    if (preconditions::test(data[idx] == 0))
                     {
-                        x_oflo();  // fail if any high-order words are nonzero
+                        CheckingType::invalid_argument("FixedBitSet to_ulong overflow error (1)",
+                                                       loc);
                     }
                 }
             }
 
-            if (data[0] > ULONG_MAX)
+            if (preconditions::test(data[0] <= ULONG_MAX))
             {
-                x_oflo();
+                CheckingType::invalid_argument("FixedBitSet to_ulong overflow error (2)", loc);
             }
 
             return static_cast<UnsignedLong>(data[0]);
         }
     }
 
-    [[nodiscard]] constexpr UnsignedLongLong to_ullong() const
+    [[nodiscard]] constexpr UnsignedLongLong to_ullong(
+        const std_transition::source_location& loc =
+            std_transition::source_location::current()) const
     {
         constexpr bool BITS_ZERO = BIT_COUNT == 0;
         constexpr bool BITS_LARGE = BIT_COUNT > 64;
@@ -531,7 +537,12 @@ public:
                 {
                     if (data[idx] != 0)
                     {
-                        x_oflo();  // fail if any high-order words are nonzero
+                        // fail if any high-order words are nonzero
+                        if (preconditions::test(data[idx] == 0))
+                        {
+                            CheckingType::invalid_argument("FixedBitSet to_ullong overflow error",
+                                                           loc);
+                        }
                     }
                 }
             }
@@ -543,7 +554,7 @@ public:
     template <class Elem = char,
               class CharTraits = std::char_traits<Elem>,
               class Alloc = std::allocator<Elem>>
-    constexpr std::basic_string<Elem, CharTraits, Alloc> to_string(
+    [[nodiscard]] constexpr std::basic_string<Elem, CharTraits, Alloc> to_string(
         Elem elem0 = static_cast<Elem>('0'), Elem elem1 = static_cast<Elem>('1')) const
     {
         // convert FixedBitSet to string
@@ -636,12 +647,6 @@ private:
         const std_transition::source_location& loc) const
     {
         CheckingType::invalid_argument("invalid FixedBitSet char", loc);
-    }
-
-    [[noreturn]] constexpr void x_oflo(const std_transition::source_location& loc =
-                                           std_transition::source_location::current()) const
-    {
-        CheckingType::invalid_argument("FixedBitSet overflow", loc);
     }
 
 public:

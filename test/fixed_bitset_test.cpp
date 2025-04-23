@@ -442,4 +442,37 @@ TEST(FixedBitset, FlipOutOfBounds)
     EXPECT_DEATH((void)val1.flip(15), "");
 }
 
+TEST(FixedBitset, ToString)
+{
+    const FixedBitset<8> val1{"00101010"};
+    EXPECT_EQ("**1*1*1*", val1.to_string('*'));
+    EXPECT_EQ("OOXOXOXO", val1.to_string('O', 'X'));
+}
+
+TEST(FixedBitset, ToUlong)
+{
+    const FixedBitset<8> val1{"00101010"};
+    EXPECT_EQ(42, val1.to_ulong());
+}
+
+TEST(FixedBitset, ToUlongOverflow)
+{
+    FixedBitset<128> val1{42};
+    val1.flip();
+    EXPECT_DEATH((void)val1.to_ulong(), "");
+}
+
+TEST(FixedBitset, ToUllong)
+{
+    const FixedBitset<8> val1{"00101010"};
+    EXPECT_EQ(42, val1.to_ullong());
+}
+
+TEST(FixedBitset, ToUllongOverflow)
+{
+    FixedBitset<128> val1{42};
+    val1.flip();
+    EXPECT_DEATH((void)val1.to_ullong(), "");
+}
+
 }  // namespace fixed_containers
