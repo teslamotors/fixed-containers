@@ -222,7 +222,7 @@ cc_library(
     includes = includes_config(),
     strip_include_prefix = strip_include_prefix_config(),
     deps = [
-        ":concepts",
+        ":preconditions",
         ":sequence_container_checking",
         ":source_location",
     ],
@@ -1213,6 +1213,7 @@ cc_test(
     name = "fixed_bitset_test",
     srcs = ["test/fixed_bitset_test.cpp"],
     deps = [
+        ":concepts",
         ":fixed_bitset",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",

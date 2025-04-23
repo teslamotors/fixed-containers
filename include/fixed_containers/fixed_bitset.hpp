@@ -33,7 +33,7 @@
 //
 // Original code from https://github.com/neargye-wg21/bitset-constexpr-proposal
 
-#include "fixed_containers/assert_or_abort.hpp"
+#include "fixed_containers/preconditions.hpp"
 #include "fixed_containers/sequence_container_checking.hpp"
 
 #include <array>
@@ -57,11 +57,13 @@ class FixedBitset
 private:
     using UnsignedLong = unsigned long;           // NOLINT(google-runtime-int)
     using UnsignedLongLong = unsigned long long;  // NOLINT(google-runtime-int)
+    using Checking = CheckingType;
 
 public:
     using size_type = std::size_t;
     using difference_type = std::ptrdiff_t;
-    using Checking = CheckingType;
+
+private:
 #if defined(_MSC_VER)
 #pragma warning(push)
 #pragma warning(disable : 4296)  // expression is always true (/Wall)
@@ -125,58 +127,23 @@ public:
         size_t my_pos_;  // position of element in FixedBitSet
     };
 
-    using reference = Reference;
-
-    static constexpr void validate(size_t pos)
-    {  // verify that _Pos is within bounds
-        assert_or_abort(pos < BIT_COUNT && static_cast<bool>("FixedBitSet index outside range"));
-    }
-
-    [[nodiscard]] constexpr bool subscript(size_t pos) const
-    {
-        return (data[pos / BITS_PER_WORD] & (Ty{1} << pos % BITS_PER_WORD)) != 0;
-    }
-
-    constexpr bool operator[](size_t pos) const
-    {
-        validate(pos);
-        return subscript(pos);
-    }
-
-    constexpr reference operator[](size_t pos)
-    {
-        validate(pos);
-        return reference(*this, pos);
-    }
-
-    constexpr FixedBitset() noexcept
-      : data()
-    {
-    }  // construct with all false values
-
-    static constexpr bool NEED_MASK = BIT_COUNT < CHAR_BIT * sizeof(UnsignedLongLong);
-
-    static constexpr UnsignedLongLong MASK = (1ULL << (NEED_MASK ? BIT_COUNT : 0)) - 1ULL;
-
-    constexpr FixedBitset(UnsignedLongLong val) noexcept
-      : data{static_cast<Ty>(NEED_MASK ? val & MASK : val)}
-    {
-    }
-
+private:
     template <class Traits, class Elem>
     constexpr void construct(const Elem* const ptr,
                              size_t count,
                              const Elem elem0,
-                             const Elem elem1)
+                             const Elem elem1,
+                             const std_transition::source_location& loc)
     {
         if (count > BIT_COUNT)
         {
             for (size_t idx = BIT_COUNT; idx < count; ++idx)
             {
-                const auto character = ptr[idx];
-                if (!Traits::eq(elem1, character) && !Traits::eq(elem0, character))
+                const auto character = *std::next(ptr, static_cast<difference_type>(idx));
+                if (preconditions::test(Traits::eq(elem1, character) ||
+                                        Traits::eq(elem0, character)))
                 {
-                    x_inv();
+                    invalid_fixed_bitset_char(loc);
                 }
             }
 
@@ -187,16 +154,17 @@ public:
         if (count != 0)
         {
             size_t bits_used_in_word = 0;
-            auto last = ptr + count;
+            const auto* last = std::next(ptr, static_cast<difference_type>(count));
             Ty this_word = 0;
             do
             {
-                --last;
+                std::advance(last, -1);
                 const auto character = *last;
                 this_word |= static_cast<Ty>(Traits::eq(elem1, character)) << bits_used_in_word;
-                if (!Traits::eq(elem1, character) && !Traits::eq(elem0, character))
+                if (preconditions::test(Traits::eq(elem1, character) ||
+                                        Traits::eq(elem0, character)))
                 {
-                    x_inv();
+                    invalid_fixed_bitset_char(loc);
                 }
 
                 if (++bits_used_in_word == BITS_PER_WORD)
@@ -221,6 +189,23 @@ public:
         }
     }
 
+public:
+    using reference = Reference;
+
+    constexpr FixedBitset() noexcept
+      : data()
+    {
+    }  // construct with all false values
+
+    static constexpr bool NEED_MASK = BIT_COUNT < CHAR_BIT * sizeof(UnsignedLongLong);
+
+    static constexpr UnsignedLongLong MASK = (1ULL << (NEED_MASK ? BIT_COUNT : 0)) - 1ULL;
+
+    constexpr FixedBitset(UnsignedLongLong val) noexcept
+      : data{static_cast<Ty>(NEED_MASK ? val & MASK : val)}
+    {
+    }
+
     template <class Elem, class Traits, class Alloc>
     constexpr explicit FixedBitset(
         const std::basic_string<Elem, Traits, Alloc>& str,
@@ -228,12 +213,14 @@ public:
         typename std::basic_string<Elem, Traits, Alloc>::size_type count =
             std::basic_string<Elem, Traits, Alloc>::npos,
         Elem elem0 = static_cast<Elem>('0'),
-        Elem elem1 = static_cast<Elem>('1'))
+        Elem elem1 = static_cast<Elem>('1'),
+        const std_transition::source_location& loc = std_transition::source_location::current())
     {
         // construct from [_Pos, _Pos + _Count) elements in string
-        if (str.size() < pos)
+
+        if (preconditions::test(pos <= size()))
         {
-            x_ran();  // _Pos off end
+            Checking::out_of_range(pos, size(), loc);
         }
 
         if (str.size() - pos < count)
@@ -241,7 +228,8 @@ public:
             count = str.size() - pos;  // trim _Count to size
         }
 
-        construct<Traits>(str._Data() + pos, count, elem0, elem1);
+        construct<Traits>(
+            std::next(str.data(), static_cast<std::ptrdiff_t>(pos)), count, elem0, elem1, loc);
     }
 
     template <class Elem>
@@ -249,14 +237,46 @@ public:
         const Elem* ntcts,
         typename std::basic_string<Elem>::size_type count = std::basic_string<Elem>::npos,
         Elem elem0 = static_cast<Elem>('0'),
-        Elem elem1 = static_cast<Elem>('1'))
+        Elem elem1 = static_cast<Elem>('1'),
+        const std_transition::source_location& loc = std_transition::source_location::current())
     {
         if (count == std::basic_string<Elem>::npos)
         {
             count = std::char_traits<Elem>::length(ntcts);
         }
 
-        construct<std::char_traits<Elem>>(ntcts, count, elem0, elem1);
+        construct<std::char_traits<Elem>>(ntcts, count, elem0, elem1, loc);
+    }
+
+    constexpr bool operator[](size_t pos) const
+    {
+        // Cannot capture real source_location for operator[]
+        // This operator should not range-check according to the spec, but we want the extra safety.
+        return test(pos, std_transition::source_location::current());
+    }
+
+    constexpr reference operator[](size_t pos)
+    {
+        // Cannot capture real source_location for operator[]
+        // This operator should not range-check according to the spec, but we want the extra safety.
+        if (preconditions::test(pos < size()))
+        {
+            Checking::out_of_range(pos, size(), std_transition::source_location::current());
+        }
+
+        return reference(*this, pos);
+    }
+
+    [[nodiscard]] constexpr bool test(size_t pos,
+                                      const std_transition::source_location& loc =
+                                          std_transition::source_location::current()) const
+    {
+        if (preconditions::test(pos < size()))
+        {
+            Checking::out_of_range(pos, size(), loc);
+        }
+
+        return subscript(pos);
     }
 
     constexpr FixedBitset& operator&=(const FixedBitset& right) noexcept
@@ -482,7 +502,7 @@ public:
         size_t result = 0;
         for (size_t w_pos = 0; w_pos <= WORD_COUNT; ++w_pos)
         {
-            result += std::popcount(data[w_pos]);
+            result += static_cast<std::size_t>(std::popcount(data[w_pos]));
         }
         return result;
     }
@@ -499,18 +519,6 @@ public:
             }
         }
         return true;
-    }
-
-    constexpr bool operator!=(const FixedBitset& right) const noexcept { return !(*this == right); }
-
-    [[nodiscard]] constexpr bool test(size_t pos) const
-    {
-        if (BIT_COUNT <= pos)
-        {
-            x_ran();  // _Pos off end
-        }
-
-        return subscript(pos);
     }
 
     [[nodiscard]] constexpr bool any() const noexcept
@@ -575,6 +583,11 @@ private:
     static constexpr ptrdiff_t WORD_COUNT =
         BIT_COUNT == 0 ? 0 : (BIT_COUNT - 1) / BITS_PER_WORD;  // NB: number of words - 1
 
+    [[nodiscard]] constexpr bool subscript(size_t pos) const
+    {
+        return (data[pos / BITS_PER_WORD] & (Ty{1} << pos % BITS_PER_WORD)) != 0;
+    }
+
     constexpr void trim() noexcept
     {  // clear any trailing bits in last word
         constexpr bool WORK_TO_DO = BIT_COUNT == 0 || BIT_COUNT % BITS_PER_WORD != 0;
@@ -606,8 +619,8 @@ private:
         return *this;
     }
 
-    [[noreturn]] constexpr void x_inv(const std_transition::source_location& loc =
-                                          std_transition::source_location::current()) const
+    [[noreturn]] constexpr void invalid_fixed_bitset_char(
+        const std_transition::source_location& loc) const
     {
         CheckingType::invalid_argument("invalid FixedBitSet char", loc);
     }
@@ -615,13 +628,13 @@ private:
     [[noreturn]] constexpr void x_oflo(const std_transition::source_location& loc =
                                            std_transition::source_location::current()) const
     {
-        CheckingType::std::overflow_error("FixedBitSet overflow", loc);
+        CheckingType::invalid_argument("FixedBitSet overflow", loc);
     }
 
     [[noreturn]] constexpr void x_ran(const std_transition::source_location& loc =
                                           std_transition::source_location::current()) const
     {
-        CheckingType::std::out_of_range("invalid FixedBitSet position", loc);
+        CheckingType::invalid_argument("invalid FixedBitSet position", loc);
     }
 
 public:
