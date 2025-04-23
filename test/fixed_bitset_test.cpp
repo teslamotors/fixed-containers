@@ -341,6 +341,38 @@ TEST(FixedBitset, OperatorBitwiseNot)
     static_assert(EXPECTED == (~INPUT));
 }
 
+TEST(FixedBitset, OperatorBinaryShiftLeft)
+{
+    constexpr FixedBitset<8> VAL1{"01110010"};
+    constexpr FixedBitset<8> VAL2{"11100100"};
+    constexpr FixedBitset<8> VAL3{"00100000"};
+    constexpr FixedBitset<8> VAL4{"01000000"};
+    constexpr FixedBitset<8> VAL5{"10000000"};
+    constexpr FixedBitset<8> VAL6{"00000000"};
+
+    static_assert(VAL2 == (VAL1 << 1));
+    static_assert(VAL3 == (VAL2 << 3));
+    static_assert(VAL4 == (VAL3 << 1));
+    static_assert(VAL5 == (VAL4 << 1));
+    static_assert(VAL6 == (VAL5 << 1));
+}
+
+TEST(FixedBitset, OperatorBinaryShiftRight)
+{
+    constexpr FixedBitset<8> VAL1{"01110010"};
+    constexpr FixedBitset<8> VAL2{"00111001"};
+    constexpr FixedBitset<8> VAL3{"00000111"};
+    constexpr FixedBitset<8> VAL4{"00000011"};
+    constexpr FixedBitset<8> VAL5{"00000001"};
+    constexpr FixedBitset<8> VAL6{"00000000"};
+
+    static_assert(VAL2 == (VAL1 >> 1));
+    static_assert(VAL3 == (VAL2 >> 3));
+    static_assert(VAL4 == (VAL3 >> 1));
+    static_assert(VAL5 == (VAL4 >> 1));
+    static_assert(VAL6 == (VAL5 >> 1));
+}
+
 TEST(FixedBitset, Set)
 {
     {

@@ -377,12 +377,14 @@ public:
 
     constexpr FixedBitset& operator<<=(std::size_t pos) noexcept
     {  // shift left by pos, first by words then by bits
-        const auto wordshift = static_cast<std::ptrdiff_t>(pos / BITS_PER_WORD);
+        const auto wordshift = static_cast<std::size_t>(pos / BITS_PER_WORD);
         if (wordshift != 0)
         {
             for (std::ptrdiff_t w_pos = WORD_COUNT; 0 <= w_pos; --w_pos)
             {
-                data_at(w_pos) = wordshift <= w_pos ? data_at(w_pos - wordshift) : 0;
+                const auto w_pos_as_size_t = static_cast<std::size_t>(w_pos);
+                data_at(w_pos_as_size_t) =
+                    wordshift <= w_pos_as_size_t ? data_at(w_pos_as_size_t - wordshift) : 0;
             }
         }
 
@@ -391,8 +393,9 @@ public:
         {  // 0 < pos < BITS_PER_WORD, shift by bits
             for (std::ptrdiff_t w_pos = WORD_COUNT; 0 < w_pos; --w_pos)
             {
-                data_at(w_pos) =
-                    (data_at(w_pos) << pos) | (data_at(w_pos - 1) >> (BITS_PER_WORD - pos));
+                const auto w_pos_as_size_t = static_cast<std::size_t>(w_pos);
+                data_at(w_pos_as_size_t) = (data_at(w_pos_as_size_t) << pos) |
+                                           (data_at(w_pos_as_size_t - 1) >> (BITS_PER_WORD - pos));
             }
 
             data_at(0) <<= pos;
@@ -403,12 +406,15 @@ public:
 
     constexpr FixedBitset& operator>>=(std::size_t pos) noexcept
     {  // shift right by pos, first by words then by bits
-        const auto wordshift = static_cast<std::ptrdiff_t>(pos / BITS_PER_WORD);
+        const auto wordshift = static_cast<std::size_t>(pos / BITS_PER_WORD);
         if (wordshift != 0)
         {
             for (std::ptrdiff_t w_pos = 0; w_pos <= WORD_COUNT; ++w_pos)
             {
-                data_at(w_pos) = wordshift <= WORD_COUNT - w_pos ? data_at(w_pos + wordshift) : 0;
+                const auto w_pos_as_size_t = static_cast<std::size_t>(w_pos);
+                data_at(w_pos_as_size_t) = wordshift <= WORD_COUNT - w_pos_as_size_t
+                                               ? data_at(w_pos_as_size_t + wordshift)
+                                               : 0;
             }
         }
 
@@ -417,8 +423,9 @@ public:
         {  // 0 < pos < BITS_PER_WORD, shift by bits
             for (std::ptrdiff_t w_pos = 0; w_pos < WORD_COUNT; ++w_pos)
             {
-                data_at(w_pos) =
-                    (data_at(w_pos) >> pos) | (data_at(w_pos + 1) << (BITS_PER_WORD - pos));
+                const auto w_pos_as_size_t = static_cast<std::size_t>(w_pos);
+                data_at(w_pos_as_size_t) = (data_at(w_pos_as_size_t) >> pos) |
+                                           (data_at(w_pos_as_size_t + 1) << (BITS_PER_WORD - pos));
             }
 
             data_at(WORD_COUNT) >>= pos;
