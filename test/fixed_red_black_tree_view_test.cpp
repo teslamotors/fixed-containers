@@ -8,6 +8,7 @@
 
 #include <gtest/gtest.h>
 
+#include <algorithm>
 #include <array>
 #include <cmath>
 #include <cstddef>
@@ -193,7 +194,7 @@ TEST(FixedRedBlackTreeView, SizeCalculation)
 
     // Test set whose memory has been zero'ed out.
     std::byte buf[sizeof(FixedSetType)];
-    std::memset(buf, 0, sizeof(FixedSetType));
+    std::ranges::fill(buf, std::byte{0});
     auto view4 = FixedRedBlackTreeRawView(
         buf,
         sizeof(FixedSetType::value_type),

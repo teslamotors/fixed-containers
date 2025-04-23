@@ -86,13 +86,20 @@ public:
     {
         if (!std::is_constant_evaluated())
         {
-            // if we just memcpy the entire array, the freelist will match :)
-            // even if the values in the full slots aren't trivially copyable, the API for this
-            // function assumes they will never be accessed so it isn't UB
+// if we just memcpy the entire array, the freelist will match :)
+// even if the values in the full slots aren't trivially copyable, the API for this
+// function assumes they will never be accessed so it isn't UB
+#if defined(__clang__) && __clang_major__ >= 20
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunsafe-buffer-usage-in-libc-call"
+#endif
             std::memcpy(
                 reinterpret_cast<void*>(&this->IMPLEMENTATION_DETAIL_DO_NOT_USE_array_),
                 reinterpret_cast<const void*>(&other.IMPLEMENTATION_DETAIL_DO_NOT_USE_array_),
                 sizeof(this->IMPLEMENTATION_DETAIL_DO_NOT_USE_array_));
+#if defined(__clang__) && __clang_major__ >= 20
+#pragma clang diagnostic pop
+#endif
         }
         else
         {

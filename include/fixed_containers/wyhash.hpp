@@ -1,8 +1,8 @@
 #pragma once
 
 #include <array>
+#include <bit>
 #include <cstdint>
-#include <cstring>
 #include <functional>
 #include <iterator>
 #include <memory>
@@ -64,16 +64,16 @@ constexpr void mum(std::uint64_t* aaa, std::uint64_t* bbb)
 // read functions. WARNING: we don't care about endianness, so results are different on big endian!
 [[nodiscard]] inline auto r8(const std::uint8_t* ppp) -> std::uint64_t
 {
-    std::uint64_t vvv{};
-    std::memcpy(&vvv, ppp, 8U);
-    return vvv;
+    std::array<std::uint8_t, 8> bytes{};
+    std::copy_n(ppp, 8, bytes.begin());
+    return std::bit_cast<std::uint64_t>(bytes);
 }
 
 [[nodiscard]] inline auto r4(const std::uint8_t* ppp) -> std::uint64_t
 {
-    std::uint32_t vvv{};
-    std::memcpy(&vvv, ppp, 4);
-    return vvv;
+    std::array<std::uint8_t, 4> bytes{};
+    std::copy_n(ppp, 4, bytes.begin());
+    return static_cast<std::uint64_t>(std::bit_cast<std::uint32_t>(bytes));
 }
 
 // reads 1, 2, or 3 bytes

@@ -2,8 +2,8 @@
 
 #include <gtest/gtest.h>
 
-#include <cstring>
 #include <string>
+#include <string_view>
 #include <type_traits>
 
 namespace fixed_containers
@@ -17,11 +17,11 @@ TEST(StringLiteral, Compare)
 {
     static constexpr const char* POINTER = "blah";
     static_assert(8 == sizeof(POINTER));  // NOLINT(bugprone-sizeof-expression)
-    ASSERT_EQ(4, std::strlen(POINTER));   // not-constexpr
+    static_assert(4 == std::string_view{POINTER}.size());
 
     static constexpr const char ARRAY[5] = "blah";
     static_assert(5 == sizeof(ARRAY));
-    ASSERT_EQ(4, std::strlen(ARRAY));  // not-constexpr
+    static_assert(4 == std::string_view{ARRAY}.size());
 
     static constexpr StringLiteral STRING_LITERAL = "blah";
     static_assert(4 == STRING_LITERAL.size());
