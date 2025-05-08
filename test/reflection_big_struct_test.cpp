@@ -1,4 +1,4 @@
-#if defined(__clang__) && __clang_major__ >= 15
+#if defined(__clang__) && __clang_major__ >= 17
 
 #define FIXED_CONTAINERS_EXTENDED_STRUCT_DECOMPOSITION_1024 1
 
