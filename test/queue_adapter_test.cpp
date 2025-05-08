@@ -9,7 +9,12 @@
 
 namespace fixed_containers
 {
+#ifdef _LIBCPP_VERSION
+static_assert(NotTriviallyCopyable<std::queue<int, FixedDeque<int, 5>>>);
+#else
 static_assert(TriviallyCopyable<std::queue<int, FixedDeque<int, 5>>>);
+#endif
+
 #if defined(_MSC_VER)
 static_assert(ConstexprDefaultConstructible<std::queue<int, FixedDeque<int, 5>>>);
 #else

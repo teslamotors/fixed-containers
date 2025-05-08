@@ -6,7 +6,12 @@ build --copt -Werror
 build --copt -fno-exceptions
 build --copt -ftemplate-backtrace-limit=0
 build:clang --copt -ftrivial-auto-var-init=pattern
-#build:clang --copt -stdlib=libc++
+
+# Clang with libc++
+build:clang_with_libcxx --config=clang
+build:clang_with_libcxx --copt="-stdlib=libc++"
+build:clang_with_libcxx --linkopt="-lc++"
+build:clang_with_libcxx --linkopt="-lc++abi"
 
 build:san --copt -fsanitize=address,undefined
 build:san --linkopt -fsanitize=address,undefined

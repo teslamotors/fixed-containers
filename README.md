@@ -428,6 +428,16 @@ CC=clang++-13 bazel build --config=clang ...
 ```
 CC=clang++-13 bazel test --config=clang :all_tests
 ```
+
+#### clang with libc++
+```
+CC=clang++-13 bazel build --config=build:clang_with_libcxx ...
+```
+2) Run tests
+```
+CC=clang++-13 bazel test --config=build:clang_with_libcxx :all_tests
+```
+
 #### gcc
 1) Build separately (optional)
 ```
