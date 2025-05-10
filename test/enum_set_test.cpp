@@ -289,24 +289,24 @@ TEST(EnumSet, InsertMultipleTimes)
     {
         EnumSet<TestEnum1> var{};
         {
-            auto [it, was_inserted] = var.insert(TestEnum1::TWO);
+            auto [iter, was_inserted] = var.insert(TestEnum1::TWO);
             assert_or_abort(was_inserted);
-            assert_or_abort(TestEnum1::TWO == *it);
+            assert_or_abort(TestEnum1::TWO == *iter);
         }
         {
-            auto [it, was_inserted] = var.insert(TestEnum1::FOUR);
+            auto [iter, was_inserted] = var.insert(TestEnum1::FOUR);
             assert_or_abort(was_inserted);
-            assert_or_abort(TestEnum1::FOUR == *it);
+            assert_or_abort(TestEnum1::FOUR == *iter);
         }
         {
-            auto [it, was_inserted] = var.insert(TestEnum1::TWO);
+            auto [iter, was_inserted] = var.insert(TestEnum1::TWO);
             assert_or_abort(!was_inserted);
-            assert_or_abort(TestEnum1::TWO == *it);
+            assert_or_abort(TestEnum1::TWO == *iter);
         }
         {
-            auto [it, was_inserted] = var.insert(TestEnum1::FOUR);
+            auto [iter, was_inserted] = var.insert(TestEnum1::FOUR);
             assert_or_abort(!was_inserted);
-            assert_or_abort(TestEnum1::FOUR == *it);
+            assert_or_abort(TestEnum1::FOUR == *iter);
         }
         return var;
     }();
@@ -376,7 +376,7 @@ TEST(EnumSet, Emplace)
         EnumSet<TestEnum1> var{};
 
         {
-            auto [it, was_inserted] = var.emplace(TestEnum1::TWO);
+            auto [iter, was_inserted] = var.emplace(TestEnum1::TWO);
 
             ASSERT_EQ(1, var.size());
             ASSERT_TRUE(!var.contains(TestEnum1::ONE));
@@ -385,11 +385,11 @@ TEST(EnumSet, Emplace)
             ASSERT_TRUE(!var.contains(TestEnum1::FOUR));
             ASSERT_TRUE(var.contains(TestEnum1::TWO));
             ASSERT_TRUE(was_inserted);
-            ASSERT_EQ(TestEnum1::TWO, *it);
+            ASSERT_EQ(TestEnum1::TWO, *iter);
         }
 
         {
-            auto [it, was_inserted] = var.emplace(TestEnum1::TWO);
+            auto [iter, was_inserted] = var.emplace(TestEnum1::TWO);
             ASSERT_EQ(1, var.size());
             ASSERT_TRUE(!var.contains(TestEnum1::ONE));
             ASSERT_TRUE(var.contains(TestEnum1::TWO));
@@ -397,11 +397,11 @@ TEST(EnumSet, Emplace)
             ASSERT_TRUE(!var.contains(TestEnum1::FOUR));
             ASSERT_TRUE(var.contains(TestEnum1::TWO));
             ASSERT_FALSE(was_inserted);
-            ASSERT_EQ(TestEnum1::TWO, *it);
+            ASSERT_EQ(TestEnum1::TWO, *iter);
         }
 
         {
-            auto [it, was_inserted] = var.emplace(TestEnum1::TWO);
+            auto [iter, was_inserted] = var.emplace(TestEnum1::TWO);
             ASSERT_EQ(1, var.size());
             ASSERT_TRUE(!var.contains(TestEnum1::ONE));
             ASSERT_TRUE(var.contains(TestEnum1::TWO));
@@ -409,7 +409,7 @@ TEST(EnumSet, Emplace)
             ASSERT_TRUE(!var.contains(TestEnum1::FOUR));
             ASSERT_TRUE(var.contains(TestEnum1::TWO));
             ASSERT_FALSE(was_inserted);
-            ASSERT_EQ(TestEnum1::TWO, *it);
+            ASSERT_EQ(TestEnum1::TWO, *iter);
         }
     }
 }

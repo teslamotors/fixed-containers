@@ -280,28 +280,28 @@ TEST(FixedUnorderedMap, InsertMultipleTimes)
     {
         FixedUnorderedMap<int, int, 10> var{};
         {
-            auto [it, was_inserted] = var.insert({2, 20});
+            auto [iter, was_inserted] = var.insert({2, 20});
             assert_or_abort(was_inserted);
-            assert_or_abort(2 == it->first);
-            assert_or_abort(20 == it->second);
+            assert_or_abort(2 == iter->first);
+            assert_or_abort(20 == iter->second);
         }
         {
-            auto [it, was_inserted] = var.insert({4, 40});
+            auto [iter, was_inserted] = var.insert({4, 40});
             assert_or_abort(was_inserted);
-            assert_or_abort(4 == it->first);
-            assert_or_abort(40 == it->second);
+            assert_or_abort(4 == iter->first);
+            assert_or_abort(40 == iter->second);
         }
         {
-            auto [it, was_inserted] = var.insert({2, 99999});
+            auto [iter, was_inserted] = var.insert({2, 99999});
             assert_or_abort(!was_inserted);
-            assert_or_abort(2 == it->first);
-            assert_or_abort(20 == it->second);
+            assert_or_abort(2 == iter->first);
+            assert_or_abort(20 == iter->second);
         }
         {
-            auto [it, was_inserted] = var.insert({4, 88888});
+            auto [iter, was_inserted] = var.insert({4, 88888});
             assert_or_abort(!was_inserted);
-            assert_or_abort(4 == it->first);
-            assert_or_abort(40 == it->second);
+            assert_or_abort(4 == iter->first);
+            assert_or_abort(40 == iter->second);
         }
         return var;
     }();
@@ -353,30 +353,30 @@ TEST(FixedUnorderedMap, InsertOrAssign)
     {
         FixedUnorderedMap<int, int, 10> var{};
         {
-            auto [it, was_inserted] = var.insert_or_assign(2, 20);
+            auto [iter, was_inserted] = var.insert_or_assign(2, 20);
             assert_or_abort(was_inserted);
-            assert_or_abort(2 == it->first);
-            assert_or_abort(20 == it->second);
+            assert_or_abort(2 == iter->first);
+            assert_or_abort(20 == iter->second);
         }
         {
             const int key = 4;
-            auto [it, was_inserted] = var.insert_or_assign(key, 40);
+            auto [iter, was_inserted] = var.insert_or_assign(key, 40);
             assert_or_abort(was_inserted);
-            assert_or_abort(4 == it->first);
-            assert_or_abort(40 == it->second);
+            assert_or_abort(4 == iter->first);
+            assert_or_abort(40 == iter->second);
         }
         {
-            auto [it, was_inserted] = var.insert_or_assign(2, 99999);
+            auto [iter, was_inserted] = var.insert_or_assign(2, 99999);
             assert_or_abort(!was_inserted);
-            assert_or_abort(2 == it->first);
-            assert_or_abort(99999 == it->second);
+            assert_or_abort(2 == iter->first);
+            assert_or_abort(99999 == iter->second);
         }
         {
             const int key = 4;
-            auto [it, was_inserted] = var.insert_or_assign(key, 88888);
+            auto [iter, was_inserted] = var.insert_or_assign(key, 88888);
             assert_or_abort(!was_inserted);
-            assert_or_abort(4 == it->first);
-            assert_or_abort(88888 == it->second);
+            assert_or_abort(4 == iter->first);
+            assert_or_abort(88888 == iter->second);
         }
         return var;
     }();
@@ -444,7 +444,7 @@ TEST(FixedUnorderedMap, TryEmplace)
         FixedUnorderedMap<int, int, 10> var1{};
 
         {
-            auto [it, was_inserted] = var1.try_emplace(2, 20);
+            auto [iter, was_inserted] = var1.try_emplace(2, 20);
 
             ASSERT_EQ(1, var1.size());
             ASSERT_TRUE(!var1.contains(1));
@@ -453,13 +453,13 @@ TEST(FixedUnorderedMap, TryEmplace)
             ASSERT_TRUE(!var1.contains(4));
             ASSERT_EQ(20, var1.at(2));
             ASSERT_TRUE(was_inserted);
-            ASSERT_EQ(2, it->first);
-            ASSERT_EQ(20, it->second);
+            ASSERT_EQ(2, iter->first);
+            ASSERT_EQ(20, iter->second);
         }
 
         {
             const int key = 2;
-            auto [it, was_inserted] = var1.try_emplace(key, 209999999);
+            auto [iter, was_inserted] = var1.try_emplace(key, 209999999);
             ASSERT_EQ(1, var1.size());
             ASSERT_TRUE(!var1.contains(1));
             ASSERT_TRUE(var1.contains(2));
@@ -467,8 +467,8 @@ TEST(FixedUnorderedMap, TryEmplace)
             ASSERT_TRUE(!var1.contains(4));
             ASSERT_EQ(20, var1.at(2));
             ASSERT_FALSE(was_inserted);
-            ASSERT_EQ(2, it->first);
-            ASSERT_EQ(20, it->second);
+            ASSERT_EQ(2, iter->first);
+            ASSERT_EQ(20, iter->second);
         }
     }
 
@@ -536,7 +536,7 @@ TEST(FixedUnorderedMap, Emplace)
         FixedUnorderedMap<int, int, 10> var1{};
 
         {
-            auto [it, was_inserted] = var1.emplace(2, 20);
+            auto [iter, was_inserted] = var1.emplace(2, 20);
 
             ASSERT_EQ(1, var1.size());
             ASSERT_TRUE(!var1.contains(1));
@@ -545,12 +545,12 @@ TEST(FixedUnorderedMap, Emplace)
             ASSERT_TRUE(!var1.contains(4));
             ASSERT_EQ(20, var1.at(2));
             ASSERT_TRUE(was_inserted);
-            ASSERT_EQ(2, it->first);
-            ASSERT_EQ(20, it->second);
+            ASSERT_EQ(2, iter->first);
+            ASSERT_EQ(20, iter->second);
         }
 
         {
-            auto [it, was_inserted] = var1.emplace(2, 209999999);
+            auto [iter, was_inserted] = var1.emplace(2, 209999999);
             ASSERT_EQ(1, var1.size());
             ASSERT_TRUE(!var1.contains(1));
             ASSERT_TRUE(var1.contains(2));
@@ -558,12 +558,12 @@ TEST(FixedUnorderedMap, Emplace)
             ASSERT_TRUE(!var1.contains(4));
             ASSERT_EQ(20, var1.at(2));
             ASSERT_FALSE(was_inserted);
-            ASSERT_EQ(2, it->first);
-            ASSERT_EQ(20, it->second);
+            ASSERT_EQ(2, iter->first);
+            ASSERT_EQ(20, iter->second);
         }
 
         {
-            auto [it, was_inserted] = var1.emplace(std::make_pair(2, 209999999));
+            auto [iter, was_inserted] = var1.emplace(std::make_pair(2, 209999999));
             ASSERT_EQ(1, var1.size());
             ASSERT_TRUE(!var1.contains(1));
             ASSERT_TRUE(var1.contains(2));
@@ -571,8 +571,8 @@ TEST(FixedUnorderedMap, Emplace)
             ASSERT_TRUE(!var1.contains(4));
             ASSERT_EQ(20, var1.at(2));
             ASSERT_FALSE(was_inserted);
-            ASSERT_EQ(2, it->first);
-            ASSERT_EQ(20, it->second);
+            ASSERT_EQ(2, iter->first);
+            ASSERT_EQ(20, iter->second);
         }
     }
 

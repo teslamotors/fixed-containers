@@ -481,28 +481,28 @@ TEST(EnumMap, InsertMultipleTimes)
     {
         EnumMap<TestEnum1, int> var{};
         {
-            auto [it, was_inserted] = var.insert({TestEnum1::TWO, 20});
+            auto [iter, was_inserted] = var.insert({TestEnum1::TWO, 20});
             assert_or_abort(was_inserted);
-            assert_or_abort(TestEnum1::TWO == it->first);
-            assert_or_abort(20 == it->second);
+            assert_or_abort(TestEnum1::TWO == iter->first);
+            assert_or_abort(20 == iter->second);
         }
         {
-            auto [it, was_inserted] = var.insert({TestEnum1::FOUR, 40});
+            auto [iter, was_inserted] = var.insert({TestEnum1::FOUR, 40});
             assert_or_abort(was_inserted);
-            assert_or_abort(TestEnum1::FOUR == it->first);
-            assert_or_abort(40 == it->second);
+            assert_or_abort(TestEnum1::FOUR == iter->first);
+            assert_or_abort(40 == iter->second);
         }
         {
-            auto [it, was_inserted] = var.insert({TestEnum1::TWO, 99999});
+            auto [iter, was_inserted] = var.insert({TestEnum1::TWO, 99999});
             assert_or_abort(!was_inserted);
-            assert_or_abort(TestEnum1::TWO == it->first);
-            assert_or_abort(20 == it->second);
+            assert_or_abort(TestEnum1::TWO == iter->first);
+            assert_or_abort(20 == iter->second);
         }
         {
-            auto [it, was_inserted] = var.insert({TestEnum1::FOUR, 88888});
+            auto [iter, was_inserted] = var.insert({TestEnum1::FOUR, 88888});
             assert_or_abort(!was_inserted);
-            assert_or_abort(TestEnum1::FOUR == it->first);
-            assert_or_abort(40 == it->second);
+            assert_or_abort(TestEnum1::FOUR == iter->first);
+            assert_or_abort(40 == iter->second);
         }
         return var;
     }();
@@ -554,30 +554,30 @@ TEST(EnumMap, InsertOrAssign)
     {
         EnumMap<TestEnum1, int> var{};
         {
-            auto [it, was_inserted] = var.insert_or_assign(TestEnum1::TWO, 20);
+            auto [iter, was_inserted] = var.insert_or_assign(TestEnum1::TWO, 20);
             assert_or_abort(was_inserted);
-            assert_or_abort(TestEnum1::TWO == it->first);
-            assert_or_abort(20 == it->second);
+            assert_or_abort(TestEnum1::TWO == iter->first);
+            assert_or_abort(20 == iter->second);
         }
         {
             const TestEnum1 key = TestEnum1::FOUR;
-            auto [it, was_inserted] = var.insert_or_assign(key, 40);
+            auto [iter, was_inserted] = var.insert_or_assign(key, 40);
             assert_or_abort(was_inserted);
-            assert_or_abort(TestEnum1::FOUR == it->first);
-            assert_or_abort(40 == it->second);
+            assert_or_abort(TestEnum1::FOUR == iter->first);
+            assert_or_abort(40 == iter->second);
         }
         {
-            auto [it, was_inserted] = var.insert_or_assign(TestEnum1::TWO, 99999);
+            auto [iter, was_inserted] = var.insert_or_assign(TestEnum1::TWO, 99999);
             assert_or_abort(!was_inserted);
-            assert_or_abort(TestEnum1::TWO == it->first);
-            assert_or_abort(99999 == it->second);
+            assert_or_abort(TestEnum1::TWO == iter->first);
+            assert_or_abort(99999 == iter->second);
         }
         {
             const TestEnum1 key = TestEnum1::FOUR;
-            auto [it, was_inserted] = var.insert_or_assign(key, 88888);
+            auto [iter, was_inserted] = var.insert_or_assign(key, 88888);
             assert_or_abort(!was_inserted);
-            assert_or_abort(TestEnum1::FOUR == it->first);
-            assert_or_abort(88888 == it->second);
+            assert_or_abort(TestEnum1::FOUR == iter->first);
+            assert_or_abort(88888 == iter->second);
         }
         return var;
     }();
@@ -609,7 +609,7 @@ TEST(EnumMap, TryEmplace)
         EnumMap<TestEnum1, int> var1{};
 
         {
-            auto [it, was_inserted] = var1.try_emplace(TestEnum1::TWO, 20);
+            auto [iter, was_inserted] = var1.try_emplace(TestEnum1::TWO, 20);
 
             ASSERT_EQ(1, var1.size());
             ASSERT_TRUE(!var1.contains(TestEnum1::ONE));
@@ -618,13 +618,13 @@ TEST(EnumMap, TryEmplace)
             ASSERT_TRUE(!var1.contains(TestEnum1::FOUR));
             ASSERT_EQ(20, var1.at(TestEnum1::TWO));
             ASSERT_TRUE(was_inserted);
-            ASSERT_EQ(TestEnum1::TWO, it->first);
-            ASSERT_EQ(20, it->second);
+            ASSERT_EQ(TestEnum1::TWO, iter->first);
+            ASSERT_EQ(20, iter->second);
         }
 
         {
             const TestEnum1 key = TestEnum1::TWO;
-            auto [it, was_inserted] = var1.try_emplace(key, 209999999);
+            auto [iter, was_inserted] = var1.try_emplace(key, 209999999);
             ASSERT_EQ(1, var1.size());
             ASSERT_TRUE(!var1.contains(TestEnum1::ONE));
             ASSERT_TRUE(var1.contains(TestEnum1::TWO));
@@ -632,8 +632,8 @@ TEST(EnumMap, TryEmplace)
             ASSERT_TRUE(!var1.contains(TestEnum1::FOUR));
             ASSERT_EQ(20, var1.at(TestEnum1::TWO));
             ASSERT_FALSE(was_inserted);
-            ASSERT_EQ(TestEnum1::TWO, it->first);
-            ASSERT_EQ(20, it->second);
+            ASSERT_EQ(TestEnum1::TWO, iter->first);
+            ASSERT_EQ(20, iter->second);
         }
 
         {
@@ -687,7 +687,7 @@ TEST(EnumMap, Emplace)
         EnumMap<TestEnum1, int> var1{};
 
         {
-            auto [it, was_inserted] = var1.emplace(TestEnum1::TWO, 20);
+            auto [iter, was_inserted] = var1.emplace(TestEnum1::TWO, 20);
 
             ASSERT_EQ(1, var1.size());
             ASSERT_TRUE(!var1.contains(TestEnum1::ONE));
@@ -696,12 +696,12 @@ TEST(EnumMap, Emplace)
             ASSERT_TRUE(!var1.contains(TestEnum1::FOUR));
             ASSERT_EQ(20, var1.at(TestEnum1::TWO));
             ASSERT_TRUE(was_inserted);
-            ASSERT_EQ(TestEnum1::TWO, it->first);
-            ASSERT_EQ(20, it->second);
+            ASSERT_EQ(TestEnum1::TWO, iter->first);
+            ASSERT_EQ(20, iter->second);
         }
 
         {
-            auto [it, was_inserted] = var1.emplace(TestEnum1::TWO, 209999999);
+            auto [iter, was_inserted] = var1.emplace(TestEnum1::TWO, 209999999);
             ASSERT_EQ(1, var1.size());
             ASSERT_TRUE(!var1.contains(TestEnum1::ONE));
             ASSERT_TRUE(var1.contains(TestEnum1::TWO));
@@ -709,12 +709,12 @@ TEST(EnumMap, Emplace)
             ASSERT_TRUE(!var1.contains(TestEnum1::FOUR));
             ASSERT_EQ(20, var1.at(TestEnum1::TWO));
             ASSERT_FALSE(was_inserted);
-            ASSERT_EQ(TestEnum1::TWO, it->first);
-            ASSERT_EQ(20, it->second);
+            ASSERT_EQ(TestEnum1::TWO, iter->first);
+            ASSERT_EQ(20, iter->second);
         }
 
         {
-            auto [it, was_inserted] = var1.emplace(std::make_pair(TestEnum1::TWO, 209999999));
+            auto [iter, was_inserted] = var1.emplace(std::make_pair(TestEnum1::TWO, 209999999));
             ASSERT_EQ(1, var1.size());
             ASSERT_TRUE(!var1.contains(TestEnum1::ONE));
             ASSERT_TRUE(var1.contains(TestEnum1::TWO));
@@ -722,8 +722,8 @@ TEST(EnumMap, Emplace)
             ASSERT_TRUE(!var1.contains(TestEnum1::FOUR));
             ASSERT_EQ(20, var1.at(TestEnum1::TWO));
             ASSERT_FALSE(was_inserted);
-            ASSERT_EQ(TestEnum1::TWO, it->first);
-            ASSERT_EQ(20, it->second);
+            ASSERT_EQ(TestEnum1::TWO, iter->first);
+            ASSERT_EQ(20, iter->second);
         }
     }
 

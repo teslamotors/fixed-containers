@@ -217,24 +217,24 @@ TEST(FixedUnorderedSet, InsertMultipleTimes)
     {
         FixedUnorderedSet<int, 10> var{};
         {
-            auto [it, was_inserted] = var.insert(2);
+            auto [iter, was_inserted] = var.insert(2);
             assert_or_abort(was_inserted);
-            assert_or_abort(2 == *it);
+            assert_or_abort(2 == *iter);
         }
         {
-            auto [it, was_inserted] = var.insert(4);
+            auto [iter, was_inserted] = var.insert(4);
             assert_or_abort(was_inserted);
-            assert_or_abort(4 == *it);
+            assert_or_abort(4 == *iter);
         }
         {
-            auto [it, was_inserted] = var.insert(2);
+            auto [iter, was_inserted] = var.insert(2);
             assert_or_abort(!was_inserted);
-            assert_or_abort(2 == *it);
+            assert_or_abort(2 == *iter);
         }
         {
-            auto [it, was_inserted] = var.insert(4);
+            auto [iter, was_inserted] = var.insert(4);
             assert_or_abort(!was_inserted);
-            assert_or_abort(4 == *it);
+            assert_or_abort(4 == *iter);
         }
         return var;
     }();
@@ -304,7 +304,7 @@ TEST(FixedUnorderedSet, Emplace)
         FixedUnorderedSet<int, 10> var1{};
 
         {
-            auto [it, was_inserted] = var1.emplace(2);
+            auto [iter, was_inserted] = var1.emplace(2);
 
             ASSERT_EQ(1, var1.size());
             ASSERT_TRUE(!var1.contains(1));
@@ -313,11 +313,11 @@ TEST(FixedUnorderedSet, Emplace)
             ASSERT_TRUE(!var1.contains(4));
             ASSERT_TRUE(var1.contains(2));
             ASSERT_TRUE(was_inserted);
-            ASSERT_EQ(2, *it);
+            ASSERT_EQ(2, *iter);
         }
 
         {
-            auto [it, was_inserted] = var1.emplace(2);
+            auto [iter, was_inserted] = var1.emplace(2);
             ASSERT_EQ(1, var1.size());
             ASSERT_TRUE(!var1.contains(1));
             ASSERT_TRUE(var1.contains(2));
@@ -325,7 +325,7 @@ TEST(FixedUnorderedSet, Emplace)
             ASSERT_TRUE(!var1.contains(4));
             ASSERT_TRUE(var1.contains(2));
             ASSERT_FALSE(was_inserted);
-            ASSERT_EQ(2, *it);
+            ASSERT_EQ(2, *iter);
         }
     }
 }
