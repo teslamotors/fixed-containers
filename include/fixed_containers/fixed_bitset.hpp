@@ -48,8 +48,8 @@ struct FixedBitsetHelper
     using Ty = std::
         conditional_t<BIT_COUNT <= sizeof(UnsignedLong) * CHAR_BIT, UnsignedLong, UnsignedLongLong>;
 
-    static constexpr std::ptrdiff_t BITS_PER_WORD = CHAR_BIT * sizeof(Ty);
-    static constexpr std::ptrdiff_t WORD_COUNT =
+    static constexpr std::size_t BITS_PER_WORD = CHAR_BIT * sizeof(Ty);
+    static constexpr std::size_t WORD_COUNT =
         BIT_COUNT == 0 ? 0 : (BIT_COUNT - 1) / BITS_PER_WORD;  // NB: number of words - 1
 };
 }  // namespace fixed_containers::fixed_bitset_detail
@@ -68,8 +68,8 @@ private:
     using UnsignedLong = typename Helper::UnsignedLong;
     using UnsignedLongLong = typename Helper::UnsignedLongLong;
 
-    static constexpr std::ptrdiff_t BITS_PER_WORD = Helper::BITS_PER_WORD;
-    static constexpr std::ptrdiff_t WORD_COUNT = Helper::WORD_COUNT;
+    static constexpr std::size_t BITS_PER_WORD = Helper::BITS_PER_WORD;
+    static constexpr std::size_t WORD_COUNT = Helper::WORD_COUNT;
 
     using Checking = CheckingType;
 
@@ -404,23 +404,19 @@ public:
         const auto wordshift = static_cast<std::size_t>(pos / BITS_PER_WORD);
         if (wordshift != 0)
         {
-            for (std::ptrdiff_t w_pos = 0; w_pos <= WORD_COUNT; ++w_pos)
+            for (std::size_t w_pos = 0; w_pos <= WORD_COUNT; ++w_pos)
             {
-                const auto w_pos_as_size_t = static_cast<std::size_t>(w_pos);
-                data_at(w_pos_as_size_t) = wordshift <= WORD_COUNT - w_pos_as_size_t
-                                               ? data_at(w_pos_as_size_t + wordshift)
-                                               : 0;
+                data_at(w_pos) = wordshift <= WORD_COUNT - w_pos ? data_at(w_pos + wordshift) : 0;
             }
         }
 
         pos %= BITS_PER_WORD;
         if (pos != 0)
         {  // 0 < pos < BITS_PER_WORD, shift by bits
-            for (std::ptrdiff_t w_pos = 0; w_pos < WORD_COUNT; ++w_pos)
+            for (std::size_t w_pos = 0; w_pos < WORD_COUNT; ++w_pos)
             {
-                const auto w_pos_as_size_t = static_cast<std::size_t>(w_pos);
-                data_at(w_pos_as_size_t) = (data_at(w_pos_as_size_t) >> pos) |
-                                           (data_at(w_pos_as_size_t + 1) << (BITS_PER_WORD - pos));
+                data_at(w_pos) =
+                    (data_at(w_pos) >> pos) | (data_at(w_pos + 1) << (BITS_PER_WORD - pos));
             }
 
             data_at(WORD_COUNT) >>= pos;
@@ -710,8 +706,8 @@ private:
     using UnsignedLong = typename Helper::UnsignedLong;
     using UnsignedLongLong = typename Helper::UnsignedLongLong;
 
-    static constexpr std::ptrdiff_t BITS_PER_WORD = Helper::BITS_PER_WORD;
-    static constexpr std::ptrdiff_t WORD_COUNT = Helper::WORD_COUNT;
+    static constexpr std::size_t BITS_PER_WORD = Helper::BITS_PER_WORD;
+    static constexpr std::size_t WORD_COUNT = Helper::WORD_COUNT;
 
 public:
     constexpr std::size_t operator()(
