@@ -155,12 +155,14 @@ public:  // Public so this type is a structural type and can thus be used in tem
 
 public:
     constexpr FixedVectorBase() noexcept
+        requires(MAXIMUM_SIZE > 0)
       : IMPLEMENTATION_DETAIL_DO_NOT_USE_size_{0}
     // Don't initialize the array
     {
         // A constexpr context requires everything to be initialized.
         // The OptionalStorage wrapper takes care of that, but for unwrapped objects
         // while also being in a constexpr context, initialize array.
+        // Unclear why deque does not need this.
         if constexpr (!std::same_as<OptionalT, optional_storage_detail::OptionalStorage<T>>)
         {
             if (std::is_constant_evaluated())
@@ -168,6 +170,16 @@ public:
                 memory::construct_at_address_of(array());
             }
         }
+    }
+
+    // Special constructor that initializes the array for 0 size.
+    // Needed by libc++17 and lower, unit tests for vector will NOT fail,
+    // but their usage in reflection will.
+    constexpr FixedVectorBase() noexcept
+        requires(MAXIMUM_SIZE == 0)
+      : IMPLEMENTATION_DETAIL_DO_NOT_USE_size_{0}
+      , IMPLEMENTATION_DETAIL_DO_NOT_USE_array_{}
+    {
     }
 
     constexpr FixedVectorBase(std::size_t count,
@@ -585,7 +597,7 @@ public:
     template <std::size_t MAXIMUM_SIZE_2, customize::SequenceContainerChecking CheckingType2>
     constexpr auto operator<=>(const FixedVectorBase<T, MAXIMUM_SIZE_2, CheckingType2>& other) const
     {
-        return std::lexicographical_compare_three_way(
+        return algorithm::lexicographical_compare_three_way(
             cbegin(), cend(), other.cbegin(), other.cend());
     }
 

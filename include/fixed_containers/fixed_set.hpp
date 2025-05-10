@@ -415,7 +415,7 @@ public:
         const FixedSet<K, MAXIMUM_SIZE_2, Compare2, COMPACTNESS_2, StorageTemplate2, CheckingType2>&
             other) const
     {
-        return std::lexicographical_compare_three_way(
+        return algorithm::lexicographical_compare_three_way(
             cbegin(), cend(), other.cbegin(), other.cend());
     }
 

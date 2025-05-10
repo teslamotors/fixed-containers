@@ -177,9 +177,20 @@ public:
 
 public:
     constexpr FixedDequeBase() noexcept
+        requires(MAXIMUM_SIZE > 0)
       : IMPLEMENTATION_DETAIL_DO_NOT_USE_starting_index_and_size_{
             .start = FIXED_DEQUE_STARTING_OFFSET, .distance = 0}
     // Don't initialize the array
+    {
+    }
+
+    // Special constructor that initializes the array for 0 size.
+    // Needed by libc++17 and lower, unit tests will fail.
+    constexpr FixedDequeBase() noexcept
+        requires(MAXIMUM_SIZE == 0)
+      : IMPLEMENTATION_DETAIL_DO_NOT_USE_array_{}
+      , IMPLEMENTATION_DETAIL_DO_NOT_USE_starting_index_and_size_{
+            .start = FIXED_DEQUE_STARTING_OFFSET, .distance = 0}
     {
     }
 
@@ -511,7 +522,7 @@ public:
     template <std::size_t MAXIMUM_SIZE_2, customize::SequenceContainerChecking CheckingType2>
     constexpr auto operator<=>(const FixedDequeBase<T, MAXIMUM_SIZE_2, CheckingType2>& other) const
     {
-        return std::lexicographical_compare_three_way(
+        return algorithm::lexicographical_compare_three_way(
             cbegin(), cend(), other.cbegin(), other.cend());
     }
 

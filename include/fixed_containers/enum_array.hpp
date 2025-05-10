@@ -1,5 +1,6 @@
 #pragma once
 
+#include "fixed_containers/algorithm.hpp"
 #include "fixed_containers/assert_or_abort.hpp"
 #include "fixed_containers/concepts.hpp"
 #include "fixed_containers/enum_utils.hpp"
@@ -171,7 +172,8 @@ public:
     }
     constexpr auto operator<=>(const EnumArray<L, T>& other) const
     {
-        return values() <=> other.values();
+        return algorithm::lexicographical_compare_three_way(
+            values().begin(), values().end(), other.values().begin(), other.values().end());
     }
 
 private:

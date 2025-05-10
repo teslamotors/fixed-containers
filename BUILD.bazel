@@ -144,6 +144,7 @@ cc_library(
     includes = includes_config(),
     strip_include_prefix = strip_include_prefix_config(),
     deps = [
+        ":algorithm",
         ":assert_or_abort",
         ":concepts",
         ":enum_utils",
@@ -183,6 +184,7 @@ cc_library(
     includes = includes_config(),
     strip_include_prefix = strip_include_prefix_config(),
     deps = [
+        ":algorithm",
         ":assert_or_abort",
         ":bidirectional_iterator",
         ":concepts",

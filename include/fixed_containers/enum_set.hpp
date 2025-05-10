@@ -1,5 +1,6 @@
 #pragma once
 
+#include "fixed_containers/algorithm.hpp"
 #include "fixed_containers/assert_or_abort.hpp"
 #include "fixed_containers/bidirectional_iterator.hpp"
 #include "fixed_containers/concepts.hpp"
@@ -375,7 +376,7 @@ public:
 
     constexpr auto operator<=>(const EnumSet<K>& other) const
     {
-        return std::lexicographical_compare_three_way(
+        return algorithm::lexicographical_compare_three_way(
             cbegin(), cend(), other.cbegin(), other.cend());
     }
 

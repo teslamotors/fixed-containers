@@ -450,7 +450,7 @@ public:
     template <std::size_t MAXIMUM_SIZE_2, customize::SequenceContainerChecking CheckingType2>
     constexpr auto operator<=>(const FixedList<T, MAXIMUM_SIZE_2, CheckingType2>& other) const
     {
-        return std::lexicographical_compare_three_way(
+        return algorithm::lexicographical_compare_three_way(
             cbegin(), cend(), other.cbegin(), other.cend());
     }
 
