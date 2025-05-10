@@ -1285,9 +1285,9 @@ TEST(FixedMap, Count)
     constexpr FixedMap<int, int, 10> VAL1{{2, 20}, {4, 40}};
     static_assert(VAL1.size() == 2);
 
-    static_assert(VAL1.count(1) == 0);
+    static_assert(VAL1.count(1) == 0);  // NOLINT(readability-container-contains)
     static_assert(VAL1.count(2) == 1);
-    static_assert(VAL1.count(3) == 0);
+    static_assert(VAL1.count(3) == 0);  // NOLINT(readability-container-contains)
     static_assert(VAL1.count(4) == 1);
 
     static_assert(VAL1.at(2) == 20);

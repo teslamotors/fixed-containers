@@ -1361,9 +1361,9 @@ TEST(EnumMap, Count)
     constexpr EnumMap<TestEnum1, int> VAL1{{TestEnum1::TWO, 20}, {TestEnum1::FOUR, 40}};
     static_assert(VAL1.size() == 2);
 
-    static_assert(VAL1.count(TestEnum1::ONE) == 0);
+    static_assert(VAL1.count(TestEnum1::ONE) == 0);  // NOLINT(readability-container-contains)
     static_assert(VAL1.count(TestEnum1::TWO) == 1);
-    static_assert(VAL1.count(TestEnum1::THREE) == 0);
+    static_assert(VAL1.count(TestEnum1::THREE) == 0);  // NOLINT(readability-container-contains)
     static_assert(VAL1.count(TestEnum1::FOUR) == 1);
 
     static_assert(VAL1.at(TestEnum1::TWO) == 20);

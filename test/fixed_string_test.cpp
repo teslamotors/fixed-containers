@@ -1789,7 +1789,7 @@ TEST(FixedString, Substring)
         return var;
     }();
 
-    static_assert(VAL1.substr(0, 3) == "012");
+    static_assert(VAL1.substr(0, 3) == "012");  // NOLINT(modernize-use-starts-ends-with)
     static_assert(VAL1.substr(1, 2) == "12");
     static_assert(VAL1.substr(2, 2) == "23");
 
