@@ -16,6 +16,10 @@ static_assert(TriviallyCopyable<FixedBitsetType>);
 static_assert(NotTrivial<FixedBitsetType>);
 static_assert(StandardLayout<FixedBitsetType>);
 static_assert(IsStructuralType<FixedBitsetType>);
+static_assert(sizeof(FixedBitset<32>) == 4);
+static_assert(sizeof(FixedBitset<33>) == 8);
+static_assert(sizeof(FixedBitset<64>) == 8);
+static_assert(sizeof(FixedBitset<65>) == 16);
 
 TEST(FixedBitset, DefaultConstructor)
 {

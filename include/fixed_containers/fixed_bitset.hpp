@@ -42,12 +42,9 @@ namespace fixed_containers::fixed_bitset_detail
 template <std::size_t BIT_COUNT>
 struct FixedBitsetHelper
 {
-    using UnsignedLong = unsigned long;           // NOLINT(google-runtime-int)
-    using UnsignedLongLong = unsigned long long;  // NOLINT(google-runtime-int)
+    using Ty = std::conditional_t<BIT_COUNT <= 32, std::uint32_t, std::uint64_t>;
 
-    using Ty = std::
-        conditional_t<BIT_COUNT <= sizeof(UnsignedLong) * CHAR_BIT, UnsignedLong, UnsignedLongLong>;
-
+    static constexpr bool IS_DOUBLE_WIDTH = std::is_same_v<Ty, std::uint32_t>;
     static constexpr std::size_t BITS_PER_WORD = CHAR_BIT * sizeof(Ty);
     static constexpr std::size_t WORD_COUNT =
         BIT_COUNT == 0 ? 0 : (BIT_COUNT - 1) / BITS_PER_WORD;  // NB: number of words - 1
@@ -65,9 +62,6 @@ class FixedBitset
 
 private:
     using Helper = fixed_bitset_detail::FixedBitsetHelper<BIT_COUNT>;
-    using UnsignedLong = typename Helper::UnsignedLong;
-    using UnsignedLongLong = typename Helper::UnsignedLongLong;
-
     static constexpr std::size_t BITS_PER_WORD = Helper::BITS_PER_WORD;
     static constexpr std::size_t WORD_COUNT = Helper::WORD_COUNT;
 
@@ -209,11 +203,10 @@ public:
     {
     }  // construct with all false values
 
-    static constexpr bool NEED_MASK = BIT_COUNT < CHAR_BIT * sizeof(UnsignedLongLong);
+    static constexpr bool NEED_MASK = Helper::IS_DOUBLE_WIDTH;
+    static constexpr std::uint64_t MASK = (1ULL << (NEED_MASK ? BIT_COUNT : 0)) - 1ULL;
 
-    static constexpr UnsignedLongLong MASK = (1ULL << (NEED_MASK ? BIT_COUNT : 0)) - 1ULL;
-
-    constexpr FixedBitset(UnsignedLongLong val) noexcept
+    constexpr FixedBitset(std::uint64_t val) noexcept
       : IMPLEMENTATION_DETAIL_DO_NOT_USE_data_{static_cast<Ty>(NEED_MASK ? val & MASK : val)}
     {
     }
@@ -497,7 +490,7 @@ public:
         return flip_unchecked(pos);
     }
 
-    [[nodiscard]] constexpr UnsignedLong to_ulong(
+    [[nodiscard]] constexpr unsigned long to_ulong(
         const std_transition::source_location& loc =
             std_transition::source_location::current()) const
     {
@@ -510,7 +503,7 @@ public:
         }
         else if constexpr (BITS_SMALL)
         {
-            return static_cast<UnsignedLong>(data_at(0));
+            return static_cast<unsigned long>(data_at(0));
         }
         else
         {
@@ -532,11 +525,11 @@ public:
                 CheckingType::invalid_argument("FixedBitSet to_ulong overflow error (2)", loc);
             }
 
-            return static_cast<UnsignedLong>(data_at(0));
+            return static_cast<unsigned long>(data_at(0));
         }
     }
 
-    [[nodiscard]] constexpr UnsignedLongLong to_ullong(
+    [[nodiscard]] constexpr unsigned long long to_ullong(
         const std_transition::source_location& loc =
             std_transition::source_location::current()) const
     {
@@ -703,8 +696,6 @@ struct std::hash<fixed_containers::FixedBitset<BIT_COUNT>>
 {
 private:
     using Helper = fixed_containers::fixed_bitset_detail::FixedBitsetHelper<BIT_COUNT>;
-    using UnsignedLong = typename Helper::UnsignedLong;
-    using UnsignedLongLong = typename Helper::UnsignedLongLong;
 
     static constexpr std::size_t BITS_PER_WORD = Helper::BITS_PER_WORD;
     static constexpr std::size_t WORD_COUNT = Helper::WORD_COUNT;
