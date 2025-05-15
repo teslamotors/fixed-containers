@@ -23,9 +23,9 @@ class OptionalReference
 private:
     using Self = OptionalReference<T, CheckingType>;
     using reference = T&;
-    using const_reference = const T&;
+    using const_reference = T&;
     using pointer = T*;
-    using const_pointer = const T*;
+    using const_pointer = T*;
     using BackingType = pointer;
 
 public:

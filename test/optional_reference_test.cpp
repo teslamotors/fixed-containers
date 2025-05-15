@@ -395,4 +395,23 @@ TEST(OptionalReference, PtrCtor)
     ASSERT_FALSE(uniqnullref.has_value());
 }
 
+TEST(OptionalReference, ConstHandling)
+{
+    {
+        MockTypeWithConstAndNonConstFunctions var1{};
+        const OptionalReference<MockTypeWithConstAndNonConstFunctions> opt_ref{var1};
+        opt_ref->const_function();
+        opt_ref->non_const_function();
+        opt_ref.value().const_function();
+        opt_ref.value().non_const_function();
+    }
+    {
+        MockTypeWithConstAndNonConstFunctions var1{};
+        const std::optional<const std::reference_wrapper<MockTypeWithConstAndNonConstFunctions>>
+            opt_ref{var1};
+        opt_ref.value().get().const_function();
+        opt_ref.value().get().non_const_function();
+    }
+}
+
 }  // namespace fixed_containers

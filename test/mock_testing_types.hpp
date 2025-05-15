@@ -430,6 +430,13 @@ public:
 static_assert(alignof(MockAligned64) == 64);
 static_assert(sizeof(MockAligned64) == 64);
 
+struct MockTypeWithConstAndNonConstFunctions
+{
+    constexpr void const_function() const {}
+
+    constexpr void non_const_function() {}
+};
+
 }  // namespace fixed_containers
 
 template <>
