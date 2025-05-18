@@ -7,6 +7,7 @@
 #include <gtest/gtest.h>
 
 #include <compare>
+#include <functional>
 #include <memory>
 #include <optional>
 #include <utility>
