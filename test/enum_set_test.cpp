@@ -105,11 +105,41 @@ TEST(EnumSet, ComplementOf)
     static_assert(!VAL1.contains(TestEnum1::FOUR));
 }
 
+TEST(EnumSet, ComplementOfRanges)
+{
+    // Uninitialized rich enums here, would exploded without a filter
+    constexpr std::array<TestRichEnum1, 20> INPUT_A{
+        TestRichEnum1::C_TWO(),
+        TestRichEnum1::C_FOUR(),
+    };
+
+    constexpr auto VAL1 = EnumSet<TestRichEnum1>::complement_of(
+        INPUT_A | std::views::filter([](auto&& entry) { return entry.has_value(); }));
+    static_assert(2 == VAL1.size());
+    static_assert(VAL1.contains(TestRichEnum1::C_ONE()));
+    static_assert(VAL1.contains(TestRichEnum1::C_THREE()));
+}
+
 TEST(EnumSet, CopyOf)
 {
     constexpr std::array<TestEnum1, 2> INPUT_A{TestEnum1::TWO, TestEnum1::FOUR};
     constexpr auto VAL1 = EnumSet<TestEnum1>::copy_of(INPUT_A);
     static_assert(VAL1.size() == 2);
+}
+
+TEST(EnumSet, CopyOfRanges)
+{
+    // Uninitialized rich enums here, would exploded without a filter
+    constexpr std::array<TestRichEnum1, 20> INPUT_A{
+        TestRichEnum1::C_TWO(),
+        TestRichEnum1::C_FOUR(),
+    };
+
+    constexpr auto VAL1 = EnumSet<TestRichEnum1>::copy_of(
+        INPUT_A | std::views::filter([](auto&& entry) { return entry.has_value(); }));
+    static_assert(2 == VAL1.size());
+    static_assert(VAL1.contains(TestRichEnum1::C_TWO()));
+    static_assert(VAL1.contains(TestRichEnum1::C_FOUR()));
 }
 
 TEST(EnumSet, BuilderInsert)

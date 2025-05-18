@@ -12,6 +12,7 @@
 #include <array>
 #include <cstddef>
 #include <initializer_list>
+#include <iterator>
 #include <memory>
 
 namespace fixed_containers::enum_set_detail
@@ -186,7 +187,7 @@ public:
     }
 
     template <class Container, class EnumSetType = Self>
-    static constexpr EnumSetType complement_of(const Container& container)
+    static constexpr EnumSetType complement_of(Container&& container)
     {
         auto output = all<EnumSetType>();
         for (const K& key : container)
@@ -198,10 +199,10 @@ public:
     }
 
     template <class Container, class EnumSetType = Self>
-    static constexpr EnumSetType copy_of(const Container& container)
+    static constexpr EnumSetType copy_of(Container&& container)
     {
         EnumSetType output{};
-        output.insert(container.begin(), container.end());
+        output.insert(std::ranges::begin(container), std::ranges::end(container));
         return output;
     }
 
