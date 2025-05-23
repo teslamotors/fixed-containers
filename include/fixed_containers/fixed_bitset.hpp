@@ -490,7 +490,7 @@ public:
         return flip_unchecked(pos);
     }
 
-    [[nodiscard]] constexpr unsigned long to_ulong(
+    [[nodiscard]] constexpr std::uint32_t to_ulong(
         const std_transition::source_location& loc =
             std_transition::source_location::current()) const
     {
@@ -503,7 +503,7 @@ public:
         }
         else if constexpr (BITS_SMALL)
         {
-            return static_cast<unsigned long>(data_at(0));
+            return static_cast<std::uint32_t>(data_at(0));
         }
         else
         {
@@ -525,11 +525,11 @@ public:
                 CheckingType::invalid_argument("FixedBitSet to_ulong overflow error (2)", loc);
             }
 
-            return static_cast<unsigned long>(data_at(0));
+            return static_cast<std::uint32_t>(data_at(0));
         }
     }
 
-    [[nodiscard]] constexpr unsigned long long to_ullong(
+    [[nodiscard]] constexpr std::uint64_t to_ullong(
         const std_transition::source_location& loc =
             std_transition::source_location::current()) const
     {
