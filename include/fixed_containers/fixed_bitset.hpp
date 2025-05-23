@@ -33,9 +33,9 @@
 #include <cassert>
 #include <climits>
 #include <cstddef>
+#include <cstdint>
 #include <functional>
 #include <string>
-#include <type_traits>
 
 namespace fixed_containers::fixed_bitset_detail
 {
