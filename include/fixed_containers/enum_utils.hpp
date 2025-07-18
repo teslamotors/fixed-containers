@@ -373,7 +373,9 @@ using RichEnumStorage = std::conditional_t<std::is_same_v<std::underlying_type_t
 #define FIXED_CONTAINERS_RICH_ENUM_CONSTANT_GEN_HELPER(RichEnumName, CONSTANT_NAME)           \
     static constexpr RichEnumName CONSTANT_NAME() /* NOLINT(readability-identifier-naming) */ \
     {                                                                                         \
-        return RichEnumName::value_of(BackingEnum::CONSTANT_NAME).value();                    \
+        const auto& value_of = RichEnumName::value_of(BackingEnum::CONSTANT_NAME);            \
+        ::fixed_containers::assert_or_abort(value_of.has_value());                            \
+        return value_of.value();                                                              \
     }
 
 namespace fixed_containers::rich_enums
