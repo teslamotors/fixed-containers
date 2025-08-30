@@ -1,12 +1,18 @@
 #include "fixed_containers/fixed_bitset.hpp"
 
+#include "test_utilities_common.hpp"
+
 #include "fixed_containers/concepts.hpp"
+#include "fixed_containers/sequence_container_checking.hpp"
 
 #include <gtest/gtest.h>
 
 #include <bitset>
+#include <concepts>
+#include <cstddef>
 #include <functional>
 #include <string>
+#include <type_traits>
 
 namespace fixed_containers
 {
@@ -517,5 +523,67 @@ TEST(FixedBitset, StdHash)
     const FixedBitset<8> val1{"00101010"};
     ASSERT_EQ(42, std::hash<FixedBitset<8>>{}(val1));
 }
+
+namespace
+{
+template <std::size_t BIT_COUNT>
+struct FixedBitsetDerived
+  : public FixedBitset<BIT_COUNT,
+                       customize::SequenceContainerAbortChecking<bool, BIT_COUNT>,
+                       FixedBitsetDerived<BIT_COUNT>>
+{
+    using Base = FixedBitset<BIT_COUNT,
+                             customize::SequenceContainerAbortChecking<bool, BIT_COUNT>,
+                             FixedBitsetDerived<BIT_COUNT>>;
+    constexpr FixedBitsetDerived() noexcept
+      : Base()
+    {
+    }  // construct with all false values
+};
+}  // namespace
+
+template <typename T>
+struct FixedBitsetFluentReturnTypeFixture : public ::testing::Test
+{
+};
+TYPED_TEST_SUITE_P(FixedBitsetFluentReturnTypeFixture);
+
+TYPED_TEST_P(FixedBitsetFluentReturnTypeFixture, FixedBitsetFluentReturnType)
+{
+    using FixedBitsetT = TypeParam;
+
+    FixedBitsetT val1{};
+    const FixedBitsetT val2{};
+
+    FixedBitsetT ret{};
+    ret = val1.set(1);
+    ret = val1.flip();
+    ret = val1.reset();
+
+    ret = val1 &= val2;
+    ret = val1 |= val2;
+    ret = val1 ^= val2;
+    ret = ~val1;
+
+    ret = val1 << 1;
+    ret = val1 <<= 1;
+    ret = val1 >> 1;
+    ret = val1 >>= 1;
+
+    ret = val1 & val2;
+    ret = val1 | val2;
+    ret = val1 ^ val2;
+
+    static_assert(std::same_as<std::decay_t<decltype(ret)>, FixedBitsetT>);
+}
+
+REGISTER_TYPED_TEST_SUITE_P(FixedBitsetFluentReturnTypeFixture, FixedBitsetFluentReturnType);
+
+using FixedBitsetFluentReturnTypeTypes = testing::Types<FixedBitset<15>, FixedBitsetDerived<8>>;
+
+INSTANTIATE_TYPED_TEST_SUITE_P(FixedBitset,
+                               FixedBitsetFluentReturnTypeFixture,
+                               FixedBitsetFluentReturnTypeTypes,
+                               NameProviderForTypeParameterizedTest);
 
 }  // namespace fixed_containers
