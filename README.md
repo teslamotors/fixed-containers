@@ -31,6 +31,7 @@ The fixed-container types have identical APIs to their std:: equivalents, so you
    | `FixedCircularQueue` | `std::queue` API with Circular Buffer semantics |
    | `FixedBitset`        | `std::bitset`                                   |
    | `FixedString`        | `std::string`                                   |
+   | `FixedGraph`         | (no direct `std::` equivalent)                  |
    | `FixedMap`           | `std::map`                                      |
    | `FixedSet`           | `std::set`                                      |
    | `FixedUnorderedMap`  | `std::unordered_map`                            |
@@ -271,6 +272,63 @@ More examples can be found [here](test/enums_test_common.hpp).
     static_assert(s1.contains(2));
     static_assert(s1.size() == 2);
     static_assert(s1.max_size() == 11);
+    ```
+
+- FixedGraph
+    ```C++
+    #include "fixed_containers/fixed_graph.hpp"
+    using namespace fixed_containers;
+
+    // Directed, unweighted graph with capacity for 8 nodes, up to 6 outgoing edges each
+    using Graph = FixedGraph<int, void, 8, 6, true>; // <NodeType, EdgeType=void (unweighted), MAX_NODES, MAX_EDGES_PER_NODE, DIRECTED>
+
+    constexpr auto g = []() {
+        Graph gr{};
+        auto a = gr.add_node(0);
+        auto b = gr.add_node(1);
+        auto c = gr.add_node(2);
+        gr.add_edge(a, b); // 0 -> 1
+        gr.add_edge(b, c); // 1 -> 2
+        gr.add_edge(a, c); // 0 -> 2
+        return gr;
+    }();
+
+    static_assert(g.node_count() == 3);
+    static_assert(g.has_edge(0, 1));
+    static_assert(g.has_edge(1, 2));
+    static_assert(g.shortest_path(0, 2).size() == 2); // 0 -> 2 direct
+
+    // Runtime example (BFS traversal)
+    void traverse() {
+        Graph gr{};
+        auto n0 = gr.add_node(0);
+        auto n1 = gr.add_node(1);
+        auto n2 = gr.add_node(2);
+        auto n3 = gr.add_node(3);
+        gr.add_edge(n0, n1);
+        gr.add_edge(n1, n2);
+        gr.add_edge(n0, n3);
+        gr.add_edge(n3, n2);
+
+        FixedVector<int, 8> order{};
+        gr.bfs(n0, [&](std::size_t idx){ order.push_back(static_cast<int>(gr.node_at(idx))); });
+        // 'order' now holds a BFS visitation order starting from node 0
+    }
+
+    // Weighted undirected example using double edge weights
+    using WUGraph = FixedGraph<int, double, 6, 6, false>; // undirected weighted
+    constexpr auto wug = [](){
+        WUGraph gr{};
+        auto a = gr.add_node(0);
+        auto b = gr.add_node(1);
+        auto c = gr.add_node(2);
+        gr.add_edge(a, b, 1.5);
+        gr.add_edge(b, c, 2.25);
+        gr.add_edge(a, c, 5.0);
+        // Dijkstra shortest path 0 -> 2 should pick 0-1-2 (1.5 + 2.25 = 3.75 < 5.0)
+        auto path = gr.dijkstra_shortest_path(a, c);
+        return gr;
+    }();
     ```
 
 - EnumMap
