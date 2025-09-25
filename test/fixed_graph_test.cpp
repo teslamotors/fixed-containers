@@ -7,6 +7,7 @@ namespace
 {
 using Graph = fixed_containers::FixedGraph<int, void, 10, 5, true, false>;
 using MatrixGraph = fixed_containers::FixedGraph<int, void, 10, 10, true, true>;
+using PoolGraph = fixed_containers::FixedGraph<int, void, 10, 5, true, false, true, 50>;
 
 void test_basic()
 {
@@ -145,11 +146,44 @@ void test_new_features()
     std::cout << "Graph coloring used " << *std::max_element(colors.begin(), colors.end()) + 1 << " colors" << std::endl;
 }
 
+void test_pool()
+{
+    std::cout << "\n=== Testing Pool Representation ===\n";
+
+    PoolGraph pg;
+    auto pn0 = pg.add_node(0);
+    auto pn1 = pg.add_node(1);
+    auto pn2 = pg.add_node(2);
+
+    pg.add_edge(pn0, pn1);
+    pg.add_edge(pn1, pn2);
+
+    std::cout << "Pool graph node_count: " << pg.node_count() << std::endl;
+    std::cout << "Pool graph neighbors of 0: " << pg.neighbors(pn0).size() << std::endl;
+    std::cout << "Pool graph has edge 0-1: " << pg.has_edge(pn0, pn1) << std::endl;
+
+    std::cout << "Pool graph BFS from 0: ";
+    pg.bfs(pn0, [](auto idx) { std::cout << idx << " "; });
+    std::cout << std::endl;
+
+    std::cout << "Pool graph DFS from 0: ";
+    pg.dfs(pn0, [](auto idx) { std::cout << idx << " "; });
+    std::cout << std::endl;
+
+    auto ppath = pg.shortest_path(pn0, pn2);
+    std::cout << "Pool graph shortest path 0 to 2: ";
+    for (auto p : ppath) std::cout << p << " ";
+    std::cout << std::endl;
+
+    std::cout << "Pool graph has cycles: " << pg.has_cycles() << std::endl;
+}
+
 }  // namespace
 
 int main()
 {
     test_basic();
     test_new_features();
+    test_pool();
     return 0;
 }
