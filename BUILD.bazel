@@ -347,6 +347,21 @@ cc_library(
 
 
 cc_library(
+    name = "fixed_graph",
+    hdrs = ["include/fixed_containers/fixed_graph.hpp"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
+    deps = [
+        ":concepts",
+        ":fixed_map",
+        ":fixed_vector",
+        ":preconditions",
+        ":source_location",
+    ],
+    copts = ["-std=c++20"],
+)
+
+cc_library(
     name = "fixed_doubly_linked_list",
     hdrs = ["include/fixed_containers/fixed_doubly_linked_list.hpp"],
     includes = includes_config(),
@@ -1363,6 +1378,17 @@ cc_test(
     copts = ["-std=c++20"],
 )
 
+
+cc_test(
+    name = "fixed_graph_test",
+    srcs = ["test/fixed_graph_test.cpp"],
+    deps = [
+        ":fixed_graph",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
+    ],
+    copts = ["-std=c++20"],
+)
 
 cc_test(
     name = "fixed_doubly_linked_list_test",

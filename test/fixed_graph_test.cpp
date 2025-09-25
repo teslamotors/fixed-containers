@@ -5,7 +5,8 @@
 
 namespace
 {
-using Graph = fixed_containers::FixedGraph<int, void, 10, 5, true>;
+using Graph = fixed_containers::FixedGraph<int, void, 10, 5, true, false>;
+using MatrixGraph = fixed_containers::FixedGraph<int, void, 10, 10, true, true>;
 
 void test_basic()
 {
