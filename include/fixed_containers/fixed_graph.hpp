@@ -18,6 +18,416 @@
 
 namespace fixed_containers
 {
+
+using NodeIndex = std::size_t;
+
+// Storage classes for FixedGraph
+
+template <typename EdgeType, std::size_t MAX_NODES, std::size_t MAX_EDGES_PER_NODE, bool DIRECTED>
+class AdjacencyListStorage
+{
+private:
+    using EdgeStorage = typename std::conditional<std::is_void<EdgeType>::value,
+                                           NodeIndex,
+                                           std::pair<NodeIndex, EdgeType>>::type;
+    using AdjacencyList = FixedVector<EdgeStorage, MAX_EDGES_PER_NODE>;
+    FixedVector<AdjacencyList, MAX_NODES> storage_;
+
+public:
+    constexpr AdjacencyListStorage()
+    {
+        storage_.resize(MAX_NODES, AdjacencyList{});
+    }
+
+    template <typename... Args>
+    constexpr void add_edge(NodeIndex from, NodeIndex to, Args&&... args)
+    {
+        if (storage_[from].size() >= MAX_EDGES_PER_NODE) return;
+        if constexpr (std::is_void_v<EdgeType>)
+        {
+            storage_[from].push_back(to);
+        }
+        else
+        {
+            storage_[from].push_back({to, std::forward<Args>(args)...});
+        }
+        if constexpr (!DIRECTED)
+        {
+            if (storage_[to].size() >= MAX_EDGES_PER_NODE) return;
+            if constexpr (std::is_void_v<EdgeType>)
+            {
+                storage_[to].push_back(from);
+            }
+            else
+            {
+                storage_[to].push_back({from, std::forward<Args>(args)...});
+            }
+        }
+    }
+
+    constexpr bool has_edge(NodeIndex from, NodeIndex to) const
+    {
+        const auto& list = storage_[from];
+        if constexpr (std::is_void_v<EdgeType>)
+        {
+            return std::find(list.begin(), list.end(), to) != list.end();
+        }
+        else
+        {
+            return std::find_if(list.begin(), list.end(), [to](const auto& p){ return p.first == to; }) != list.end();
+        }
+    }
+
+    constexpr FixedVector<EdgeStorage, MAX_NODES> neighbors(NodeIndex node) const
+    {
+        FixedVector<EdgeStorage, MAX_NODES> result{};
+        const auto& list = storage_[node];
+        for (const auto& e : list)
+        {
+            result.push_back(e);
+        }
+        return result;
+    }
+
+    constexpr std::size_t edge_count(std::size_t node_count) const
+    {
+        std::size_t count = 0;
+        for (NodeIndex u = 0; u < node_count; ++u)
+        {
+            if constexpr (DIRECTED)
+            {
+                count += storage_[u].size();
+            }
+            else
+            {
+                for (const auto& e : storage_[u])
+                {
+                    NodeIndex v = std::is_void_v<EdgeType> ? e : e.first;
+                    if (u < v) ++count;
+                }
+            }
+        }
+        return count;
+    }
+
+    constexpr bool remove_edge(NodeIndex from, NodeIndex to)
+    {
+        bool removed = false;
+        auto& list = storage_[from];
+        if constexpr (std::is_void_v<EdgeType>)
+        {
+            auto it = std::find(list.begin(), list.end(), to);
+            if (it != list.end())
+            {
+                list.erase(it);
+                removed = true;
+            }
+        }
+        else
+        {
+            auto it = std::find_if(list.begin(), list.end(), [to](const auto& p){ return p.first == to; });
+            if (it != list.end())
+            {
+                list.erase(it);
+                removed = true;
+            }
+        }
+        if constexpr (!DIRECTED)
+        {
+            if (removed)
+            {
+                auto& list2 = storage_[to];
+                if constexpr (std::is_void_v<EdgeType>)
+                {
+                    auto it = std::find(list2.begin(), list2.end(), from);
+                    if (it != list2.end()) list2.erase(it);
+                }
+                else
+                {
+                    auto it = std::find_if(list2.begin(), list2.end(), [from](const auto& p){ return p.first == from; });
+                    if (it != list2.end()) list2.erase(it);
+                }
+            }
+        }
+        return removed;
+    }
+
+    constexpr std::size_t degree(NodeIndex u) const
+    {
+        return storage_[u].size();
+    }
+};
+
+template <typename EdgeType, std::size_t MAX_NODES, bool DIRECTED>
+class AdjacencyMatrixStorage
+{
+private:
+    using MatrixElement = typename std::conditional<std::is_void<EdgeType>::value,
+                                                     bool,
+                                                     std::optional<EdgeType>>::type;
+    FixedVector<FixedVector<MatrixElement, MAX_NODES>, MAX_NODES> storage_;
+
+public:
+    constexpr AdjacencyMatrixStorage()
+    {
+        storage_.resize(MAX_NODES);
+        for (auto& row : storage_)
+        {
+            row.resize(MAX_NODES);
+            if constexpr (!std::is_void_v<EdgeType>)
+            {
+                for (auto& e : row) e = std::nullopt;
+            }
+        }
+    }
+
+    template <typename... Args>
+    constexpr void add_edge(NodeIndex from, NodeIndex to, Args&&... args)
+    {
+        if constexpr (std::is_void_v<EdgeType>)
+        {
+            storage_[from][to] = true;
+        }
+        else
+        {
+            storage_[from][to] = std::forward<Args...>(args...);
+        }
+        if constexpr (!DIRECTED)
+        {
+            if constexpr (std::is_void_v<EdgeType>)
+            {
+                storage_[to][from] = true;
+            }
+            else
+            {
+                storage_[to][from] = std::forward<Args...>(args...);
+            }
+        }
+    }
+
+    constexpr bool has_edge(NodeIndex from, NodeIndex to) const
+    {
+        if constexpr (std::is_void_v<EdgeType>)
+        {
+            return storage_[from][to];
+        }
+        else
+        {
+            return storage_[from][to].has_value();
+        }
+    }
+
+    constexpr FixedVector<typename std::conditional<std::is_void_v<EdgeType>, NodeIndex, std::pair<NodeIndex, EdgeType>>::type, MAX_NODES> neighbors(NodeIndex node) const
+    {
+        FixedVector<typename std::conditional<std::is_void_v<EdgeType>, NodeIndex, std::pair<NodeIndex, EdgeType>>::type, MAX_NODES> result{};
+        for (NodeIndex v = 0; v < MAX_NODES; ++v)
+        {
+            if (has_edge(node, v))
+            {
+                if constexpr (std::is_void_v<EdgeType>)
+                {
+                    result.push_back(v);
+                }
+                else
+                {
+                    result.push_back({v, *storage_[node][v]});
+                }
+            }
+        }
+        return result;
+    }
+
+    constexpr std::size_t edge_count(std::size_t node_count) const
+    {
+        std::size_t count = 0;
+        for (NodeIndex u = 0; u < node_count; ++u)
+        {
+            for (NodeIndex v = 0; v < node_count; ++v)
+            {
+                if (has_edge(u, v))
+                {
+                    if constexpr (DIRECTED)
+                    {
+                        ++count;
+                    }
+                    else
+                    {
+                        if (u < v) ++count;
+                    }
+                }
+            }
+        }
+        return count;
+    }
+
+    constexpr bool remove_edge(NodeIndex from, NodeIndex to)
+    {
+        bool removed = has_edge(from, to);
+        if (removed)
+        {
+            if constexpr (std::is_void_v<EdgeType>)
+            {
+                storage_[from][to] = false;
+            }
+            else
+            {
+                storage_[from][to] = std::nullopt;
+            }
+            if constexpr (!DIRECTED)
+            {
+                if constexpr (std::is_void_v<EdgeType>)
+                {
+                    storage_[to][from] = false;
+                }
+                else
+                {
+                    storage_[to][from] = std::nullopt;
+                }
+            }
+        }
+        return removed;
+    }
+
+    constexpr std::size_t degree(NodeIndex u) const
+    {
+        std::size_t deg = 0;
+        for (NodeIndex v = 0; v < MAX_NODES; ++v)
+        {
+            if (has_edge(u, v)) ++deg;
+        }
+        return deg;
+    }
+};
+
+template <typename EdgeType, std::size_t MAX_NODES, std::size_t MAX_TOTAL_EDGES, bool DIRECTED>
+class AdjacencyPoolStorage
+{
+private:
+    using EdgeStorage = typename std::conditional<std::is_void<EdgeType>::value,
+                                           NodeIndex,
+                                           std::pair<NodeIndex, EdgeType>>::type;
+    FixedVector<EdgeStorage, MAX_TOTAL_EDGES> storage_;
+    FixedVector<std::pair<size_t, size_t>, MAX_NODES> ranges_;
+
+public:
+    constexpr AdjacencyPoolStorage()
+    {
+        ranges_.resize(MAX_NODES, {0, 0});
+    }
+
+    template <typename... Args>
+    constexpr void add_edge(NodeIndex from, NodeIndex to, Args&&... args)
+    {
+        if (storage_.size() >= MAX_TOTAL_EDGES) return;
+        size_t insert_pos = storage_.size();
+        if constexpr (std::is_void_v<EdgeType>)
+        {
+            storage_.push_back(to);
+        }
+        else
+        {
+            storage_.push_back({to, std::forward<Args...>(args...)});
+        }
+        if (ranges_[from].second == 0) {
+            ranges_[from].first = insert_pos;
+        }
+        ranges_[from].second = insert_pos + 1;
+        if constexpr (!DIRECTED)
+        {
+            if (storage_.size() >= MAX_TOTAL_EDGES) return;
+            insert_pos = storage_.size();
+            if constexpr (std::is_void_v<EdgeType>)
+            {
+                storage_.push_back(from);
+            }
+            else
+            {
+                storage_.push_back({from, std::forward<Args...>(args...)});
+            }
+            if (ranges_[to].second == 0) {
+                ranges_[to].first = insert_pos;
+            }
+            ranges_[to].second = insert_pos + 1;
+        }
+    }
+
+    constexpr bool has_edge(NodeIndex from, NodeIndex to) const
+    {
+        auto [start, end] = ranges_[from];
+        for (size_t i = start; i < end; ++i)
+        {
+            const auto& e = storage_[i];
+            NodeIndex v;
+            if constexpr (std::is_void_v<EdgeType>)
+            {
+                v = e;
+            }
+            else
+            {
+                v = e.first;
+            }
+            if (v == to) return true;
+        }
+        return false;
+    }
+
+    constexpr FixedVector<EdgeStorage, MAX_NODES> neighbors(NodeIndex node) const
+    {
+        FixedVector<EdgeStorage, MAX_NODES> result{};
+        auto [start, end] = ranges_[node];
+        for (size_t i = start; i < end; ++i)
+        {
+            result.push_back(storage_[i]);
+        }
+        return result;
+    }
+
+    constexpr std::size_t edge_count(std::size_t node_count) const
+    {
+        std::size_t count = 0;
+        for (NodeIndex u = 0; u < node_count; ++u)
+        {
+            auto [start, end] = ranges_[u];
+            if constexpr (DIRECTED)
+            {
+                count += (end - start);
+            }
+            else
+            {
+                for (size_t i = start; i < end; ++i)
+                {
+                    const auto& e = storage_[i];
+                    NodeIndex v;
+                    if constexpr (std::is_void_v<EdgeType>)
+                    {
+                        v = e;
+                    }
+                    else
+                    {
+                        v = e.first;
+                    }
+                    if (u < v) ++count;
+                }
+            }
+        }
+        return count;
+    }
+
+    constexpr bool remove_edge(NodeIndex from, NodeIndex to)
+    {
+        (void)from;
+        (void)to;
+        // Removal from pool is complex due to contiguous storage, so not implemented
+        return false;
+    }
+
+    constexpr std::size_t degree(NodeIndex u) const
+    {
+        auto [start, end] = ranges_[u];
+        return end - start;
+    }
+};
+
 /**
  * Fixed-capacity graph with maximum nodes and edges declared at compile-time.
  * Supports directed and undirected graphs, weighted and unweighted edges.
@@ -31,9 +441,7 @@ template <typename NodeType,
           std::size_t MAX_NODES = 100,
           std::size_t MAX_EDGES_PER_NODE = 10,
           bool DIRECTED = true,
-          bool USE_MATRIX = false,
-          bool USE_POOL = false,
-          std::size_t MAX_TOTAL_EDGES = MAX_EDGES_PER_NODE * MAX_NODES>
+          typename StorageType = AdjacencyListStorage<EdgeType, MAX_NODES, MAX_EDGES_PER_NODE, DIRECTED>>
 class FixedGraph
 {
 public:
@@ -41,12 +449,7 @@ public:
     using edge_type = EdgeType;
     static constexpr std::size_t max_nodes = MAX_NODES;
     static constexpr std::size_t max_edges_per_node = MAX_EDGES_PER_NODE;
-    static constexpr bool use_matrix = USE_MATRIX;
-    static constexpr bool use_pool = USE_POOL;
     static_assert(MAX_NODES > 0, "MAX_NODES must be > 0");
-    static_assert(MAX_EDGES_PER_NODE > 0 || USE_MATRIX || USE_POOL, "MAX_EDGES_PER_NODE must be > 0 for adjacency list or pool");
-    static_assert(!USE_MATRIX || MAX_EDGES_PER_NODE >= MAX_NODES, "For matrix, MAX_EDGES_PER_NODE should be at least MAX_NODES");
-    static_assert(!USE_POOL || MAX_TOTAL_EDGES > 0, "MAX_TOTAL_EDGES must be > 0 for pool");
 
 private:
     using NodeIndex = std::size_t;
@@ -56,26 +459,11 @@ private:
     using EdgeStorage = typename std::conditional<std::is_void<EdgeType>::value,
                                            NodeIndex,
                                            std::pair<NodeIndex, EdgeType>>::type;
-    using AdjacencyList = FixedVector<EdgeStorage, MAX_EDGES_PER_NODE>;
+
     using NodeList = FixedVector<std::pair<NodeType, NodeIndex>, MAX_NODES>;
 
-    // For matrix representation
-    using MatrixElement = typename std::conditional<std::is_void<EdgeType>::value,
-                                                     bool,
-                                                     std::optional<EdgeType>>::type;
-    using AdjacencyMatrix = FixedVector<FixedVector<MatrixElement, MAX_NODES>, MAX_NODES>;
-
     // Storage
-    using NonMatrixStorage = typename std::conditional<USE_POOL,
-                                                       FixedVector<EdgeStorage, MAX_TOTAL_EDGES>,
-                                                       FixedVector<AdjacencyList, MAX_NODES>>::type;
-    using StorageType = typename std::conditional<USE_MATRIX,
-                                                  AdjacencyMatrix,
-                                                  NonMatrixStorage>::type;
-    StorageType adjacency_storage_;
-
-    // For pool mode: per-node start/end indices in the pool
-    FixedVector<std::pair<size_t, size_t>, MAX_NODES> node_ranges_;
+    StorageType storage_;
 
     NodeList node_list_;
     FixedVector<NodeType, MAX_NODES> index_to_node_;
@@ -88,27 +476,7 @@ public:
     static constexpr NodeIndex INVALID_INDEX = INTERNAL_INVALID_INDEX;
 
 public:
-    constexpr FixedGraph() noexcept
-    {
-        if constexpr (USE_MATRIX) {
-            adjacency_storage_.resize(MAX_NODES);
-            for (auto& row : adjacency_storage_) {
-                row.resize(MAX_NODES);
-                if constexpr (std::is_void_v<EdgeType>) {
-                    // bool is false by default
-                } else {
-                    for (auto& elem : row) {
-                        elem = std::nullopt;
-                    }
-                }
-            }
-        } else if constexpr (USE_POOL) {
-            // adjacency_storage_ is already sized
-            node_ranges_.resize(MAX_NODES, {0, 0});
-        } else {
-            adjacency_storage_.resize(MAX_NODES, AdjacencyList{});
-        }
-    }
+    constexpr FixedGraph() noexcept {}
 
     // Generate a complete graph (every node connected to every other node)
     static constexpr FixedGraph create_complete_graph(std::size_t num_nodes)
@@ -192,84 +560,7 @@ public:
         {
             return;
         }
-        if constexpr (USE_MATRIX) {
-            if constexpr (std::is_void_v<EdgeType>) {
-                adjacency_storage_[from][to] = true;
-            } else {
-                adjacency_storage_[from][to] = std::forward<Args...>(args...);
-            }
-        } else if constexpr (USE_POOL) {
-            if (adjacency_storage_.size() >= MAX_TOTAL_EDGES)
-            {
-                return; // Capacity full
-            }
-            size_t insert_pos = adjacency_storage_.size();
-            if constexpr (std::is_void_v<EdgeType>)
-            {
-                static_assert(sizeof...(Args) == 0, "No weight for void EdgeType");
-                adjacency_storage_.push_back(to);
-            }
-            else
-            {
-                static_assert(sizeof...(Args) == 1, "Need weight for non-void EdgeType");
-                adjacency_storage_.push_back({to, std::forward<Args>(args)...});
-            }
-            // Update node's range
-            node_ranges_[from].second = insert_pos + 1;
-        } else {
-            if (adjacency_storage_[from].size() >= MAX_EDGES_PER_NODE)
-            {
-                return;
-            }
-            if constexpr (std::is_void_v<EdgeType>)
-            {
-                static_assert(sizeof...(Args) == 0, "No weight for void EdgeType");
-                adjacency_storage_[from].push_back(to);
-            }
-            else
-            {
-                static_assert(sizeof...(Args) == 1, "Need weight for non-void EdgeType");
-                adjacency_storage_[from].push_back({to, std::forward<Args>(args)...});
-            }
-        }
-        if constexpr (!DIRECTED)
-        {
-            if constexpr (USE_MATRIX) {
-                if constexpr (std::is_void_v<EdgeType>) {
-                    adjacency_storage_[to][from] = true;
-                } else {
-                    adjacency_storage_[to][from] = std::forward<Args...>(args...);
-                }
-            } else if constexpr (USE_POOL) {
-                if (adjacency_storage_.size() >= MAX_TOTAL_EDGES)
-                {
-                    return;
-                }
-                size_t insert_pos = adjacency_storage_.size();
-                if constexpr (std::is_void_v<EdgeType>)
-                {
-                    adjacency_storage_.push_back(from);
-                }
-                else
-                {
-                    adjacency_storage_.push_back({from, std::forward<Args>(args)...});
-                }
-                node_ranges_[to].second = insert_pos + 1;
-            } else {
-                if (adjacency_storage_[to].size() >= MAX_EDGES_PER_NODE)
-                {
-                    return;
-                }
-                if constexpr (std::is_void_v<EdgeType>)
-                {
-                    adjacency_storage_[to].push_back(from);
-                }
-                else
-                {
-                    adjacency_storage_[to].push_back({from, std::forward<Args>(args)...});
-                }
-            }
-        }
+        storage_.add_edge(from, to, std::forward<Args>(args)...);
     }
 
     // Check if edge exists
@@ -279,62 +570,17 @@ public:
         {
             return false;
         }
-        if constexpr (USE_MATRIX) {
-            if constexpr (std::is_void_v<EdgeType>) {
-                return adjacency_storage_[from][to];
-            } else {
-                return adjacency_storage_[from][to].has_value();
-            }
-        } else if constexpr (USE_POOL) {
-            auto [start, end] = node_ranges_[from];
-            for (size_t i = start; i < end; ++i) {
-                if (get_neighbor(adjacency_storage_[i]) == to) return true;
-            }
-            return false;
-        } else {
-            const auto& list = adjacency_storage_[from];
-            if constexpr (std::is_void_v<EdgeType>)
-            {
-                return std::find(list.begin(), list.end(), to) != list.end();
-            }
-            else
-            {
-                return std::find_if(list.begin(), list.end(), [to](const auto& p) { return p.first == to; }) != list.end();
-            }
-        }
+        return storage_.has_edge(from, to);
     }
 
     // Get neighbors
-    constexpr FixedVector<EdgeStorage, MAX_NODES> neighbors(NodeIndex node) const
+    constexpr void neighbors(NodeIndex node, FixedVector<EdgeStorage, MAX_NODES>& out) const
     {
-        FixedVector<EdgeStorage, MAX_NODES> result{};
         if (node >= next_index_) {
-            return result;
+            out.clear();
+            return;
         }
-        if constexpr (USE_MATRIX) {
-            for (NodeIndex v = 0; v < next_index_; ++v) {
-                if constexpr (std::is_void<EdgeType>::value) {
-                    if (adjacency_storage_[node][v]) {
-                        result.push_back(v);
-                    }
-                } else {
-                    if (adjacency_storage_[node][v].has_value()) {
-                        result.push_back({v, *adjacency_storage_[node][v]});
-                    }
-                }
-            }
-        } else if constexpr (USE_POOL) {
-            auto [start, end] = node_ranges_[node];
-            for (size_t i = start; i < end; ++i) {
-                result.push_back(adjacency_storage_[i]);
-            }
-        } else {
-            const auto& list = adjacency_storage_[node];
-            for (const auto& e : list) {
-                result.push_back(e);
-            }
-        }
-        return result;
+        out = storage_.neighbors(node);
     }
 
     // Get node count
@@ -343,47 +589,7 @@ public:
     // Count edges (directed counts each directed edge; undirected counts each undirected edge once)
     constexpr std::size_t edge_count() const noexcept
     {
-        std::size_t count = 0;
-        if constexpr (USE_MATRIX) {
-            for (NodeIndex u = 0; u < next_index_; ++u) {
-                for (NodeIndex v = 0; v < next_index_; ++v) {
-                    if constexpr (std::is_void<EdgeType>::value) {
-                        if (adjacency_storage_[u][v]) {
-                            if constexpr (DIRECTED) {
-                                ++count;
-                            } else {
-                                if (u < v) ++count;
-                            }
-                        }
-                    } else {
-                        if (adjacency_storage_[u][v].has_value()) {
-                            if constexpr (DIRECTED) {
-                                ++count;
-                            } else {
-                                if (u < v) ++count;
-                            }
-                        }
-                    }
-                }
-            }
-        } else {
-            for (NodeIndex u = 0; u < next_index_; ++u)
-            {
-                if constexpr (DIRECTED)
-                {
-                    count += adjacency_storage_[u].size();
-                }
-                else
-                {
-                    for (const auto& e : adjacency_storage_[u])
-                    {
-                        NodeIndex v = get_neighbor(e);
-                        if (u < v) ++count;
-                    }
-                }
-            }
-        }
-        return count;
+        return storage_.edge_count(next_index_);
     }
 
     // Get node by index
@@ -393,40 +599,7 @@ public:
     constexpr bool remove_edge(NodeIndex from, NodeIndex to)
     {
         if (from >= next_index_ || to >= next_index_) return false;
-        bool removed = false;
-        auto& list = adjacency_storage_[from];
-        if constexpr (std::is_void_v<EdgeType>)
-        {
-            for (auto it = list.begin(); it != list.end(); ++it)
-            {
-                if (*it == to) { list.erase(it); removed = true; break; }
-            }
-        }
-        else
-        {
-            for (auto it = list.begin(); it != list.end(); ++it)
-            {
-                if (it->first == to) { list.erase(it); removed = true; break; }
-            }
-        }
-        if constexpr (!DIRECTED)
-        {
-            if (removed)
-            {
-                auto& list2 = adjacency_storage_[to];
-                if constexpr (std::is_void_v<EdgeType>)
-                {
-                    for (auto it = list2.begin(); it != list2.end(); ++it)
-                    { if (*it == from) { list2.erase(it); break; } }
-                }
-                else
-                {
-                    for (auto it = list2.begin(); it != list2.end(); ++it)
-                    { if (it->first == from) { list2.erase(it); break; } }
-                }
-            }
-        }
-        return removed;
+        return storage_.remove_edge(from, to);
     }
 
     // BFS traversal
@@ -441,7 +614,9 @@ public:
         {
             NodeIndex current = queue[head++];
             visitor(current);
-            for (const auto& edge : neighbors(current))
+            FixedVector<EdgeStorage, MAX_NODES> neigh{};
+            neighbors(current, neigh);
+            for (const auto& edge : neigh)
             {
                 NodeIndex neighbor = get_neighbor(edge);
                 if (!visited[neighbor]) { visited[neighbor] = true; queue.push_back(neighbor); }
@@ -467,7 +642,9 @@ public:
             {
                 visited[current] = true;
                 visitor(current);
-                for (const auto& edge : neighbors(current)) {
+                FixedVector<EdgeStorage, MAX_NODES> neigh{};
+                neighbors(current, neigh);
+                for (const auto& edge : neigh) {
                     NodeIndex neighbor = get_neighbor(edge);
                     if (!visited[neighbor]) {
                         stack.push_back(neighbor);
@@ -478,64 +655,22 @@ public:
     }
 
     // Shortest path using BFS (for unweighted graphs)
-    constexpr FixedVector<NodeIndex, MAX_NODES> shortest_path(NodeIndex start, NodeIndex end) const
-    {
-        FixedVector<NodeIndex, MAX_NODES> path{};
-        if (start >= next_index_ || end >= next_index_ || start == end)
-        {
-            if (start == end && start < next_index_)
-                path.push_back(start);
-            return path;
-        }
-
-        FixedVector<NodeIndex, MAX_NODES> parent{};
-        parent.resize(MAX_NODES, INVALID_INDEX);
-        FixedVector<bool, MAX_NODES> visited{};
-        visited.resize(MAX_NODES, false);
-        FixedVector<NodeIndex, MAX_NODES> queue{}; queue.push_back(start); visited[start] = true;
-        bool found = false; std::size_t head = 0;
-        while (head < queue.size() && !found)
-        {
-            NodeIndex current = queue[head++];
-            for (const auto& edge : neighbors(current))
-            {
-                NodeIndex neighbor = get_neighbor(edge);
-                if (!visited[neighbor]) { visited[neighbor] = true; parent[neighbor] = current; queue.push_back(neighbor); if (neighbor == end) { found = true; break; } }
-            }
-        }
-
-        // Reconstruct path (build reversed then reverse in-place to avoid O(n^2) inserts)
-        if (found)
-        {
-            FixedVector<NodeIndex, MAX_NODES> rev{};
-            NodeIndex current = end;
-            while (current != INVALID_INDEX)
-            {
-                rev.push_back(current);
-                current = parent[current];
-            }
-            // Reverse into path
-            for (std::size_t i = 0; i < rev.size(); ++i)
-            {
-                path.push_back(rev[rev.size() - 1 - i]);
-            }
-        }
-
-        return path;
-    }
+    constexpr void shortest_path(NodeIndex start, NodeIndex end, FixedVector<NodeIndex, MAX_NODES>& out) const
 
     // Topological sort (for directed graphs)
-    constexpr FixedVector<NodeIndex, MAX_NODES> topological_sort() const
+    constexpr void topological_sort(FixedVector<NodeIndex, MAX_NODES>& out) const
         requires(DIRECTED)
     {
-        FixedVector<NodeIndex, MAX_NODES> result{};
+        out.clear();
         FixedVector<std::size_t, MAX_NODES> in_degree{};
         in_degree.resize(MAX_NODES, 0);
 
         // Calculate in-degrees
         for (NodeIndex i = 0; i < next_index_; ++i)
         {
-            for (const auto& edge : neighbors(i))
+            FixedVector<EdgeStorage, MAX_NODES> neigh{};
+            neighbors(i, neigh);
+            for (const auto& edge : neigh)
             {
                 NodeIndex neighbor = get_neighbor(edge);
                 if (neighbor < MAX_NODES)
@@ -554,10 +689,12 @@ public:
         while (head < queue.size())
         {
             NodeIndex current = queue[head++];
-            result.push_back(current);
+            out.push_back(current);
 
             // Reduce in-degree of neighbors
-            for (const auto& edge : neighbors(current))
+            FixedVector<EdgeStorage, MAX_NODES> neigh{};
+            neighbors(current, neigh);
+            for (const auto& edge : neigh)
             {
                 NodeIndex neighbor = get_neighbor(edge);
                 if (neighbor < MAX_NODES)
@@ -570,10 +707,8 @@ public:
         }
 
         // Check for cycles (if not all nodes are included)
-        if (result.size() != next_index_)
-            return {}; // Cycle detected
-
-        return result;
+        if (out.size() != next_index_)
+            out.clear(); // Cycle detected
     }
 
     // Check if graph is connected (for undirected graphs)
@@ -597,7 +732,9 @@ public:
             NodeIndex current = stack.back();
             stack.pop_back();
 
-            for (const auto& edge : neighbors(current))
+            FixedVector<EdgeStorage, MAX_NODES> neigh{};
+            neighbors(current, neigh);
+            for (const auto& edge : neigh)
             {
                 NodeIndex neighbor = get_neighbor(edge);
                 if (!visited[neighbor])
@@ -614,9 +751,10 @@ public:
 
     // Dijkstra's shortest path algorithm for weighted graphs
     template <typename WeightType = EdgeType>
-    constexpr FixedVector<NodeIndex, MAX_NODES> dijkstra_shortest_path(NodeIndex start, NodeIndex end) const
+    constexpr void dijkstra_shortest_path(NodeIndex start, NodeIndex end, FixedVector<NodeIndex, MAX_NODES>& out) const
         requires(!std::is_void_v<EdgeType> && std::is_arithmetic_v<WeightType>)
     {
+        out.clear();
         using DistanceType = WeightType;
         constexpr DistanceType INF = std::numeric_limits<DistanceType>::max() / 2;
 
@@ -633,7 +771,7 @@ public:
         auto find_min_distance = [&](const FixedVector<bool, MAX_NODES>& visited) -> NodeIndex {
             DistanceType min_dist = INF;
             NodeIndex min_node = INVALID_INDEX;
-            for (NodeIndex i = 0; i < next_index_; ++i) {
+            for (NodeIndex i = 0; i < next_index_; i++) {
                 if (!visited[i] && distances[i] < min_dist) {
                     min_dist = distances[i];
                     min_node = i;
@@ -648,7 +786,9 @@ public:
 
             visited[u] = true;
 
-            for (const auto& edge : neighbors(u)) {
+            FixedVector<EdgeStorage, MAX_NODES> neigh{};
+            neighbors(u, neigh);
+            for (const auto& edge : neigh) {
                 NodeIndex v = get_neighbor(edge);
                 DistanceType weight = get_weight(edge);
                 if (!visited[v] && distances[u] != INF && distances[u] + weight < distances[v]) {
@@ -659,34 +799,35 @@ public:
         }
 
         // Reconstruct path (reversed accumulation then reverse)
-        FixedVector<NodeIndex, MAX_NODES> path{};
-        if (distances[end] == INF) return path; // No path found
+        if (distances[end] == INF) return; // No path found
         FixedVector<NodeIndex, MAX_NODES> rev{};
         for (NodeIndex at = end; at != INVALID_INDEX; at = previous[at]) {
             rev.push_back(at);
         }
         for (std::size_t i = 0; i < rev.size(); ++i) {
-            path.push_back(rev[rev.size() - 1 - i]);
+            out.push_back(rev[rev.size() - 1 - i]);
         }
-        return path;
     }
 
     // Bellman-Ford algorithm for graphs with negative weights
     template <typename WeightType = EdgeType>
-    constexpr std::pair<FixedVector<WeightType, MAX_NODES>, bool> bellman_ford_shortest_paths(NodeIndex start) const
+    constexpr void bellman_ford_shortest_paths(NodeIndex start, FixedVector<WeightType, MAX_NODES>& distances, bool& has_negative_cycle) const
         requires(!std::is_void_v<EdgeType> && std::is_arithmetic_v<WeightType>)
     {
+        distances.clear();
+        distances.resize(MAX_NODES);
         using DistanceType = WeightType;
         constexpr DistanceType INF = std::numeric_limits<DistanceType>::max() / 2;
 
-        FixedVector<DistanceType, MAX_NODES> distances{};
         distances.resize(MAX_NODES, INF);
         distances[start] = 0;
 
         // Relax edges |V|-1 times
         for (NodeIndex i = 0; i < next_index_ - 1; ++i) {
             for (NodeIndex u = 0; u < next_index_; ++u) {
-                for (const auto& edge : neighbors(u)) {
+                FixedVector<EdgeStorage, MAX_NODES> neigh{};
+                neighbors(u, neigh);
+                for (const auto& edge : neigh) {
                     NodeIndex v = get_neighbor(edge);
                     DistanceType weight = get_weight(edge);
                     if (distances[u] != INF && distances[u] + weight < distances[v]) {
@@ -697,9 +838,11 @@ public:
         }
 
         // Check for negative cycles
-        bool has_negative_cycle = false;
+        has_negative_cycle = false;
         for (NodeIndex u = 0; u < next_index_; ++u) {
-            for (const auto& edge : neighbors(u)) {
+            FixedVector<EdgeStorage, MAX_NODES> neigh{};
+            neighbors(u, neigh);
+            for (const auto& edge : neigh) {
                 NodeIndex v = get_neighbor(edge);
                 DistanceType weight = get_weight(edge);
                 if (distances[u] != INF && distances[u] + weight < distances[v]) {
@@ -709,15 +852,14 @@ public:
             }
             if (has_negative_cycle) break;
         }
-
-        return {distances, has_negative_cycle};
     }
 
     // Minimum spanning tree using Kruskal's algorithm
     template <typename WeightType = EdgeType>
-    constexpr FixedVector<std::pair<NodeIndex, NodeIndex>, MAX_NODES * MAX_NODES> kruskal_mst() const
+    constexpr void kruskal_mst(FixedVector<std::pair<NodeIndex, NodeIndex>, MAX_NODES * MAX_NODES>& out) const
         requires(!std::is_void_v<EdgeType> && std::is_arithmetic_v<WeightType> && !DIRECTED)
     {
+        out.clear();
         // Union-Find structure
         FixedVector<NodeIndex, MAX_NODES> parent{};
         parent.resize(MAX_NODES);
@@ -735,7 +877,9 @@ public:
         // Collect all edges
         FixedVector<std::tuple<WeightType, NodeIndex, NodeIndex>, MAX_NODES * MAX_NODES> edges{};
         for (NodeIndex u = 0; u < next_index_; ++u) {
-            for (const auto& edge : neighbors(u)) {
+            FixedVector<EdgeStorage, MAX_NODES> neigh{};
+            neighbors(u, neigh);
+            for (const auto& edge : neigh) {
                 NodeIndex v = get_neighbor(edge);
                 WeightType weight = get_weight(edge);
                 if (u < v) { // Avoid duplicates in undirected graph
@@ -747,21 +891,19 @@ public:
         // Sort edges by weight
         std::sort(edges.begin(), edges.end());
 
-        FixedVector<std::pair<NodeIndex, NodeIndex>, MAX_NODES * MAX_NODES> mst{};
         for (const auto& [weight, u, v] : edges) {
             if (find(find, u) != find(find, v)) {
                 unite(u, v);
-                mst.push_back({u, v});
+                out.push_back({u, v});
             }
         }
-
-        return mst;
     }
 
     // Strongly connected components using Kosaraju's algorithm
-    constexpr FixedVector<FixedVector<NodeIndex, MAX_NODES>, MAX_NODES> strongly_connected_components() const
+    constexpr void strongly_connected_components(FixedVector<FixedVector<NodeIndex, MAX_NODES>, MAX_NODES>& out) const
         requires(DIRECTED)
     {
+        out.clear();
         FixedVector<bool, MAX_NODES> visited{};
         visited.resize(MAX_NODES, false);
         FixedVector<NodeIndex, MAX_NODES> order{};
@@ -769,7 +911,9 @@ public:
         // First DFS to get finishing times
         auto dfs1 = [&](auto& self, NodeIndex node) -> void {
             visited[node] = true;
-            for (const auto& edge : neighbors(node)) {
+            FixedVector<EdgeStorage, MAX_NODES> neigh{};
+            neighbors(node, neigh);
+            for (const auto& edge : neigh) {
                 NodeIndex neighbor = get_neighbor(edge);
                 if (!visited[neighbor]) {
                     self(self, neighbor);
@@ -785,19 +929,20 @@ public:
         }
 
         // Create transpose graph
-        FixedGraph transpose = create_transpose();
+        FixedGraph transpose{};
+        create_transpose(transpose);
 
         // Reset visited
         visited = FixedVector<bool, MAX_NODES>{};
         visited.resize(MAX_NODES, false);
 
-        FixedVector<FixedVector<NodeIndex, MAX_NODES>, MAX_NODES> sccs{};
-
         // Second DFS on transpose graph in decreasing finish time order
         auto dfs2 = [&](auto& self, NodeIndex node, FixedVector<NodeIndex, MAX_NODES>& component) -> void {
             visited[node] = true;
             component.push_back(node);
-            for (const auto& edge : transpose.neighbors(node)) {
+            FixedVector<EdgeStorage, MAX_NODES> neigh{};
+            transpose.neighbors(node, neigh);
+            for (const auto& edge : neigh) {
                 NodeIndex neighbor = get_neighbor(edge);
                 if (!visited[neighbor]) {
                     self(self, neighbor, component);
@@ -811,34 +956,32 @@ public:
             if (!visited[node]) {
                 FixedVector<NodeIndex, MAX_NODES> component{};
                 dfs2(dfs2, node, component);
-                sccs.push_back(component);
+                out.push_back(component);
             }
         }
-
-        return sccs;
     }
 
     // Create transpose graph (reverse all edges)
-    constexpr FixedGraph create_transpose() const
+    constexpr void create_transpose(FixedGraph& out) const
         requires(DIRECTED)
     {
-        FixedGraph transpose{};
+        out = FixedGraph{};
         for (NodeIndex i = 0; i < next_index_; ++i) {
-            transpose.add_node(index_to_node_[i]);
+            out.add_node(index_to_node_[i]);
         }
 
         for (NodeIndex u = 0; u < next_index_; ++u) {
-            for (const auto& edge : neighbors(u)) {
+            FixedVector<EdgeStorage, MAX_NODES> neigh{};
+            neighbors(u, neigh);
+            for (const auto& edge : neigh) {
                 NodeIndex v = get_neighbor(edge);
                 if constexpr (std::is_void_v<EdgeType>) {
-                    transpose.add_edge(v, u);
+                    out.add_edge(v, u);
                 } else {
-                    transpose.add_edge(v, u, get_weight(edge));
+                    out.add_edge(v, u, get_weight(edge));
                 }
             }
         }
-
-        return transpose;
     }
 
     // Check if graph is bipartite
@@ -855,7 +998,9 @@ public:
                 while (head < queue.size()) {
                     NodeIndex u = queue[head++];
 
-                    for (const auto& edge : neighbors(u)) {
+                    FixedVector<EdgeStorage, MAX_NODES> neigh{};
+                    neighbors(u, neigh);
+                    for (const auto& edge : neigh) {
                         NodeIndex v = get_neighbor(edge);
                         if (colors[v] == -1) {
                             colors[v] = 1 - colors[u];
@@ -871,20 +1016,22 @@ public:
     }
 
     // Graph coloring using greedy algorithm
-    constexpr FixedVector<int, MAX_NODES> greedy_coloring() const
+    constexpr void greedy_coloring(FixedVector<int, MAX_NODES>& out) const
     {
-        FixedVector<int, MAX_NODES> colors{};
-        colors.resize(MAX_NODES, -1);
+        out.clear();
+        out.resize(MAX_NODES, -1);
 
         for (NodeIndex u = 0; u < next_index_; ++u) {
             FixedVector<bool, MAX_NODES> used_colors{};
             used_colors.resize(MAX_NODES, false);
 
             // Check colors of neighbors
-            for (const auto& edge : neighbors(u)) {
+            FixedVector<EdgeStorage, MAX_NODES> neigh{};
+            neighbors(u, neigh);
+            for (const auto& edge : neigh) {
                 NodeIndex v = get_neighbor(edge);
-                if (colors[v] != -1) {
-                    used_colors[colors[v]] = true;
+                if (out[v] != -1) {
+                    used_colors[out[v]] = true;
                 }
             }
 
@@ -893,34 +1040,18 @@ public:
             while (color < static_cast<int>(MAX_NODES) && used_colors[color]) {
                 ++color;
             }
-            colors[u] = color;
+            out[u] = color;
         }
-
-        return colors;
     }
 
     // Degree centrality
-    constexpr FixedVector<std::size_t, MAX_NODES> degree_centrality() const
+    constexpr void degree_centrality(FixedVector<std::size_t, MAX_NODES>& out) const
     {
-        FixedVector<std::size_t, MAX_NODES> centrality{};
-        centrality.resize(MAX_NODES, 0);
+        out.clear();
+        out.resize(MAX_NODES, 0);
 
         for (NodeIndex u = 0; u < next_index_; ++u) {
-            if constexpr (USE_MATRIX) {
-                std::size_t deg = 0;
-                for (NodeIndex v = 0; v < next_index_; ++v) {
-                    if constexpr (std::is_void_v<EdgeType>) {
-                        if (adjacency_storage_[u][v]) ++deg;
-                    } else {
-                        if (adjacency_storage_[u][v].has_value()) ++deg;
-                    }
-                }
-                centrality[u] = deg;
-            } else if constexpr (USE_POOL) {
-                centrality[u] = node_ranges_[u].second - node_ranges_[u].first;
-            } else {
-                centrality[u] = adjacency_storage_[u].size();
-            }
+            out[u] = storage_.degree(u);
             if constexpr (!DIRECTED) {
                 // For undirected graphs, degree is already correct
             } else {
@@ -928,15 +1059,13 @@ public:
                 // Here we use out-degree
             }
         }
-
-        return centrality;
     }
 
     // Betweenness centrality (approximate for large graphs)
-    constexpr FixedVector<double, MAX_NODES> betweenness_centrality() const
+    constexpr void betweenness_centrality(FixedVector<double, MAX_NODES>& out) const
     {
-        FixedVector<double, MAX_NODES> centrality{};
-        centrality.resize(MAX_NODES, 0.0);
+        out.clear();
+        out.resize(MAX_NODES, 0.0);
 
         for (NodeIndex s = 0; s < next_index_; ++s) {
             FixedVector<double, MAX_NODES> sigma{};
@@ -955,7 +1084,9 @@ public:
             while (head < queue.size()) {
                 NodeIndex v = queue[head++];
 
-                for (const auto& edge : neighbors(v)) {
+                FixedVector<EdgeStorage, MAX_NODES> neigh{};
+                neighbors(v, neigh);
+                for (const auto& edge : neigh) {
                     NodeIndex w = get_neighbor(edge);
                     if (distance[w] == -1.0) {
                         queue.push_back(w);
@@ -985,12 +1116,10 @@ public:
                 }
 
                 if (w != s) {
-                    centrality[w] += delta[w];
+                    out[w] += delta[w];
                 }
             }
         }
-
-        return centrality;
     }
 
     // Check if graph has Eulerian circuit
@@ -1006,7 +1135,9 @@ public:
             for (NodeIndex u = 0; u < next_index_; ++u)
             {
                 if (get_degree(u) > 0) has_any_edge[u] = true;
-                for (const auto& edge : neighbors(u))
+                FixedVector<EdgeStorage, MAX_NODES> neigh{};
+                neighbors(u, neigh);
+                for (const auto& edge : neigh)
                 {
                     NodeIndex v = get_neighbor(edge);
                     in_degree[v]++;
@@ -1031,11 +1162,15 @@ public:
             {
                 NodeIndex cur = stack.back(); stack.pop_back();
                 // Out edges
-                for (const auto& edge : neighbors(cur)) { NodeIndex v = get_neighbor(edge); if (!visited[v]) { visited[v] = true; stack.push_back(v);} }
+                FixedVector<EdgeStorage, MAX_NODES> neigh_out{};
+                neighbors(cur, neigh_out);
+                for (const auto& edge : neigh_out) { NodeIndex v = get_neighbor(edge); if (!visited[v]) { visited[v] = true; stack.push_back(v);} }
                 // In edges (scan all) - O(VE) worst case but bounded by template sizes
                 for (NodeIndex v = 0; v < next_index_; ++v)
                 {
-                    for (const auto& e2 : neighbors(v)) { if (get_neighbor(e2) == cur && !visited[v]) { visited[v] = true; stack.push_back(v); } }
+                    FixedVector<EdgeStorage, MAX_NODES> neigh_in{};
+                    neighbors(v, neigh_in);
+                    for (const auto& e2 : neigh_in) { if (get_neighbor(e2) == cur && !visited[v]) { visited[v] = true; stack.push_back(v); } }
                 }
             }
             for (NodeIndex u = 0; u < next_index_; ++u) if (has_any_edge[u] && !visited[u]) return false;
@@ -1057,33 +1192,7 @@ public:
         std::size_t max_possible_edges = DIRECTED ? next_index_ * (next_index_ - 1) : next_index_ * (next_index_ - 1) / 2;
         if (max_possible_edges == 0) return 0.0;
 
-        std::size_t actual_edges = 0;
-        if constexpr (USE_MATRIX) {
-            for (NodeIndex u = 0; u < next_index_; ++u) {
-                for (NodeIndex v = 0; v < next_index_; ++v) {
-                    if constexpr (std::is_void_v<EdgeType>) {
-                        if (adjacency_storage_[u][v]) {
-                            if constexpr (DIRECTED) ++actual_edges; else if (u < v) ++actual_edges;
-                        }
-                    } else {
-                        if (adjacency_storage_[u][v].has_value()) {
-                            if constexpr (DIRECTED) ++actual_edges; else if (u < v) ++actual_edges;
-                        }
-                    }
-                }
-            }
-        } else {
-            for (NodeIndex u = 0; u < next_index_; ++u) {
-                for (const auto& edge : neighbors(u)) {
-                    NodeIndex v = get_neighbor(edge);
-                    if constexpr (DIRECTED) {
-                        ++actual_edges;
-                    } else {
-                        if (u < v) ++actual_edges; // Count each undirected edge once
-                    }
-                }
-            }
-        }
+        std::size_t actual_edges = storage_.edge_count(next_index_);
 
         return static_cast<double>(actual_edges) / max_possible_edges;
     }
@@ -1092,8 +1201,9 @@ public:
     constexpr std::size_t diameter() const
     {
         std::size_t max_distance = 0;
+        FixedVector<std::size_t, MAX_NODES> distances{};
         for (NodeIndex start = 0; start < next_index_; ++start) {
-            FixedVector<std::size_t, MAX_NODES> distances = bfs_distances(start);
+            bfs_distances(start, distances);
             for (std::size_t dist : distances) {
                 if (dist != std::numeric_limits<std::size_t>::max() && dist > max_distance) {
                     max_distance = dist;
@@ -1104,28 +1214,28 @@ public:
     }
 
     // BFS distances from a source node
-    constexpr FixedVector<std::size_t, MAX_NODES> bfs_distances(NodeIndex start) const
+    constexpr void bfs_distances(NodeIndex start, FixedVector<std::size_t, MAX_NODES>& out) const
     {
-        FixedVector<std::size_t, MAX_NODES> distances{};
-        distances.resize(MAX_NODES, std::numeric_limits<std::size_t>::max());
+        out.clear();
+        out.resize(MAX_NODES, std::numeric_limits<std::size_t>::max());
         FixedVector<bool, MAX_NODES> visited{};
         visited.resize(MAX_NODES, false);
-        FixedVector<NodeIndex, MAX_NODES> queue{}; queue.push_back(start); distances[start] = 0; visited[start] = true;
+        FixedVector<NodeIndex, MAX_NODES> queue{}; queue.push_back(start); out[start] = 0; visited[start] = true;
         std::size_t head = 0;
         while (head < queue.size()) {
             NodeIndex current = queue[head++];
 
-            for (const auto& edge : neighbors(current)) {
+            FixedVector<EdgeStorage, MAX_NODES> neigh{};
+            neighbors(current, neigh);
+            for (const auto& edge : neigh) {
                 NodeIndex neighbor = get_neighbor(edge);
                 if (!visited[neighbor]) {
                     visited[neighbor] = true;
-                    distances[neighbor] = distances[current] + 1;
+                    out[neighbor] = out[current] + 1;
                     queue.push_back(neighbor);
                 }
             }
         }
-
-        return distances;
     }
 
     // Clustering coefficient for undirected graphs
@@ -1134,7 +1244,8 @@ public:
     {
         if (node >= next_index_) return 0.0;
 
-        const auto& neighbors_list = neighbors(node);
+        FixedVector<EdgeStorage, MAX_NODES> neighbors_list{};
+        neighbors(node, neighbors_list);
         std::size_t degree = neighbors_list.size();
         if (degree < 2) return 0.0;
 
@@ -1166,81 +1277,81 @@ public:
     }
 
     // Graph complement
-    constexpr FixedGraph complement() const
+    constexpr void complement(FixedGraph& out) const
     {
-        FixedGraph comp{};
+        out = FixedGraph{};
         for (NodeIndex i = 0; i < next_index_; ++i) {
-            comp.add_node(index_to_node_[i]);
+            out.add_node(index_to_node_[i]);
         }
 
         for (NodeIndex u = 0; u < next_index_; ++u) {
             for (NodeIndex v = 0; v < next_index_; ++v) {
                 if (u != v && !has_edge(u, v)) {
                     if constexpr (std::is_void_v<EdgeType>) {
-                        comp.add_edge(u, v);
-                        if constexpr (!DIRECTED) comp.add_edge(v, u);
+                        out.add_edge(u, v);
+                        if constexpr (!DIRECTED) out.add_edge(v, u);
                     } else {
-                        comp.add_edge(u, v, EdgeType{});
-                        if constexpr (!DIRECTED) comp.add_edge(v, u, EdgeType{});
+                        out.add_edge(u, v, EdgeType{});
+                        if constexpr (!DIRECTED) out.add_edge(v, u, EdgeType{});
                     }
                 }
             }
         }
-
-        return comp;
     }
 
     // Graph union
-    constexpr FixedGraph graph_union(const FixedGraph& other) const
+    constexpr void graph_union(const FixedGraph& other, FixedGraph& out) const
     {
-        FixedGraph result = *this;
+        out = *this;
 
         // Add nodes from other graph
         for (NodeIndex i = 0; i < other.next_index_; ++i) {
-            result.add_node(other.index_to_node_[i]);
+            out.add_node(other.index_to_node_[i]);
         }
 
         // Add edges from other graph
         for (NodeIndex u = 0; u < other.next_index_; ++u) {
-            for (const auto& edge : other.neighbors(u)) {
+            FixedVector<EdgeStorage, MAX_NODES> neigh{};
+            other.neighbors(u, neigh);
+            for (const auto& edge : neigh) {
                 NodeIndex v = other.get_neighbor(edge);
                 if constexpr (std::is_void_v<EdgeType>) {
-                    result.add_edge(u, v);
+                    out.add_edge(u, v);
                 } else {
-                    result.add_edge(u, v, other.get_weight(edge));
+                    out.add_edge(u, v, other.get_weight(edge));
                 }
             }
         }
-
-        return result;
     }
 
     // Graph intersection
-    constexpr FixedGraph graph_intersection(const FixedGraph& other) const
+    constexpr void graph_intersection(const FixedGraph& other, FixedGraph& out) const
     {
-        FixedGraph result{};
+        out = FixedGraph{};
 
         // Add common nodes
         for (NodeIndex i = 0; i < next_index_; ++i) {
             for (NodeIndex j = 0; j < other.next_index_; ++j) {
                 if (index_to_node_[i] == other.index_to_node_[j]) {
-                    result.add_node(index_to_node_[i]);
+                    out.add_node(index_to_node_[i]);
                     break;
                 }
             }
         }
 
         // Add common edges
-        for (NodeIndex u = 0; u < result.next_index_; ++u) {
-            for (NodeIndex v = 0; v < result.next_index_; ++v) {
+        for (NodeIndex u = 0; u < out.next_index_; ++u) {
+            for (NodeIndex v = 0; v < out.next_index_; ++v) {
                 if (has_edge(u, v) && other.has_edge(u, v)) {
                     if constexpr (std::is_void_v<EdgeType>) {
-                        result.add_edge(u, v);
+                        out.add_edge(u, v);
                     } else {
                         // Find the weight from this graph
-                        for (const auto& edge : neighbors(u)) {
+                        FixedVector<EdgeStorage, MAX_NODES> neigh{};
+                        neighbors(u, neigh);
+                        for (const auto& edge : neigh) {
                             if (get_neighbor(edge) == v) {
-                                result.add_edge(u, v, get_weight(edge));
+                                out.add_edge(u, v, get_weight(edge));
                                 break;
                             }
                         }
@@ -1248,8 +1359,6 @@ public:
                 }
             }
         }
-
-        return result;
     }
 
     // Serialize graph to binary format
@@ -1267,7 +1376,8 @@ public:
             out += sizeof(NodeType);
         }
         for (NodeIndex u = 0; u < next_index_; ++u) {
-            const auto& list = neighbors(u);
+            FixedVector<EdgeStorage, MAX_NODES> list{};
+            neighbors(u, list);
             *out++ = static_cast<std::byte>(list.size());
             for (const auto& edge : list) {
                 if constexpr (std::is_void_v<EdgeType>) {
@@ -1351,21 +1461,7 @@ private:
 
     constexpr std::size_t get_degree(NodeIndex u) const
     {
-        if constexpr (USE_MATRIX) {
-            std::size_t deg = 0;
-            for (NodeIndex v = 0; v < next_index_; ++v) {
-                if constexpr (std::is_void_v<EdgeType>) {
-                    if (adjacency_storage_[u][v]) ++deg;
-                } else {
-                    if (adjacency_storage_[u][v].has_value()) ++deg;
-                }
-            }
-            return deg;
-        } else if constexpr (USE_POOL) {
-            return node_ranges_[u].second - node_ranges_[u].first;
-        } else {
-            return adjacency_storage_[u].size();
-        }
+        return storage_.degree(u);
     }
 
     constexpr bool has_cycles_helper(NodeIndex node,
@@ -1375,7 +1471,9 @@ private:
         visited[node] = true;
         rec_stack[node] = true;
 
-        for (const auto& edge : neighbors(node))
+        FixedVector<EdgeStorage, MAX_NODES> neigh{};
+        neighbors(node, neigh);
+        for (const auto& edge : neigh)
         {
             NodeIndex neighbor = get_neighbor(edge);
             if (!visited[neighbor] && has_cycles_helper(neighbor, visited, rec_stack))

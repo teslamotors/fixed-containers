@@ -3,11 +3,14 @@
 
 #include <iostream>
 
+using fixed_containers::FixedVector;
+
 namespace
 {
-using Graph = fixed_containers::FixedGraph<int, void, 10, 5, true, false>;
-using MatrixGraph = fixed_containers::FixedGraph<int, void, 10, 10, true, true>;
-using PoolGraph = fixed_containers::FixedGraph<int, void, 10, 5, true, false, true, 50>;
+using Graph = fixed_containers::FixedGraph<int, void, 10, 5, true, fixed_containers::AdjacencyListStorage<void, 10, 5, true>>;
+using MatrixGraph = fixed_containers::FixedGraph<int, void, 10, 10, true, fixed_containers::AdjacencyMatrixStorage<void, 10, true>>;
+using PoolGraph = fixed_containers::FixedGraph<int, void, 10, 5, true, fixed_containers::AdjacencyPoolStorage<void, 10, 50, true>>;
+using EdgeStorage = std::size_t; // for void edges
 
 void test_basic()
 {
@@ -22,7 +25,9 @@ void test_basic()
     g.add_edge(n0, n1);
     g.add_edge(n1, n2);
 
-    std::cout << "Neighbors of 0: " << g.neighbors(n0).size() << std::endl;
+    fixed_containers::FixedVector<EdgeStorage, 10> neigh{};
+    g.neighbors(n0, neigh);
+    std::cout << "Neighbors of 0: " << neigh.size() << std::endl;
     std::cout << "Has edge 0-1: " << g.has_edge(n0, n1) << std::endl;
     std::cout << "Has edge 1-0: " << g.has_edge(n1, n0) << std::endl;
 
@@ -34,7 +39,8 @@ void test_basic()
     g.dfs(n0, [](auto idx) { std::cout << idx << " "; });
     std::cout << std::endl;
 
-    auto path = g.shortest_path(n0, n2);
+    FixedVector<std::size_t, 10> path;
+    g.shortest_path(n0, n2, path);
     std::cout << "Shortest path 0 to 2: ";
     for (auto p : path) std::cout << p << " ";
     std::cout << std::endl;
@@ -67,7 +73,7 @@ void test_new_features()
     std::cout << "Graph without cycle has cycles: " << g2.has_cycles() << std::endl;
 
     // Test connectivity (for undirected graphs)
-    using UndirectedGraph = fixed_containers::FixedGraph<int, void, 10, 5, false>;
+    using UndirectedGraph = fixed_containers::FixedGraph<int, void, 10, 5, false, fixed_containers::AdjacencyListStorage<void, 10, 5, false>>;
     UndirectedGraph ug;
     auto u1 = ug.add_node(0);
     auto u2 = ug.add_node(1);
@@ -89,7 +95,7 @@ void test_new_features()
     std::cout << "\n=== Advanced Graph Features ===\n";
 
     // Test bipartite checking
-    using UndirectedGraphType = fixed_containers::FixedGraph<int, void, 10, 5, false>;
+    using UndirectedGraphType = fixed_containers::FixedGraph<int, void, 10, 5, false, fixed_containers::AdjacencyListStorage<void, 10, 5, false>>;
     UndirectedGraphType bipartite_graph;
     auto bp1 = bipartite_graph.add_node(0);
     auto bp2 = bipartite_graph.add_node(1);
@@ -107,11 +113,12 @@ void test_new_features()
     std::cout << "Cycle graph diameter: " << cycle.diameter() << std::endl;
 
     // Test degree centrality
-    auto degrees = complete.degree_centrality();
+    FixedVector<std::size_t, 10> degrees;
+    complete.degree_centrality(degrees);
     std::cout << "Degree centrality of node 0 in complete graph: " << degrees[0] << std::endl;
 
     // Test topological sort
-    using DirectedGraph = fixed_containers::FixedGraph<int, void, 10, 5, true>;
+    using DirectedGraph = fixed_containers::FixedGraph<int, void, 10, 5, true, fixed_containers::AdjacencyListStorage<void, 10, 5, true>>;
     DirectedGraph dag_graph;
     auto ts1 = dag_graph.add_node(0);
     auto ts2 = dag_graph.add_node(1);
@@ -122,7 +129,8 @@ void test_new_features()
     dag_graph.add_edge(ts2, ts4);
     dag_graph.add_edge(ts3, ts4);
 
-    auto topo_order = dag_graph.topological_sort();
+    FixedVector<std::size_t, 10> topo_order;
+    dag_graph.topological_sort(topo_order);
     std::cout << "Topological sort: ";
     for (auto node : topo_order) std::cout << node << " ";
     std::cout << std::endl;
@@ -138,11 +146,13 @@ void test_new_features()
     scc_graph.add_edge(scc3, scc1);
     scc_graph.add_edge(scc3, scc4);
 
-    auto sccs = scc_graph.strongly_connected_components();
+    FixedVector<FixedVector<std::size_t, 10>, 10> sccs;
+    scc_graph.strongly_connected_components(sccs);
     std::cout << "Number of strongly connected components: " << sccs.size() << std::endl;
 
     // Test graph coloring
-    auto colors = complete.greedy_coloring();
+    FixedVector<int, 10> colors;
+    complete.greedy_coloring(colors);
     std::cout << "Graph coloring used " << *std::max_element(colors.begin(), colors.end()) + 1 << " colors" << std::endl;
 }
 
@@ -159,7 +169,9 @@ void test_pool()
     pg.add_edge(pn1, pn2);
 
     std::cout << "Pool graph node_count: " << pg.node_count() << std::endl;
-    std::cout << "Pool graph neighbors of 0: " << pg.neighbors(pn0).size() << std::endl;
+    FixedVector<EdgeStorage, 10> pneigh{};
+    pg.neighbors(pn0, pneigh);
+    std::cout << "Pool graph neighbors of 0: " << pneigh.size() << std::endl;
     std::cout << "Pool graph has edge 0-1: " << pg.has_edge(pn0, pn1) << std::endl;
 
     std::cout << "Pool graph BFS from 0: ";
@@ -170,7 +182,8 @@ void test_pool()
     pg.dfs(pn0, [](auto idx) { std::cout << idx << " "; });
     std::cout << std::endl;
 
-    auto ppath = pg.shortest_path(pn0, pn2);
+    FixedVector<std::size_t, 10> ppath;
+    pg.shortest_path(pn0, pn2, ppath);
     std::cout << "Pool graph shortest path 0 to 2: ";
     for (auto p : ppath) std::cout << p << " ";
     std::cout << std::endl;
