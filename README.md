@@ -420,13 +420,15 @@ ctest -C Debug
 
 ### bazel
 #### clang
+- clang++-20 and above [support function side effect verification](https://clang.llvm.org/docs/FunctionEffectAnalysis.html)
+
 1) Build separately (optional)
 ```
 CC=clang++-13 bazel build --config=clang ...
 ```
 2) Run tests
 ```
-CC=clang++-13 bazel test --config=clang :all_tests
+CC=clang++-13 bazel test --config=clang --build_tests_only --nocache_test_results --runs_per_test=1 :all_tests
 ```
 
 #### clang with libc++
@@ -458,7 +460,7 @@ The macro is needed to avoid analysis on some particularly slow places.
 
 ## Tested Compilers
 
-- Clang  13
+- Clang 13 (and 20)
 - GCC 11
 - MSVC++ 14.29 / Visual Studio 2019
 

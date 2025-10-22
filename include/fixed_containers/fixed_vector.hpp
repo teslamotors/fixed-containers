@@ -1,6 +1,7 @@
 #pragma once
 
 #include "fixed_containers/algorithm.hpp"
+#include "fixed_containers/compiler_compat.hpp"
 #include "fixed_containers/concepts.hpp"
 #include "fixed_containers/iterator_utils.hpp"
 #include "fixed_containers/memory.hpp"
@@ -26,52 +27,52 @@ class FixedVectorBuilder
 public:
     constexpr FixedVectorBuilder() = default;
 
-    constexpr FixedVectorBuilder& push_back(const T& key) & noexcept
+    constexpr FixedVectorBuilder& push_back(const T& key) & noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         vector_.push_back(key);
         return *this;
     }
-    constexpr FixedVectorBuilder&& push_back(const T& key) && noexcept
+    constexpr FixedVectorBuilder&& push_back(const T& key) && noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return std::move(push_back(key));
     }
 
-    constexpr FixedVectorBuilder& push_back_all(std::initializer_list<T> list) & noexcept
+    constexpr FixedVectorBuilder& push_back_all(std::initializer_list<T> list) & noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         push_back_all(list.begin(), list.end());
         return *this;
     }
-    constexpr FixedVectorBuilder&& push_back_all(std::initializer_list<T> list) && noexcept
+    constexpr FixedVectorBuilder&& push_back_all(std::initializer_list<T> list) && noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return std::move(push_back_all(list));
     }
 
     template <InputIterator InputIt>
-    constexpr FixedVectorBuilder& push_back_all(InputIt first, InputIt last) & noexcept
+    constexpr FixedVectorBuilder& push_back_all(InputIt first, InputIt last) & noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         vector_.insert(vector_.end(), first, last);
         return *this;
     }
     template <InputIterator InputIt>
-    constexpr FixedVectorBuilder&& push_back_all(InputIt first, InputIt last) && noexcept
+    constexpr FixedVectorBuilder&& push_back_all(InputIt first, InputIt last) && noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return std::move(push_back_all(first, last));
     }
 
     template <class Container>
-    constexpr FixedVectorBuilder& push_back_all(const Container& container) & noexcept
+    constexpr FixedVectorBuilder& push_back_all(const Container& container) & noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         push_back_all(container.cbegin(), container.cend());
         return *this;
     }
     template <class Container>
-    constexpr FixedVectorBuilder&& push_back_all(const Container& container) && noexcept
+    constexpr FixedVectorBuilder&& push_back_all(const Container& container) && noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return std::move(push_back_all(container.cbegin(), container.cend()));
     }
 
-    [[nodiscard]] constexpr FixedVectorType build() const& { return vector_; }
-    constexpr FixedVectorType&& build() && { return std::move(vector_); }
+    [[nodiscard]] constexpr FixedVectorType build() const& noexcept FIXED_CONTAINERS_NONALLOCATING { return vector_; }
+    constexpr FixedVectorType&& build() && noexcept FIXED_CONTAINERS_NONALLOCATING { return std::move(vector_); }
 
 private:
     FixedVectorType vector_;
@@ -105,11 +106,11 @@ class FixedVectorBase
 
     struct Mapper
     {
-        constexpr T& operator()(OptionalT& opt_storage) const noexcept
+        constexpr T& operator()(OptionalT& opt_storage) const noexcept FIXED_CONTAINERS_NONALLOCATING
         {
             return optional_storage_detail::get(opt_storage);
         }
-        constexpr const T& operator()(const OptionalT& opt_storage) const noexcept
+        constexpr const T& operator()(const OptionalT& opt_storage) const noexcept FIXED_CONTAINERS_NONALLOCATING
         // requires(not std::is_const_v<OptionalT>)
         {
             return optional_storage_detail::get(opt_storage);
@@ -137,11 +138,11 @@ public:
     using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
 public:
-    [[nodiscard]] static constexpr std::size_t static_max_size() noexcept { return MAXIMUM_SIZE; }
+    [[nodiscard]] static constexpr std::size_t static_max_size() noexcept FIXED_CONTAINERS_NONALLOCATING { return MAXIMUM_SIZE; }
 
 private:
     static constexpr void check_target_size(size_type target_size,
-                                            const std_transition::source_location& loc)
+                                            const std_transition::source_location& loc) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         if (preconditions::test(target_size <= MAXIMUM_SIZE))
         {
@@ -154,7 +155,7 @@ public:  // Public so this type is a structural type and can thus be used in tem
     Array IMPLEMENTATION_DETAIL_DO_NOT_USE_array_;
 
 public:
-    constexpr FixedVectorBase() noexcept
+    constexpr FixedVectorBase() noexcept FIXED_CONTAINERS_NONALLOCATING
         requires(MAXIMUM_SIZE > 0)
       : IMPLEMENTATION_DETAIL_DO_NOT_USE_size_{0}
     // Don't initialize the array
@@ -175,7 +176,7 @@ public:
     // Special constructor that initializes the array for 0 size.
     // Needed by libc++17 and lower, unit tests for vector will NOT fail,
     // but their usage in reflection will.
-    constexpr FixedVectorBase() noexcept
+    constexpr FixedVectorBase() noexcept FIXED_CONTAINERS_NONALLOCATING
         requires(MAXIMUM_SIZE == 0)
       : IMPLEMENTATION_DETAIL_DO_NOT_USE_size_{0}
       , IMPLEMENTATION_DETAIL_DO_NOT_USE_array_{}
@@ -185,7 +186,7 @@ public:
     constexpr FixedVectorBase(std::size_t count,
                               const T& value,
                               const std_transition::source_location& loc =
-                                  std_transition::source_location::current()) noexcept
+                                  std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
       : FixedVectorBase()
     {
         check_target_size(count, loc);
@@ -198,7 +199,7 @@ public:
 
     constexpr explicit FixedVectorBase(std::size_t count,
                                        const std_transition::source_location& loc =
-                                           std_transition::source_location::current()) noexcept
+                                           std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
       : FixedVectorBase(count, T(), loc)
     {
     }
@@ -207,7 +208,7 @@ public:
     constexpr FixedVectorBase(InputIt first,
                               InputIt last,
                               const std_transition::source_location& loc =
-                                  std_transition::source_location::current()) noexcept
+                                  std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
       : FixedVectorBase()
     {
         insert(cend(), first, last, loc);
@@ -215,7 +216,7 @@ public:
 
     constexpr FixedVectorBase(std::initializer_list<T> list,
                               const std_transition::source_location& loc =
-                                  std_transition::source_location::current()) noexcept
+                                  std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
       : FixedVectorBase(list.begin(), list.end(), loc)
     {
     }
@@ -228,14 +229,14 @@ public:
      */
     constexpr void resize(
         size_type count,
-        const std_transition::source_location& loc = std_transition::source_location::current())
+        const std_transition::source_location& loc = std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         this->resize(count, T{}, loc);
     }
     constexpr void resize(
         size_type count,
         const value_type& value,
-        const std_transition::source_location& loc = std_transition::source_location::current())
+        const std_transition::source_location& loc = std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         check_target_size(count, loc);
 
@@ -259,14 +260,14 @@ public:
      */
     constexpr void push_back(
         const value_type& value,
-        const std_transition::source_location& loc = std_transition::source_location::current())
+        const std_transition::source_location& loc = std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         check_not_full(loc);
         this->push_back_internal(value);
     }
     constexpr void push_back(
         value_type&& value,
-        const std_transition::source_location& loc = std_transition::source_location::current())
+        const std_transition::source_location& loc = std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         check_not_full(loc);
         this->push_back_internal(std::move(value));
@@ -276,7 +277,7 @@ public:
      * Calling emplace_back on a full container is undefined.
      */
     template <class... Args>
-    constexpr reference emplace_back(Args&&... args)
+    constexpr reference emplace_back(Args&&... args) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         check_not_full(std_transition::source_location::current());
         emplace_at(end_index(), std::forward<Args>(args)...);
@@ -289,7 +290,7 @@ public:
      * Calling pop_back on an empty container is undefined.
      */
     constexpr void pop_back(
-        const std_transition::source_location& loc = std_transition::source_location::current())
+        const std_transition::source_location& loc = std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         check_not_empty(loc);
         destroy_at(back_index());
@@ -303,7 +304,7 @@ public:
     constexpr iterator insert(
         const_iterator pos,
         const value_type& value,
-        const std_transition::source_location& loc = std_transition::source_location::current())
+        const std_transition::source_location& loc = std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         check_not_full(loc);
         auto entry_it = advance_all_after_iterator_by_n(pos, 1);
@@ -313,7 +314,7 @@ public:
     constexpr iterator insert(
         const_iterator pos,
         value_type&& value,
-        const std_transition::source_location& loc = std_transition::source_location::current())
+        const std_transition::source_location& loc = std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         check_not_full(loc);
         auto entry_it = advance_all_after_iterator_by_n(pos, 1);
@@ -325,7 +326,7 @@ public:
         const_iterator pos,
         InputIt first,
         InputIt last,
-        const std_transition::source_location& loc = std_transition::source_location::current())
+        const std_transition::source_location& loc = std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return insert_internal(
             typename std::iterator_traits<InputIt>::iterator_category{}, pos, first, last, loc);
@@ -333,7 +334,7 @@ public:
     constexpr iterator insert(
         const_iterator pos,
         std::initializer_list<T> ilist,
-        const std_transition::source_location& loc = std_transition::source_location::current())
+        const std_transition::source_location& loc = std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return insert_internal(
             std::random_access_iterator_tag{}, pos, ilist.begin(), ilist.end(), loc);
@@ -344,7 +345,7 @@ public:
      * Calling emplace on a full container is undefined.
      */
     template <class... Args>
-    constexpr iterator emplace(const_iterator pos, Args&&... args)
+    constexpr iterator emplace(const_iterator pos, Args&&... args) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         check_not_full(std_transition::source_location::current());
         auto entry_it = advance_all_after_iterator_by_n(pos, 1);
@@ -358,7 +359,7 @@ public:
     constexpr void assign(
         size_type count,
         const value_type& value,
-        const std_transition::source_location& loc = std_transition::source_location::current())
+        const std_transition::source_location& loc = std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         check_target_size(count, loc);
         this->clear();
@@ -372,7 +373,7 @@ public:
     constexpr void assign(
         InputIt first,
         InputIt last,
-        const std_transition::source_location& loc = std_transition::source_location::current())
+        const std_transition::source_location& loc = std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         this->clear();
         this->insert(cend(), first, last, loc);
@@ -380,7 +381,7 @@ public:
 
     constexpr void assign(
         std::initializer_list<T> ilist,
-        const std_transition::source_location& loc = std_transition::source_location::current())
+        const std_transition::source_location& loc = std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         this->clear();
         this->insert(cend(), ilist, loc);
@@ -392,7 +393,7 @@ public:
     constexpr iterator erase(const_iterator first,
                              const_iterator last,
                              const std_transition::source_location& loc =
-                                 std_transition::source_location::current()) noexcept
+                                 std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         if (preconditions::test(first <= last))
         {
@@ -424,7 +425,8 @@ public:
         else
         {
             // Do the move
-            const iterator write_end_it = std::move(read_start_it, read_end_it, write_start_it);
+            // Doesn't actually allocate
+            const iterator write_end_it = FIXED_CONTAINERS_SUPPRESS_FUNCTION_EFFECTS(std::move(read_start_it, read_end_it, write_start_it));
 
             // Clean out the tail
             destroy_range(write_end_it, read_end_it);
@@ -439,7 +441,7 @@ public:
      */
     constexpr iterator erase(const_iterator pos,
                              const std_transition::source_location& loc =
-                                 std_transition::source_location::current()) noexcept
+                                 std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return erase(pos, std::next(pos), loc);
     }
@@ -447,7 +449,7 @@ public:
     /**
      * Erases all elements from the container. After this call, size() returns zero.
      */
-    constexpr void clear() noexcept
+    constexpr void clear() noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         destroy_range(begin(), end());
         set_size(0);
@@ -456,13 +458,13 @@ public:
     /**
      * Regular accessors.
      */
-    constexpr reference operator[](size_type index) noexcept
+    constexpr reference operator[](size_type index) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         // Cannot capture real source_location for operator[]
         // This operator should not range-check according to the spec, but we want the extra safety.
         return at(index, std_transition::source_location::current());
     }
-    constexpr const_reference operator[](size_type index) const noexcept
+    constexpr const_reference operator[](size_type index) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         // Cannot capture real source_location for operator[]
         // This operator should not range-check according to the spec, but we want the extra safety.
@@ -471,7 +473,7 @@ public:
 
     constexpr reference at(size_type index,
                            const std_transition::source_location& loc =
-                               std_transition::source_location::current()) noexcept
+                               std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         if (preconditions::test(index < size()))
         {
@@ -482,7 +484,7 @@ public:
     [[nodiscard]] constexpr const_reference at(
         size_type index,
         const std_transition::source_location& loc =
-            std_transition::source_location::current()) const noexcept
+            std_transition::source_location::current()) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         if (preconditions::test(index < size()))
         {
@@ -492,37 +494,37 @@ public:
     }
 
     constexpr reference front(
-        const std_transition::source_location& loc = std_transition::source_location::current())
+        const std_transition::source_location& loc = std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         check_not_empty(loc);
         return unchecked_at(front_index());
     }
     [[nodiscard]] constexpr const_reference front(
         const std_transition::source_location& loc =
-            std_transition::source_location::current()) const
+            std_transition::source_location::current()) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         check_not_empty(loc);
         return unchecked_at(front_index());
     }
     constexpr reference back(
-        const std_transition::source_location& loc = std_transition::source_location::current())
+        const std_transition::source_location& loc = std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         check_not_empty(loc);
         return unchecked_at(back_index());
     }
     [[nodiscard]] constexpr const_reference back(
         const std_transition::source_location& loc =
-            std_transition::source_location::current()) const
+            std_transition::source_location::current()) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         check_not_empty(loc);
         return unchecked_at(back_index());
     }
 
-    constexpr value_type* data() noexcept
+    constexpr value_type* data() noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return std::addressof(optional_storage_detail::get(*array().data()));
     }
-    [[nodiscard]] constexpr const value_type* data() const noexcept
+    [[nodiscard]] constexpr const value_type* data() const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return std::addressof(optional_storage_detail::get(*array().data()));
     }
@@ -530,28 +532,28 @@ public:
     /**
      * Iterators
      */
-    constexpr iterator begin() noexcept { return create_iterator(front_index()); }
-    [[nodiscard]] constexpr const_iterator begin() const noexcept { return cbegin(); }
-    [[nodiscard]] constexpr const_iterator cbegin() const noexcept
+    constexpr iterator begin() noexcept FIXED_CONTAINERS_NONALLOCATING { return create_iterator(front_index()); }
+    [[nodiscard]] constexpr const_iterator begin() const noexcept FIXED_CONTAINERS_NONALLOCATING { return cbegin(); }
+    [[nodiscard]] constexpr const_iterator cbegin() const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return create_const_iterator(front_index());
     }
-    constexpr iterator end() noexcept { return create_iterator(end_index()); }
-    [[nodiscard]] constexpr const_iterator end() const noexcept { return cend(); }
-    [[nodiscard]] constexpr const_iterator cend() const noexcept
+    constexpr iterator end() noexcept FIXED_CONTAINERS_NONALLOCATING { return create_iterator(end_index()); }
+    [[nodiscard]] constexpr const_iterator end() const noexcept FIXED_CONTAINERS_NONALLOCATING { return cend(); }
+    [[nodiscard]] constexpr const_iterator cend() const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return create_const_iterator(end_index());
     }
 
-    constexpr reverse_iterator rbegin() noexcept { return reverse_iterator(end()); }
-    [[nodiscard]] constexpr const_reverse_iterator rbegin() const noexcept { return crbegin(); }
-    [[nodiscard]] constexpr const_reverse_iterator crbegin() const noexcept
+    constexpr reverse_iterator rbegin() noexcept FIXED_CONTAINERS_NONALLOCATING { return reverse_iterator(end()); }
+    [[nodiscard]] constexpr const_reverse_iterator rbegin() const noexcept FIXED_CONTAINERS_NONALLOCATING { return crbegin(); }
+    [[nodiscard]] constexpr const_reverse_iterator crbegin() const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return const_reverse_iterator(cend());
     }
-    constexpr reverse_iterator rend() noexcept { return reverse_iterator(begin()); }
-    [[nodiscard]] constexpr const_reverse_iterator rend() const noexcept { return crend(); }
-    [[nodiscard]] constexpr const_reverse_iterator crend() const noexcept
+    constexpr reverse_iterator rend() noexcept FIXED_CONTAINERS_NONALLOCATING { return reverse_iterator(begin()); }
+    [[nodiscard]] constexpr const_reverse_iterator rend() const noexcept FIXED_CONTAINERS_NONALLOCATING { return crend(); }
+    [[nodiscard]] constexpr const_reverse_iterator crend() const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return const_reverse_iterator(cbegin());
     }
@@ -559,11 +561,11 @@ public:
     /**
      * Size
      */
-    [[nodiscard]] constexpr std::size_t max_size() const noexcept { return static_max_size(); }
-    [[nodiscard]] constexpr std::size_t capacity() const noexcept { return max_size(); }
+    [[nodiscard]] constexpr std::size_t max_size() const noexcept FIXED_CONTAINERS_NONALLOCATING { return static_max_size(); }
+    [[nodiscard]] constexpr std::size_t capacity() const noexcept FIXED_CONTAINERS_NONALLOCATING { return max_size(); }
     constexpr void reserve(const std::size_t new_capacity,
                            const std_transition::source_location& loc =
-                               std_transition::source_location::current()) noexcept
+                               std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         if (preconditions::test(new_capacity <= MAXIMUM_SIZE))
         {
@@ -571,17 +573,17 @@ public:
         }
         // Do nothing
     }
-    [[nodiscard]] constexpr std::size_t size() const noexcept
+    [[nodiscard]] constexpr std::size_t size() const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_size_;
     }
-    [[nodiscard]] constexpr bool empty() const noexcept { return size() == 0; }
+    [[nodiscard]] constexpr bool empty() const noexcept FIXED_CONTAINERS_NONALLOCATING { return size() == 0; }
 
     /**
      * Equality.
      */
     template <std::size_t MAXIMUM_SIZE_2, customize::SequenceContainerChecking CheckingType2>
-    constexpr bool operator==(const FixedVectorBase<T, MAXIMUM_SIZE_2, CheckingType2>& other) const
+    constexpr bool operator==(const FixedVectorBase<T, MAXIMUM_SIZE_2, CheckingType2>& other) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         if constexpr (MAXIMUM_SIZE == MAXIMUM_SIZE_2)
         {
@@ -595,7 +597,7 @@ public:
     }
 
     template <std::size_t MAXIMUM_SIZE_2, customize::SequenceContainerChecking CheckingType2>
-    constexpr auto operator<=>(const FixedVectorBase<T, MAXIMUM_SIZE_2, CheckingType2>& other) const
+    constexpr auto operator<=>(const FixedVectorBase<T, MAXIMUM_SIZE_2, CheckingType2>& other) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return algorithm::lexicographical_compare_three_way(
             cbegin(), cend(), other.cbegin(), other.cend());
@@ -603,7 +605,7 @@ public:
 
 private:
     constexpr iterator advance_all_after_iterator_by_n(const const_iterator pos,
-                                                       const std::size_t n)
+                                                       const std::size_t n) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         const std::ptrdiff_t value_count_to_move = std::distance(pos, cend());
         increment_size(n);  // Increment now so iterators are all within valid range
@@ -622,7 +624,7 @@ private:
                                        const_iterator pos,
                                        InputIt first,
                                        InputIt last,
-                                       const std_transition::source_location& loc)
+                                       const std_transition::source_location& loc) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         const auto entry_count_to_add = static_cast<std::size_t>(std::distance(first, last));
         check_target_size(size() + entry_count_to_add, loc);
@@ -640,7 +642,7 @@ private:
                                        const_iterator pos,
                                        InputIt first,
                                        InputIt last,
-                                       const std_transition::source_location& loc)
+                                       const std_transition::source_location& loc) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         auto first_it = const_to_mutable_it(pos);
         auto middle_it = end();
@@ -668,7 +670,7 @@ private:
         return first_it;
     }
 
-    constexpr iterator create_iterator(const std::size_t offset_from_start) noexcept
+    constexpr iterator create_iterator(const std::size_t offset_from_start) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         //  Not a pointer in all platforms, e.g msvc
         auto array_it =  // NOLINT(readability-qualified-auto)
@@ -677,7 +679,7 @@ private:
     }
 
     [[nodiscard]] constexpr const_iterator create_const_iterator(
-        const std::size_t offset_from_start) const noexcept
+        const std::size_t offset_from_start) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         //  Not a pointer in all platforms, e.g msvc
         auto array_it =  // NOLINT(readability-qualified-auto)
@@ -686,19 +688,19 @@ private:
     }
 
 private:
-    constexpr iterator const_to_mutable_it(const_iterator const_it)
+    constexpr iterator const_to_mutable_it(const_iterator const_it) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return std::next(begin(), std::distance(cbegin(), const_it));
     }
 
-    constexpr void check_not_full(const std_transition::source_location& loc) const
+    constexpr void check_not_full(const std_transition::source_location& loc) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         if (preconditions::test(size() < MAXIMUM_SIZE))
         {
             Checking::length_error(MAXIMUM_SIZE + 1, loc);
         }
     }
-    constexpr void check_not_empty(const std_transition::source_location& loc) const
+    constexpr void check_not_empty(const std_transition::source_location& loc) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         if (preconditions::test(!empty()))
         {
@@ -706,53 +708,53 @@ private:
         }
     }
 
-    [[nodiscard]] constexpr std::size_t front_index() const { return 0; }
-    [[nodiscard]] constexpr std::size_t back_index() const { return end_index() - 1; }
-    [[nodiscard]] constexpr std::size_t end_index() const { return size(); }
+    [[nodiscard]] constexpr std::size_t front_index() const noexcept FIXED_CONTAINERS_NONALLOCATING { return 0; }
+    [[nodiscard]] constexpr std::size_t back_index() const noexcept FIXED_CONTAINERS_NONALLOCATING { return end_index() - 1; }
+    [[nodiscard]] constexpr std::size_t end_index() const noexcept FIXED_CONTAINERS_NONALLOCATING { return size(); }
 
-    [[nodiscard]] constexpr const Array& array() const
+    [[nodiscard]] constexpr const Array& array() const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_;
     }
-    constexpr Array& array() { return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_; }
+    constexpr Array& array() noexcept FIXED_CONTAINERS_NONALLOCATING { return IMPLEMENTATION_DETAIL_DO_NOT_USE_array_; }
 
-    constexpr void increment_size(const std::size_t n = 1)
+    constexpr void increment_size(const std::size_t n = 1) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         IMPLEMENTATION_DETAIL_DO_NOT_USE_size_ += n;
     }
-    constexpr void decrement_size(const std::size_t n = 1)
+    constexpr void decrement_size(const std::size_t n = 1) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         IMPLEMENTATION_DETAIL_DO_NOT_USE_size_ -= n;
     }
-    constexpr void set_size(const std::size_t size)
+    constexpr void set_size(const std::size_t size) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         IMPLEMENTATION_DETAIL_DO_NOT_USE_size_ = size;
     }
 
-    [[nodiscard]] constexpr const T& unchecked_at(const std::size_t index) const
+    [[nodiscard]] constexpr const T& unchecked_at(const std::size_t index) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return optional_storage_detail::get(array()[index]);
     }
-    constexpr T& unchecked_at(const std::size_t index)
+    constexpr T& unchecked_at(const std::size_t index) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return optional_storage_detail::get(array()[index]);
     }
 
-    constexpr void destroy_at(std::size_t /*index*/)
+    constexpr void destroy_at(std::size_t /*index*/) noexcept FIXED_CONTAINERS_NONALLOCATING
         requires TriviallyDestructible<T>
     {
     }
-    constexpr void destroy_at(std::size_t index)
+    constexpr void destroy_at(std::size_t index) noexcept FIXED_CONTAINERS_NONALLOCATING
         requires NotTriviallyDestructible<T>
     {
         memory::destroy_at_address_of(unchecked_at(index));
     }
 
-    constexpr void destroy_range(iterator /*first*/, iterator /*last*/)
+    constexpr void destroy_range(iterator /*first*/, iterator /*last*/) noexcept FIXED_CONTAINERS_NONALLOCATING
         requires TriviallyDestructible<T>
     {
     }
-    constexpr void destroy_range(iterator first, iterator last)
+    constexpr void destroy_range(iterator first, iterator last) noexcept FIXED_CONTAINERS_NONALLOCATING
         requires NotTriviallyDestructible<T>
     {
         for (; first != last; ++first)
@@ -761,30 +763,30 @@ private:
         }
     }
 
-    constexpr void place_at(const std::size_t index, const value_type& value)
+    constexpr void place_at(const std::size_t index, const value_type& value) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         memory::construct_at_address_of(unchecked_at(index), value);
     }
-    constexpr void place_at(const std::size_t index, value_type&& value)
+    constexpr void place_at(const std::size_t index, value_type&& value) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         memory::construct_at_address_of(unchecked_at(index), std::move(value));
     }
 
     template <class... Args>
-    constexpr void emplace_at(const std::size_t index, Args&&... args)
+    constexpr void emplace_at(const std::size_t index, Args&&... args) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         memory::construct_at_address_of(unchecked_at(index), std::forward<Args>(args)...);
     }
 
     // [WORKAROUND-1] - Needed by the non-trivially-copyable flavor of FixedVector
 protected:
-    constexpr void push_back_internal(const value_type& value)
+    constexpr void push_back_internal(const value_type& value) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         place_at(end_index(), value);
         increment_size();
     }
 
-    constexpr void push_back_internal(value_type&& value)
+    constexpr void push_back_internal(value_type&& value) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         place_at(end_index(), std::move(value));
         increment_size();
@@ -804,20 +806,20 @@ public:
     using Builder =
         fixed_vector_detail::FixedVectorBuilder<T, FixedVector<T, MAXIMUM_SIZE, CheckingType>>;
 
-    constexpr FixedVector() noexcept
+    constexpr FixedVector() noexcept FIXED_CONTAINERS_NONALLOCATING
       : Base()
     {
     }
     constexpr FixedVector(std::size_t count,
                           const T& value,
                           const std_transition::source_location& loc =
-                              std_transition::source_location::current()) noexcept
+                              std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
       : Base(count, value, loc)
     {
     }
     constexpr explicit FixedVector(std::size_t count,
                                    const std_transition::source_location& loc =
-                                       std_transition::source_location::current()) noexcept
+                                       std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
       : Base(count, loc)
     {
     }
@@ -825,35 +827,35 @@ public:
     constexpr FixedVector(InputIt first,
                           InputIt last,
                           const std_transition::source_location& loc =
-                              std_transition::source_location::current()) noexcept
+                              std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
       : Base(first, last, loc)
     {
     }
     constexpr FixedVector(std::initializer_list<T> list,
                           const std_transition::source_location& loc =
-                              std_transition::source_location::current()) noexcept
+                              std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
       : Base(list, loc)
     {
     }
 
-    constexpr FixedVector(const FixedVector& other)
+    constexpr FixedVector(const FixedVector& other) FIXED_CONTAINERS_NONALLOCATING
         requires TriviallyCopyConstructible<T>
     = default;
-    constexpr FixedVector(FixedVector&& other) noexcept
+    constexpr FixedVector(FixedVector&& other) noexcept FIXED_CONTAINERS_NONALLOCATING
         requires TriviallyMoveConstructible<T>
     = default;
-    constexpr FixedVector& operator=(const FixedVector& other)
+    constexpr FixedVector& operator=(const FixedVector& other) noexcept FIXED_CONTAINERS_NONALLOCATING
         requires TriviallyCopyAssignable<T>
     = default;
-    constexpr FixedVector& operator=(FixedVector&& other) noexcept
+    constexpr FixedVector& operator=(FixedVector&& other) noexcept FIXED_CONTAINERS_NONALLOCATING
         requires TriviallyMoveAssignable<T>
     = default;
 
-    constexpr FixedVector(const FixedVector& other)
+    constexpr FixedVector(const FixedVector& other) noexcept FIXED_CONTAINERS_NONALLOCATING
       : FixedVector(other.begin(), other.end())
     {
     }
-    constexpr FixedVector(FixedVector&& other) noexcept
+    constexpr FixedVector(FixedVector&& other) noexcept FIXED_CONTAINERS_NONALLOCATING
       : FixedVector()
     {
         for (T& entry : other)
@@ -865,7 +867,7 @@ public:
         // as well as the trivial move constructor of this class.
         other.clear();
     }
-    constexpr FixedVector& operator=(const FixedVector& other)
+    constexpr FixedVector& operator=(const FixedVector& other) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         if (this == &other)
         {
@@ -875,7 +877,7 @@ public:
         this->assign(other.begin(), other.end());
         return *this;
     }
-    constexpr FixedVector& operator=(FixedVector&& other) noexcept
+    constexpr FixedVector& operator=(FixedVector&& other) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         if (this == &other)
         {
@@ -909,20 +911,20 @@ public:
     using Builder =
         fixed_vector_detail::FixedVectorBuilder<T, FixedVector<T, MAXIMUM_SIZE, CheckingType>>;
 
-    constexpr FixedVector() noexcept
+    constexpr FixedVector() noexcept FIXED_CONTAINERS_NONALLOCATING
       : Base()
     {
     }
     constexpr FixedVector(std::size_t count,
                           const T& value,
                           const std_transition::source_location& loc =
-                              std_transition::source_location::current()) noexcept
+                              std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
       : Base(count, value, loc)
     {
     }
     constexpr explicit FixedVector(std::size_t count,
                                    const std_transition::source_location& loc =
-                                       std_transition::source_location::current()) noexcept
+                                       std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
       : Base(count, loc)
     {
     }
@@ -930,13 +932,13 @@ public:
     constexpr FixedVector(InputIt first,
                           InputIt last,
                           const std_transition::source_location& loc =
-                              std_transition::source_location::current()) noexcept
+                              std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
       : Base(first, last, loc)
     {
     }
     constexpr FixedVector(std::initializer_list<T> list,
                           const std_transition::source_location& loc =
-                              std_transition::source_location::current()) noexcept
+                              std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
       : Base(list, loc)
     {
     }
@@ -967,26 +969,26 @@ public:
     using Builder =
         fixed_vector_detail::FixedVectorBuilder<T, FixedVector<T, MAXIMUM_SIZE, CheckingType>>;
 
-    constexpr FixedVector() noexcept
+    constexpr FixedVector() noexcept FIXED_CONTAINERS_NONALLOCATING
       : Base()
     {
     }
     constexpr FixedVector(std::initializer_list<T> list,
                           const std_transition::source_location& loc =
-                              std_transition::source_location::current()) noexcept
+                              std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
       : Base(list, loc)
     {
     }
     constexpr FixedVector(std::size_t count,
                           const T& value,
                           const std_transition::source_location& loc =
-                              std_transition::source_location::current()) noexcept
+                              std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
       : Base(count, value, loc)
     {
     }
     constexpr explicit FixedVector(std::size_t count,
                                    const std_transition::source_location& loc =
-                                       std_transition::source_location::current()) noexcept
+                                       std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
       : Base(count, loc)
     {
     }
@@ -994,21 +996,21 @@ public:
     constexpr FixedVector(InputIt first,
                           InputIt last,
                           const std_transition::source_location& loc =
-                              std_transition::source_location::current()) noexcept
+                              std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
       : Base(first, last, loc)
     {
     }
 };
 
 template <typename T, std::size_t MAXIMUM_SIZE, typename CheckingType>
-[[nodiscard]] constexpr bool is_full(const FixedVector<T, MAXIMUM_SIZE, CheckingType>& container)
+[[nodiscard]] constexpr bool is_full(const FixedVector<T, MAXIMUM_SIZE, CheckingType>& container) noexcept FIXED_CONTAINERS_NONALLOCATING
 {
     return container.size() >= container.max_size();
 }
 
 template <typename T, std::size_t MAXIMUM_SIZE, typename CheckingType, typename U>
 constexpr typename FixedVector<T, MAXIMUM_SIZE, CheckingType>::size_type erase(
-    FixedVector<T, MAXIMUM_SIZE, CheckingType>& container, const U& value)
+    FixedVector<T, MAXIMUM_SIZE, CheckingType>& container, const U& value) noexcept FIXED_CONTAINERS_NONALLOCATING
 {
     const auto original_size = container.size();
     container.erase(std::remove(container.begin(), container.end(), value), container.end());
@@ -1017,7 +1019,7 @@ constexpr typename FixedVector<T, MAXIMUM_SIZE, CheckingType>::size_type erase(
 
 template <typename T, std::size_t MAXIMUM_SIZE, typename CheckingType, typename Predicate>
 constexpr typename FixedVector<T, MAXIMUM_SIZE, CheckingType>::size_type erase_if(
-    FixedVector<T, MAXIMUM_SIZE, CheckingType>& container, Predicate predicate)
+    FixedVector<T, MAXIMUM_SIZE, CheckingType>& container, Predicate predicate) noexcept FIXED_CONTAINERS_NONALLOCATING
 {
     const auto original_size = container.size();
     container.erase(std::remove_if(container.begin(), container.end(), predicate), container.end());
@@ -1036,7 +1038,7 @@ template <typename T,
 [[nodiscard]] constexpr FixedVectorType make_fixed_vector(
     const T (&list)[MAXIMUM_SIZE],
     const std_transition::source_location& loc =
-        std_transition::source_location::current()) noexcept
+        std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
 {
     return {std::begin(list), std::end(list), loc};
 }
@@ -1046,7 +1048,7 @@ template <typename T,
 [[nodiscard]] constexpr FixedVectorType make_fixed_vector(
     const std::array<T, 0> /*list*/,
     const std_transition::source_location& /*loc*/
-    = std_transition::source_location::current()) noexcept
+    = std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
 {
     return {};
 }
@@ -1055,7 +1057,7 @@ template <typename T, std::size_t MAXIMUM_SIZE>
 [[nodiscard]] constexpr auto make_fixed_vector(
     const T (&list)[MAXIMUM_SIZE],
     const std_transition::source_location& loc =
-        std_transition::source_location::current()) noexcept
+        std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
 {
     using CheckingType = customize::SequenceContainerAbortChecking<T, MAXIMUM_SIZE>;
     using FixedVectorType = FixedVector<T, MAXIMUM_SIZE, CheckingType>;
@@ -1065,7 +1067,7 @@ template <typename T>
 [[nodiscard]] constexpr auto make_fixed_vector(
     const std::array<T, 0> list,
     const std_transition::source_location& loc =
-        std_transition::source_location::current()) noexcept
+        std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
 {
     using CheckingType = customize::SequenceContainerAbortChecking<T, 0>;
     using FixedVectorType = FixedVector<T, 0, CheckingType>;
