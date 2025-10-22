@@ -624,6 +624,7 @@ cc_library(
     strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":assert_or_abort",
+        ":compiler_compat",
         ":concepts",
         ":fixed_vector",
         ":preconditions",
@@ -640,6 +641,7 @@ cc_library(
     strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":algorithm",
+        ":compiler_compat",
         ":concepts",
         ":iterator_utils",
         ":memory",
@@ -789,6 +791,9 @@ cc_library(
     hdrs = ["include/fixed_containers/memory.hpp"],
     includes = includes_config(),
     strip_include_prefix = strip_include_prefix_config(),
+    deps = [
+        ":compiler_compat",
+    ],
     copts = ["-std=c++20"],
 )
 
@@ -1066,6 +1071,14 @@ cc_library(
 cc_library(
     name = "variadic_templates",
     hdrs = ["include/fixed_containers/variadic_templates.hpp"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
+    copts = ["-std=c++20"],
+)
+
+cc_library(
+    name = "compiler_compat",
+    hdrs = ["include/fixed_containers/compiler_compat.hpp"],
     includes = includes_config(),
     strip_include_prefix = strip_include_prefix_config(),
     copts = ["-std=c++20"],

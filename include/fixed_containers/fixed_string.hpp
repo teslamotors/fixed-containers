@@ -1,6 +1,7 @@
 #pragma once
 
 #include "fixed_containers/assert_or_abort.hpp"
+#include "fixed_containers/compiler_compat.hpp"
 #include "fixed_containers/concepts.hpp"
 #include "fixed_containers/fixed_vector.hpp"
 #include "fixed_containers/preconditions.hpp"
@@ -54,7 +55,7 @@ public:
     using const_reverse_iterator = typename FixedVecStorage::const_reverse_iterator;
 
 public:
-    [[nodiscard]] static constexpr std::size_t static_max_size() noexcept { return MAXIMUM_LENGTH; }
+    [[nodiscard]] static constexpr std::size_t static_max_size() noexcept FIXED_CONTAINERS_NONALLOCATING { return MAXIMUM_LENGTH; }
 
     static constexpr size_type npos =  // NOLINT(readability-identifier-naming)
         std::string_view::npos;
@@ -64,7 +65,7 @@ public:  // Public so this type is a structural type and can thus be used in tem
 
 public:
     constexpr FixedString(const std_transition::source_location& loc =
-                              std_transition::source_location::current()) noexcept
+                              std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
       : IMPLEMENTATION_DETAIL_DO_NOT_USE_data_{}
     {
         null_terminate_at_max_length();
@@ -74,7 +75,7 @@ public:
     constexpr FixedString(
         size_type count,
         CharT character,
-        const std_transition::source_location& loc = std_transition::source_location::current())
+        const std_transition::source_location& loc = std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
       : IMPLEMENTATION_DETAIL_DO_NOT_USE_data_{count, character, loc}
     {
         null_terminate_at_max_length();
@@ -83,14 +84,14 @@ public:
 
     constexpr FixedString(
         const CharT* char_ptr,
-        const std_transition::source_location& loc = std_transition::source_location::current())
+        const std_transition::source_location& loc = std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
       : FixedString(std::string_view{char_ptr}, loc)
     {
     }
 
     constexpr FixedString(
         std::initializer_list<CharT> ilist,
-        const std_transition::source_location& loc = std_transition::source_location::current())
+        const std_transition::source_location& loc = std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
       : IMPLEMENTATION_DETAIL_DO_NOT_USE_data_{ilist, loc}
     {
         null_terminate_at_max_length();
@@ -99,7 +100,7 @@ public:
 
     explicit(false) constexpr FixedString(const std::string_view& view,
                                           const std_transition::source_location& loc =
-                                              std_transition::source_location::current()) noexcept
+                                              std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
       : IMPLEMENTATION_DETAIL_DO_NOT_USE_data_{view.begin(), view.end(), loc}
     {
         null_terminate_at_max_length();
@@ -109,7 +110,7 @@ public:
     constexpr FixedString& assign(
         size_type count,
         CharT character,
-        const std_transition::source_location& loc = std_transition::source_location::current())
+        const std_transition::source_location& loc = std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         vec().assign(count, character, loc);
         null_terminate(loc);
@@ -119,7 +120,7 @@ public:
     constexpr FixedString& assign(
         InputIt first,
         InputIt last,
-        const std_transition::source_location& loc = std_transition::source_location::current())
+        const std_transition::source_location& loc = std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         vec().assign(first, last, loc);
         null_terminate(loc);
@@ -127,7 +128,7 @@ public:
     }
     constexpr FixedString& assign(
         std::initializer_list<CharT> ilist,
-        const std_transition::source_location& loc = std_transition::source_location::current())
+        const std_transition::source_location& loc = std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         vec().assign(ilist, loc);
         null_terminate(loc);
@@ -135,20 +136,20 @@ public:
     }
     constexpr FixedString& assign(
         const std::string_view& view,
-        const std_transition::source_location& loc = std_transition::source_location::current())
+        const std_transition::source_location& loc = std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         vec().assign(view.begin(), view.end(), loc);
         null_terminate(loc);
         return *this;
     }
 
-    [[nodiscard]] constexpr reference operator[](size_type index) noexcept
+    [[nodiscard]] constexpr reference operator[](size_type index) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         // Cannot capture real source_location for operator[]
         // This operator should not range-check according to the spec, but we want the extra safety.
         return vec().at(index, std_transition::source_location::current());
     }
-    [[nodiscard]] constexpr const_reference operator[](size_type index) const noexcept
+    [[nodiscard]] constexpr const_reference operator[](size_type index) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         // Cannot capture real source_location for operator[]
         // This operator should not range-check according to the spec, but we want the extra safety.
@@ -157,74 +158,74 @@ public:
 
     [[nodiscard]] constexpr reference at(size_type index,
                                          const std_transition::source_location& loc =
-                                             std_transition::source_location::current()) noexcept
+                                             std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return vec().at(index, loc);
     }
     [[nodiscard]] constexpr const_reference at(
         size_type index,
         const std_transition::source_location& loc =
-            std_transition::source_location::current()) const noexcept
+            std_transition::source_location::current()) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return vec().at(index, loc);
     }
 
     constexpr reference front(
-        const std_transition::source_location& loc = std_transition::source_location::current())
+        const std_transition::source_location& loc = std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return vec().front(loc);
     }
     [[nodiscard]] constexpr const_reference front(
         const std_transition::source_location& loc =
-            std_transition::source_location::current()) const
+            std_transition::source_location::current()) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return vec().front(loc);
     }
     constexpr reference back(
-        const std_transition::source_location& loc = std_transition::source_location::current())
+        const std_transition::source_location& loc = std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return vec().back(loc);
     }
     [[nodiscard]] constexpr const_reference back(
         const std_transition::source_location& loc =
-            std_transition::source_location::current()) const
+            std_transition::source_location::current()) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return vec().back(loc);
     }
 
-    [[nodiscard]] constexpr const char* data() const noexcept { return vec().data(); }
-    [[nodiscard]] constexpr char* data() noexcept { return vec().data(); }
-    [[nodiscard]] constexpr const CharT* c_str() const noexcept { return data(); }
+    [[nodiscard]] constexpr const char* data() const noexcept FIXED_CONTAINERS_NONALLOCATING { return vec().data(); }
+    [[nodiscard]] constexpr char* data() noexcept FIXED_CONTAINERS_NONALLOCATING { return vec().data(); }
+    [[nodiscard]] constexpr const CharT* c_str() const noexcept FIXED_CONTAINERS_NONALLOCATING { return data(); }
 
     explicit(false) constexpr operator std::string_view() const
     {
         return std::string_view(data(), length());
     }
 
-    constexpr iterator begin() noexcept { return vec().begin(); }
-    [[nodiscard]] constexpr const_iterator begin() const noexcept { return cbegin(); }
-    [[nodiscard]] constexpr const_iterator cbegin() const noexcept { return vec().cbegin(); }
-    constexpr iterator end() noexcept { return vec().end(); }
-    [[nodiscard]] constexpr const_iterator end() const noexcept { return cend(); }
-    [[nodiscard]] constexpr const_iterator cend() const noexcept { return vec().cend(); }
+    constexpr iterator begin() noexcept FIXED_CONTAINERS_NONALLOCATING { return vec().begin(); }
+    [[nodiscard]] constexpr const_iterator begin() const noexcept FIXED_CONTAINERS_NONALLOCATING { return cbegin(); }
+    [[nodiscard]] constexpr const_iterator cbegin() const noexcept FIXED_CONTAINERS_NONALLOCATING { return vec().cbegin(); }
+    constexpr iterator end() noexcept FIXED_CONTAINERS_NONALLOCATING { return vec().end(); }
+    [[nodiscard]] constexpr const_iterator end() const noexcept FIXED_CONTAINERS_NONALLOCATING { return cend(); }
+    [[nodiscard]] constexpr const_iterator cend() const noexcept FIXED_CONTAINERS_NONALLOCATING { return vec().cend(); }
 
-    constexpr reverse_iterator rbegin() noexcept { return vec().rbegin(); }
-    [[nodiscard]] constexpr const_reverse_iterator rbegin() const noexcept { return crbegin(); }
-    [[nodiscard]] constexpr const_reverse_iterator crbegin() const noexcept
+    constexpr reverse_iterator rbegin() noexcept FIXED_CONTAINERS_NONALLOCATING { return vec().rbegin(); }
+    [[nodiscard]] constexpr const_reverse_iterator rbegin() const noexcept FIXED_CONTAINERS_NONALLOCATING { return crbegin(); }
+    [[nodiscard]] constexpr const_reverse_iterator crbegin() const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return vec().crbegin();
     }
-    constexpr reverse_iterator rend() noexcept { return vec().rend(); }
-    [[nodiscard]] constexpr const_reverse_iterator rend() const noexcept { return crend(); }
-    [[nodiscard]] constexpr const_reverse_iterator crend() const noexcept { return vec().crend(); }
+    constexpr reverse_iterator rend() noexcept FIXED_CONTAINERS_NONALLOCATING { return vec().rend(); }
+    [[nodiscard]] constexpr const_reverse_iterator rend() const noexcept FIXED_CONTAINERS_NONALLOCATING { return crend(); }
+    [[nodiscard]] constexpr const_reverse_iterator crend() const noexcept FIXED_CONTAINERS_NONALLOCATING { return vec().crend(); }
 
-    [[nodiscard]] constexpr bool empty() const noexcept { return length() == 0; }
-    [[nodiscard]] constexpr std::size_t length() const noexcept { return vec().size(); }
-    [[nodiscard]] constexpr std::size_t size() const noexcept { return length(); }
-    [[nodiscard]] constexpr std::size_t max_size() const noexcept { return static_max_size(); }
+    [[nodiscard]] constexpr bool empty() const noexcept FIXED_CONTAINERS_NONALLOCATING { return length() == 0; }
+    [[nodiscard]] constexpr std::size_t length() const noexcept FIXED_CONTAINERS_NONALLOCATING { return vec().size(); }
+    [[nodiscard]] constexpr std::size_t size() const noexcept FIXED_CONTAINERS_NONALLOCATING { return length(); }
+    [[nodiscard]] constexpr std::size_t max_size() const noexcept FIXED_CONTAINERS_NONALLOCATING { return static_max_size(); }
     constexpr void reserve(const std::size_t new_capacity,
                            const std_transition::source_location& loc =
-                               std_transition::source_location::current()) noexcept
+                               std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         if (preconditions::test(new_capacity <= MAXIMUM_LENGTH))
         {
@@ -232,9 +233,9 @@ public:
         }
         // Do nothing
     }
-    [[nodiscard]] constexpr std::size_t capacity() const noexcept { return max_size(); }
+    [[nodiscard]] constexpr std::size_t capacity() const noexcept FIXED_CONTAINERS_NONALLOCATING { return max_size(); }
 
-    constexpr void clear() noexcept
+    constexpr void clear() noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         vec().clear();
         null_terminate(std_transition::source_location::current());
@@ -243,7 +244,7 @@ public:
     constexpr iterator insert(
         const_iterator pos,
         CharT character,
-        const std_transition::source_location& loc = std_transition::source_location::current())
+        const std_transition::source_location& loc = std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         const ScopedNullTermination guard{this, loc};
         return vec().insert(pos, character, loc);
@@ -253,7 +254,7 @@ public:
         const_iterator pos,
         InputIt first,
         InputIt last,
-        const std_transition::source_location& loc = std_transition::source_location::current())
+        const std_transition::source_location& loc = std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         const ScopedNullTermination guard{this, loc};
         return vec().insert(pos, first, last, loc);
@@ -261,7 +262,7 @@ public:
     constexpr iterator insert(
         const_iterator pos,
         std::initializer_list<CharT> ilist,
-        const std_transition::source_location& loc = std_transition::source_location::current())
+        const std_transition::source_location& loc = std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         const ScopedNullTermination guard{this, loc};
         return vec().insert(pos, ilist, loc);
@@ -269,7 +270,7 @@ public:
     constexpr iterator insert(
         const_iterator pos,
         std::string_view view,
-        const std_transition::source_location& loc = std_transition::source_location::current())
+        const std_transition::source_location& loc = std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         const ScopedNullTermination guard{this, loc};
         return vec().insert(pos, view.begin(), view.end(), loc);
@@ -277,7 +278,7 @@ public:
 
     constexpr iterator erase(
         const_iterator position,
-        const std_transition::source_location& loc = std_transition::source_location::current())
+        const std_transition::source_location& loc = std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         const ScopedNullTermination guard{this, loc};
         return vec().erase(position, loc);
@@ -285,7 +286,7 @@ public:
     constexpr iterator erase(
         const_iterator first,
         const_iterator last,
-        const std_transition::source_location& loc = std_transition::source_location::current())
+        const std_transition::source_location& loc = std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         const ScopedNullTermination guard{this, loc};
         return vec().erase(first, last, loc);
@@ -293,14 +294,14 @@ public:
 
     constexpr void push_back(
         CharT character,
-        const std_transition::source_location& loc = std_transition::source_location::current())
+        const std_transition::source_location& loc = std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         vec().push_back(character, loc);
         null_terminate(loc);
     }
 
     constexpr void pop_back(
-        const std_transition::source_location& loc = std_transition::source_location::current())
+        const std_transition::source_location& loc = std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         vec().pop_back(loc);
         null_terminate(loc);
@@ -309,7 +310,7 @@ public:
     template <class InputIt>
     constexpr FixedString& append(
         const CharT* char_ptr,
-        const std_transition::source_location& loc = std_transition::source_location::current())
+        const std_transition::source_location& loc = std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return append(std::string_view{char_ptr}, loc);
     }
@@ -317,7 +318,7 @@ public:
     constexpr FixedString& append(
         InputIt first,
         InputIt last,
-        const std_transition::source_location& loc = std_transition::source_location::current())
+        const std_transition::source_location& loc = std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         vec().insert(vec().cend(), first, last, loc);
         null_terminate(loc);
@@ -325,7 +326,7 @@ public:
     }
     constexpr FixedString& append(
         std::initializer_list<CharT> ilist,
-        const std_transition::source_location& loc = std_transition::source_location::current())
+        const std_transition::source_location& loc = std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         vec().insert(vec().cend(), ilist, loc);
         null_terminate(loc);
@@ -333,76 +334,76 @@ public:
     }
     constexpr FixedString& append(
         const std::string_view& view,
-        const std_transition::source_location& loc = std_transition::source_location::current())
+        const std_transition::source_location& loc = std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         vec().insert(vec().cend(), view.begin(), view.end(), loc);
         null_terminate(loc);
         return *this;
     }
 
-    constexpr FixedString& operator+=(CharT character)
+    constexpr FixedString& operator+=(CharT character) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return append(character, std_transition::source_location::current());
     }
-    constexpr FixedString& operator+=(const CharT* char_ptr)
+    constexpr FixedString& operator+=(const CharT* char_ptr) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return append(char_ptr, std_transition::source_location::current());
     }
-    constexpr FixedString& operator+=(std::initializer_list<CharT> ilist)
+    constexpr FixedString& operator+=(std::initializer_list<CharT> ilist) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return append(ilist, std_transition::source_location::current());
     }
-    constexpr FixedString& operator+=(const std::string_view& view)
+    constexpr FixedString& operator+=(const std::string_view& view) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return append(view, std_transition::source_location::current());
     }
 
     template <std::size_t MAXIMUM_LENGTH_2, customize::SequenceContainerChecking CheckingType2>
     [[nodiscard]] constexpr size_type find(const FixedString<MAXIMUM_LENGTH_2, CheckingType2>& str,
-                                           const size_type pos = 0) const
+                                           const size_type pos = 0) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return as_view().find(str, pos);
     }
     [[nodiscard]] constexpr size_type find(const CharT* char_ptr,
                                            size_type pos,
-                                           size_type count) const
+                                           size_type count) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return as_view().find(char_ptr, pos, count);
     }
-    [[nodiscard]] constexpr size_type find(const CharT* const str, const size_type pos = 0) const
+    [[nodiscard]] constexpr size_type find(const CharT* const str, const size_type pos = 0) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return as_view().find(str, pos);
     }
-    [[nodiscard]] constexpr size_type find(const CharT character, const size_type pos = 0) const
+    [[nodiscard]] constexpr size_type find(const CharT character, const size_type pos = 0) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return as_view().find(character, pos);
     }
     template <class StringViewLike>
         requires(std::is_convertible_v<const StringViewLike&, std::string_view> and
                  not std::is_convertible_v<const StringViewLike&, const char*>)
-    [[nodiscard]] constexpr size_type find(const StringViewLike& str, const size_type pos = 0) const
+    [[nodiscard]] constexpr size_type find(const StringViewLike& str, const size_type pos = 0) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return as_view().find(str, pos);
     }
 
     template <std::size_t MAXIMUM_LENGTH_2, customize::SequenceContainerChecking CheckingType2>
     [[nodiscard]] constexpr size_type rfind(const FixedString<MAXIMUM_LENGTH_2, CheckingType2>& str,
-                                            const size_type pos = npos) const
+                                            const size_type pos = npos) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return as_view().rfind(str, pos);
     }
     [[nodiscard]] constexpr size_type rfind(const CharT* char_ptr,
                                             size_type pos,
-                                            size_type count) const
+                                            size_type count) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return as_view().rfind(char_ptr, pos, count);
     }
     [[nodiscard]] constexpr size_type rfind(const CharT* const str,
-                                            const size_type pos = npos) const
+                                            const size_type pos = npos) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return as_view().rfind(str, pos);
     }
-    [[nodiscard]] constexpr size_type rfind(const CharT character, const size_type pos = npos) const
+    [[nodiscard]] constexpr size_type rfind(const CharT character, const size_type pos = npos) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return as_view().rfind(character, pos);
     }
@@ -410,30 +411,30 @@ public:
         requires(std::is_convertible_v<const StringViewLike&, std::string_view> and
                  not std::is_convertible_v<const StringViewLike&, const char*>)
     [[nodiscard]] constexpr size_type rfind(const StringViewLike& str,
-                                            const size_type pos = npos) const
+                                            const size_type pos = npos) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return as_view().rfind(str, pos);
     }
 
     template <std::size_t MAXIMUM_LENGTH_2, customize::SequenceContainerChecking CheckingType2>
     [[nodiscard]] constexpr size_type find_first_of(
-        const FixedString<MAXIMUM_LENGTH_2, CheckingType2>& str, const size_type pos = 0) const
+        const FixedString<MAXIMUM_LENGTH_2, CheckingType2>& str, const size_type pos = 0) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return as_view().find_first_of(str, pos);
     }
     [[nodiscard]] constexpr size_type find_first_of(const CharT* char_ptr,
                                                     size_type pos,
-                                                    size_type count) const
+                                                    size_type count) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return as_view().find_first_of(char_ptr, pos, count);
     }
     [[nodiscard]] constexpr size_type find_first_of(const CharT* const str,
-                                                    const size_type pos = 0) const
+                                                    const size_type pos = 0) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return as_view().find_first_of(str, pos);
     }
     [[nodiscard]] constexpr size_type find_first_of(const CharT character,
-                                                    const size_type pos = 0) const
+                                                    const size_type pos = 0) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return as_view().find_first_of(character, pos);
     }
@@ -441,30 +442,30 @@ public:
         requires(std::is_convertible_v<const StringViewLike&, std::string_view> and
                  not std::is_convertible_v<const StringViewLike&, const char*>)
     [[nodiscard]] constexpr size_type find_first_of(const StringViewLike& str,
-                                                    const size_type pos = 0) const
+                                                    const size_type pos = 0) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return as_view().find_first_of(str, pos);
     }
 
     template <std::size_t MAXIMUM_LENGTH_2, customize::SequenceContainerChecking CheckingType2>
     [[nodiscard]] constexpr size_type find_first_not_of(
-        const FixedString<MAXIMUM_LENGTH_2, CheckingType2>& str, const size_type pos = 0) const
+        const FixedString<MAXIMUM_LENGTH_2, CheckingType2>& str, const size_type pos = 0) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return as_view().find_first_not_of(str, pos);
     }
     [[nodiscard]] constexpr size_type find_first_not_of(const CharT* char_ptr,
                                                         size_type pos,
-                                                        size_type count) const
+                                                        size_type count) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return as_view().find_first_not_of(char_ptr, pos, count);
     }
     [[nodiscard]] constexpr size_type find_first_not_of(const CharT* const str,
-                                                        const size_type pos = 0) const
+                                                        const size_type pos = 0) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return as_view().find_first_not_of(str, pos);
     }
     [[nodiscard]] constexpr size_type find_first_not_of(const CharT character,
-                                                        const size_type pos = 0) const
+                                                        const size_type pos = 0) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return as_view().find_first_not_of(character, pos);
     }
@@ -472,30 +473,30 @@ public:
         requires(std::is_convertible_v<const StringViewLike&, std::string_view> and
                  not std::is_convertible_v<const StringViewLike&, const char*>)
     [[nodiscard]] constexpr size_type find_first_not_of(const StringViewLike& str,
-                                                        const size_type pos = 0) const
+                                                        const size_type pos = 0) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return as_view().find_first_not_of(str, pos);
     }
 
     template <std::size_t MAXIMUM_LENGTH_2, customize::SequenceContainerChecking CheckingType2>
     [[nodiscard]] constexpr size_type find_last_of(
-        const FixedString<MAXIMUM_LENGTH_2, CheckingType2>& str, const size_type pos = npos) const
+        const FixedString<MAXIMUM_LENGTH_2, CheckingType2>& str, const size_type pos = npos) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return as_view().find_last_of(str, pos);
     }
     [[nodiscard]] constexpr size_type find_last_of(const CharT* char_ptr,
                                                    size_type pos,
-                                                   size_type count) const
+                                                   size_type count) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return as_view().find_last_of(char_ptr, pos, count);
     }
     [[nodiscard]] constexpr size_type find_last_of(const CharT* const str,
-                                                   const size_type pos = npos) const
+                                                   const size_type pos = npos) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return as_view().find_last_of(str, pos);
     }
     [[nodiscard]] constexpr size_type find_last_of(const CharT character,
-                                                   const size_type pos = npos) const
+                                                   const size_type pos = npos) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return as_view().find_last_of(character, pos);
     }
@@ -503,30 +504,30 @@ public:
         requires(std::is_convertible_v<const StringViewLike&, std::string_view> and
                  not std::is_convertible_v<const StringViewLike&, const char*>)
     [[nodiscard]] constexpr size_type find_last_of(const StringViewLike& str,
-                                                   const size_type pos = npos) const
+                                                   const size_type pos = npos) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return as_view().find_last_of(str, pos);
     }
 
     template <std::size_t MAXIMUM_LENGTH_2, customize::SequenceContainerChecking CheckingType2>
     [[nodiscard]] constexpr size_type find_last_not_of(
-        const FixedString<MAXIMUM_LENGTH_2, CheckingType2>& str, const size_type pos = npos) const
+        const FixedString<MAXIMUM_LENGTH_2, CheckingType2>& str, const size_type pos = npos) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return as_view().find_last_not_of(str, pos);
     }
     [[nodiscard]] constexpr size_type find_last_not_of(const CharT* char_ptr,
                                                        size_type pos,
-                                                       size_type count) const
+                                                       size_type count) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return as_view().find_last_not_of(char_ptr, pos, count);
     }
     [[nodiscard]] constexpr size_type find_last_not_of(const CharT* const str,
-                                                       const size_type pos = npos) const
+                                                       const size_type pos = npos) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return as_view().find_last_not_of(str, pos);
     }
     [[nodiscard]] constexpr size_type find_last_not_of(const CharT character,
-                                                       const size_type pos = npos) const
+                                                       const size_type pos = npos) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return as_view().find_last_not_of(character, pos);
     }
@@ -534,65 +535,72 @@ public:
         requires(std::is_convertible_v<const StringViewLike&, std::string_view> and
                  not std::is_convertible_v<const StringViewLike&, const char*>)
     [[nodiscard]] constexpr size_type find_last_not_of(const StringViewLike& str,
-                                                       const size_type pos = npos) const
+                                                       const size_type pos = npos) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return as_view().find_last_not_of(str, pos);
     }
 
-    [[nodiscard]] constexpr int compare(std::string_view view) const
+    [[nodiscard]] constexpr int compare(std::string_view view) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return std::string_view(*this).compare(view);
     }
 
     template <std::size_t MAXIMUM_LENGTH_2, customize::SequenceContainerChecking CheckingType2>
-    constexpr bool operator==(const FixedString<MAXIMUM_LENGTH_2, CheckingType2>& other) const
+    constexpr bool operator==(const FixedString<MAXIMUM_LENGTH_2, CheckingType2>& other) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return as_view() == std::string_view{other};
     }
-    constexpr bool operator==(const CharT* other) const
+    constexpr bool operator==(const CharT* other) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return as_view() == std::string_view{other};
     }
-    constexpr bool operator==(std::string_view view) const noexcept { return as_view() == view; }
+    constexpr bool operator==(std::string_view view) const noexcept FIXED_CONTAINERS_NONALLOCATING { return as_view() == view; }
 
     template <std::size_t MAXIMUM_LENGTH_2, customize::SequenceContainerChecking CheckingType2>
     constexpr std::strong_ordering operator<=>(
-        const FixedString<MAXIMUM_LENGTH_2, CheckingType2>& other) const noexcept
+        const FixedString<MAXIMUM_LENGTH_2, CheckingType2>& other) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return as_view() <=> other;
     }
-    constexpr std::strong_ordering operator<=>(const CharT* other) const noexcept
+    constexpr std::strong_ordering operator<=>(const CharT* other) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return as_view() <=> std::string_view{other};
     }
-    constexpr std::strong_ordering operator<=>(const std::string_view& other) const noexcept
+    constexpr std::strong_ordering operator<=>(const std::string_view& other) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return as_view() <=> other;
     }
 
-    [[nodiscard]] constexpr bool starts_with(const std::string_view& prefix) const noexcept
+    [[nodiscard]] constexpr bool starts_with(const std::string_view& prefix) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
-        return as_view().starts_with(prefix);
+        // Suppress function effects: std::string_view methods may call exception-throwing functions
+        // in their implementation, but we compile without exceptions, so no allocation occurs
+        // ...
+        // c++/12/bits/functexcept.h:81:3 declaration cannot be inferred 'nonallocating' (...)
+        // __throw_out_of_range_fmt(const char*, ...) __attribute__((__noreturn__))
+        return FIXED_CONTAINERS_SUPPRESS_FUNCTION_EFFECTS(as_view().starts_with(prefix));
     }
-    [[nodiscard]] constexpr bool starts_with(char character) const noexcept
+    [[nodiscard]] constexpr bool starts_with(char character) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
-        return as_view().starts_with(character);
+        // Same note as above in starts_with(std::string_view)
+        return FIXED_CONTAINERS_SUPPRESS_FUNCTION_EFFECTS(as_view().starts_with(character));
     }
 
-    [[nodiscard]] constexpr bool starts_with(const char* char_ptr) const noexcept
+    [[nodiscard]] constexpr bool starts_with(const char* char_ptr) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
-        return as_view().starts_with(char_ptr);
+        // Same note as above in starts_with(std::string_view)
+        return FIXED_CONTAINERS_SUPPRESS_FUNCTION_EFFECTS(as_view().starts_with(char_ptr));
     }
 
-    [[nodiscard]] constexpr bool ends_with(const std::string_view& suffix) const noexcept
+    [[nodiscard]] constexpr bool ends_with(const std::string_view& suffix) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return as_view().ends_with(suffix);
     }
-    [[nodiscard]] constexpr bool ends_with(char character) const noexcept
+    [[nodiscard]] constexpr bool ends_with(char character) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return as_view().ends_with(character);
     }
-    [[nodiscard]] constexpr bool ends_with(const char* char_ptr) const noexcept
+    [[nodiscard]] constexpr bool ends_with(const char* char_ptr) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return as_view().ends_with(char_ptr);
     }
@@ -601,19 +609,24 @@ public:
         size_type pos = 0,
         size_t len = MAXIMUM_LENGTH,
         const std_transition::source_location& loc =
-            std_transition::source_location::current()) const
+            std_transition::source_location::current()) const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         if (preconditions::test(pos < length()))
         {
             Checking::out_of_range(pos, length(), loc);
         }
 
-        return std::string_view(*this).substr(pos, len);
+        // Suppress function effects: std::string_view methods may call exception-throwing functions
+        // in their implementation, but we compile without exceptions, so no allocation occurs
+        // ...
+        // c++/12/bits/functexcept.h:81:3 declaration cannot be inferred 'nonallocating' (...)
+        // __throw_out_of_range_fmt(const char*, ...) __attribute__((__noreturn__))
+        return FIXED_CONTAINERS_SUPPRESS_FUNCTION_EFFECTS(std::string_view(*this).substr(pos, len));
     }
 
     constexpr void resize(
         size_type count,
-        const std_transition::source_location& loc = std_transition::source_location::current())
+        const std_transition::source_location& loc = std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         resize(count, CharT{}, loc);
     }
@@ -621,20 +634,20 @@ public:
     constexpr void resize(
         size_type count,
         CharT character,
-        const std_transition::source_location& loc = std_transition::source_location::current())
+        const std_transition::source_location& loc = std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         vec().resize(count, character, loc);
         null_terminate(loc);
     }
 
 private:
-    constexpr void null_terminate(std::size_t n)
+    constexpr void null_terminate(std::size_t n) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         // This bypasses the vector's bounds check
         // This keeps the vector's size equal to the length of the string
         *std::next(vec().data(), static_cast<std::ptrdiff_t>(n)) = '\0';
     }
-    constexpr void null_terminate(const std_transition::source_location& loc)
+    constexpr void null_terminate(const std_transition::source_location& loc) noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         const std::size_t len = length();
         if (preconditions::test(len <= MAXIMUM_LENGTH))
@@ -644,11 +657,19 @@ private:
 
         null_terminate(length());
     }
-    constexpr void null_terminate_at_max_length() { null_terminate(MAXIMUM_LENGTH); }
+    constexpr void null_terminate_at_max_length() noexcept FIXED_CONTAINERS_NONALLOCATING { null_terminate(MAXIMUM_LENGTH); }
 
-    [[nodiscard]] constexpr std::string_view as_view() const { return *this; }
+    [[nodiscard]] constexpr std::string_view as_view() const noexcept FIXED_CONTAINERS_NONALLOCATING
+    {
+        // Suppress function effects: std::string_view methods may call exception-throwing functions
+        // in their implementation, but we compile without exceptions, so no allocation occurs
+        // ...
+        // c++/12/bits/functexcept.h:81:3 declaration cannot be inferred 'nonallocating' (...)
+        // __throw_out_of_range_fmt(const char*, ...) __attribute__((__noreturn__))
+        return FIXED_CONTAINERS_SUPPRESS_FUNCTION_EFFECTS(*this);
+    }
 
-    [[nodiscard]] constexpr const FixedVecStorage& vec() const
+    [[nodiscard]] constexpr const FixedVecStorage& vec() const noexcept FIXED_CONTAINERS_NONALLOCATING
     {
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_data_;
     }
@@ -656,32 +677,34 @@ private:
 };
 
 template <std::size_t MAXIMUM_LENGTH, typename CheckingType>
-std::istream& operator>>(std::istream& stream, FixedString<MAXIMUM_LENGTH, CheckingType>& str)
+std::istream& operator>>(std::istream& stream, FixedString<MAXIMUM_LENGTH, CheckingType>& str) noexcept FIXED_CONTAINERS_NONALLOCATING
 {
     static constexpr std::size_t MAXIMUM_LENGTH_WITH_NULL_TERMINATOR = MAXIMUM_LENGTH + 1;
     str.clear();
 
     // Skip leading whitespace (`std::istream >> std::string` behaves the same way)
-    stream >> std::ws;
+    // c++/12/istream:316:7 declaration cannot be inferred 'nonallocating' because it has no definition in this translation unit
+    //   316 |       get(char_type& __c);
+    FIXED_CONTAINERS_SUPPRESS_FUNCTION_EFFECTS(stream) >> std::ws;
 
     char character{};
-    stream.get(character);
+    FIXED_CONTAINERS_SUPPRESS_FUNCTION_EFFECTS(stream.get(character));
 
     // If EOF/error, put the character back and return
     if (stream.eof() || stream.fail())
     {
-        return stream.putback(character);
+        return FIXED_CONTAINERS_SUPPRESS_FUNCTION_EFFECTS(stream.putback(character));
     }
 
     for (; !std::isspace(character) && !is_full(str) && !stream.eof() && !stream.fail();
-         stream.get(character))
+         FIXED_CONTAINERS_SUPPRESS_FUNCTION_EFFECTS(stream.get(character)))
     {
         str.push_back(character);
     }
 
     if (stream.fail())
     {
-        stream.setstate(std::ios::failbit);
+        FIXED_CONTAINERS_SUPPRESS_FUNCTION_EFFECTS(stream.setstate(std::ios::failbit));
         return stream;
     }
 
@@ -697,13 +720,15 @@ std::istream& operator>>(std::istream& stream, FixedString<MAXIMUM_LENGTH, Check
     return stream;
 }
 template <std::size_t MAXIMUM_LENGTH, typename CheckingType>
-std::ostream& operator<<(std::ostream& stream, const FixedString<MAXIMUM_LENGTH, CheckingType>& str)
+std::ostream& operator<<(std::ostream& stream, const FixedString<MAXIMUM_LENGTH, CheckingType>& str) noexcept FIXED_CONTAINERS_NONALLOCATING
 {
-    return stream << std::string_view{str};
+    // c++/12/bits/ostream_insert.h:77:5: note: declaration cannot be inferred 'nonallocating' because it has no definition in this translation unit
+    //   77 |     __ostream_insert(basic_ostream<_CharT, _Traits>& __out,
+    return FIXED_CONTAINERS_SUPPRESS_FUNCTION_EFFECTS(stream) << std::string_view{str};
 }
 
 template <std::size_t MAXIMUM_LENGTH, typename CheckingType>
-[[nodiscard]] constexpr bool is_full(const FixedString<MAXIMUM_LENGTH, CheckingType>& container)
+[[nodiscard]] constexpr bool is_full(const FixedString<MAXIMUM_LENGTH, CheckingType>& container) noexcept FIXED_CONTAINERS_NONALLOCATING
 {
     return container.size() >= container.max_size();
 }
@@ -720,7 +745,7 @@ template <
 [[nodiscard]] constexpr FixedStringType make_fixed_string(
     const char (&list)[MAXIMUM_LENGTH_WITH_NULL_TERMINATOR],
     const std_transition::source_location& loc =
-        std_transition::source_location::current()) noexcept
+        std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
 {
     constexpr std::size_t MAXIMUM_LENGTH = MAXIMUM_LENGTH_WITH_NULL_TERMINATOR - 1;
     assert_or_abort(*std::next(list, MAXIMUM_LENGTH) == '\0');
@@ -731,7 +756,7 @@ template <std::size_t MAXIMUM_LENGTH_WITH_NULL_TERMINATOR>
 [[nodiscard]] constexpr auto make_fixed_string(
     const char (&list)[MAXIMUM_LENGTH_WITH_NULL_TERMINATOR],
     const std_transition::source_location& loc =
-        std_transition::source_location::current()) noexcept
+        std_transition::source_location::current()) noexcept FIXED_CONTAINERS_NONALLOCATING
 {
     constexpr std::size_t MAXIMUM_LENGTH = MAXIMUM_LENGTH_WITH_NULL_TERMINATOR - 1;
     using CheckingType = customize::SequenceContainerAbortChecking<char, MAXIMUM_LENGTH>;
