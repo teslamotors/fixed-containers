@@ -137,6 +137,7 @@ TEST(FixedUnorderedMap, OperatorBracketConstexpr)
         FixedUnorderedMap<int, int, 10> var{};
         var[2] = 20;
         var[4] = 40;
+        static_assert(std::same_as<decltype(var[0]), int&>);
         return var;
     }();
 

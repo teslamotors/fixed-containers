@@ -142,6 +142,33 @@ public:
         return table().value(idx);
     }
 
+#if defined(__cpp_multidimensional_subscript) && __cpp_multidimensional_subscript >= 202110L
+    constexpr V& operator[](const K& key,
+                            const std_transition::source_location& loc =
+                                std_transition::source_location::current()) noexcept
+    {
+        TableIndex idx = table().opaque_index_of(key);
+        if (!table().exists(idx))
+        {
+            check_not_full(loc);
+            idx = table().emplace(idx, key);
+        }
+        return table().value(idx);
+    }
+
+    constexpr V& operator[](K&& key,
+                            const std_transition::source_location& loc =
+                                std_transition::source_location::current()) noexcept
+    {
+        TableIndex idx = table().opaque_index_of(key);
+        if (!table().exists(idx))
+        {
+            check_not_full(loc);
+            idx = table().emplace(idx, std::move(key));
+        }
+        return table().value(idx);
+    }
+#else
     constexpr V& operator[](const K& key) noexcept
     {
         TableIndex idx = table().opaque_index_of(key);
@@ -163,6 +190,7 @@ public:
         }
         return table().value(idx);
     }
+#endif
 
     [[nodiscard]] constexpr const_iterator cbegin() const noexcept
     {

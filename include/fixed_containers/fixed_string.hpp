@@ -142,7 +142,19 @@ public:
         return *this;
     }
 
-    [[nodiscard]] constexpr reference operator[](size_type index) noexcept
+#if defined(__cpp_multidimensional_subscript) && __cpp_multidimensional_subscript >= 202110L && \
+    defined(__cpp_explicit_this_parameter) && __cpp_explicit_this_parameter >= 202110L
+    template <class Self>
+    constexpr auto&& operator[](this Self&& self,
+                                size_type index,
+                                const std_transition::source_location& loc =
+                                    std_transition::source_location::current()) noexcept
+    {
+        // This operator should not range-check according to the spec, but we want the extra safety.
+        return std::forward<Self>(self).vec().at(index, loc);
+    }
+#else
+    constexpr reference operator[](size_type index) noexcept
     {
         // Cannot capture real source_location for operator[]
         // This operator should not range-check according to the spec, but we want the extra safety.
@@ -154,6 +166,7 @@ public:
         // This operator should not range-check according to the spec, but we want the extra safety.
         return vec().at(index, std_transition::source_location::current());
     }
+#endif
 
     [[nodiscard]] constexpr reference at(size_type index,
                                          const std_transition::source_location& loc =

@@ -275,12 +275,14 @@ TEST(FixedString, BracketOperator)
     static_assert(VAL1[1] == 'b');
     static_assert(VAL1[2] == '2');
     static_assert(VAL1.size() == 3);
+    static_assert(std::same_as<decltype(VAL1[0]), const char&>);
 
     auto var2 = FixedString<11>{"012"};
     var2[1] = 'b';
     EXPECT_EQ(var2[0], '0');
     EXPECT_EQ(var2[1], 'b');
     EXPECT_EQ(var2[2], '2');
+    static_assert(std::same_as<decltype(var2[0]), char&>);
 
     const auto& var3 = var2;
     EXPECT_EQ(var3[0], '0');

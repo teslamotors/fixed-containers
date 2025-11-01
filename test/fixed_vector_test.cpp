@@ -680,6 +680,7 @@ TEST(FixedVector, BracketOperator)
         static_assert(VAL1[1] == 201);
         static_assert(VAL1[2] == 102);
         static_assert(VAL1.size() == 3);
+        static_assert(std::same_as<decltype(VAL1[0]), const int&>);
 
         auto var2 = FixedVector<int, 11>{0, 1, 2};
         var2[1] = 901;
@@ -691,6 +692,7 @@ TEST(FixedVector, BracketOperator)
         EXPECT_EQ(var3[0], 0);
         EXPECT_EQ(var3[1], 901);
         EXPECT_EQ(var3[2], 2);
+        static_assert(std::same_as<decltype(var2[0]), int&>);
     }
 }
 

@@ -253,6 +253,28 @@ public:
         construct<std::char_traits<Elem>>(ntcts, count, elem0, elem1, loc);
     }
 
+#if defined(__cpp_multidimensional_subscript) && __cpp_multidimensional_subscript >= 202110L
+    constexpr bool operator[](std::size_t pos,
+                              const std_transition::source_location& loc =
+                                  std_transition::source_location::current()) const
+    {
+        // This operator should not range-check according to the spec, but we want the extra safety.
+        return test(pos, loc);
+    }
+
+    constexpr reference operator[](
+        std::size_t pos,
+        const std_transition::source_location& loc = std_transition::source_location::current())
+    {
+        // This operator should not range-check according to the spec, but we want the extra safety.
+        if (preconditions::test(pos < size()))
+        {
+            Checking::out_of_range(pos, size(), loc);
+        }
+
+        return reference(*this, pos);
+    }
+#else
     constexpr bool operator[](std::size_t pos) const
     {
         // Cannot capture real source_location for operator[]
@@ -271,6 +293,7 @@ public:
 
         return reference(*this, pos);
     }
+#endif
 
     [[nodiscard]] constexpr bool test(std::size_t pos,
                                       const std_transition::source_location& loc =

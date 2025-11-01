@@ -35,8 +35,7 @@ template <class K,
           template <class /*Would be IsFixedIndexBasedStorage but gcc doesn't like the constraints
                              here. clang accepts it */
                     ,
-                    std::size_t>
-          typename StorageTemplate = FixedIndexBasedPoolStorage,
+                    std::size_t> typename StorageTemplate = FixedIndexBasedPoolStorage,
           customize::MapChecking<K> CheckingType = customize::MapAbortChecking<K, V, MAXIMUM_SIZE>>
 class FixedMap
 {
@@ -219,6 +218,36 @@ public:
         return tree().node_at(index).value();
     }
 
+#if defined(__cpp_multidimensional_subscript) && __cpp_multidimensional_subscript >= 202110L
+    constexpr V& operator[](const K& key,
+                            const std_transition::source_location& loc =
+                                std_transition::source_location::current()) noexcept
+    {
+        NodeIndexAndParentIndex np_idxs = tree().index_of_node_with_parent(key);
+        if (tree().contains_at(np_idxs.i))
+        {
+            return tree().node_at(np_idxs.i).value();
+        }
+
+        check_not_full(loc);
+        tree().insert_new_at(np_idxs, key);
+        return tree().node_at(np_idxs.i).value();
+    }
+    constexpr V& operator[](K&& key,
+                            const std_transition::source_location& loc =
+                                std_transition::source_location::current()) noexcept
+    {
+        NodeIndexAndParentIndex np_idxs = tree().index_of_node_with_parent(key);
+        if (tree().contains_at(np_idxs.i))
+        {
+            return tree().node_at(np_idxs.i).value();
+        }
+
+        check_not_full(loc);
+        tree().insert_new_at(np_idxs, std::move(key));
+        return tree().node_at(np_idxs.i).value();
+    }
+#else
     constexpr V& operator[](const K& key) noexcept
     {
         NodeIndexAndParentIndex np_idxs = tree().index_of_node_with_parent(key);
@@ -245,6 +274,7 @@ public:
         tree().insert_new_at(np_idxs, std::move(key));
         return tree().node_at(np_idxs.i).value();
     }
+#endif
 
     [[nodiscard]] constexpr const_iterator cbegin() const noexcept
     {
@@ -619,8 +649,7 @@ public:
               template <class /*Would be IsFixedIndexBasedStorage but gcc doesn't like the
                                  constraints here. clang accepts it */
                         ,
-                        std::size_t>
-              typename StorageTemplate2,
+                        std::size_t> typename StorageTemplate2,
               customize::MapChecking<K> CheckingType2>
     [[nodiscard]] constexpr bool operator==(const FixedMap<K,
                                                            V,
@@ -711,8 +740,7 @@ template <class K,
           template <class /*Would be IsFixedIndexBasedStorage but gcc doesn't like the constraints
 here. clang accepts it */
                     ,
-                    std::size_t>
-          typename StorageTemplate,
+                    std::size_t> typename StorageTemplate,
           customize::MapChecking<K> CheckingType>
 [[nodiscard]] constexpr bool is_full(
     const FixedMap<K, V, MAXIMUM_SIZE, Compare, COMPACTNESS, StorageTemplate, CheckingType>&
@@ -729,8 +757,7 @@ template <class K,
           template <class /*Would be IsFixedIndexBasedStorage but gcc doesn't like the constraints
 here. clang accepts it */
                     ,
-                    std::size_t>
-          typename StorageTemplate,
+                    std::size_t> typename StorageTemplate,
           customize::MapChecking<K> CheckingType,
           class Predicate>
 constexpr
@@ -840,8 +867,7 @@ template <
     template <class /*Would be IsFixedIndexBasedStorage but gcc doesn't like the constraints
 here. clang accepts it */
               ,
-              std::size_t>
-    typename StorageTemplate,
+              std::size_t> typename StorageTemplate,
     fixed_containers::customize::MapChecking<K> CheckingType>
 struct tuple_size<
     fixed_containers::
