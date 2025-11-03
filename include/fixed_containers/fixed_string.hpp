@@ -740,6 +740,15 @@ template <std::size_t MAXIMUM_LENGTH_WITH_NULL_TERMINATOR>
         list, loc);
 }
 
+template <std::size_t MAXIMUM_LENGTH, typename CheckingType>
+constexpr FixedString<MAXIMUM_LENGTH, CheckingType>& append_truncating(
+    FixedString<MAXIMUM_LENGTH, CheckingType>& str, std::string_view view)
+{
+    const std::size_t safe_chars = std::min(view.size(), MAXIMUM_LENGTH - str.length());
+    str.append(view.substr(0, safe_chars));
+    return str;
+}
+
 }  // namespace fixed_containers
 
 // Specializations

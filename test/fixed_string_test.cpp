@@ -1903,6 +1903,19 @@ TEST(FixedString, Span)
     }
 }
 
+TEST(FixedString, AppendTruncating)
+{
+    constexpr auto VAL1 = []()
+    {
+        FixedString<4> out{"1"};
+        std::string_view view{"2345678"};
+        append_truncating(out, view);
+        return out;
+    }();
+
+    static_assert(VAL1 == "1234");
+}
+
 TEST(FixedString, MaxSizeDeduction)
 {
     constexpr auto VAL1 = make_fixed_string("abcde");
