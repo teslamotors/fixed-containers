@@ -2,6 +2,7 @@
 
 #include "fixed_containers/forward_iterator.hpp"
 
+#include <climits>
 #include <cstddef>
 #include <cstdint>
 
