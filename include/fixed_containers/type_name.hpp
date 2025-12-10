@@ -16,24 +16,19 @@ namespace fixed_containers
 template <typename T>
 constexpr auto type_name()
 {
-    std::string_view name{};
-    std::string_view prefix{};
-    std::string_view suffix{};
 #ifdef __clang__
-    name = __PRETTY_FUNCTION__;
-    prefix = "auto fixed_containers::type_name() [T = ";
-    suffix = "]";
+    const std::string_view name = __PRETTY_FUNCTION__;
+    const std::string_view prefix = "auto fixed_containers::type_name() [T = ";
+    const std::string_view suffix = "]";
 #elif defined(__GNUC__)
-    name = __PRETTY_FUNCTION__;
-    prefix = "constexpr auto fixed_containers::type_name() [with T = ";
-    suffix = "]";
+    const std::string_view name = __PRETTY_FUNCTION__;
+    const std::string_view prefix = "constexpr auto fixed_containers::type_name() [with T = ";
+    const std::string_view suffix = "]";
 #elif defined(_MSC_VER)
-    name = __FUNCSIG__;
-    prefix = "auto __cdecl fixed_containers::type_name<";
-    suffix = ">(void)";
+    const std::string_view name = __FUNCSIG__;
+    const std::string_view prefix = "auto __cdecl fixed_containers::type_name<";
+    const std::string_view suffix = ">(void)";
 #endif
-    name.remove_prefix(prefix.size());
-    name.remove_suffix(suffix.size());
-    return name;
+    return name.substr(prefix.size(), name.size() - prefix.size() - suffix.size());
 }
 }  // namespace fixed_containers
