@@ -1294,6 +1294,7 @@ cc_test(
     deps = [
         ":concepts",
         ":fixed_bitset",
+        ":test_utilities_common",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
