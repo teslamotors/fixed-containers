@@ -415,4 +415,326 @@ TEST(OptionalReference, ConstHandling)
     }
 }
 
+TEST(OptionalReference, AndThenWithValue)
+{
+    struct Inner
+    {
+        int value{};
+    };
+
+    struct Outer
+    {
+        Inner inner{};
+    };
+
+    {
+        static constexpr Outer OUTER{.inner = {.value = 42}};
+
+        constexpr auto RESULT = OptionalReference<const Outer>(OUTER).and_then(
+            [](const Outer& out)
+            { return OptionalReference<const Inner>(out.inner); });
+
+        static_assert(RESULT.has_value());
+        static_assert(RESULT.value().value == 42);
+    }
+
+    {
+        Outer outer{.inner = {.value = 42}};
+        const OptionalReference<Outer> opt_ref(outer);
+
+        auto result = opt_ref.and_then([](Outer& out)
+                                       { return OptionalReference<Inner>(out.inner); });
+
+        ASSERT_TRUE(result.has_value());
+        EXPECT_EQ(result.value().value, 42);
+    }
+}
+
+TEST(OptionalReference, AndThenWithoutValue)
+{
+    struct Inner
+    {
+        int value{};
+    };
+
+    struct Outer
+    {
+        Inner inner{};
+    };
+
+    {
+        constexpr auto RESULT = OptionalReference<const Outer>{}.and_then(
+            [](const Outer& out)
+            { return OptionalReference<const Inner>(out.inner); });
+
+        static_assert(!RESULT.has_value());
+    }
+
+    {
+        const OptionalReference<Outer> opt_ref{};
+
+        auto result = opt_ref.and_then([](Outer& out)
+                                       { return OptionalReference<Inner>(out.inner); });
+
+        ASSERT_FALSE(result.has_value());
+    }
+}
+
+TEST(OptionalReference, AndThenChaining)
+{
+    struct Level3
+    {
+        int value{};
+    };
+
+    struct Level2
+    {
+        Level3 level3{};
+    };
+
+    struct Level1
+    {
+        Level2 level2{};
+    };
+
+    Level1 data{.level2 = {.level3 = {.value = 123}}};
+    const OptionalReference<Level1> opt_ref(data);
+
+    auto result = opt_ref
+                      .and_then([](Level1& lev1)
+                                { return OptionalReference<Level2>(lev1.level2); })
+                      .and_then([](Level2& lev2)
+                                { return OptionalReference<Level3>(lev2.level3); });
+
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(result.value().value, 123);
+}
+
+TEST(OptionalReference, TransformWithValue)
+{
+    struct Outer
+    {
+        int value{};
+    };
+
+    {
+        static constexpr Outer DATA{.value = 42};
+
+        constexpr auto RESULT = OptionalReference<const Outer>(DATA).transform(
+            [](const Outer& out) -> const int& { return out.value; });
+
+        static_assert(RESULT.has_value());
+        static_assert(RESULT.value() == 42);
+    }
+
+    {
+        Outer data{.value = 42};
+        OptionalReference<Outer> opt_ref(data);
+
+        auto result = opt_ref.transform([](Outer& out) -> int& { return out.value; });
+
+        ASSERT_TRUE(result.has_value());
+        EXPECT_EQ(result.value(), 42);
+
+        // Verify it's actually a reference by modifying through it
+        result.value() = 100;
+        EXPECT_EQ(data.value, 100);
+    }
+}
+
+TEST(OptionalReference, TransformWithoutValue)
+{
+    struct Data
+    {
+        int value{};
+    };
+
+    {
+        constexpr auto RESULT = OptionalReference<const Data>{}.transform(
+            [](const Data& dat) -> const int& { return dat.value; });
+
+        static_assert(!RESULT.has_value());
+    }
+
+    {
+        const OptionalReference<Data> opt_ref{};
+
+        auto result = opt_ref.transform([](const Data& dat) -> const int& { return dat.value; });
+
+        ASSERT_FALSE(result.has_value());
+    }
+}
+
+TEST(OptionalReference, TransformChaining)
+{
+    struct Level2
+    {
+        int value{};
+    };
+
+    struct Level1
+    {
+        Level2 level2{};
+    };
+
+    Level1 data{.level2 = {.value = 99}};
+    OptionalReference<Level1> opt_ref(data);
+
+    auto result = opt_ref
+                      .transform([](Level1& lev1) -> Level2& { return lev1.level2; })
+                      .transform([](Level2& lev2) -> int& { return lev2.value; });
+
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(result.value(), 99);
+}
+
+TEST(OptionalReference, TransformConstToConst)
+{
+    struct Data
+    {
+        int value{};
+    };
+
+    const Data data{.value = 55};
+    const OptionalReference<const Data> opt_ref(data);
+
+    auto result = opt_ref.transform([](const Data& dat) -> const int& { return dat.value; });
+
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(result.value(), 55);
+}
+
+TEST(OptionalReference, OrElseWithValue)
+{
+    {
+        static constexpr int PRIMARY{10};
+        static constexpr int FALLBACK{20};
+
+        constexpr auto RESULT = OptionalReference<const int>(&PRIMARY).or_else(
+            []()
+            { return OptionalReference<const int>(&FALLBACK); });
+
+        static_assert(RESULT.has_value());
+        static_assert(RESULT.value() == 10);
+    }
+
+    {
+        int primary{10};
+        int fallback{20};
+
+        const OptionalReference<int> opt_ref(primary);
+        auto result = opt_ref.or_else([&fallback]() { return OptionalReference<int>(fallback); });
+
+        ASSERT_TRUE(result.has_value());
+        EXPECT_EQ(result.value(), 10);
+    }
+}
+
+TEST(OptionalReference, OrElseWithoutValue)
+{
+    {
+        static constexpr int FALLBACK{20};
+
+        constexpr auto RESULT = OptionalReference<const int>{}.or_else(
+            []()
+            { return OptionalReference<const int>(&FALLBACK); });
+
+        static_assert(RESULT.has_value());
+        static_assert(RESULT.value() == 20);
+    }
+
+    {
+        int fallback{20};
+
+        const OptionalReference<int> opt_ref{};
+        auto result = opt_ref.or_else([&fallback]() { return OptionalReference<int>(fallback); });
+
+        ASSERT_TRUE(result.has_value());
+        EXPECT_EQ(result.value(), 20);
+    }
+}
+
+TEST(OptionalReference, OrElseChaining)
+{
+    int fallback1{30};
+
+    const OptionalReference<int> opt1{};
+    const OptionalReference<int> opt2{};
+
+    auto result = opt1.or_else([&opt2]() { return opt2; })
+                      .or_else([&fallback1]() { return OptionalReference<int>(fallback1); });
+
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(result.value(), 30);
+}
+
+TEST(OptionalReference, OrElseReturnsEmpty)
+{
+    const OptionalReference<int> opt_ref{};
+    auto result = opt_ref.or_else([]() { return OptionalReference<int>{}; });
+
+    ASSERT_FALSE(result.has_value());
+}
+
+TEST(OptionalReference, MonadicChainingComplex)
+{
+    struct Config
+    {
+        int setting{};
+    };
+
+    struct User
+    {
+        Config config{};
+    };
+
+    struct Database
+    {
+        User user{};
+    };
+
+    Database database{.user = {.config = {.setting = 42}}};
+    Database fallback_db{.user = {.config = {.setting = 0}}};
+
+    OptionalReference<Database> opt_db(database);
+
+    auto result = opt_db
+                      .and_then([](Database& dbase)
+                                { return OptionalReference<User>(dbase.user); })
+                      .transform([](User& usr) -> Config& { return usr.config; })
+                      .or_else([&fallback_db]()
+                               { return OptionalReference<Config>(fallback_db.user.config); })
+                      .transform([](Config& cfg) -> int& { return cfg.setting; });
+
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(result.value(), 42);
+
+    // Modify through the chain
+    result.value() = 100;
+    EXPECT_EQ(database.user.config.setting, 100);
+}
+
+TEST(OptionalReference, MonadicOperationsConstCorrectness)
+{
+    struct Data
+    {
+        int value{};
+    };
+
+    Data mutable_data{.value = 10};
+    const Data const_data{.value = 20};
+
+    OptionalReference<Data> mutable_opt(mutable_data);
+    auto mutable_result = mutable_opt.transform([](Data& dat) -> int& { return dat.value; });
+    ASSERT_TRUE(mutable_result.has_value());
+    mutable_result.value() = 100;
+    EXPECT_EQ(mutable_data.value, 100);
+
+    const OptionalReference<const Data> const_opt(const_data);
+    auto const_result =
+        const_opt.transform([](const Data& dat) -> const int& { return dat.value; });
+    ASSERT_TRUE(const_result.has_value());
+    EXPECT_EQ(const_result.value(), 20);
+}
+
 }  // namespace fixed_containers

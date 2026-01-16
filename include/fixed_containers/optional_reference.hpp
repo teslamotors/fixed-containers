@@ -5,6 +5,7 @@
 #include "fixed_containers/source_location.hpp"
 
 #include <compare>
+#include <functional>
 #include <memory>
 #include <optional>
 #include <type_traits>
@@ -27,6 +28,9 @@ private:
     using pointer = T*;
     using const_pointer = T*;
     using BackingType = pointer;
+    template <class F, class Ref>
+    using TransformResultType =
+        OptionalReference<std::remove_reference_t<std::invoke_result_t<F, Ref>>>;
 
 public:
     // Needed for structural type
@@ -142,6 +146,124 @@ public:
     {
         val() = &val;
         return val;
+    }
+
+    template <class F>
+    constexpr std::invoke_result_t<F, reference> and_then(F&& func) &
+    {
+        if (has_value())
+        {
+            return std::invoke(std::forward<F>(func), *val());
+        }
+        return std::invoke_result_t<F, reference>{};
+    }
+
+    template <class F>
+    constexpr std::invoke_result_t<F, const_reference> and_then(F&& func) const&
+    {
+        if (has_value())
+        {
+            return std::invoke(std::forward<F>(func), *val());
+        }
+        return std::invoke_result_t<F, const_reference>{};
+    }
+
+    template <class F>
+    constexpr std::invoke_result_t<F, reference> and_then(F&& func) &&
+    {
+        if (has_value())
+        {
+            return std::invoke(std::forward<F>(func), *val());
+        }
+        return std::invoke_result_t<F, reference>{};
+    }
+
+    template <class F>
+    constexpr std::invoke_result_t<F, const_reference> and_then(F&& func) const&&
+    {
+        if (has_value())
+        {
+            return std::invoke(std::forward<F>(func), *val());
+        }
+        return std::invoke_result_t<F, const_reference>{};
+    }
+
+    template <class F>
+    constexpr TransformResultType<F, reference> transform(F&& func) &
+    {
+        using InvokeResult = std::invoke_result_t<F, reference>;
+        static_assert(std::is_reference_v<InvokeResult>,
+                      "transform() function must return a reference for OptionalReference");
+        using ResultValueType = std::remove_reference_t<InvokeResult>;
+        if (has_value())
+        {
+            return OptionalReference<ResultValueType>(std::invoke(std::forward<F>(func), *val()));
+        }
+        return OptionalReference<ResultValueType>{};
+    }
+
+    template <class F>
+    constexpr TransformResultType<F, const_reference> transform(F&& func) const&
+    {
+        using InvokeResult = std::invoke_result_t<F, const_reference>;
+        static_assert(std::is_reference_v<InvokeResult>,
+                      "transform() function must return a reference for OptionalReference");
+        using ResultValueType = std::remove_reference_t<InvokeResult>;
+        if (has_value())
+        {
+            return OptionalReference<ResultValueType>(std::invoke(std::forward<F>(func), *val()));
+        }
+        return OptionalReference<ResultValueType>{};
+    }
+
+    template <class F>
+    constexpr TransformResultType<F, reference> transform(F&& func) &&
+    {
+        using InvokeResult = std::invoke_result_t<F, reference>;
+        static_assert(std::is_reference_v<InvokeResult>,
+                      "transform() function must return a reference for OptionalReference");
+        using ResultValueType = std::remove_reference_t<InvokeResult>;
+        if (has_value())
+        {
+            return OptionalReference<ResultValueType>(std::invoke(std::forward<F>(func), *val()));
+        }
+        return OptionalReference<ResultValueType>{};
+    }
+
+    template <class F>
+    constexpr TransformResultType<F, const_reference> transform(F&& func) const&&
+    {
+        using InvokeResult = std::invoke_result_t<F, const_reference>;
+        static_assert(std::is_reference_v<InvokeResult>,
+                      "transform() function must return a reference for OptionalReference");
+        using ResultValueType = std::remove_reference_t<InvokeResult>;
+        if (has_value())
+        {
+            return OptionalReference<ResultValueType>(std::invoke(std::forward<F>(func), *val()));
+        }
+        return OptionalReference<ResultValueType>{};
+    }
+
+    template <class F>
+    constexpr Self or_else(F&& func) const&
+        requires std::is_same_v<std::invoke_result_t<F>, Self>
+    {
+        if (has_value())
+        {
+            return *this;
+        }
+        return std::invoke(std::forward<F>(func));
+    }
+
+    template <class F>
+    constexpr Self or_else(F&& func) &&
+        requires std::is_same_v<std::invoke_result_t<F>, Self>
+    {
+        if (has_value())
+        {
+            return std::move(*this);
+        }
+        return std::invoke(std::forward<F>(func));
     }
 
 private:
