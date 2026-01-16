@@ -10,6 +10,7 @@
 
 #include <algorithm>
 #include <array>
+#include <concepts>
 #include <cstddef>
 #include <iterator>
 #include <span>
@@ -1910,7 +1911,7 @@ TEST(FixedString, AppendTruncating)
     constexpr auto VAL1 = []()
     {
         FixedString<4> out{"1"};
-        std::string_view view{"2345678"};
+        const std::string_view view{"2345678"};
         append_truncating(out, view);
         return out;
     }();
