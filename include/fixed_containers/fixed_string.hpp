@@ -289,6 +289,21 @@ public:
     }
 
     constexpr iterator erase(
+        size_type index = 0,
+        size_type count = npos,
+        const std_transition::source_location& loc = std_transition::source_location::current())
+    {
+        if (preconditions::test(index <= length()))
+        {
+            Checking::out_of_range(index, length(), loc);
+        }
+
+        const size_type actual_count = std::min(count, length() - index);
+        return erase(std::next(cbegin(), static_cast<difference_type>(index)),
+                     std::next(cbegin(), static_cast<difference_type>(index + actual_count)),
+                     loc);
+    }
+    constexpr iterator erase(
         const_iterator position,
         const std_transition::source_location& loc = std_transition::source_location::current())
     {

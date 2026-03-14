@@ -939,6 +939,227 @@ TEST(FixedString, InsertStringView)
     }
 }
 
+TEST(FixedString, EraseByIndex)
+{
+    // Erase from middle
+    {
+        constexpr auto VAL1 = []()
+        {
+            FixedString<8> var{"abcde"};
+            var.erase(2, 2);
+            return var;
+        }();
+
+        static_assert(VAL1 == "abe");
+        static_assert(VAL1.size() == 3);
+        static_assert(VAL1.max_size() == 8);
+    }
+    {
+        FixedString<8> var{"abcde"};
+        auto iter = var.erase(2, 2);
+        EXPECT_EQ(iter, std::next(var.begin(), 2));
+        EXPECT_EQ(*iter, 'e');
+        EXPECT_EQ(var, "abe");
+    }
+
+    // Erase from beginning
+    {
+        constexpr auto VAL1 = []()
+        {
+            FixedString<8> var{"abcde"};
+            var.erase(0, 3);
+            return var;
+        }();
+
+        static_assert(VAL1 == "de");
+        static_assert(VAL1.size() == 2);
+    }
+    {
+        FixedString<8> var{"abcde"};
+        auto iter = var.erase(0, 3);
+        EXPECT_EQ(iter, var.begin());
+        EXPECT_EQ(*iter, 'd');
+        EXPECT_EQ(var, "de");
+    }
+
+    // Erase from end (to end of string)
+    {
+        constexpr auto VAL1 = []()
+        {
+            FixedString<8> var{"abcde"};
+            var.erase(3, 2);
+            return var;
+        }();
+
+        static_assert(VAL1 == "abc");
+        static_assert(VAL1.size() == 3);
+    }
+    {
+        FixedString<8> var{"abcde"};
+        auto iter = var.erase(3, 2);
+        EXPECT_EQ(iter, var.end());
+        EXPECT_EQ(var, "abc");
+    }
+
+    // Erase entire string using defaults
+    {
+        constexpr auto VAL1 = []()
+        {
+            FixedString<8> var{"abcde"};
+            var.erase();
+            return var;
+        }();
+
+        static_assert(VAL1 == "");
+        static_assert(VAL1.empty());
+    }
+    {
+        FixedString<8> var{"abcde"};
+        auto iter = var.erase();
+        EXPECT_EQ(iter, var.begin());
+        EXPECT_EQ(iter, var.end());
+        EXPECT_EQ(var, "");
+    }
+
+    // Erase with default count (npos) - erase(2) erases from index 2 to end
+    {
+        constexpr auto VAL1 = []()
+        {
+            FixedString<8> var{"abcde"};
+            var.erase(2);
+            return var;
+        }();
+
+        static_assert(VAL1 == "ab");
+        static_assert(VAL1.size() == 2);
+    }
+    {
+        FixedString<8> var{"abcde"};
+        auto iter = var.erase(2);
+        EXPECT_EQ(iter, var.end());
+        EXPECT_EQ(var, "ab");
+    }
+
+    // Count exceeds remaining characters (clamped)
+    {
+        constexpr auto VAL1 = []()
+        {
+            FixedString<8> var{"abcde"};
+            var.erase(2, 100);
+            return var;
+        }();
+
+        static_assert(VAL1 == "ab");
+        static_assert(VAL1.size() == 2);
+    }
+
+    // Count is npos explicitly
+    {
+        constexpr auto VAL1 = []()
+        {
+            FixedString<8> var{"abcde"};
+            var.erase(2, FixedString<8>::npos);
+            return var;
+        }();
+
+        static_assert(VAL1 == "ab");
+        static_assert(VAL1.size() == 2);
+    }
+
+    // Erase single character
+    {
+        constexpr auto VAL1 = []()
+        {
+            FixedString<8> var{"abcde"};
+            var.erase(2, 1);
+            return var;
+        }();
+
+        static_assert(VAL1 == "abde");
+        static_assert(VAL1.size() == 4);
+    }
+
+    // Count is zero (no-op)
+    {
+        constexpr auto VAL1 = []()
+        {
+            FixedString<8> var{"abcde"};
+            var.erase(2, 0);
+            return var;
+        }();
+
+        static_assert(VAL1 == "abcde");
+        static_assert(VAL1.size() == 5);
+    }
+    {
+        FixedString<8> var{"abcde"};
+        auto iter = var.erase(2, 0);
+        EXPECT_EQ(iter, std::next(var.begin(), 2));
+        EXPECT_EQ(*iter, 'c');
+        EXPECT_EQ(var, "abcde");
+    }
+
+    // Index at end (erase 0 characters, valid)
+    {
+        constexpr auto VAL1 = []()
+        {
+            FixedString<8> var{"abcde"};
+            var.erase(5, 1);
+            return var;
+        }();
+
+        static_assert(VAL1 == "abcde");
+        static_assert(VAL1.size() == 5);
+    }
+    {
+        FixedString<8> var{"abcde"};
+        auto iter = var.erase(5, 1);
+        EXPECT_EQ(iter, var.end());
+        EXPECT_EQ(var, "abcde");
+    }
+
+    // Empty string with index 0
+    {
+        constexpr auto VAL1 = []()
+        {
+            FixedString<8> var{};
+            var.erase(0, 0);
+            return var;
+        }();
+
+        static_assert(VAL1 == "");
+        static_assert(VAL1.size() == 0);
+    }
+
+    // Empty string with defaults
+    {
+        constexpr auto VAL1 = []()
+        {
+            FixedString<8> var{};
+            var.erase();
+            return var;
+        }();
+
+        static_assert(VAL1 == "");
+        static_assert(VAL1.size() == 0);
+    }
+}
+
+TEST(FixedString, EraseByIndexExceedsCapacity)
+{
+    // Index out of range
+    {
+        FixedString<8> var{"abcde"};
+        EXPECT_DEATH(var.erase(6, 1), "");
+    }
+
+    // Index out of range on empty string
+    {
+        FixedString<8> var{};
+        EXPECT_DEATH(var.erase(1, 0), "");
+    }
+}
+
 TEST(FixedString, EraseRange)
 {
     constexpr auto VAL1 = []()
