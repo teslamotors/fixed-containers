@@ -550,12 +550,12 @@ TYPED_TEST_SUITE_P(FixedBitsetFluentReturnTypeFixture);
 
 TYPED_TEST_P(FixedBitsetFluentReturnTypeFixture, FixedBitsetFluentReturnType)
 {
-    using FixedBitsetT = TypeParam;
+    using BitsetT = TypeParam;
 
-    FixedBitsetT val1{};
-    const FixedBitsetT val2{};
+    BitsetT val1{};
+    const BitsetT val2{};
 
-    FixedBitsetT ret{};
+    BitsetT ret{};
     ret = val1.set(1);
     ret = val1.flip();
     ret = val1.reset();
@@ -574,12 +574,13 @@ TYPED_TEST_P(FixedBitsetFluentReturnTypeFixture, FixedBitsetFluentReturnType)
     ret = val1 | val2;
     ret = val1 ^ val2;
 
-    static_assert(std::same_as<std::decay_t<decltype(ret)>, FixedBitsetT>);
+    static_assert(std::same_as<std::decay_t<decltype(ret)>, BitsetT>);
 }
 
 REGISTER_TYPED_TEST_SUITE_P(FixedBitsetFluentReturnTypeFixture, FixedBitsetFluentReturnType);
 
-using FixedBitsetFluentReturnTypeTypes = testing::Types<FixedBitset<15>, FixedBitsetDerived<8>>;
+using FixedBitsetFluentReturnTypeTypes =
+    testing::Types<std::bitset<15>, FixedBitset<15>, FixedBitsetDerived<8>>;
 
 INSTANTIATE_TYPED_TEST_SUITE_P(FixedBitset,
                                FixedBitsetFluentReturnTypeFixture,

@@ -12,25 +12,28 @@
 #include <cstdlib>
 #include <istream>
 #include <string_view>
+#include <type_traits>
 
 namespace fixed_containers
 {
 template <std::size_t MAXIMUM_LENGTH,
           customize::SequenceContainerChecking CheckingType =
-              customize::SequenceContainerAbortChecking<char, MAXIMUM_LENGTH>>
+              customize::SequenceContainerAbortChecking<char, MAXIMUM_LENGTH>,
+          class Derived = void>
 class FixedString
 {
     using Checking = CheckingType;
     using CharT = char;
-    using Self = FixedString<MAXIMUM_LENGTH, Checking>;
+    using Self =
+        std::conditional_t<std::is_void_v<Derived>, FixedString<MAXIMUM_LENGTH, Checking>, Derived>;
     using FixedVecStorage = FixedVector<CharT, MAXIMUM_LENGTH + 1, CheckingType>;
 
     struct ScopedNullTermination
     {
-        Self* self_;
+        FixedString* self_;
         std_transition::source_location loc_;
 
-        constexpr ScopedNullTermination(Self* self,
+        constexpr ScopedNullTermination(FixedString* self,
                                         const std_transition::source_location& loc) noexcept
           : self_(self)
           , loc_(loc)
@@ -106,40 +109,40 @@ public:
         null_terminate(loc);
     }
 
-    constexpr FixedString& assign(
+    constexpr Self& assign(
         size_type count,
         CharT character,
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
         vec().assign(count, character, loc);
         null_terminate(loc);
-        return *this;
+        return static_cast<Self&>(*this);
     }
     template <class InputIt>
-    constexpr FixedString& assign(
+    constexpr Self& assign(
         InputIt first,
         InputIt last,
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
         vec().assign(first, last, loc);
         null_terminate(loc);
-        return *this;
+        return static_cast<Self&>(*this);
     }
-    constexpr FixedString& assign(
+    constexpr Self& assign(
         std::initializer_list<CharT> ilist,
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
         vec().assign(ilist, loc);
         null_terminate(loc);
-        return *this;
+        return static_cast<Self&>(*this);
     }
-    constexpr FixedString& assign(
+    constexpr Self& assign(
         const std::string_view& view,
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
         vec().assign(view.begin(), view.end(), loc);
         null_terminate(loc);
-        return *this;
+        return static_cast<Self&>(*this);
     }
 
 #if defined(__cpp_multidimensional_subscript) && __cpp_multidimensional_subscript >= 202110L && \
@@ -334,53 +337,53 @@ public:
         null_terminate(loc);
     }
 
-    template <class InputIt>
-    constexpr FixedString& append(
+    constexpr Self& append(
         const CharT* char_ptr,
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
         return append(std::string_view{char_ptr}, loc);
     }
     template <class InputIt>
-    constexpr FixedString& append(
+    constexpr Self& append(
         InputIt first,
         InputIt last,
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
         vec().insert(vec().cend(), first, last, loc);
         null_terminate(loc);
-        return *this;
+        return static_cast<Self&>(*this);
     }
-    constexpr FixedString& append(
+    constexpr Self& append(
         std::initializer_list<CharT> ilist,
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
         vec().insert(vec().cend(), ilist, loc);
         null_terminate(loc);
-        return *this;
+        return static_cast<Self&>(*this);
     }
-    constexpr FixedString& append(
+    constexpr Self& append(
         const std::string_view& view,
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
         vec().insert(vec().cend(), view.begin(), view.end(), loc);
         null_terminate(loc);
-        return *this;
+        return static_cast<Self&>(*this);
     }
 
-    constexpr FixedString& operator+=(CharT character)
+    constexpr Self& operator+=(CharT character)
     {
-        return append(character, std_transition::source_location::current());
+        push_back(character, std_transition::source_location::current());
+        return static_cast<Self&>(*this);
     }
-    constexpr FixedString& operator+=(const CharT* char_ptr)
+    constexpr Self& operator+=(const CharT* char_ptr)
     {
         return append(char_ptr, std_transition::source_location::current());
     }
-    constexpr FixedString& operator+=(std::initializer_list<CharT> ilist)
+    constexpr Self& operator+=(std::initializer_list<CharT> ilist)
     {
         return append(ilist, std_transition::source_location::current());
     }
-    constexpr FixedString& operator+=(const std::string_view& view)
+    constexpr Self& operator+=(const std::string_view& view)
     {
         return append(view, std_transition::source_location::current());
     }
