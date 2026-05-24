@@ -361,9 +361,9 @@ target_link_libraries(<your_binary> fixed_containers::fixed_containers)
 ### bazel
 If you are managing dependencies with the newer bzlmod system, use the following in your `MODULE.bazel` file:
 ```
-bazel_dep(name = "fixed_containers")
+bazel_dep(name = "fixed-containers", repo_name = "fixed_containers")
 archive_override(
-    module_name = "fixed_containers",
+    module_name = "fixed-containers",
     strip_prefix = "fixed-containers-<commit>",
     urls = ["https://github.com/teslamotors/fixed-containers/archive/<commit>.tar.gz"],
 )
