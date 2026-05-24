@@ -631,7 +631,7 @@ public:
         const std_transition::source_location& loc =
             std_transition::source_location::current()) const
     {
-        if (preconditions::test(pos < length()))
+        if (preconditions::test(pos <= length()))
         {
             Checking::out_of_range(pos, length(), loc);
         }

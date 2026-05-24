@@ -2017,6 +2017,11 @@ TEST(FixedString, Substring)
     static_assert(VAL1.substr(1, 2) == "12");
     static_assert(VAL1.substr(2, 2) == "23");
 
+    // substr(pos) is valid for pos == size() and yields an empty string, matching
+    // std::string/std::string_view. Only pos > size() is out of range.
+    static_assert(VAL1.substr(VAL1.length()).empty());
+    static_assert(VAL1.substr(4, 2).empty());
+
     EXPECT_DEATH((void)VAL1.substr(5, 1), "");
 }
 
