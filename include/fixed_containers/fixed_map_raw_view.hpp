@@ -157,7 +157,7 @@ public:
     {
         // Needed until FixedRedBlackTreeRawView supports types with alignment >= 8.
         // Currently, it tacititly presumes alignment will be <= 8 for the keys and values.
-        assert_or_abort(std::max(value_align_bytes, key_align_bytes) <= 8);
+        assert_or_abort((std::max)(value_align_bytes, key_align_bytes) <= 8);
     }
 
     [[nodiscard]] Iterator begin() const

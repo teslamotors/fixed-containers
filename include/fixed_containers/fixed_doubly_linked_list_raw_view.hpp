@@ -66,8 +66,8 @@ public:
                                  std::size_t max_elem_count)
       : list_ptr_{static_cast<const std::byte*>(list_ptr)}
       // the PoolStorage stores unions of `T`, `std::size_t`, so they are always at least that big
-      , elem_size_bytes_{std::max(elem_size_bytes, sizeof(std::size_t))}
-      , elem_align_bytes_{std::max(elem_align_bytes, alignof(std::size_t))}
+      , elem_size_bytes_{(std::max)(elem_size_bytes, sizeof(std::size_t))}
+      , elem_align_bytes_{(std::max)(elem_align_bytes, alignof(std::size_t))}
       , max_elem_count_{max_elem_count}
     {
     }

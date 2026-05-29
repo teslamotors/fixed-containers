@@ -25,7 +25,7 @@ public:  // public for testing
                                                    std::size_t value_size,
                                                    std::size_t value_alignment)
     {
-        const std::size_t struct_alignment = std::max(key_alignment, value_alignment);
+        const std::size_t struct_alignment = (std::max)(key_alignment, value_alignment);
 
         auto value_offs = static_cast<std::size_t>(
             MapEntryRawView::get_value_offs(key_size, key_alignment, value_size, value_alignment));
@@ -98,7 +98,7 @@ public:
                              std::size_t value_count)
       : list_view_{get_linked_list_ptr(map_ptr),
                    compute_pair_size(key_size, key_alignment, value_size, value_alignment),
-                   std::max(key_alignment, value_alignment),
+                   (std::max)(key_alignment, value_alignment),
                    value_count}
       , key_size_{key_size}
       , key_alignment_{key_alignment}

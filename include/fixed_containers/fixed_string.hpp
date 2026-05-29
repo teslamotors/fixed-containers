@@ -298,7 +298,7 @@ public:
             Checking::out_of_range(index, length(), loc);
         }
 
-        const size_type actual_count = std::min(count, length() - index);
+        const size_type actual_count = (std::min)(count, length() - index);
         return erase(std::next(cbegin(), static_cast<difference_type>(index)),
                      std::next(cbegin(), static_cast<difference_type>(index + actual_count)),
                      loc);
@@ -772,7 +772,7 @@ template <std::size_t MAXIMUM_LENGTH, typename CheckingType>
 constexpr FixedString<MAXIMUM_LENGTH, CheckingType>& append_truncating(
     FixedString<MAXIMUM_LENGTH, CheckingType>& str, std::string_view view)
 {
-    const std::size_t safe_chars = std::min(view.size(), MAXIMUM_LENGTH - str.length());
+    const std::size_t safe_chars = (std::min)(view.size(), MAXIMUM_LENGTH - str.length());
     str.append(view.substr(0, safe_chars));
     return str;
 }

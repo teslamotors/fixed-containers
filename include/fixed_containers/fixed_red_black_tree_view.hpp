@@ -322,7 +322,7 @@ public:
             {
             case StorageType::FIXED_INDEX_POOL:
                 // IndexOrValueStorage is a union containing a size_t (index) or the node itself.
-                return std::max(sizeof(std::size_t), node_size_bytes);
+                return (std::max)(sizeof(std::size_t), node_size_bytes);
 
             case StorageType::FIXED_INDEX_CONTIGUOUS:
                 return node_size_bytes;
