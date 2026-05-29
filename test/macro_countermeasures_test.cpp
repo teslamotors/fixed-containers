@@ -4,35 +4,98 @@
 // gtest undefines min/max, include it first
 #include <gtest/gtest.h>
 
-// Define mocks of problematic macros
-// Can't define min, conflict with the standard <algorithm> header. Use temporarily but don't merge
-/*
-/usr/bin/../lib/gcc/x86_64-linux-gnu/12/../../../../include/c++/12/bits/ranges_algo.h:3348:35:
-error: expected unqualified-id if (const auto __len = std::min(__d1, __d2))
- */
-// #define min(a, b) (((a) < (b)) ? (a) : (b))
+// Pre-include every stdlib (and third-party) header fixed_containers transitively uses.
+// Once they're in the include-guard cache, the `#define min/max` below cannot
+// re-trigger their parse, so stdlib internals that name `min`/`max` as identifiers
+// (e.g. <algorithm>'s forward declarations, <random>'s _Gen::max()) are unaffected.
+// Only fixed_containers' code is exercised against the poisoned macros.
+
+// NOLINTBEGIN(misc-include-cleaner): intentional pre-include, not direct identifier use.
+#include <algorithm>
+#include <any>
+#include <array>
+#include <bit>
+#include <bitset>
+#include <cassert>
+#include <chrono>
+#include <climits>
+#include <compare>
+#include <concepts>
+#include <cstddef>
+#include <cstdint>
+#include <cstdlib>
+#include <cstring>
+#include <functional>
+#include <initializer_list>
+#include <istream>
+#include <iterator>
+#include <limits>
+#include <memory>
+#include <numeric>
+#include <optional>
+#include <random>
+#include <ranges>
+#include <source_location>
+#include <string>
+#include <string_view>
+#include <tuple>
+#include <type_traits>
+#include <utility>
+#include <variant>
+#include <version>
+
+#include <magic_enum/magic_enum.hpp>
+// NOLINTEND(misc-include-cleaner)
+
+// Define mocks of problematic macros (skip if the environment, e.g. <windows.h>,
+// already supplied them — what matters for this test is that they are macros).
+#if !defined(min)
+#define min(a, b) (((a) < (b)) ? (a) : (b))
+#endif
+#if !defined(max)
 #define max(a, b) (((a) > (b)) ? (a) : (b))
+#endif
 #define CONST const
 #define CONSTANT const
 #define MUTABLE mutable
 #define BLACK 0  // NOLINT(modernize-macro-to-enum)
 #define RED 1    // NOLINT(modernize-macro-to-enum)
 
+// NOLINTBEGIN(misc-include-cleaner): *_view headers included for macro-pollution coverage,
+// not for direct identifier use in this translation unit.
 #include "fixed_containers/enum_array.hpp"
 #include "fixed_containers/enum_map.hpp"
+#include "fixed_containers/enum_map_raw_view.hpp"
 #include "fixed_containers/enum_set.hpp"
+#include "fixed_containers/enum_set_raw_view.hpp"
 #include "fixed_containers/enum_utils.hpp"
 #include "fixed_containers/fixed_bitset.hpp"
+#include "fixed_containers/fixed_bitset_raw_view.hpp"
 #include "fixed_containers/fixed_circular_deque.hpp"
 #include "fixed_containers/fixed_circular_queue.hpp"
 #include "fixed_containers/fixed_deque.hpp"
+#include "fixed_containers/fixed_deque_raw_view.hpp"
+#include "fixed_containers/fixed_doubly_linked_list_raw_view.hpp"
 #include "fixed_containers/fixed_map.hpp"
+#include "fixed_containers/fixed_map_raw_view.hpp"
+#include "fixed_containers/fixed_red_black_tree_view.hpp"
 #include "fixed_containers/fixed_set.hpp"
 #include "fixed_containers/fixed_stack.hpp"
 #include "fixed_containers/fixed_string.hpp"
 #include "fixed_containers/fixed_unordered_map.hpp"
+#include "fixed_containers/fixed_unordered_map_raw_view.hpp"
 #include "fixed_containers/fixed_unordered_set.hpp"
+#include "fixed_containers/fixed_unordered_set_raw_view.hpp"
 #include "fixed_containers/fixed_vector.hpp"
+#include "fixed_containers/map_entry_raw_view.hpp"
+#include "fixed_containers/pair_view.hpp"
+
+#if defined(__clang__) && __clang_major__ >= 15
+#include "fixed_containers/recursive_reflection.hpp"
+#include "fixed_containers/reflection.hpp"
+#include "fixed_containers/struct_view.hpp"
+#endif
+// NOLINTEND(misc-include-cleaner)
 
 namespace fixed_containers
 {
@@ -54,8 +117,8 @@ struct ClassWithMutableMember
 }  // namespace
 TEST(MacroCountermeasures, DummyUsagesOfTheMacros)
 {
-    //    CONST int min_result = min(3, 5);
-    //    EXPECT_EQ(3, min_result);
+    CONST int min_result = min(3, 5);
+    EXPECT_EQ(3, min_result);
 
     CONST int max_result1 = max(3, 5);
     EXPECT_EQ(5, max_result1);
