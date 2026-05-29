@@ -1,5 +1,5 @@
 module(
-    name = "fixed-containers",
+    name = "fixed_containers",
 )
 
 bazel_dep(name = "magic_enum", repo_name = "com_github_neargye_magic_enum")
