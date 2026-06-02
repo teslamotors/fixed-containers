@@ -22,10 +22,15 @@ static_assert(TriviallyCopyable<IotaView1>);
 static_assert(TriviallyCopyable<decltype(IotaView1{}.begin())>);
 // Some implementations of iota_view's iterator can allow it to go out of range
 // static_assert(*std::next(IotaView1{0, 3}.begin(), 15) == 15);
+// These exact byte sizes assume a 64-bit data model. On platforms with narrower
+// pointers and std::size_t, such as wasm32, the sizes are smaller, so guard the
+// checks to 64-bit targets to avoid false failures.
+#if defined(__SIZEOF_POINTER__) && __SIZEOF_POINTER__ == 8
 static_assert(sizeof(IotaView1) == 16ULL);
 static_assert(sizeof(IotaView1{}.begin()) == 8ULL);
 // Need both range and the iterator to make a range-enforcing iterator
 static_assert(sizeof(IotaView1) + sizeof(IotaView1{}.begin()) == 24ULL);
+#endif
 #endif
 }  // namespace
 
@@ -33,9 +38,14 @@ static_assert(TriviallyCopyable<IntegerRangeIterator<>>);
 
 static_assert(RandomAccessEntryProvider<IntegerRangeEntryProvider<>>);
 
+// These exact byte sizes assume a 64-bit data model. On platforms with narrower pointers
+// and std::size_t, such as wasm32, the iterators are smaller, so guard the checks to
+// 64-bit targets to avoid false failures.
+#if defined(__SIZEOF_POINTER__) && __SIZEOF_POINTER__ == 8
 static_assert(sizeof(IntegerRangeIterator<IteratorDirection::FORWARD, IntegerRange>) == 24);
 static_assert(
     sizeof(IntegerRangeIterator<IteratorDirection::FORWARD, CompileTimeIntegerRange<0, 3>>) == 16);
+#endif
 
 TEST(IntegerRangeIterator, DefaultConstructor)
 {

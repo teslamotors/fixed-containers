@@ -15,9 +15,14 @@ static_assert(TriviallyCopyable<CircularIntegerRangeIterator<>>);
 
 static_assert(RandomAccessEntryProvider<CircularIntegerRangeEntryProvider<>>);
 
+// These exact byte sizes assume a 64-bit data model. On platforms with narrower pointers
+// and std::size_t, such as wasm32, the iterators are smaller, so guard the checks to
+// 64-bit targets to avoid false failures.
+#if defined(__SIZEOF_POINTER__) && __SIZEOF_POINTER__ == 8
 static_assert(sizeof(CircularIntegerRangeIterator<IteratorDirection::FORWARD, IntegerRange>) == 32);
 static_assert(sizeof(CircularIntegerRangeIterator<IteratorDirection::FORWARD,
                                                   CompileTimeIntegerRange<0, 3>>) == 24);
+#endif
 TEST(CircularIntegerRangeIterator, DefaultConstructor)
 {
     using ItType = CircularIntegerRangeIterator<IteratorDirection::FORWARD>;
