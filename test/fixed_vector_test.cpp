@@ -1229,6 +1229,13 @@ TEST(FixedVector, Size)
     }
 }
 
+TEST(FixedVector, SizeExceedsMaxSize)
+{
+    FixedVector<int, 3> var{1, 2, 3};
+    var.IMPLEMENTATION_DETAIL_DO_NOT_USE_size_ = 4;
+    EXPECT_DEATH((void)var.size(), "");
+}
+
 TEST(FixedVector, Empty)
 {
     constexpr auto VAL1 = []() { return FixedVector<int, 7>{}; }();
