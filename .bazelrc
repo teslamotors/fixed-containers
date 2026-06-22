@@ -50,3 +50,5 @@ build:clang --copt -Wno-used-but-marked-unused
 build:clang --copt -Wno-switch-default
 #
 build:clang --copt -Wno-poison-system-directories
+build:clang --copt -Wno-unknown-warning-option
+build:clang --copt -Wno-nrvo
