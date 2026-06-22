@@ -182,8 +182,11 @@ constexpr void for_each_parsed_field_entry(const T& instance, Func func)
 }
 
 template <typename T>
-constexpr std::size_t field_count_of_impl(const T& instance)
+constexpr std::size_t field_count_of_impl([[maybe_unused]] const T& instance)
 {
+#if __has_builtin(__builtin_structured_binding_size)
+    return __builtin_structured_binding_size(T);
+#else
     std::size_t counter = 0;
     for_each_parsed_field_entry(instance,
                                 [&counter](const FieldEntry& field_entry)
@@ -194,6 +197,7 @@ constexpr std::size_t field_count_of_impl(const T& instance)
                                     }
                                 });
     return counter;
+#endif
 }
 
 template <std::size_t MAXIMUM_FIELD_COUNT, typename T>
@@ -241,7 +245,7 @@ template <typename T, typename Func>
 constexpr void for_each_field(T&& instance, Func&& func)
 {
     constexpr const auto& FIELD_NAMES = field_names_of<T>();
-    struct_decomposition::to_parameter_pack<FIELD_NAMES.size()>(
+    struct_decomposition::to_parameter_pack(
         instance,
         [&func]<typename... Args>(Args&&... args) -> bool
         {

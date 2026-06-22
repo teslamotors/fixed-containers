@@ -72,6 +72,7 @@ if(${USING_CLANG})
 
         -Wno-padded
         -Wno-poison-system-directories
+        -Wno-nrvo
     )
 elseif(MSVC)
     SET(DIAGNOSTIC_FLAGS ${DIAGNOSTIC_FLAGS}

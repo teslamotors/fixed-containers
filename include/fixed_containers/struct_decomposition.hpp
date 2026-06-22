@@ -568,7 +568,6 @@ constexpr auto to_parameter_pack(T& t, Func&& f)
 // clang-format off
 // NOLINTEND(readability-identifier-length, readability-identifier-naming, misc-confusable-identifiers)
 // clang-format on
-
 }  // namespace fixed_containers::struct_decomposition
 
 #if defined(FIXED_CONTAINERS_EXTENDED_STRUCT_DECOMPOSITION_1024) && \
@@ -578,3 +577,15 @@ constexpr auto to_parameter_pack(T& t, Func&& f)
 #include "fixed_containers/struct_decomposition_513_to_768.hpp"
 #include "fixed_containers/struct_decomposition_769_to_1024.hpp"
 #endif
+
+namespace fixed_containers::struct_decomposition
+{
+#if __has_builtin(__builtin_structured_binding_size)
+template <typename T, typename Func>
+constexpr auto to_parameter_pack(T& instance, Func&& func)
+{
+    return to_parameter_pack<__builtin_structured_binding_size(T)>(instance,
+                                                                   std::forward<Func>(func));
+}
+#endif
+}  // namespace fixed_containers::struct_decomposition
