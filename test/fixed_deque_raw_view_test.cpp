@@ -38,9 +38,9 @@ TEST(FixedDequeRawView, IntDeque)
     EXPECT_EQ(deque.size(), view.size());
     EXPECT_EQ(reinterpret_cast<char*>(&deque),
               reinterpret_cast<char*>(&deque.IMPLEMENTATION_DETAIL_DO_NOT_USE_array_));
-    char* member =
+    const char* member =
         reinterpret_cast<char*>(&deque.IMPLEMENTATION_DETAIL_DO_NOT_USE_starting_index_and_size_);
-    char* array = reinterpret_cast<char*>(&deque.IMPLEMENTATION_DETAIL_DO_NOT_USE_array_);
+    const char* array = reinterpret_cast<char*>(&deque.IMPLEMENTATION_DETAIL_DO_NOT_USE_array_);
     EXPECT_EQ(member - array, view.value_storage_size());
     auto dq_it = deque.begin();
     auto view_it = view.begin();
@@ -77,9 +77,9 @@ TEST(FixedDequeRawView, StructDeque)
     // value_storage_size() is needed purely to compute where this bookkeeping struct is.
     // This is potentially error prone as there may be padding in between the data portion and the
     // bookkeeping struct.
-    char* member =
+    const char* member =
         reinterpret_cast<char*>(&deque.IMPLEMENTATION_DETAIL_DO_NOT_USE_starting_index_and_size_);
-    char* array = reinterpret_cast<char*>(&deque.IMPLEMENTATION_DETAIL_DO_NOT_USE_array_);
+    const char* array = reinterpret_cast<char*>(&deque.IMPLEMENTATION_DETAIL_DO_NOT_USE_array_);
     EXPECT_EQ(member - array, view.value_storage_size());
 
     auto dq_it = deque.begin();

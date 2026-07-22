@@ -34,7 +34,7 @@ public:  // public for testing
         // align the total struct size to the correct alignment
         if (struct_size % struct_alignment != 0)
         {
-            struct_size += struct_alignment - struct_size % struct_alignment;
+            struct_size += struct_alignment - (struct_size % struct_alignment);
         }
         return struct_size;
     }

@@ -19,7 +19,7 @@ public:
         // align the value start addr to the correct alignment
         if (value_offs % value_alignment != 0)
         {
-            value_offs += value_alignment - value_offs % value_alignment;
+            value_offs += value_alignment - (value_offs % value_alignment);
         }
         return static_cast<std::ptrdiff_t>(value_offs);
     }
