@@ -50,3 +50,6 @@ build:clang --copt -Wno-used-but-marked-unused
 build:clang --copt -Wno-switch-default
 #
 build:clang --copt -Wno-poison-system-directories
+# -Wnrvo was added in clang 21; guard so older clang doesn't error on the unknown flag
+build:clang --copt -Wno-unknown-warning-option
+build:clang --copt -Wno-nrvo

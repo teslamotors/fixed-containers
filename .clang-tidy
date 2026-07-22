@@ -76,6 +76,9 @@ Checks: >
   -bugprone-unchecked-optional-access,
   -readability-container-size-empty,
   -bugprone-crtp-constructor-accessibility,
+  -portability-avoid-pragma-once,
+  -readability-use-concise-preprocessor-directives,
+  -clang-diagnostic-nrvo,
 
 # Turn all the warnings from the checks above into errors.
 WarningsAsErrors: "*"

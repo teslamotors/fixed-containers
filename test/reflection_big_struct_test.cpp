@@ -1,5 +1,7 @@
 #if defined(__clang__) && __clang_major__ >= 17
 
+// NOLINTBEGIN(misc-confusable-identifiers)
+
 #define FIXED_CONTAINERS_EXTENDED_STRUCT_DECOMPOSITION_1024 1
 
 #include "fixed_containers/reflection.hpp"
@@ -62,5 +64,7 @@ TEST(Reflection, BigStructHandling)
 }
 
 }  // namespace fixed_containers
+
+// NOLINTEND(misc-confusable-identifiers)
 
 #endif

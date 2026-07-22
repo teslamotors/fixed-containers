@@ -656,11 +656,13 @@ TEST(EnumMap, TryEmplace)
 TEST(EnumMap, TryEmplaceTypeConversion)
 {
     {
+        // NOLINTNEXTLINE(misc-const-correctness): ownership transferred to unique_ptr<int>
         int* raw_ptr = new int;
         EnumMap<TestEnum1, std::unique_ptr<int>> var{};
         var.try_emplace(TestEnum1::THREE, raw_ptr);
     }
     {
+        // NOLINTNEXTLINE(misc-const-correctness): ownership transferred to unique_ptr<int>
         int* raw_ptr = new int;
         std::map<TestEnum1, std::unique_ptr<int>> var{};
         var.try_emplace(TestEnum1::THREE, raw_ptr);

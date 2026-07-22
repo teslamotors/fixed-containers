@@ -493,11 +493,13 @@ TEST(FixedMap, TryEmplaceExceedsCapacity)
 TEST(FixedMap, TryEmplaceTypeConversion)
 {
     {
+        // NOLINTNEXTLINE(misc-const-correctness): ownership transferred to unique_ptr<int>
         int* raw_ptr = new int;
         FixedMap<int, std::unique_ptr<int>, 10> var{};
         var.try_emplace(3, raw_ptr);
     }
     {
+        // NOLINTNEXTLINE(misc-const-correctness): ownership transferred to unique_ptr<int>
         int* raw_ptr = new int;
         std::map<int, std::unique_ptr<int>> var{};
         var.try_emplace(3, raw_ptr);

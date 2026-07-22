@@ -72,6 +72,10 @@ if(${USING_CLANG})
 
         -Wno-padded
         -Wno-poison-system-directories
+
+        # -Wnrvo was added in clang 21; guard so older clang doesn't error on the unknown flag
+        -Wno-unknown-warning-option
+        -Wno-nrvo
     )
 elseif(MSVC)
     SET(DIAGNOSTIC_FLAGS ${DIAGNOSTIC_FLAGS}
