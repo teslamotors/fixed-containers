@@ -21,9 +21,9 @@ archive_override(
 bazel_dep(name = "google_benchmark", dev_dependency = True, repo_name = "com_google_benchmark")
 archive_override(
     module_name = "google_benchmark",
-    integrity = "sha256-3xI14ONyl+mQu4M8cjzT3sYfyVxJUfZL3Vxy0c6n9Pk=",
-    strip_prefix = "benchmark-447752540c71f34d5d71046e08192db181e9b02b",
-    urls = ["https://github.com/google/benchmark/archive/447752540c71f34d5d71046e08192db181e9b02b.tar.gz"],
+    integrity = "sha256-ljE0HIK6xKKIvvlR+LJrQfaQIXlBhOzpafhHOXfqo0A=",
+    strip_prefix = "benchmark-1.9.5",
+    urls = ["https://github.com/google/benchmark/archive/refs/tags/v1.9.5.tar.gz"],
 )
 
 # Hedron's Compile Commands Extractor for Bazel

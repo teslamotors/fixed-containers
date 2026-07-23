@@ -16,6 +16,10 @@
     {
       "name": "magic-enum",
       "version": "0.9.7"
+    },
+    {
+      "name": "benchmark",
+      "version": "1.9.5"
     }
   ],
   "builtin-baseline": "a345bbdc68cdfda65603e24413b21afb28f110fb"
