@@ -488,7 +488,14 @@ TEST(OptionalReference, Transform)
 TEST(OptionalReference, OrElse)
 {
     static constexpr int FALLBACK = 7;
-    static constexpr auto TO_FALLBACK = []() { return OptionalReference<const int>{FALLBACK}; };
+    // Bind a named lvalue reference before constructing. Naming `FALLBACK` directly here lets MSVC
+    // apply the lvalue-to-rvalue conversion, which selects the deleted `OptionalReference(T&&)`
+    // overload that exists to stop the reference binding to a temporary.
+    static constexpr auto TO_FALLBACK = []()
+    {
+        const int& fallback = FALLBACK;
+        return OptionalReference<const int>{fallback};
+    };
 
     {
         static constexpr int VAL1 = 42;
