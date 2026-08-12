@@ -11,7 +11,7 @@ namespace fixed_containers::struct_decomposition
 // clang-format on
 template <std::size_t C /*FIELD_COUNT*/, typename T, typename Func>
     requires(C >= 769)
-constexpr auto to_parameter_pack(T& t, Func&& f)
+constexpr decltype(auto) to_parameter_pack(T& t, Func&& f)
 {
     // codegen-start
     // clang-format off

@@ -26,7 +26,7 @@ template <std::size_t C /*FIELD_COUNT*/, typename T, typename Func>
 // ifdef-ed to get the nice error message from the static_assert()
     requires(C <= 128)
 #endif
-constexpr auto to_parameter_pack(T& t, Func&& f)
+constexpr decltype(auto) to_parameter_pack(T& t, Func&& f)
 {
     if constexpr (C == 0)
     {
