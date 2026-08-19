@@ -1,10 +1,12 @@
 #include "fixed_containers/fixed_string.hpp"
 
 #include "mock_testing_types.hpp"
+#include "test_utilities_common.hpp"
 
 #include "fixed_containers/concepts.hpp"
 #include "fixed_containers/consteval_compare.hpp"
 #include "fixed_containers/max_size.hpp"
+#include "fixed_containers/sequence_container_checking.hpp"
 
 #include <gtest/gtest.h>
 
@@ -2266,6 +2268,117 @@ TEST(FixedString, UsageAsTemplateParameter)
     const FixedStringInstanceCanBeUsedAsATemplateParameter<MY_STR1> my_struct{};
     static_cast<void>(my_struct);
 }
+
+namespace
+{
+template <std::size_t MAXIMUM_LENGTH>
+struct FixedStringDerived
+  : public FixedString<MAXIMUM_LENGTH,
+                       customize::SequenceContainerAbortChecking<char, MAXIMUM_LENGTH>,
+                       FixedStringDerived<MAXIMUM_LENGTH>>
+{
+    using Base = FixedString<MAXIMUM_LENGTH,
+                             customize::SequenceContainerAbortChecking<char, MAXIMUM_LENGTH>,
+                             FixedStringDerived<MAXIMUM_LENGTH>>;
+    using Base::Base;
+};
+}  // namespace
+
+template <typename T>
+struct FixedStringFluentReturnTypeFixture : public ::testing::Test
+{
+};
+TYPED_TEST_SUITE_P(FixedStringFluentReturnTypeFixture);
+
+TYPED_TEST_P(FixedStringFluentReturnTypeFixture, AssignReturnType)
+{
+    using StringT = TypeParam;
+
+    StringT val{"hello"};
+    StringT ret{};
+
+    ret = val.assign(3, 'a');
+    static_assert(std::same_as<decltype(val.assign(3, 'a')), StringT&>);
+
+    const std::array<char, 3> chars{'a', 'b', 'c'};
+    ret = val.assign(chars.begin(), chars.end());
+    static_assert(std::same_as<decltype(val.assign(chars.begin(), chars.end())), StringT&>);
+
+    ret = val.assign({'x', 'y', 'z'});
+    static_assert(std::same_as<decltype(val.assign({'x', 'y', 'z'})), StringT&>);
+
+    ret = val.assign(std::string_view{"test"});
+    static_assert(std::same_as<decltype(val.assign(std::string_view{"test"})), StringT&>);
+}
+
+TYPED_TEST_P(FixedStringFluentReturnTypeFixture, AppendReturnType)
+{
+    using StringT = TypeParam;
+
+    StringT val{"hi"};
+    StringT ret{};
+
+    const std::array<char, 3> chars{'a', 'b', 'c'};
+    ret = val.assign("hi");
+    ret = val.append(chars.begin(), chars.end());
+    static_assert(std::same_as<decltype(val.append(chars.begin(), chars.end())), StringT&>);
+
+    ret = val.assign("hi");
+    ret = val.append({'x', 'y'});
+    static_assert(std::same_as<decltype(val.append({'x', 'y'})), StringT&>);
+
+    ret = val.assign("hi");
+    ret = val.append(std::string_view{"world"});
+    static_assert(std::same_as<decltype(val.append(std::string_view{"world"})), StringT&>);
+}
+
+TYPED_TEST_P(FixedStringFluentReturnTypeFixture, OperatorPlusEqualReturnType)
+{
+    using StringT = TypeParam;
+
+    StringT val{"hi"};
+    StringT ret{};
+
+    ret = val.assign("hi");
+    ret = (val += 'x');
+    static_assert(std::same_as<decltype(val += 'x'), StringT&>);
+
+    ret = val.assign("hi");
+    ret = (val += "world");
+    static_assert(std::same_as<decltype(val += "world"), StringT&>);
+
+    ret = val.assign("hi");
+    ret = (val += {'a', 'b'});
+    static_assert(std::same_as<decltype(val += {'a', 'b'}), StringT&>);
+
+    ret = val.assign("hi");
+    ret = (val += std::string_view{"end"});
+    static_assert(std::same_as<decltype(val += std::string_view{"end"}), StringT&>);
+}
+
+TYPED_TEST_P(FixedStringFluentReturnTypeFixture, FluentChaining)
+{
+    using StringT = TypeParam;
+
+    StringT val{};
+    val.assign(std::string_view{"hello"}).append(std::string_view{" world"});
+
+    EXPECT_EQ(std::string_view{val}, "hello world");
+}
+
+REGISTER_TYPED_TEST_SUITE_P(FixedStringFluentReturnTypeFixture,
+                             AssignReturnType,
+                             AppendReturnType,
+                             OperatorPlusEqualReturnType,
+                             FluentChaining);
+
+using FixedStringFluentReturnTypeTypes =
+    testing::Types<std::string, FixedString<32>, FixedStringDerived<32>>;
+
+INSTANTIATE_TYPED_TEST_SUITE_P(FixedString,
+                                FixedStringFluentReturnTypeFixture,
+                                FixedStringFluentReturnTypeTypes,
+                                NameProviderForTypeParameterizedTest);
 
 }  // namespace fixed_containers
 
