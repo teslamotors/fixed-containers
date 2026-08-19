@@ -415,4 +415,110 @@ TEST(OptionalReference, ConstHandling)
     }
 }
 
+TEST(OptionalReference, AndThen)
+{
+    static constexpr auto TO_DOUBLED = [](const int& val)
+    { return val % 2 == 0 ? std::optional<int>{val * 2} : std::optional<int>{}; };
+
+    {
+        static constexpr int VAL1 = 21;
+        constexpr OptionalReference<const int> OPT_REF{VAL1};
+        static_assert(!OPT_REF.and_then(TO_DOUBLED).has_value());
+    }
+    {
+        static constexpr int VAL1 = 42;
+        constexpr OptionalReference<const int> OPT_REF{VAL1};
+        static_assert(OPT_REF.and_then(TO_DOUBLED) == std::optional<int>{84});
+    }
+    {
+        constexpr OptionalReference<const int> OPT_REF{};
+        static_assert(!OPT_REF.and_then(TO_DOUBLED).has_value());
+    }
+    {
+        // The callable is free to return an OptionalReference too.
+        static constexpr int VAL1 = 42;
+        constexpr OptionalReference<const int> OPT_REF{VAL1};
+        constexpr auto IDENTITY = [](const int& val) { return OptionalReference<const int>{val}; };
+        static_assert(&OPT_REF.and_then(IDENTITY).value() == &VAL1);
+    }
+    {
+        // Not invoked when empty.
+        int call_count = 0;
+        const OptionalReference<const int> opt_ref{};
+        const auto counting = [&call_count](const int& val)
+        {
+            call_count++;
+            return std::optional<int>{val};
+        };
+        EXPECT_FALSE(opt_ref.and_then(counting).has_value());
+        EXPECT_EQ(0, call_count);
+    }
+}
+
+TEST(OptionalReference, Transform)
+{
+    static constexpr auto TO_HALVED = [](const int& val) { return val / 2; };
+
+    {
+        static constexpr int VAL1 = 42;
+        constexpr OptionalReference<const int> OPT_REF{VAL1};
+        static_assert(OPT_REF.transform(TO_HALVED) == std::optional<int>{21});
+    }
+    {
+        constexpr OptionalReference<const int> OPT_REF{};
+        static_assert(!OPT_REF.transform(TO_HALVED).has_value());
+    }
+    {
+        // The value is copied out, so mutating the referent afterwards does not change it.
+        int val1 = 42;
+        const OptionalReference<int> opt_ref{val1};
+        const std::optional<int> transformed = opt_ref.transform(TO_HALVED);
+        val1 = 0;
+        EXPECT_EQ(std::optional<int>{21}, transformed);
+    }
+    {
+        // Chains after an and_then() that keeps returning an OptionalReference.
+        static constexpr int VAL1 = 42;
+        constexpr OptionalReference<const int> OPT_REF{VAL1};
+        constexpr auto IDENTITY = [](const int& val) { return OptionalReference<const int>{val}; };
+        static_assert(OPT_REF.and_then(IDENTITY).transform(TO_HALVED) == std::optional<int>{21});
+    }
+}
+
+TEST(OptionalReference, OrElse)
+{
+    static constexpr int FALLBACK = 7;
+    // Bind a named lvalue reference before constructing. Naming `FALLBACK` directly here lets MSVC
+    // apply the lvalue-to-rvalue conversion, which selects the deleted `OptionalReference(T&&)`
+    // overload that exists to stop the reference binding to a temporary.
+    static constexpr auto TO_FALLBACK = []()
+    {
+        const int& fallback = FALLBACK;
+        return OptionalReference<const int>{fallback};
+    };
+
+    {
+        static constexpr int VAL1 = 42;
+        constexpr OptionalReference<const int> OPT_REF{VAL1};
+        static_assert(&OPT_REF.or_else(TO_FALLBACK).value() == &VAL1);
+    }
+    {
+        constexpr OptionalReference<const int> OPT_REF{};
+        static_assert(&OPT_REF.or_else(TO_FALLBACK).value() == &FALLBACK);
+    }
+    {
+        // Not invoked when a value is present.
+        int call_count = 0;
+        int val1 = 42;
+        const OptionalReference<int> opt_ref{val1};
+        const auto counting = [&call_count]()
+        {
+            call_count++;
+            return OptionalReference<int>{};
+        };
+        EXPECT_TRUE(opt_ref.or_else(counting).has_value());
+        EXPECT_EQ(0, call_count);
+    }
+}
+
 }  // namespace fixed_containers

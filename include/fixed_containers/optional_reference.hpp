@@ -5,9 +5,11 @@
 #include "fixed_containers/source_location.hpp"
 
 #include <compare>
+#include <functional>
 #include <memory>
 #include <optional>
 #include <type_traits>
+#include <utility>
 
 namespace fixed_containers
 {
@@ -134,6 +136,50 @@ public:
     {
         check_bad_optional_access(std_transition::source_location::current());
         return *val();
+    }
+
+    // Monadic operations, mirroring the C++23 additions to std::optional. There is only one
+    // overload of each because `reference` and `const_reference` are both `T&`: constness of
+    // an OptionalReference applies to the reference, not to the referent.
+    template <class F>
+    [[nodiscard]] constexpr std::remove_cvref_t<std::invoke_result_t<F, const_reference>> and_then(
+        F&& func) const
+    {
+        using Result = std::remove_cvref_t<std::invoke_result_t<F, const_reference>>;
+        if (!has_value())
+        {
+            return Result{};
+        }
+
+        return std::invoke(std::forward<F>(func), *val());
+    }
+
+    // Unlike `and_then()`, this returns a std::optional: the callable produces a value, so there
+    // would be nothing left for an OptionalReference to refer to.
+    template <class F>
+    [[nodiscard]] constexpr std::optional<
+        std::remove_cv_t<std::invoke_result_t<F, const_reference>>>
+    transform(F&& func) const
+    {
+        using Result = std::optional<std::remove_cv_t<std::invoke_result_t<F, const_reference>>>;
+        if (!has_value())
+        {
+            return Result{};
+        }
+
+        return Result{std::invoke(std::forward<F>(func), *val())};
+    }
+
+    template <class F>
+    [[nodiscard]] constexpr Self or_else(F&& func) const
+        requires(std::is_same_v<std::remove_cvref_t<std::invoke_result_t<F>>, Self>)
+    {
+        if (!has_value())
+        {
+            return std::forward<F>(func)();
+        }
+
+        return *this;
     }
 
     constexpr void reset() noexcept { val() = nullptr; }
