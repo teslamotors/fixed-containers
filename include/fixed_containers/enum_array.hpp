@@ -85,7 +85,7 @@ public:
         for (const auto& [label, value] : range)
         {
             const std::size_t ordinal = EnumAdapterType::ordinal(label);
-            values().at(ordinal) = value;
+            values()[ordinal] = value;
         }
     }
 
@@ -108,22 +108,22 @@ public:
     constexpr reference at(const L& label)
     {
         const std::size_t ordinal = EnumAdapterType::ordinal(label);
-        return values().at(ordinal);
+        return values()[ordinal];
     }
     [[nodiscard]] constexpr const_reference at(const L& label) const
     {
         const std::size_t ordinal = EnumAdapterType::ordinal(label);
-        return values().at(ordinal);
+        return values()[ordinal];
     }
     constexpr reference operator[](const L& label)
     {
         const std::size_t ordinal = EnumAdapterType::ordinal(label);
-        return values().at(ordinal);
+        return values()[ordinal];
     }
     constexpr const_reference operator[](const L& label) const
     {
         const std::size_t ordinal = EnumAdapterType::ordinal(label);
-        return values().at(ordinal);
+        return values()[ordinal];
     }
     constexpr reference front() { return values().front(); }
     [[nodiscard]] constexpr const_reference front() const { return values().front(); }

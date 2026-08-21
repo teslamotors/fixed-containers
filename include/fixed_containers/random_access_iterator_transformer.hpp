@@ -96,60 +96,60 @@ public:
 
     constexpr reference operator[](difference_type off) const
     {
-        return unary_function_(*std::next(iterator_, off));
+        return unary_function_(iterator_[off]);
     }
 
     constexpr Self& operator++() noexcept
     {
-        std::advance(iterator_, 1);
+        ++iterator_;
         return *this;
     }
 
     constexpr Self operator++(int) & noexcept
     {
         Self tmp = *this;
-        std::advance(iterator_, 1);
+        ++iterator_;
         return tmp;
     }
 
     constexpr Self& operator--() noexcept
     {
-        std::advance(iterator_, -1);
+        --iterator_;
         return *this;
     }
 
     constexpr Self operator--(int) & noexcept
     {
         Self tmp = *this;
-        std::advance(iterator_, -1);
+        --iterator_;
         return tmp;
     }
 
     constexpr Self& operator+=(difference_type off)
     {
-        std::advance(iterator_, off);
+        iterator_ += off;
         return *this;
     }
 
     constexpr Self operator+(difference_type off) const
     {
-        return Self(std::next(iterator_, off), unary_function_);
+        return Self(iterator_ + off, unary_function_);
     }
 
     friend constexpr Self operator+(difference_type off, const Self& other)
     {
-        return Self{std::next(other.iterator_, off), other.unary_function_};
+        return Self{other.iterator_ + off, other.unary_function_};
     }
 
     constexpr Self& operator-=(difference_type off)
     {
-        std::advance(iterator_, -off);
+        iterator_ -= off;
         return *this;
     }
 
     constexpr Self operator-(difference_type off) const
     {
-        return Self(std::prev(iterator_, off), unary_function_);
+        return Self(iterator_ - off, unary_function_);
     }
 
     constexpr difference_type operator-(const Self& other) const
