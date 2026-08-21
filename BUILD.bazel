@@ -30,6 +30,7 @@ cc_library(
     strip_include_prefix = strip_include_prefix_config(),
     deps = [
         ":memory",
+        ":swar",
     ],
     copts = ["-std=c++20"],
 )
@@ -629,6 +630,7 @@ cc_library(
         ":preconditions",
         ":sequence_container_checking",
         ":source_location",
+        ":swar",
     ],
     copts = ["-std=c++20"],
 )
@@ -1033,6 +1035,14 @@ cc_library(
 )
 
 cc_library(
+    name = "swar",
+    hdrs = ["include/fixed_containers/swar.hpp"],
+    includes = includes_config(),
+    strip_include_prefix = strip_include_prefix_config(),
+    copts = ["-std=c++20"],
+)
+
+cc_library(
     name = "tuples",
     hdrs = ["include/fixed_containers/tuples.hpp"],
     includes = includes_config(),
@@ -1126,6 +1136,18 @@ cc_library(
     copts = ["-std=c++20"],
     strip_include_prefix = "/test",
     visibility = ["//visibility:private"],
+)
+
+cc_test(
+    name = "algorithm_test",
+    srcs = ["test/algorithm_test.cpp"],
+    deps = [
+        ":algorithm",
+        ":fixed_vector",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
+    ],
+    copts = ["-std=c++20"],
 )
 
 cc_test(
@@ -1930,6 +1952,17 @@ cc_test(
         ":in_out",
         ":out",
         "@com_github_neargye_magic_enum//:magic_enum",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
+    ],
+    copts = ["-std=c++20"],
+)
+
+cc_test(
+    name = "swar_test",
+    srcs = ["test/swar_test.cpp"],
+    deps = [
+        ":swar",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
