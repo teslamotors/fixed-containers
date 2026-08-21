@@ -6,12 +6,15 @@
 #include "fixed_containers/preconditions.hpp"
 #include "fixed_containers/sequence_container_checking.hpp"
 #include "fixed_containers/source_location.hpp"
+#include "fixed_containers/swar.hpp"
 
 #include <array>
 #include <cstddef>
+#include <cstdint>
 #include <cstdlib>
 #include <istream>
 #include <string_view>
+#include <type_traits>
 
 namespace fixed_containers
 {
@@ -403,7 +406,19 @@ public:
     }
     [[nodiscard]] constexpr size_type find(const CharT character, const size_type pos = 0) const
     {
-        return as_view().find(character, pos);
+        if (std::is_constant_evaluated())
+        {
+            return as_view().find(character, pos);
+        }
+        if (pos >= length())
+        {
+            return npos;
+        }
+        const std::size_t relative =
+            swar::find_byte(reinterpret_cast<const std::uint8_t*>(data() + pos),
+                            length() - pos,
+                            static_cast<std::uint8_t>(character));
+        return relative == length() - pos ? npos : pos + relative;
     }
     template <class StringViewLike>
         requires(std::is_convertible_v<const StringViewLike&, std::string_view> and
@@ -432,7 +447,19 @@ public:
     }
     [[nodiscard]] constexpr size_type rfind(const CharT character, const size_type pos = npos) const
     {
-        return as_view().rfind(character, pos);
+        if (std::is_constant_evaluated())
+        {
+            return as_view().rfind(character, pos);
+        }
+        if (empty())
+        {
+            return npos;
+        }
+        const std::size_t last = pos < length() ? pos + 1 : length();
+        const std::size_t found = swar::rfind_byte(reinterpret_cast<const std::uint8_t*>(data()),
+                                                   last,
+                                                   static_cast<std::uint8_t>(character));
+        return found == last ? npos : found;
     }
     template <class StringViewLike>
         requires(std::is_convertible_v<const StringViewLike&, std::string_view> and

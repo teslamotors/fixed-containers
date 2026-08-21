@@ -1,8 +1,15 @@
 #pragma once
 
 #include "fixed_containers/memory.hpp"
+#include "fixed_containers/swar.hpp"
 
+#include <compare>
+#include <concepts>
+#include <cstddef>
+#include <cstdint>
 #include <iterator>
+#include <memory>
+#include <type_traits>
 #include <utility>
 
 namespace fixed_containers::algorithm
@@ -37,6 +44,42 @@ constexpr BidirIt2 uninitialized_relocate_backward(BidirIt1 first, BidirIt1 last
     return d_last;
 }
 
+template <class InputIt1, class InputIt2>
+constexpr bool equal(InputIt1 first1, InputIt1 last1, InputIt2 first2, InputIt2 last2)
+{
+    using T1 = std::remove_cvref_t<decltype(*first1)>;
+    using T2 = std::remove_cvref_t<decltype(*first2)>;
+    if constexpr (std::contiguous_iterator<InputIt1> && std::contiguous_iterator<InputIt2> &&
+                  std::same_as<T1, T2> && swar::UniqueObjectRepresentation<T1>)
+    {
+        if (!std::is_constant_evaluated())
+        {
+            const auto count1 = last1 - first1;
+            const auto count2 = last2 - first2;
+            if (count1 != count2)
+            {
+                return false;
+            }
+            if (count1 == 0)
+            {
+                return true;
+            }
+            return swar::equal_bytes(reinterpret_cast<const std::uint8_t*>(std::to_address(first1)),
+                                     reinterpret_cast<const std::uint8_t*>(std::to_address(first2)),
+                                     static_cast<std::size_t>(count1) * sizeof(T1));
+        }
+    }
+
+    for (; first1 != last1 && first2 != last2; ++first1, ++first2)
+    {
+        if (!(*first1 == *first2))
+        {
+            return false;
+        }
+    }
+    return first1 == last1 && first2 == last2;
+}
+
 // https://en.cppreference.com/w/cpp/algorithm/lexicographical_compare_three_way
 // but lib++-16 and lower are missing this function
 template <class InputIt1, class InputIt2, class Cmp = decltype(std::compare_three_way())>
@@ -52,6 +95,22 @@ constexpr auto lexicographical_compare_three_way(InputIt1 first1,
                                      std::is_same<ReturnType, std::weak_ordering>,
                                      std::is_same<ReturnType, std::partial_ordering>>,
                   "The return type must be a comparison category type.");
+
+    using T1 = std::remove_cvref_t<decltype(*first1)>;
+    using T2 = std::remove_cvref_t<decltype(*first2)>;
+    if constexpr (std::same_as<Cmp, std::compare_three_way> && std::contiguous_iterator<InputIt1> &&
+                  std::contiguous_iterator<InputIt2> && std::same_as<T1, T2> &&
+                  swar::UnsignedByteLike<T1>)
+    {
+        if (!std::is_constant_evaluated())
+        {
+            return swar::compare_bytes(
+                reinterpret_cast<const std::uint8_t*>(std::to_address(first1)),
+                reinterpret_cast<const std::uint8_t*>(std::to_address(first2)),
+                static_cast<std::size_t>(last1 - first1),
+                static_cast<std::size_t>(last2 - first2));
+        }
+    }
 
     bool is_exhausted1 = (first1 == last1);
     bool is_exhausted_2 = (first2 == last2);
