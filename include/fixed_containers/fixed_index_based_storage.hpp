@@ -171,10 +171,10 @@ public:
 
     [[nodiscard]] constexpr bool full() const noexcept { return nodes().full(); }
 
-    constexpr T& at(const std::size_t index) noexcept { return nodes().at(index); }
+    constexpr T& at(const std::size_t index) noexcept { return nodes().data()[index]; }
     [[nodiscard]] constexpr const T& at(const std::size_t index) const noexcept
     {
-        return nodes().at(index);
+        return nodes().data()[index];
     }
 
     template <class... Args>
@@ -186,8 +186,8 @@ public:
 
     constexpr std::size_t delete_at_and_return_repositioned_index(const std::size_t index) noexcept
     {
-        memory::destroy_at_address_of(nodes().at(index));
-        memory::construct_at_address_of(nodes().at(index), std::move(nodes().back()));
+        memory::destroy_at_address_of(nodes().data()[index]);
+        memory::construct_at_address_of(nodes().data()[index], std::move(nodes().back()));
         nodes().pop_back();
         return nodes().size();
     }

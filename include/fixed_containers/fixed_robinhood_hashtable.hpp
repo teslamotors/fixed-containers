@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include <array>
+#include <bit>
 #include <cstdint>
 #include <utility>
 
@@ -172,16 +173,27 @@ public:
         // bucket also encodes. This does not restrict the size of the table because we store the
         // value_index in 32 bits, so the 56 left in this hash are plenty for our needs.
         const std::uint64_t shifted_hash = hash >> Bucket::FINGERPRINT_BITS;
-        return static_cast<SizeType>(shifted_hash % INTERNAL_TABLE_SIZE);
+        if constexpr (std::has_single_bit(INTERNAL_TABLE_SIZE))
+        {
+            return static_cast<SizeType>(shifted_hash & (INTERNAL_TABLE_SIZE - 1));
+        }
+        else
+        {
+            return static_cast<SizeType>(shifted_hash % INTERNAL_TABLE_SIZE);
+        }
     }
 
     [[nodiscard]] static constexpr SizeType next_bucket_index(SizeType bucket_index)
     {
-        if (bucket_index + 1 < INTERNAL_TABLE_SIZE)
+        if constexpr (std::has_single_bit(INTERNAL_TABLE_SIZE))
         {
-            return bucket_index + 1;
+            return (bucket_index + 1U) & static_cast<SizeType>(INTERNAL_TABLE_SIZE - 1U);
         }
-        return 0;
+        else
+        {
+            const SizeType next = bucket_index + 1U;
+            return next == static_cast<SizeType>(INTERNAL_TABLE_SIZE) ? 0 : next;
+        }
     }
 
     constexpr void place_and_shift_up(Bucket bucket, SizeType table_loc)
@@ -393,10 +405,20 @@ public:
 
 constexpr std::size_t default_bucket_count(std::size_t value_count)
 {
-    // oversize the bucket array by 30%
-    // TODO: think about the oversize percentage
-    // TODO: round to a nearby power of 2 to improve modulus performance
-    return (value_count * 130) / 100;
+    // Oversize the bucket array by ~30%, then round up to a power of two so
+    // `hash % table_size` and wraparound become a single AND instead of a divide.
+    if (value_count <= 1)
+    {
+        return value_count;
+    }
+
+    const std::size_t oversized = (value_count * 130) / 100;
+    const std::size_t rounded = std::bit_ceil(oversized);
+    if (rounded > Bucket::MAX_NUM_BUCKETS)
+    {
+        return std::min(std::max(oversized, value_count), Bucket::MAX_NUM_BUCKETS);
+    }
+    return rounded;
 }
 
 }  // namespace fixed_containers::fixed_robinhood_hashtable_detail
