@@ -4,13 +4,17 @@
 
 #include "fixed_containers/concepts.hpp"
 #include "fixed_containers/sequence_container_checking.hpp"
+#include "fixed_containers/source_location.hpp"
+#include "fixed_containers/string_literal.hpp"
 
 #include <gtest/gtest.h>
 
 #include <bitset>
 #include <concepts>
 #include <cstddef>
+#include <cstdlib>
 #include <functional>
+#include <iostream>
 #include <string>
 #include <type_traits>
 
@@ -101,6 +105,70 @@ TEST(FixedBitset, StringConstructor)
 TEST(FixedBitset, StringConstructorPosOutOfBounds)
 {
     EXPECT_DEATH((FixedBitset<8>{std::string{"110010"}, 9}), "");
+}
+
+namespace
+{
+// Names the Checking hook that was reached, so a death test can tell a rejected `pos` apart
+// from an out of bounds read that happened to land on a character that is neither `elem0`
+// nor `elem1`. A plain `EXPECT_DEATH(..., "")` cannot tell those two aborts apart.
+template <typename /*T*/, std::size_t /*MAXIMUM_SIZE*/>
+struct SequenceContainerReportingChecking
+{
+    [[noreturn]] static void out_of_range(const std::size_t /*index*/,
+                                          const std::size_t /*size*/,
+                                          const std_transition::source_location& /*loc*/)
+    {
+        std::cerr << "reached out_of_range\n";
+        std::abort();
+    }
+
+    [[noreturn]] static void length_error(const std::size_t /*target_capacity*/,
+                                          const std_transition::source_location& /*loc*/)
+    {
+        std::cerr << "reached length_error\n";
+        std::abort();
+    }
+
+    [[noreturn]] static void empty_container_access(const std_transition::source_location& /*loc*/)
+    {
+        std::cerr << "reached empty_container_access\n";
+        std::abort();
+    }
+
+    [[noreturn]] static void invalid_argument(const StringLiteral& /*error_message*/,
+                                              const std_transition::source_location& /*loc*/)
+    {
+        std::cerr << "reached invalid_argument\n";
+        std::abort();
+    }
+};
+
+using ReportingBitset64 = FixedBitset<64, SequenceContainerReportingChecking<bool, 64>>;
+}  // namespace
+
+TEST(FixedBitset, StringConstructorPosPastEndOfString)
+{
+    // [bitset.cons] rejects `pos > str.size()`. `pos` is within BIT_COUNT here, so this only
+    // reaches out_of_range if the bound comes from the string and not from size().
+    EXPECT_DEATH((ReportingBitset64{std::string(24, '1'), 30}), "reached out_of_range");
+}
+
+TEST(FixedBitset, StringConstructorPosPastBitCount)
+{
+    // `pos` past BIT_COUNT is fine as long as it is within the string; `count` gets trimmed.
+    {
+        const std::string bit_string = "1111111111110011";
+        const FixedBitset<8> val1{bit_string, 12};
+        EXPECT_EQ(8, val1.size());
+        EXPECT_EQ(2, val1.count());
+    }
+    {
+        const std::string bit_string = "1111111111110011";
+        const std::bitset<8> val1{bit_string, 12};
+        EXPECT_EQ(8, val1.size());
+        EXPECT_EQ(2, val1.count());
+    }
 }
 
 TEST(FixedBitset, StringConstructorInvalidArgument)

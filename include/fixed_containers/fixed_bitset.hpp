@@ -229,9 +229,9 @@ public:
     {
         // construct from [pos, pos + count) elements in string
 
-        if (preconditions::test(pos <= size()))
+        if (preconditions::test(pos <= str.size()))
         {
-            Checking::out_of_range(pos, size(), loc);
+            Checking::out_of_range(pos, str.size(), loc);
         }
 
         if (str.size() - pos < count)
