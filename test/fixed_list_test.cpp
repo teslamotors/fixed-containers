@@ -1453,6 +1453,71 @@ TEST(FixedList, InsertInitializerList)
     }
 }
 
+TEST(FixedList, InsertEmptyRangeReturnsPosition)
+{
+    constexpr bool FORWARD_RANGE_RETURNS_POSITION = []()
+    {
+        std::array<int, 1> external_range{100};
+        FixedList<int, 7> var{0, 1, 2, 3};
+
+        const auto begin = var.begin();
+        if (var.insert(begin, external_range.begin(), external_range.begin()) != begin)
+        {
+            return false;
+        }
+
+        const auto middle = std::next(var.begin(), 2);
+        if (var.insert(middle, external_range.begin(), external_range.begin()) != middle)
+        {
+            return false;
+        }
+
+        const auto end = var.end();
+        return var.insert(end, external_range.begin(), external_range.begin()) == end &&
+               std::ranges::equal(var, std::array{0, 1, 2, 3}) && var.size() == 4;
+    }();
+    static_assert(FORWARD_RANGE_RETURNS_POSITION);
+    EXPECT_TRUE(FORWARD_RANGE_RETURNS_POSITION);
+
+    constexpr bool INITIALIZER_LIST_RETURNS_POSITION = []()
+    {
+        FixedList<int, 7> var{0, 1, 2, 3};
+
+        const auto begin = var.begin();
+        if (var.insert(begin, {}) != begin)
+        {
+            return false;
+        }
+
+        const auto middle = std::next(var.begin(), 2);
+        if (var.insert(middle, {}) != middle)
+        {
+            return false;
+        }
+
+        const auto end = var.end();
+        return var.insert(end, {}) == end && std::ranges::equal(var, std::array{0, 1, 2, 3}) &&
+               var.size() == 4;
+    }();
+    static_assert(INITIALIZER_LIST_RETURNS_POSITION);
+    EXPECT_TRUE(INITIALIZER_LIST_RETURNS_POSITION);
+
+    MockIntegralStream<int> stream{1};
+    const auto empty_input_iterator = stream.end();
+    FixedList<int, 7> var{0, 1, 2, 3};
+
+    const auto begin = var.begin();
+    EXPECT_EQ(begin, var.insert(begin, empty_input_iterator, empty_input_iterator));
+
+    const auto middle = std::next(var.begin(), 2);
+    EXPECT_EQ(middle, var.insert(middle, empty_input_iterator, empty_input_iterator));
+
+    const auto end = var.end();
+    EXPECT_EQ(end, var.insert(end, empty_input_iterator, empty_input_iterator));
+    EXPECT_TRUE(std::ranges::equal(var, std::array{0, 1, 2, 3}));
+    EXPECT_EQ(4, var.size());
+}
+
 TEST(FixedList, InsertInitializerListExceedsCapacity)
 {
     FixedList<int, 4> var1{0, 1, 2};
