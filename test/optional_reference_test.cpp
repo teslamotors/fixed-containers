@@ -191,6 +191,45 @@ TEST(OptionalReference, Reset)
     EXPECT_FALSE(ref.has_value());
 }
 
+TEST(OptionalReference, Emplace)
+{
+    int first = 5;
+    int second = 7;
+    OptionalReference<int> ref;
+
+    int& first_result = ref.emplace(first);
+    EXPECT_TRUE(ref.has_value());
+    EXPECT_EQ(std::addressof(first), std::addressof(first_result));
+    EXPECT_EQ(std::addressof(first), std::addressof(ref.value()));
+
+    int& second_result = ref.emplace(second);
+    EXPECT_EQ(std::addressof(second), std::addressof(second_result));
+    EXPECT_EQ(std::addressof(second), std::addressof(ref.value()));
+    second_result = 11;
+    EXPECT_EQ(5, first);
+    EXPECT_EQ(11, second);
+
+    constexpr bool CONST_EMPLACE_WORKS = []()
+    {
+        const int value = 42;
+        OptionalReference<const int> const_ref;
+        const int& result = const_ref.emplace(value);
+        return std::addressof(result) == std::addressof(value) &&
+               std::addressof(const_ref.value()) == std::addressof(value);
+    }();
+    static_assert(CONST_EMPLACE_WORKS);
+
+    constexpr bool OVERLOADED_ADDRESS_OF_WORKS = []()
+    {
+        MockFailingAddressOfOperator value{17};
+        OptionalReference<MockFailingAddressOfOperator> address_ref;
+        MockFailingAddressOfOperator& result = address_ref.emplace(value);
+        return std::addressof(result) == std::addressof(value) &&
+               std::addressof(address_ref.value()) == std::addressof(value);
+    }();
+    static_assert(OVERLOADED_ADDRESS_OF_WORKS);
+}
+
 TEST(OptionalReference, CopyCtor)
 {
     int entry_a = 5;
