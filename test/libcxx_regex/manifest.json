@@ -1,0 +1,1239 @@
+{
+  "revision": "242ccbf6b6d9d090762a87138c854f2d93b6ab60",
+  "tests": [
+    {
+      "source": "re.alg/re.alg.match/awk.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases.",
+        "FixedRegexLocale's default primary table folds ASCII case, so [=M=] includes m (unlike libc++'s classic primary key)."
+      ]
+    },
+    {
+      "source": "re.alg/re.alg.match/basic.compile.fail.cpp",
+      "status": "compile_fail",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.alg/re.alg.match/basic.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases.",
+        "FixedRegexLocale's default primary table folds ASCII case, so [=M=] includes m (unlike libc++'s classic primary key)."
+      ]
+    },
+    {
+      "source": "re.alg/re.alg.match/ecma.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases.",
+        "FixedRegexLocale's default primary table folds ASCII case, so [=M=] includes m (unlike libc++'s classic primary key)."
+      ]
+    },
+    {
+      "source": "re.alg/re.alg.match/egrep.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.alg/re.alg.match/exponential.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.alg/re.alg.match/extended.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases.",
+        "FixedRegexLocale's default primary table folds ASCII case, so [=M=] includes m (unlike libc++'s classic primary key)."
+      ]
+    },
+    {
+      "source": "re.alg/re.alg.match/grep.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.alg/re.alg.match/inverted_character_classes.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.alg/re.alg.match/lookahead_capture.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.alg/re.alg.match/parse_curly_brackets.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.alg/re.alg.replace/exponential.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases.",
+        "Owning replacement results use auto (FixedString), not std::string."
+      ]
+    },
+    {
+      "source": "re.alg/re.alg.replace/test1.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.alg/re.alg.replace/test2.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.alg/re.alg.replace/test3.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases.",
+        "Owning replacement results use auto (FixedString), not std::string."
+      ]
+    },
+    {
+      "source": "re.alg/re.alg.replace/test4.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases.",
+        "Owning replacement results use auto (FixedString), not std::string."
+      ]
+    },
+    {
+      "source": "re.alg/re.alg.replace/test5.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases.",
+        "Owning replacement results use auto (FixedString), not std::string."
+      ]
+    },
+    {
+      "source": "re.alg/re.alg.replace/test6.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases.",
+        "Owning replacement results use auto (FixedString), not std::string."
+      ]
+    },
+    {
+      "source": "re.alg/re.alg.replace/zero_length_matches.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.alg/re.alg.search/awk.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases.",
+        "FixedRegexLocale's default primary table folds ASCII case, so [=M=] includes m (unlike libc++'s classic primary key)."
+      ]
+    },
+    {
+      "source": "re.alg/re.alg.search/backup.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.alg/re.alg.search/basic.compile.fail.cpp",
+      "status": "compile_fail",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.alg/re.alg.search/basic.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases.",
+        "FixedRegexLocale's default primary table folds ASCII case, so [=M=] includes m (unlike libc++'s classic primary key)."
+      ]
+    },
+    {
+      "source": "re.alg/re.alg.search/ecma.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases.",
+        "FixedRegexLocale's default primary table folds ASCII case, so [=M=] includes m (unlike libc++'s classic primary key).",
+        "For (a*)* on bc, capture 1 is unmatched: ECMA-262 15.10.2.5, step 2.1. Position is end of input, not zero."
+      ]
+    },
+    {
+      "source": "re.alg/re.alg.search/egrep.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.alg/re.alg.search/exponential.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.alg/re.alg.search/extended.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases.",
+        "FixedRegexLocale's default primary table folds ASCII case, so [=M=] includes m (unlike libc++'s classic primary key)."
+      ]
+    },
+    {
+      "source": "re.alg/re.alg.search/grep.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.alg/re.alg.search/invert_neg_word_search.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.alg/re.alg.search/lookahead.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.alg/re.alg.search/no_update_pos.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.alg/re.except/nothing_to_do.pass.cpp",
+      "status": "not_applicable",
+      "reason": "Upstream placeholder; no independent assertions."
+    },
+    {
+      "source": "re.badexp/regex_error.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.const/re.err/error_type.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.const/re.matchflag/match_flag_type.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.const/re.matchflag/match_multiline.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.const/re.matchflag/match_not_bol.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.const/re.matchflag/match_not_eol.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.const/re.matchflag/match_not_null.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.const/re.matchflag/match_prev_avail.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases.",
+        "Retain libstdc++/MSVC anchor semantics for match_prev_avail; libc++ differs. See LWG 3605 and LLVM issue 74838. Word-boundary assertions unchanged."
+      ]
+    },
+    {
+      "source": "re.const/re.synopt/syntax_option_type.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.def/defns.regex.collating.element/nothing_to_do.pass.cpp",
+      "status": "not_applicable",
+      "reason": "Upstream placeholder; no independent assertions."
+    },
+    {
+      "source": "re.def/defns.regex.finite.state.machine/nothing_to_do.pass.cpp",
+      "status": "not_applicable",
+      "reason": "Upstream placeholder; no independent assertions."
+    },
+    {
+      "source": "re.def/defns.regex.format.specifier/nothing_to_do.pass.cpp",
+      "status": "not_applicable",
+      "reason": "Upstream placeholder; no independent assertions."
+    },
+    {
+      "source": "re.def/defns.regex.matched/nothing_to_do.pass.cpp",
+      "status": "not_applicable",
+      "reason": "Upstream placeholder; no independent assertions."
+    },
+    {
+      "source": "re.def/defns.regex.primary.equivalence.class/nothing_to_do.pass.cpp",
+      "status": "not_applicable",
+      "reason": "Upstream placeholder; no independent assertions."
+    },
+    {
+      "source": "re.def/defns.regex.regular.expression/nothing_to_do.pass.cpp",
+      "status": "not_applicable",
+      "reason": "Upstream placeholder; no independent assertions."
+    },
+    {
+      "source": "re.def/defns.regex.subexpression/nothing_to_do.pass.cpp",
+      "status": "not_applicable",
+      "reason": "Upstream placeholder; no independent assertions."
+    },
+    {
+      "source": "re.general/nothing_to_do.pass.cpp",
+      "status": "not_applicable",
+      "reason": "Upstream placeholder; no independent assertions."
+    },
+    {
+      "source": "re.grammar/excessive_brace_count.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases.",
+        "Overflow size_t rather than libc++'s smaller internal repeat counter."
+      ]
+    },
+    {
+      "source": "re.grammar/excessive_brace_min_max.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.iter/re.regiter/iterator_concept_conformance.compile.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.iter/re.regiter/re.regiter.cnstr/cnstr.compile.fail.cpp",
+      "status": "compile_fail",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.iter/re.regiter/re.regiter.cnstr/cnstr.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.iter/re.regiter/re.regiter.cnstr/default.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases.",
+        "Omit unguarded wchar_t instantiation."
+      ]
+    },
+    {
+      "source": "re.iter/re.regiter/re.regiter.comp/equal.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.iter/re.regiter/re.regiter.comp/tested_elsewhere.pass.cpp",
+      "status": "not_applicable",
+      "reason": "Upstream placeholder; no independent assertions."
+    },
+    {
+      "source": "re.iter/re.regiter/re.regiter.deref/deref.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.iter/re.regiter/re.regiter.incr/post.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.iter/re.regiter/types.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases.",
+        "Omit unguarded wchar_t instantiation."
+      ]
+    },
+    {
+      "source": "re.iter/re.tokiter/iterator_concept_conformance.compile.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.iter/re.tokiter/re.tokiter.cnstr/array.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.iter/re.tokiter/re.tokiter.cnstr/default.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases.",
+        "Omit unguarded wchar_t instantiation."
+      ]
+    },
+    {
+      "source": "re.iter/re.tokiter/re.tokiter.cnstr/init.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.iter/re.tokiter/re.tokiter.cnstr/int.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.iter/re.tokiter/re.tokiter.cnstr/temporary-objects.verify.cpp",
+      "status": "compile_fail",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.iter/re.tokiter/re.tokiter.cnstr/vector.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.iter/re.tokiter/re.tokiter.comp/equal.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.iter/re.tokiter/re.tokiter.deref/deref.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.iter/re.tokiter/re.tokiter.incr/post.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.iter/re.tokiter/types.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases.",
+        "Omit unguarded wchar_t instantiation."
+      ]
+    },
+    {
+      "source": "re.regex/re.regex.assign/assign.il.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.regex/re.regex.assign/assign.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.regex/re.regex.assign/assign_iter_iter_flag.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.regex/re.regex.assign/assign_ptr_flag.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.regex/re.regex.assign/assign_ptr_size_flag.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.regex/re.regex.assign/assign_string_flag.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.regex/re.regex.assign/copy.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.regex/re.regex.assign/il.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.regex/re.regex.assign/ptr.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.regex/re.regex.assign/string.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.regex/re.regex.const/constants.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases.",
+        "Omit unguarded wchar_t instantiation."
+      ]
+    },
+    {
+      "source": "re.regex/re.regex.construct/awk_oct.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.regex/re.regex.construct/bad_backref.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.regex/re.regex.construct/bad_ctype.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.regex/re.regex.construct/bad_escape.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases.",
+        "IdentityEscape permits a/e in current [re.grammar]; keep invalid c escapes rejected (https://eel.is/c++draft/re.grammar)."
+      ]
+    },
+    {
+      "source": "re.regex/re.regex.construct/bad_range.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.regex/re.regex.construct/bad_repeat.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.regex/re.regex.construct/copy.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.regex/re.regex.construct/deduct.pass.cpp",
+      "status": "not_applicable",
+      "reason": "Pattern capacity must be supplied explicitly; STL basic_regex CTAD is inapplicable."
+    },
+    {
+      "source": "re.regex/re.regex.construct/deduct.verify.cpp",
+      "status": "not_applicable",
+      "reason": "Pattern capacity must be supplied explicitly; STL basic_regex CTAD is inapplicable."
+    },
+    {
+      "source": "re.regex/re.regex.construct/default.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases.",
+        "Omit unguarded wchar_t instantiation."
+      ]
+    },
+    {
+      "source": "re.regex/re.regex.construct/il_flg.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.regex/re.regex.construct/iter_iter.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.regex/re.regex.construct/iter_iter_flg.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.regex/re.regex.construct/ptr.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.regex/re.regex.construct/ptr_flg.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.regex/re.regex.construct/ptr_size.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.regex/re.regex.construct/ptr_size_flg.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.regex/re.regex.construct/string.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.regex/re.regex.construct/string_flg.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.regex/re.regex.locale/imbue.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases.",
+        "Use explicit fixed value-table locale fixture instead of named OS facets/global locale; retain narrow transform/imbue/case assertions. No claim of named-locale equivalence."
+      ]
+    },
+    {
+      "source": "re.regex/re.regex.nonmemb/re.regex.nmswap/swap.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.regex/re.regex.operations/tested_elsewhere.pass.cpp",
+      "status": "not_applicable",
+      "reason": "Upstream placeholder; no independent assertions."
+    },
+    {
+      "source": "re.regex/re.regex.swap/swap.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.regex/types.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases.",
+        "Check fixed string/value-table locale aliases; omit unguarded wchar_t assertions."
+      ]
+    },
+    {
+      "source": "re.req/nothing_to_do.pass.cpp",
+      "status": "not_applicable",
+      "reason": "Upstream placeholder; no independent assertions."
+    },
+    {
+      "source": "re.results/range_concept_conformance.compile.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases.",
+        "Select rvalue viewable_range expectations using the P2415R2 feature-test macro; check lvalue ranges on all supported libraries."
+      ]
+    },
+    {
+      "source": "re.results/re.results.acc/begin_end.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.results/re.results.acc/cbegin_cend.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.results/re.results.acc/index.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.results/re.results.acc/length.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.results/re.results.acc/position.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.results/re.results.acc/prefix.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.results/re.results.acc/str.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases.",
+        "Compare against the fixed submatch's owning string conversion."
+      ]
+    },
+    {
+      "source": "re.results/re.results.acc/suffix.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.results/re.results.all/get_allocator.pass.cpp",
+      "status": "not_applicable",
+      "reason": "Allocator construction/access has no fixed-capacity equivalent."
+    },
+    {
+      "source": "re.results/re.results.const/allocator.pass.cpp",
+      "status": "not_applicable",
+      "reason": "Allocator construction/access has no fixed-capacity equivalent."
+    },
+    {
+      "source": "re.results/re.results.const/copy.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases.",
+        "Retain default/copy/move state and noexcept assertions; remove allocator construction, access, propagation, and allocator-count checks."
+      ]
+    },
+    {
+      "source": "re.results/re.results.const/copy_assign.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases.",
+        "Retain default/copy/move state and noexcept assertions; remove allocator construction, access, propagation, and allocator-count checks."
+      ]
+    },
+    {
+      "source": "re.results/re.results.const/default.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases.",
+        "Retain default/copy/move state and noexcept assertions; remove allocator construction, access, propagation, and allocator-count checks.",
+        "Omit unguarded wchar_t instantiation."
+      ]
+    },
+    {
+      "source": "re.results/re.results.const/move.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases.",
+        "Retain default/copy/move state and noexcept assertions; remove allocator construction, access, propagation, and allocator-count checks."
+      ]
+    },
+    {
+      "source": "re.results/re.results.const/move_assign.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases.",
+        "Retain default/copy/move state and noexcept assertions; remove allocator construction, access, propagation, and allocator-count checks."
+      ]
+    },
+    {
+      "source": "re.results/re.results.form/form1.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.results/re.results.form/form2.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.results/re.results.form/form3.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases.",
+        "Formatted owning output is FixedString; preserve custom-allocator input format strings."
+      ]
+    },
+    {
+      "source": "re.results/re.results.form/form4.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases.",
+        "Formatted owning output is FixedString; preserve custom-allocator input format strings."
+      ]
+    },
+    {
+      "source": "re.results/re.results.nonmember/equal.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.results/re.results.size/empty.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.results/re.results.size/empty.verify.cpp",
+      "status": "not_applicable",
+      "reason": "Implementation-specific nodiscard warning diagnostic, not a behavioral test."
+    },
+    {
+      "source": "re.results/re.results.size/max_size.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases.",
+        "Omit unguarded wchar_t instantiation."
+      ]
+    },
+    {
+      "source": "re.results/re.results.state/ready.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.results/re.results.swap/member_swap.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.results/re.results.swap/non_member_swap.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.results/types.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases.",
+        "Omit unguarded wchar_t instantiation.",
+        "Check fixed string/locale aliases; omit allocator alias and unguarded wchar_t instantiation."
+      ]
+    },
+    {
+      "source": "re.submatch/re.submatch.members/compare_string_type.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.submatch/re.submatch.members/compare_sub_match.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.submatch/re.submatch.members/compare_value_type_ptr.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.submatch/re.submatch.members/default.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.submatch/re.submatch.members/length.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.submatch/re.submatch.members/operator_string.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.submatch/re.submatch.members/str.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.submatch/re.submatch.members/swap.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.submatch/re.submatch.op/compare.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.submatch/re.submatch.op/stream.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.submatch/types.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases.",
+        "Check fixed string/locale aliases; omit allocator alias and unguarded wchar_t instantiation."
+      ]
+    },
+    {
+      "source": "re.syn/cmatch.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.syn/cregex_iterator.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.syn/cregex_token_iterator.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.syn/csub_match.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.syn/regex.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.syn/smatch.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.syn/sregex_iterator.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.syn/sregex_token_iterator.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.syn/ssub_match.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.syn/wcmatch.pass.cpp",
+      "status": "not_applicable",
+      "reason": "Wide-character API is not implemented."
+    },
+    {
+      "source": "re.syn/wcregex_iterator.pass.cpp",
+      "status": "not_applicable",
+      "reason": "Wide-character API is not implemented."
+    },
+    {
+      "source": "re.syn/wcregex_token_iterator.pass.cpp",
+      "status": "not_applicable",
+      "reason": "Wide-character API is not implemented."
+    },
+    {
+      "source": "re.syn/wcsub_match.pass.cpp",
+      "status": "not_applicable",
+      "reason": "Wide-character API is not implemented."
+    },
+    {
+      "source": "re.syn/wregex.pass.cpp",
+      "status": "not_applicable",
+      "reason": "Wide-character API is not implemented."
+    },
+    {
+      "source": "re.syn/wsmatch.pass.cpp",
+      "status": "not_applicable",
+      "reason": "Wide-character API is not implemented."
+    },
+    {
+      "source": "re.syn/wsregex_iterator.pass.cpp",
+      "status": "not_applicable",
+      "reason": "Wide-character API is not implemented."
+    },
+    {
+      "source": "re.syn/wsregex_token_iterator.pass.cpp",
+      "status": "not_applicable",
+      "reason": "Wide-character API is not implemented."
+    },
+    {
+      "source": "re.syn/wssub_match.pass.cpp",
+      "status": "not_applicable",
+      "reason": "Wide-character API is not implemented."
+    },
+    {
+      "source": "re.traits/default.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases.",
+        "Use explicit fixed value-table locale fixture instead of named OS facets/global locale; retain narrow transform/imbue/case assertions. No claim of named-locale equivalence."
+      ]
+    },
+    {
+      "source": "re.traits/getloc.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases.",
+        "Use explicit fixed value-table locale fixture instead of named OS facets/global locale; retain narrow transform/imbue/case assertions. No claim of named-locale equivalence."
+      ]
+    },
+    {
+      "source": "re.traits/imbue.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases.",
+        "Use explicit fixed value-table locale fixture instead of named OS facets/global locale; retain narrow transform/imbue/case assertions. No claim of named-locale equivalence."
+      ]
+    },
+    {
+      "source": "re.traits/isctype.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.traits/length.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.traits/lookup_classname.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases.",
+        "Compare character-class membership, not libc++'s implementation-defined mask representation."
+      ]
+    },
+    {
+      "source": "re.traits/lookup_collatename.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.traits/transform.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases.",
+        "Use explicit fixed value-table locale fixture instead of named OS facets/global locale; retain narrow transform/imbue/case assertions. No claim of named-locale equivalence."
+      ]
+    },
+    {
+      "source": "re.traits/transform_primary.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases.",
+        "Use explicit fixed value-table locale fixture instead of named OS facets/global locale; retain narrow transform/imbue/case assertions. No claim of named-locale equivalence."
+      ]
+    },
+    {
+      "source": "re.traits/translate.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    },
+    {
+      "source": "re.traits/translate_nocase.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases.",
+        "Use explicit fixed value-table locale fixture instead of named OS facets/global locale; retain narrow transform/imbue/case assertions. No claim of named-locale equivalence."
+      ]
+    },
+    {
+      "source": "re.traits/types.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases.",
+        "Check fixed string/locale aliases; omit allocator alias and unguarded wchar_t instantiation."
+      ]
+    },
+    {
+      "source": "re.traits/value.pass.cpp",
+      "status": "pass",
+      "adaptations": [
+        "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases."
+      ]
+    }
+  ]
+}

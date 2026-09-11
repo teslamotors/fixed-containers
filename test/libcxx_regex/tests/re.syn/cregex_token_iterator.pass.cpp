@@ -1,0 +1,24 @@
+//===----------------------------------------------------------------------===//
+//
+// Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
+// See https://llvm.org/LICENSE.txt for license information.
+// SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+//
+//===----------------------------------------------------------------------===//
+
+// <regex>
+
+// typedef regex_token_iterator<const char*>   cregex_token_iterator;
+
+// Ported from LLVM 242ccbf6b6d9d090762a87138c854f2d93b6ab60/re.syn/cregex_token_iterator.pass.cpp
+// See test/libcxx_regex/manifest.json for all adaptations to this test.
+#include "adapter.h"
+#include <type_traits>
+#include "test_macros.h"
+
+int main(int, char**)
+{
+    static_assert((std::is_same<libcxx_fixed_regex::regex_token_iterator<const char*>, libcxx_fixed_regex::cregex_token_iterator>::value), "");
+
+  return 0;
+}

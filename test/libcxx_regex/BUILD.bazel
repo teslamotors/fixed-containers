@@ -1,0 +1,31 @@
+licenses(["notice"])
+
+exports_files(["LICENSE.TXT"])
+
+cc_library(
+    name = "support",
+    testonly = True,
+    hdrs = ["adapter.h"] + glob(["support/*.h"]),
+    includes = [".", "support"],
+    deps = ["//:fixed_regex", "//:fixed_regex_traits", "//:fixed_match_results", "//:fixed_string"],
+)
+
+[
+    cc_test(
+        name = source.removeprefix("tests/").replace("/", "_").replace(".", "_"),
+        srcs = [source],
+        # Upstream tests use assert and catch regex_error. The default library
+        # policy remains allocation-free and is tested separately without exceptions.
+        copts = ["-std=c++20", "-UNDEBUG", "-fexceptions", "-w"],
+        deps = [":support"],
+        size = "small",
+    )
+    for source in glob(["tests/**/*.pass.cpp"])
+]
+
+test_suite(
+    name = "conformance",
+    tests = [source.removeprefix("tests/").replace("/", "_").replace(".", "_")
+             for source in glob(["tests/**/*.pass.cpp"])],
+    visibility = ["//visibility:public"],
+)
