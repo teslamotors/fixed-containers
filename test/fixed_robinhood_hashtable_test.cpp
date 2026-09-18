@@ -4,6 +4,7 @@
 
 #include <gtest/gtest.h>
 
+#include <bit>
 #include <cstdint>
 #include <functional>
 #include <iostream>
@@ -876,6 +877,19 @@ TEST(MapCornerCases, PerfectCollisions)
     idx = map.opaque_index_of(24);
     EXPECT_TRUE(map.exists(idx));
     EXPECT_EQ(idx.bucket_index, 6);
+}
+
+TEST(DefaultBucketCount, RoundsUpToPowerOfTwo)
+{
+    static_assert(default_bucket_count(0) == 0);
+    static_assert(default_bucket_count(1) == 1);
+    static_assert(default_bucket_count(2) == 2);
+    static_assert(default_bucket_count(10) == 16);
+    static_assert(default_bucket_count(11) == 16);
+    static_assert(default_bucket_count(32) == 64);
+    static_assert(default_bucket_count(100) == 256);
+    static_assert(std::has_single_bit(default_bucket_count(7)));
+    static_assert(default_bucket_count(10) >= (10 * 130) / 100);
 }
 
 }  // namespace fixed_containers::fixed_robinhood_hashtable_detail

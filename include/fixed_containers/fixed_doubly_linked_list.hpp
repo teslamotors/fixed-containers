@@ -116,15 +116,15 @@ public:
 public:
     [[nodiscard]] constexpr const IndexType& next_of(IndexType index) const
     {
-        return chain().at(index).next;
+        return chain()[index].next;
     }
-    [[nodiscard]] constexpr IndexType& next_of(IndexType index) { return chain().at(index).next; }
+    [[nodiscard]] constexpr IndexType& next_of(IndexType index) { return chain()[index].next; }
 
     [[nodiscard]] constexpr const IndexType& prev_of(IndexType index) const
     {
-        return chain().at(index).prev;
+        return chain()[index].prev;
     }
-    [[nodiscard]] constexpr IndexType& prev_of(IndexType index) { return chain().at(index).prev; }
+    [[nodiscard]] constexpr IndexType& prev_of(IndexType index) { return chain()[index].prev; }
 
 private:
     [[nodiscard]] constexpr const StorageType& storage() const

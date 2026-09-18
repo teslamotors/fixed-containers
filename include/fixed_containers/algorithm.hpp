@@ -2,7 +2,12 @@
 
 #include "fixed_containers/memory.hpp"
 
+#include <compare>
+#include <cstddef>
+#include <cstring>
 #include <iterator>
+#include <memory>
+#include <type_traits>
 #include <utility>
 
 namespace fixed_containers::algorithm
@@ -12,6 +17,24 @@ namespace fixed_containers::algorithm
 template <class FwdIt1, class FwdIt2>
 constexpr FwdIt2 uninitialized_relocate(FwdIt1 first, FwdIt1 last, FwdIt2 d_first)
 {
+    using ValueType = std::remove_cvref_t<decltype(*first)>;
+    if constexpr (std::contiguous_iterator<FwdIt1> && std::contiguous_iterator<FwdIt2> &&
+                  std::is_trivially_copyable_v<ValueType> &&
+                  std::is_trivially_destructible_v<ValueType>)
+    {
+        if (!std::is_constant_evaluated())
+        {
+            const auto count = std::distance(first, last);
+            if (count > 0)
+            {
+                std::memmove(static_cast<void*>(std::to_address(d_first)),
+                             static_cast<const void*>(std::to_address(first)),
+                             static_cast<std::size_t>(count) * sizeof(ValueType));
+            }
+            return std::next(d_first, count);
+        }
+    }
+
     while (first != last)
     {
         memory::construct_at_address_of(*d_first, std::move(*first));
@@ -27,6 +50,26 @@ constexpr FwdIt2 uninitialized_relocate(FwdIt1 first, FwdIt1 last, FwdIt2 d_firs
 template <class BidirIt1, class BidirIt2>
 constexpr BidirIt2 uninitialized_relocate_backward(BidirIt1 first, BidirIt1 last, BidirIt2 d_last)
 {
+    using ValueType = std::remove_cvref_t<decltype(*first)>;
+    if constexpr (std::contiguous_iterator<BidirIt1> && std::contiguous_iterator<BidirIt2> &&
+                  std::is_trivially_copyable_v<ValueType> &&
+                  std::is_trivially_destructible_v<ValueType>)
+    {
+        if (!std::is_constant_evaluated())
+        {
+            const auto count = std::distance(first, last);
+            if (count > 0)
+            {
+                auto dest_first = std::prev(d_last, count);
+                std::memmove(static_cast<void*>(std::to_address(dest_first)),
+                             static_cast<const void*>(std::to_address(first)),
+                             static_cast<std::size_t>(count) * sizeof(ValueType));
+                return dest_first;
+            }
+            return d_last;
+        }
+    }
+
     while (first != last)
     {
         --d_last;
@@ -53,25 +96,19 @@ constexpr auto lexicographical_compare_three_way(InputIt1 first1,
                                      std::is_same<ReturnType, std::partial_ordering>>,
                   "The return type must be a comparison category type.");
 
-    bool is_exhausted1 = (first1 == last1);
-    bool is_exhausted_2 = (first2 == last2);
-    for (; !is_exhausted1 && !is_exhausted_2;)
+    for (; first1 != last1 && first2 != last2; ++first1, ++first2)
     {
         if (auto ccc = comp(*first1, *first2); ccc != ReturnType::equal)
         {
             return ccc;
         }
-        std::advance(first1, 1);
-        std::advance(first2, 1);
-        is_exhausted1 = (first1 == last1);
-        is_exhausted_2 = (first2 == last2);
     }
 
-    if (!is_exhausted1)
+    if (first1 != last1)
     {
         return std::strong_ordering::greater;
     }
-    if (!is_exhausted_2)
+    if (first2 != last2)
     {
         return std::strong_ordering::less;
     }

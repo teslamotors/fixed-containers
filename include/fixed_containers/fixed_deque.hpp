@@ -15,6 +15,7 @@
 
 #include <algorithm>
 #include <array>
+#include <bit>
 #include <cstddef>
 #include <initializer_list>
 #include <iterator>
@@ -52,12 +53,26 @@ class FixedDequeBase
     static constexpr std::size_t increment_index_with_wraparound(std::size_t index,
                                                                  std::size_t n = 1)
     {
-        return circular_indexing::increment_index_with_wraparound(FULL_RANGE, index, n).integer;
+        if constexpr (MAXIMUM_SIZE > 0 && std::has_single_bit(MAXIMUM_SIZE))
+        {
+            return (index + n) & (MAXIMUM_SIZE - 1);
+        }
+        else
+        {
+            return circular_indexing::increment_index_with_wraparound(FULL_RANGE, index, n).integer;
+        }
     }
     static constexpr std::size_t decrement_index_with_wraparound(std::size_t index,
                                                                  std::size_t n = 1)
     {
-        return circular_indexing::decrement_index_with_wraparound(FULL_RANGE, index, n).integer;
+        if constexpr (MAXIMUM_SIZE > 0 && std::has_single_bit(MAXIMUM_SIZE))
+        {
+            return (index - n) & (MAXIMUM_SIZE - 1);
+        }
+        else
+        {
+            return circular_indexing::decrement_index_with_wraparound(FULL_RANGE, index, n).integer;
+        }
     }
 
 public:
@@ -116,7 +131,7 @@ private:
             assert_or_abort(starting_index_and_distance_->to_range().contains(current_index_));
             const std::size_t index =
                 decrement_index_with_wraparound(current_index_, FIXED_DEQUE_STARTING_OFFSET);
-            return optional_storage_detail::get(array_->at(index));
+            return optional_storage_detail::get((*array_)[index]);
         }
 
         template <bool IS_CONST2>
