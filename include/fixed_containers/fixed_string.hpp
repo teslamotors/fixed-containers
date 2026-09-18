@@ -338,6 +338,14 @@ public:
     }
 
     constexpr Self& append(
+        size_type count,
+        CharT character,
+        const std_transition::source_location& loc = std_transition::source_location::current())
+    {
+        resize(length() + count, character, loc);
+        return static_cast<Self&>(*this);
+    }
+    constexpr Self& append(
         const CharT* char_ptr,
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
