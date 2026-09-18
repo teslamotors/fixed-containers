@@ -1407,6 +1407,35 @@ TEST(FixedString, AppendInitializerList)
     }
 }
 
+TEST(FixedString, AppendCount)
+{
+    {
+        constexpr auto VAL1 = []()
+        {
+            FixedString<5> var{"012"};
+            var.append(2, 'a');
+            return var;
+        }();
+
+        static_assert(VAL1 == "012aa");
+        static_assert(VAL1.size() == 5);
+        static_assert(VAL1.max_size() == 5);
+    }
+
+    {
+        FixedString<7> var{"0123"};
+        auto& self = var.append(2, 'a');
+        EXPECT_EQ(var, "0123aa");
+        EXPECT_EQ(self, var);
+    }
+}
+
+TEST(FixedString, AppendCountExceedsCapacity)
+{
+    FixedString<4> var{"012"};
+    EXPECT_DEATH(var.append(2, 'a'), "");
+}
+
 TEST(FixedString, AppendStringView)
 {
     {
@@ -2330,6 +2359,10 @@ TYPED_TEST_P(FixedStringFluentReturnTypeFixture, AppendReturnType)
     ret = val.assign("hi");
     ret = val.append(std::string_view{"world"});
     static_assert(std::same_as<decltype(val.append(std::string_view{"world"})), StringT&>);
+
+    ret = val.assign("hi");
+    ret = val.append(2, 'x');
+    static_assert(std::same_as<decltype(val.append(2, 'x')), StringT&>);
 }
 
 TYPED_TEST_P(FixedStringFluentReturnTypeFixture, OperatorPlusEqualReturnType)
