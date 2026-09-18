@@ -504,7 +504,7 @@ private:
             }
         }
 
-        return create_iterator(inserted_point);
+        return create_iterator(inserted_point == NULL_INDEX ? insertion_point : inserted_point);
     }
 
     template <InputIterator InputIt>
@@ -537,7 +537,7 @@ private:
             Checking::length_error(MAXIMUM_SIZE + excess_element_count, loc);
         }
 
-        return create_iterator(inserted_point);
+        return create_iterator(inserted_point == NULL_INDEX ? insertion_point : inserted_point);
     }
 
     constexpr iterator create_iterator(const std::size_t offset_from_start) noexcept
