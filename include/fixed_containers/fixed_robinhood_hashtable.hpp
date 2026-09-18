@@ -393,10 +393,10 @@ public:
 
 constexpr std::size_t default_bucket_count(std::size_t value_count)
 {
-    // oversize the bucket array by 30%
+    // Oversize the bucket array by 30% to reduce collisions as the container becomes full.
     // TODO: think about the oversize percentage
-    // TODO: round to a nearby power of 2 to improve modulus performance
-    return (value_count * 130) / 100;
+    // Additionally, use the next power of 2 to improve modulo runtime efficiency. 
+    return std::bit_ceil((value_count * 130) / 100);
 }
 
 }  // namespace fixed_containers::fixed_robinhood_hashtable_detail
