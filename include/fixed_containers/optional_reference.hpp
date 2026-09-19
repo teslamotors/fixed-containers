@@ -140,7 +140,7 @@ public:
 
     constexpr reference emplace(reference val) noexcept
     {
-        val() = &val;
+        this->val() = std::addressof(val);
         return val;
     }
 
