@@ -19,6 +19,7 @@
 #include <sstream>
 #include <string>
 #include <string_view>
+#include <tuple>
 
 namespace fixed_containers
 {
@@ -2412,6 +2413,111 @@ INSTANTIATE_TYPED_TEST_SUITE_P(FixedString,
                                 FixedStringFluentReturnTypeFixture,
                                 FixedStringFluentReturnTypeTypes,
                                 NameProviderForTypeParameterizedTest);
+
+TEST(FixedString, DerivedEquality)
+{
+    constexpr FixedStringDerived<12> VAL1{"012"};
+    // Neither capacity nor the `Derived` parameter should affect equality
+    constexpr FixedStringDerived<11> VAL2{"012"};
+    constexpr FixedString<12> VAL3{"012"};
+    constexpr FixedStringDerived<12> VAL4{"092"};
+
+    static_assert(VAL1 == VAL2);
+    static_assert(VAL1 == VAL3);
+    static_assert(VAL3 == VAL1);
+    static_assert(VAL1 != VAL4);
+    static_assert(VAL4 != VAL3);
+
+    EXPECT_EQ(VAL1, VAL2);
+    EXPECT_EQ(VAL1, VAL3);
+    EXPECT_NE(VAL1, VAL4);
+}
+
+TEST(FixedString, DerivedComparison)
+{
+    constexpr FixedStringDerived<5> LEFT{"123"};
+    constexpr FixedStringDerived<11> RIGHT{"124"};
+    constexpr FixedString<5> PLAIN{"124"};
+
+    static_assert((LEFT <=> RIGHT) == std::strong_ordering::less);
+    static_assert((RIGHT <=> LEFT) == std::strong_ordering::greater);
+    static_assert((LEFT <=> PLAIN) == std::strong_ordering::less);
+    static_assert((PLAIN <=> LEFT) == std::strong_ordering::greater);
+    static_assert((RIGHT <=> PLAIN) == std::strong_ordering::equal);
+
+    static_assert(LEFT < RIGHT);
+    static_assert(LEFT <= RIGHT);
+    static_assert(!(LEFT > RIGHT));
+    static_assert(!(LEFT >= RIGHT));
+}
+
+TEST(FixedString, DerivedFindFamily)
+{
+    constexpr FixedStringDerived<11> VAL1{"abcdefabcde"};
+    static constexpr FixedStringDerived<3> NEEDLE{"bcd"};
+    // The base is what carries the `Derived` template parameter
+    constexpr const FixedStringDerived<3>::Base& NEEDLE_AS_BASE = NEEDLE;
+
+    static_assert(1 == VAL1.find(NEEDLE));
+    static_assert(1 == VAL1.find(NEEDLE_AS_BASE));
+    static_assert(7 == VAL1.rfind(NEEDLE));
+    static_assert(7 == VAL1.rfind(NEEDLE_AS_BASE));
+
+    static constexpr FixedStringDerived<2> CHARS{"ec"};
+    constexpr const FixedStringDerived<2>::Base& CHARS_AS_BASE = CHARS;
+
+    static_assert(2 == VAL1.find_first_of(CHARS));
+    static_assert(2 == VAL1.find_first_of(CHARS_AS_BASE));
+    static_assert(0 == VAL1.find_first_not_of(CHARS));
+    static_assert(0 == VAL1.find_first_not_of(CHARS_AS_BASE));
+    static_assert(10 == VAL1.find_last_of(CHARS));
+    static_assert(10 == VAL1.find_last_of(CHARS_AS_BASE));
+    static_assert(9 == VAL1.find_last_not_of(CHARS));
+    static_assert(9 == VAL1.find_last_not_of(CHARS_AS_BASE));
+}
+
+TEST(FixedString, DerivedIsFull)
+{
+    constexpr FixedStringDerived<3> VAL1{"012"};
+    constexpr FixedStringDerived<4> VAL2{"012"};
+
+    static_assert(is_full(VAL1));
+    static_assert(!is_full(VAL2));
+}
+
+TEST(FixedString, DerivedAppendTruncating)
+{
+    constexpr auto VAL1 = []()
+    {
+        FixedStringDerived<4> out{"1"};
+        const std::string_view view{"2345678"};
+        // The fluent return type is preserved for derived types
+        static_assert(std::same_as<decltype(append_truncating(out, view)), FixedStringDerived<4>&>);
+        append_truncating(out, view);
+        return out;
+    }();
+
+    static_assert(VAL1 == "1234");
+}
+
+TEST(FixedString, DerivedStreamOperators)
+{
+    const FixedStringDerived<5> str{"hello"};
+    std::stringstream out_stream;
+    out_stream << str;
+    EXPECT_EQ(out_stream.str(), "hello");
+
+    FixedStringDerived<5> read_into{};
+    std::istringstream in_stream{"world"};
+    in_stream >> read_into;
+    EXPECT_EQ(std::string_view{read_into}, "world");
+}
+
+TEST(FixedString, DerivedTupleSize)
+{
+    // Implicit structured bindings stay disabled when `Derived` is provided
+    static_assert(std::tuple_size_v<FixedStringDerived<5>::Base> == 0);
+}
 
 }  // namespace fixed_containers
 

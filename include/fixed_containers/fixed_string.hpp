@@ -396,9 +396,12 @@ public:
         return append(view, std_transition::source_location::current());
     }
 
-    template <std::size_t MAXIMUM_LENGTH_2, customize::SequenceContainerChecking CheckingType2>
-    [[nodiscard]] constexpr size_type find(const FixedString<MAXIMUM_LENGTH_2, CheckingType2>& str,
-                                           const size_type pos = 0) const
+    template <std::size_t MAXIMUM_LENGTH_2,
+              customize::SequenceContainerChecking CheckingType2,
+              class Derived2>
+    [[nodiscard]] constexpr size_type find(
+        const FixedString<MAXIMUM_LENGTH_2, CheckingType2, Derived2>& str,
+        const size_type pos = 0) const
     {
         return as_view().find(str, pos);
     }
@@ -424,9 +427,12 @@ public:
         return as_view().find(str, pos);
     }
 
-    template <std::size_t MAXIMUM_LENGTH_2, customize::SequenceContainerChecking CheckingType2>
-    [[nodiscard]] constexpr size_type rfind(const FixedString<MAXIMUM_LENGTH_2, CheckingType2>& str,
-                                            const size_type pos = npos) const
+    template <std::size_t MAXIMUM_LENGTH_2,
+              customize::SequenceContainerChecking CheckingType2,
+              class Derived2>
+    [[nodiscard]] constexpr size_type rfind(
+        const FixedString<MAXIMUM_LENGTH_2, CheckingType2, Derived2>& str,
+        const size_type pos = npos) const
     {
         return as_view().rfind(str, pos);
     }
@@ -454,9 +460,12 @@ public:
         return as_view().rfind(str, pos);
     }
 
-    template <std::size_t MAXIMUM_LENGTH_2, customize::SequenceContainerChecking CheckingType2>
+    template <std::size_t MAXIMUM_LENGTH_2,
+              customize::SequenceContainerChecking CheckingType2,
+              class Derived2>
     [[nodiscard]] constexpr size_type find_first_of(
-        const FixedString<MAXIMUM_LENGTH_2, CheckingType2>& str, const size_type pos = 0) const
+        const FixedString<MAXIMUM_LENGTH_2, CheckingType2, Derived2>& str,
+        const size_type pos = 0) const
     {
         return as_view().find_first_of(str, pos);
     }
@@ -485,9 +494,12 @@ public:
         return as_view().find_first_of(str, pos);
     }
 
-    template <std::size_t MAXIMUM_LENGTH_2, customize::SequenceContainerChecking CheckingType2>
+    template <std::size_t MAXIMUM_LENGTH_2,
+              customize::SequenceContainerChecking CheckingType2,
+              class Derived2>
     [[nodiscard]] constexpr size_type find_first_not_of(
-        const FixedString<MAXIMUM_LENGTH_2, CheckingType2>& str, const size_type pos = 0) const
+        const FixedString<MAXIMUM_LENGTH_2, CheckingType2, Derived2>& str,
+        const size_type pos = 0) const
     {
         return as_view().find_first_not_of(str, pos);
     }
@@ -516,9 +528,12 @@ public:
         return as_view().find_first_not_of(str, pos);
     }
 
-    template <std::size_t MAXIMUM_LENGTH_2, customize::SequenceContainerChecking CheckingType2>
+    template <std::size_t MAXIMUM_LENGTH_2,
+              customize::SequenceContainerChecking CheckingType2,
+              class Derived2>
     [[nodiscard]] constexpr size_type find_last_of(
-        const FixedString<MAXIMUM_LENGTH_2, CheckingType2>& str, const size_type pos = npos) const
+        const FixedString<MAXIMUM_LENGTH_2, CheckingType2, Derived2>& str,
+        const size_type pos = npos) const
     {
         return as_view().find_last_of(str, pos);
     }
@@ -547,9 +562,12 @@ public:
         return as_view().find_last_of(str, pos);
     }
 
-    template <std::size_t MAXIMUM_LENGTH_2, customize::SequenceContainerChecking CheckingType2>
+    template <std::size_t MAXIMUM_LENGTH_2,
+              customize::SequenceContainerChecking CheckingType2,
+              class Derived2>
     [[nodiscard]] constexpr size_type find_last_not_of(
-        const FixedString<MAXIMUM_LENGTH_2, CheckingType2>& str, const size_type pos = npos) const
+        const FixedString<MAXIMUM_LENGTH_2, CheckingType2, Derived2>& str,
+        const size_type pos = npos) const
     {
         return as_view().find_last_not_of(str, pos);
     }
@@ -583,8 +601,11 @@ public:
         return std::string_view(*this).compare(view);
     }
 
-    template <std::size_t MAXIMUM_LENGTH_2, customize::SequenceContainerChecking CheckingType2>
-    constexpr bool operator==(const FixedString<MAXIMUM_LENGTH_2, CheckingType2>& other) const
+    template <std::size_t MAXIMUM_LENGTH_2,
+              customize::SequenceContainerChecking CheckingType2,
+              class Derived2>
+    constexpr bool operator==(
+        const FixedString<MAXIMUM_LENGTH_2, CheckingType2, Derived2>& other) const
     {
         return as_view() == std::string_view{other};
     }
@@ -594,9 +615,11 @@ public:
     }
     constexpr bool operator==(std::string_view view) const noexcept { return as_view() == view; }
 
-    template <std::size_t MAXIMUM_LENGTH_2, customize::SequenceContainerChecking CheckingType2>
+    template <std::size_t MAXIMUM_LENGTH_2,
+              customize::SequenceContainerChecking CheckingType2,
+              class Derived2>
     constexpr std::strong_ordering operator<=>(
-        const FixedString<MAXIMUM_LENGTH_2, CheckingType2>& other) const noexcept
+        const FixedString<MAXIMUM_LENGTH_2, CheckingType2, Derived2>& other) const noexcept
     {
         return as_view() <=> other;
     }
@@ -694,8 +717,9 @@ private:
     constexpr FixedVecStorage& vec() { return IMPLEMENTATION_DETAIL_DO_NOT_USE_data_; }
 };
 
-template <std::size_t MAXIMUM_LENGTH, typename CheckingType>
-std::istream& operator>>(std::istream& stream, FixedString<MAXIMUM_LENGTH, CheckingType>& str)
+template <std::size_t MAXIMUM_LENGTH, typename CheckingType, typename Derived>
+std::istream& operator>>(std::istream& stream,
+                         FixedString<MAXIMUM_LENGTH, CheckingType, Derived>& str)
 {
     static constexpr std::size_t MAXIMUM_LENGTH_WITH_NULL_TERMINATOR = MAXIMUM_LENGTH + 1;
     str.clear();
@@ -735,14 +759,16 @@ std::istream& operator>>(std::istream& stream, FixedString<MAXIMUM_LENGTH, Check
 
     return stream;
 }
-template <std::size_t MAXIMUM_LENGTH, typename CheckingType>
-std::ostream& operator<<(std::ostream& stream, const FixedString<MAXIMUM_LENGTH, CheckingType>& str)
+template <std::size_t MAXIMUM_LENGTH, typename CheckingType, typename Derived>
+std::ostream& operator<<(std::ostream& stream,
+                         const FixedString<MAXIMUM_LENGTH, CheckingType, Derived>& str)
 {
     return stream << std::string_view{str};
 }
 
-template <std::size_t MAXIMUM_LENGTH, typename CheckingType>
-[[nodiscard]] constexpr bool is_full(const FixedString<MAXIMUM_LENGTH, CheckingType>& container)
+template <std::size_t MAXIMUM_LENGTH, typename CheckingType, typename Derived>
+[[nodiscard]] constexpr bool is_full(
+    const FixedString<MAXIMUM_LENGTH, CheckingType, Derived>& container)
 {
     return container.size() >= container.max_size();
 }
@@ -779,13 +805,12 @@ template <std::size_t MAXIMUM_LENGTH_WITH_NULL_TERMINATOR>
         list, loc);
 }
 
-template <std::size_t MAXIMUM_LENGTH, typename CheckingType>
-constexpr FixedString<MAXIMUM_LENGTH, CheckingType>& append_truncating(
-    FixedString<MAXIMUM_LENGTH, CheckingType>& str, std::string_view view)
+template <std::size_t MAXIMUM_LENGTH, typename CheckingType, typename Derived>
+constexpr auto& append_truncating(FixedString<MAXIMUM_LENGTH, CheckingType, Derived>& str,
+                                  std::string_view view)
 {
     const std::size_t safe_chars = (std::min)(view.size(), MAXIMUM_LENGTH - str.length());
-    str.append(view.substr(0, safe_chars));
-    return str;
+    return str.append(view.substr(0, safe_chars));
 }
 
 }  // namespace fixed_containers
@@ -794,8 +819,9 @@ constexpr FixedString<MAXIMUM_LENGTH, CheckingType>& append_truncating(
 namespace std
 {
 template <std::size_t MAXIMUM_LENGTH,
-          fixed_containers::customize::SequenceContainerChecking CheckingType>
-struct tuple_size<fixed_containers::FixedString<MAXIMUM_LENGTH, CheckingType>>
+          fixed_containers::customize::SequenceContainerChecking CheckingType,
+          class Derived>
+struct tuple_size<fixed_containers::FixedString<MAXIMUM_LENGTH, CheckingType, Derived>>
   : std::integral_constant<std::size_t, 0>
 {
     // Implicit Structured Binding due to the fields being public is disabled
