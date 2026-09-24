@@ -138,10 +138,10 @@ public:
 
     constexpr void reset() noexcept { val() = nullptr; }
 
-    constexpr reference emplace(reference val) noexcept
+    constexpr reference emplace(reference new_value) noexcept
     {
-        this->val() = std::addressof(val);
-        return val;
+        this->val() = std::addressof(new_value);
+        return new_value;
     }
 
 private:
