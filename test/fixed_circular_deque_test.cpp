@@ -1696,6 +1696,27 @@ TEST(FixedCircularDeque, InsertValueExceedsCapacity)
     run_test(FixedCircularDequeInitialStateLastIndex{});
 }
 
+TEST(FixedCircularDeque, InsertValueAtBeginWhenFull)
+{
+    auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
+    {
+        auto var = Factory::template create<int, 4>({0, 1, 2, 3});
+        const int value = 5;
+        EXPECT_EQ(var.insert(var.begin(), value), var.begin());
+        EXPECT_EQ(var.insert(var.begin(), 6), var.begin());
+        EXPECT_EQ(var.emplace(var.begin(), 7), var.begin());
+        EXPECT_TRUE(std::ranges::equal(var, std::array<int, 4>{0, 1, 2, 3}));
+
+        auto var2 = Factory::template create<int, 4>({0, 1, 2, 3});
+        const std::array<int, 1> entry_a{5};
+        var2.insert(var2.begin(), entry_a.begin(), entry_a.end());
+        EXPECT_TRUE(std::ranges::equal(var2, std::array<int, 4>{0, 1, 2, 3}));
+    };
+
+    run_test(FixedCircularDequeInitialStateFirstIndex{});
+    run_test(FixedCircularDequeInitialStateLastIndex{});
+}
+
 TEST(FixedCircularDeque, InsertIterator)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)

@@ -154,6 +154,10 @@ public:
         const value_type& value,
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
+        if (is_dropped_on_insertion(pos))
+        {
+            return begin();
+        }
         pop_front_if_full(loc);
         return deque().insert(pos, value, loc);
     }
@@ -162,6 +166,10 @@ public:
         value_type&& value,
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
+        if (is_dropped_on_insertion(pos))
+        {
+            return begin();
+        }
         pop_front_if_full(loc);
         return deque().insert(pos, std::move(value), loc);
     }
@@ -187,6 +195,10 @@ public:
     template <class... Args>
     constexpr iterator emplace(const_iterator pos, Args&&... args)
     {
+        if (is_dropped_on_insertion(pos))
+        {
+            return begin();
+        }
         pop_front_if_full(std_transition::source_location::current());
         return deque().emplace(pos, std::forward<Args>(args)...);
     }
@@ -476,6 +488,13 @@ private:
             deque().pop_back(loc);
         }
     }
+    // When full, an element inserted at the front would be the oldest one and is dropped right
+    // away, same as with the iterator overloads of insert()
+    [[nodiscard]] constexpr bool is_dropped_on_insertion(const_iterator pos) const
+    {
+        return is_full(deque()) && pos == cbegin();
+    }
+
     constexpr void pop_front_if_full(const std_transition::source_location& loc)
     {
         if (is_full(deque()))
