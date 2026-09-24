@@ -727,34 +727,23 @@ std::istream& operator>>(std::istream& stream,
     // Skip leading whitespace (`std::istream >> std::string` behaves the same way)
     stream >> std::ws;
 
-    char character{};
-    stream.get(character);
-
-    // If EOF/error, put the character back and return
-    if (stream.eof() || stream.fail())
+    // Peek before extracting so that the delimiting whitespace stays in the stream, and so that
+    // a word that exactly fills the string is not reported as exceeding the capacity.
+    for (auto next = stream.peek();
+         next != std::istream::traits_type::eof() && std::isspace(next) == 0;
+         next = stream.peek())
     {
-        return stream.putback(character);
+        if (preconditions::test(!is_full(str)))
+        {
+            CheckingType::length_error(MAXIMUM_LENGTH_WITH_NULL_TERMINATOR,
+                                       std_transition::source_location::current());
+        }
+        str.push_back(std::istream::traits_type::to_char_type(stream.get()));
     }
 
-    for (; !std::isspace(character) && !is_full(str) && !stream.eof() && !stream.fail();
-         stream.get(character))
-    {
-        str.push_back(character);
-    }
-
-    if (stream.fail())
+    if (str.empty())
     {
         stream.setstate(std::ios::failbit);
-        return stream;
-    }
-
-    const bool string_is_full = is_full(str);
-    const bool stream_eof = stream.eof();
-    const bool has_exceeded_capacity = string_is_full && !stream_eof;
-    if (preconditions::test(!has_exceeded_capacity))
-    {
-        CheckingType::length_error(MAXIMUM_LENGTH_WITH_NULL_TERMINATOR,
-                                   std_transition::source_location::current());
     }
 
     return stream;
