@@ -2257,6 +2257,30 @@ TEST(FixedString, IStreamOperator)
     }
 }
 
+TEST(FixedString, IStreamOperatorExactFitFollowedByWhitespace)
+{
+    static constexpr std::string_view INPUT_STRING = "12345678 9";
+
+    auto run_test = []<typename StringType>(StringType&& str)
+    {
+        const std::string input_as_std_string{INPUT_STRING};
+        std::istringstream input(input_as_std_string);
+        input >> str;
+
+        EXPECT_EQ("12345678", str);
+        EXPECT_FALSE(input.fail());
+        EXPECT_EQ(' ', input.peek());
+
+        input >> str;
+        EXPECT_EQ("9", str);
+        EXPECT_FALSE(input.fail());
+        EXPECT_TRUE(input.eof());
+    };
+
+    run_test(std::string{});
+    run_test(FixedString<8>{});
+}
+
 TEST(FixedString, IStreamOperatorExceedsMaxSize)
 {
     static constexpr std::string_view INPUT_STRING = "1234567890";
