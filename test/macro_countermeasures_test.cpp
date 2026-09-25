@@ -35,6 +35,7 @@
 #include <optional>
 #include <random>
 #include <ranges>
+#include <regex>
 #include <source_location>
 #include <string>
 #include <string_view>
@@ -79,6 +80,7 @@
 #include "fixed_containers/fixed_map.hpp"
 #include "fixed_containers/fixed_map_raw_view.hpp"
 #include "fixed_containers/fixed_red_black_tree_view.hpp"
+#include "fixed_containers/fixed_regex.hpp"
 #include "fixed_containers/fixed_set.hpp"
 #include "fixed_containers/fixed_stack.hpp"
 #include "fixed_containers/fixed_string.hpp"

@@ -2,6 +2,8 @@ module(
     name = "fixed_containers",
 )
 
+bazel_dep(name = "platforms", version = "0.0.11", dev_dependency = True)
+
 bazel_dep(name = "magic_enum", repo_name = "com_github_neargye_magic_enum")
 archive_override(
     module_name = "magic_enum",

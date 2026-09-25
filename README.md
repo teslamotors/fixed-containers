@@ -31,6 +31,7 @@ The fixed-container types have identical APIs to their std:: equivalents, so you
    | `FixedCircularQueue` | `std::queue` API with Circular Buffer semantics |
    | `FixedBitset`        | `std::bitset`                                   |
    | `FixedString`        | `std::string`                                   |
+   | `FixedRegex`         | `std::regex`                                    |
    | `FixedMap`           | `std::map`                                      |
    | `FixedSet`           | `std::set`                                      |
    | `FixedUnorderedMap`  | `std::unordered_map`                            |
@@ -41,6 +42,10 @@ The fixed-container types have identical APIs to their std:: equivalents, so you
 
 * `StringLiteral` - Compile-time null-terminated literal string.
 * Rich enums - `enum` & `class` hybrid.
+
+`FixedRegex` provides allocation-free compilation, matching, searching, replacement,
+and match/token iteration. See [the regex documentation](docs/fixed_regex.md) for
+capacities, localization, supported syntax, and the API changes needed to avoid allocations.
 
 ## Rich enum features
 * Rich enums behave like an enum (compile-time known values, can be used in switch-statements, template parameters as well as `EnumMap`/`EnumSet` etc).
