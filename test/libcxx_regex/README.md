@@ -25,7 +25,9 @@ ctest --test-dir build -L libcxx --output-on-failure -j4
 The suite is enabled by default alongside the other tests. Disable it with
 `-DFIXED_CONTAINERS_OPT_BUILD_LIBCXX_REGEX_TESTS=OFF`. CMake enables ASan/UBSan
 for Clang, like the project's existing tests. GCC/Clang compile-failure tests
-also run through CTest; this diagnostic harness is not enabled for MSVC.
+also run through CTest; this diagnostic harness is not enabled for MSVC. MSVC
+executables reserve an 8 MB stack, like the Linux/macOS default: the larger tests
+hold many ~75 KB regex temporaries, which unoptimized MSVC builds never overlap.
 
 Run the 147 executable tests through Bazel:
 
@@ -67,8 +69,10 @@ Allocator-specific assertions are omitted from copy/move result tests, retaining
 their state/noexcept assertions. Locale tests use explicit deterministic byte
 tables, not installed OS locales or global facets. Character-class tests compare
 membership for every byte instead of libc++'s implementation-specific mask
-values. `LIBCPP_ASSERT` checks of libc++ internals are disabled independently of
-the host STL, as they are upstream when testing other implementations.
+values, against explicitly defined classic-locale classes (`std::ctype_base`
+masks need not be distinct; MSVC's `blank` equals its `space`). `LIBCPP_ASSERT`
+checks of libc++ internals are disabled independently of the host STL, as they
+are upstream when testing other implementations.
 
 Range-conformance assertions account for the host library's P2415R2 support:
 rvalue results are viewable with `__cpp_lib_ranges >= 202110L`, but not with

@@ -1179,7 +1179,8 @@
       "status": "pass",
       "adaptations": [
         "Use fixed-capacity types/algorithms via adapter.h; disable guarded wchar_t cases.",
-        "Compare character-class membership, not libc++'s implementation-defined mask representation."
+        "Compare character-class membership, not libc++'s implementation-defined mask representation.",
+        "Name the expected classic-locale classes explicitly: std::ctype_base masks need not be distinct (MSVC's blank equals space)."
       ]
     },
     {

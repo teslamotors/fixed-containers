@@ -12,6 +12,10 @@ foreach(source IN LISTS LIBCXX_REGEX_TEST_SOURCES)
     target_include_directories(${test_name} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/support")
     if(MSVC)
         target_compile_options(${test_name} PRIVATE /UNDEBUG /EHsc)
+        # Each FixedRegex<256, 4096> is ~75 KB and a search keeps ~350 KB of backtracking state
+        # on the stack. Unoptimized MSVC builds give every temporary its own stack slot, so the
+        # larger upstream tests overflow Windows' 1 MB default. Reserve Linux/macOS's 8 MB.
+        target_link_options(${test_name} PRIVATE /STACK:8388608)
     else()
         target_compile_options(${test_name} PRIVATE -UNDEBUG -fexceptions)
     endif()

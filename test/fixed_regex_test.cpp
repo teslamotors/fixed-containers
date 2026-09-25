@@ -104,6 +104,41 @@ void compare_with_std(
         }
     }
 }
+
+// [re.alg.replace] specifies regex_replace in terms of regex_iterator. MSVC's std::regex_replace
+// instead stops after a match that ends at the end of the input, dropping the final empty match
+// that its regex_iterator reports.
+std::string standard_replace(const char* input,
+                             const std::regex& regex,
+                             const char* format,
+                             std::regex_constants::match_flag_type flags)
+{
+    const bool copy =
+        (flags & std::regex_constants::format_no_copy) == std::regex_constants::match_default;
+    const bool first_only =
+        (flags & std::regex_constants::format_first_only) != std::regex_constants::match_default;
+    const char* const last = input + std::char_traits<char>::length(input);
+    std::string result{};
+    const char* suffix = input;
+    for (std::cregex_iterator it{input, last, regex, flags}; it != std::cregex_iterator{}; ++it)
+    {
+        if (copy)
+        {
+            result.append(it->prefix().first, it->prefix().second);
+        }
+        result += it->format(format, flags);
+        suffix = it->suffix().first;
+        if (first_only)
+        {
+            break;
+        }
+    }
+    if (copy)
+    {
+        result.append(suffix, last);
+    }
+    return result;
+}
 }  // namespace
 
 TEST(FixedRegex, Expressions)
@@ -370,7 +405,7 @@ TEST(FixedRegex, IterationAndReplacement)
             }
             EXPECT_EQ(actual, std::default_sentinel);
             for (const auto* format :
-                 {"-", "$&!", "$1:$2", "$$:$`:$'", "$00:$01:$12:$99", "$x$", "\\1&\\&"})
+                 {"-", "$&!", "$1:$2", "$$:$`:$'", "$01:$12:$99", "$x$", "\\1&\\&"})
             {
                 for (const auto flags : {regex_constants::format_default,
                                          regex_constants::format_sed,
@@ -380,11 +415,15 @@ TEST(FixedRegex, IterationAndReplacement)
                     SCOPED_TRACE(format);
                     SCOPED_TRACE(static_cast<int>(flags));
                     EXPECT_EQ(regex_replace<256>(input, regex, format, flags),
-                              std::string_view(std::regex_replace(input, standard, format, flags)));
+                              std::string_view(standard_replace(input, standard, format, flags)));
                 }
             }
         }
     }
+
+    // ECMA-262 leaves $00 implementation-defined. Like libstdc++ and libc++, FixedRegex substitutes
+    // the whole match; MSVC's STL copies it literally.
+    EXPECT_EQ(regex_replace<8>("ab", Regex{"b"}, "<$00>"), "a<b>");
 }
 
 TEST(FixedRegex, TokenIteration)
@@ -479,9 +518,27 @@ TEST(FixedRegex, BinaryInputAndCaseRanges)
     compare_with_std(std::string_view("a\0b", 3), input);
     compare_with_std("a.b", input);
     compare_with_std("a.b", input, Regex::extended);
-    for (const char* pattern : {"[Z-a]", "[A-z]", "[A-Z]", "[a-z]", "[^A-Z]"})
+    for (const char* pattern : {"[A-Z]", "[a-z]", "[^A-Z]"})
         for (const char* text : {"A", "a", "Z", "z", "B", "b", "_", "[", "`"})
             compare_with_std(pattern, text, Regex::icase);
+
+    // Standard libraries disagree when a case-insensitive range spans both cases: libc++ and
+    // MSVC's STL fold the endpoints (MSVC then rejects [Z-a]). FixedRegex, like libstdc++ and
+    // ECMA-262, keeps the endpoints as written and folds the compared characters.
+    const Regex z_to_a{"[Z-a]", Regex::icase};
+    const Regex a_to_z{"[A-z]", Regex::icase};
+    for (const char* text : {"A", "a", "Z", "z", "_", "[", "`"})
+    {
+        SCOPED_TRACE(text);
+        EXPECT_TRUE(regex_match(text, z_to_a));
+        EXPECT_TRUE(regex_match(text, a_to_z));
+    }
+    for (const char* text : {"B", "b"})
+    {
+        SCOPED_TRACE(text);
+        EXPECT_FALSE(regex_match(text, z_to_a));
+        EXPECT_TRUE(regex_match(text, a_to_z));
+    }
 }
 
 TEST(FixedRegex, LookaheadAndPosixPriority)

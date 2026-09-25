@@ -294,27 +294,72 @@ def main():
         if relative == "re.traits/lookup_classname.pass.cpp":
             text = text.replace(
                 "typename libcxx_fixed_regex::regex_traits<char_type>::char_class_type expected",
-                "std::ctype_base::mask expected",
+                "classic_ctype::mask expected",
+            )
+            # LIBCPP_ASSERT discards its arguments; leave those libc++ checks as written.
+            text = re.sub(
+                r"^(?!.*LIBCPP_ASSERT).*std::ctype_base::.*$",
+                lambda m: m.group().replace("std::ctype_base::", "classic_ctype::"),
+                text,
+                flags=re.M,
+            )
+            text = text.replace(
+                '#include "test_iterators.h"\n',
+                """#include "test_iterators.h"
+
+// std::ctype_base masks are implementation-defined and need not be distinct (MSVC's
+// blank equals its space), so spell out the classic locale's classes explicitly.
+namespace classic_ctype
+{
+using mask = unsigned;
+constexpr mask alnum = 1U << 0, alpha = 1U << 1, blank = 1U << 2, cntrl = 1U << 3,
+               digit = 1U << 4, graph = 1U << 5, lower = 1U << 6, print = 1U << 7,
+               punct = 1U << 8, space = 1U << 9, upper = 1U << 10, xdigit = 1U << 11;
+
+inline bool is(mask m, char c)
+{
+    const int i = static_cast<unsigned char>(c);
+    const bool upper_case = i >= 'A' && i <= 'Z';
+    const bool lower_case = i >= 'a' && i <= 'z';
+    const bool decimal = i >= '0' && i <= '9';
+    const bool visible = i > ' ' && i < 127;
+    return ((m & alnum) && (upper_case || lower_case || decimal)) ||
+           ((m & alpha) && (upper_case || lower_case)) ||
+           ((m & blank) && (i == ' ' || i == '\\t')) ||
+           ((m & cntrl) && (i < ' ' || i == 127)) ||
+           ((m & digit) && decimal) ||
+           ((m & graph) && visible) ||
+           ((m & lower) && lower_case) ||
+           ((m & print) && (visible || i == ' ')) ||
+           ((m & punct) && visible && !(upper_case || lower_case || decimal)) ||
+           ((m & space) && (i == ' ' || (i >= '\\t' && i <= '\\r'))) ||
+           ((m & upper) && upper_case) ||
+           ((m & xdigit) && (decimal || (i >= 'A' && i <= 'F') || (i >= 'a' && i <= 'f')));
+}
+} // namespace classic_ctype
+""",
+                1,
             )
             text = text.replace(
                 "assert(result == expected);",
                 """// char_class_type encodings are implementation-defined: compare membership.
-    const auto& facet = std::use_facet<std::ctype<char>>(std::locale::classic());
     for (int i = 0; i < 256; ++i)
-        assert(t.isctype(static_cast<char>(i), result) == facet.is(expected, static_cast<char>(i)));""",
+        assert(t.isctype(static_cast<char>(i), result) == classic_ctype::is(expected, static_cast<char>(i)));""",
             )
             start = text.index("    assert((result & expected) == expected);")
             end = text.index("\n}", start)
             text = (
                 text[:start]
-                + """    const auto& facet = std::use_facet<std::ctype<char>>(std::locale::classic());
-    for (int i = 0; i < 256; ++i)
+                + """    for (int i = 0; i < 256; ++i)
         assert(t.isctype(static_cast<char>(i), result) ==
-               (i == '_' || facet.is(expected, static_cast<char>(i))));"""
+               (i == '_' || classic_ctype::is(expected, static_cast<char>(i))));"""
                 + text[end:]
             )
             notes.append(
                 "Compare character-class membership, not libc++'s implementation-defined mask representation."
+            )
+            notes.append(
+                "Name the expected classic-locale classes explicitly: std::ctype_base masks need not be distinct (MSVC's blank equals space)."
             )
         if relative.endswith(".compile.pass.cpp"):
             text += "\nint main() {} // The assertions above are compile-time tests.\n"

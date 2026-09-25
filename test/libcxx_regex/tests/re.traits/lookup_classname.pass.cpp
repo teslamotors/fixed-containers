@@ -22,10 +22,41 @@
 #include "test_macros.h"
 #include "test_iterators.h"
 
+// std::ctype_base masks are implementation-defined and need not be distinct (MSVC's
+// blank equals its space), so spell out the classic locale's classes explicitly.
+namespace classic_ctype
+{
+using mask = unsigned;
+constexpr mask alnum = 1U << 0, alpha = 1U << 1, blank = 1U << 2, cntrl = 1U << 3,
+               digit = 1U << 4, graph = 1U << 5, lower = 1U << 6, print = 1U << 7,
+               punct = 1U << 8, space = 1U << 9, upper = 1U << 10, xdigit = 1U << 11;
+
+inline bool is(mask m, char c)
+{
+    const int i = static_cast<unsigned char>(c);
+    const bool upper_case = i >= 'A' && i <= 'Z';
+    const bool lower_case = i >= 'a' && i <= 'z';
+    const bool decimal = i >= '0' && i <= '9';
+    const bool visible = i > ' ' && i < 127;
+    return ((m & alnum) && (upper_case || lower_case || decimal)) ||
+           ((m & alpha) && (upper_case || lower_case)) ||
+           ((m & blank) && (i == ' ' || i == '\t')) ||
+           ((m & cntrl) && (i < ' ' || i == 127)) ||
+           ((m & digit) && decimal) ||
+           ((m & graph) && visible) ||
+           ((m & lower) && lower_case) ||
+           ((m & print) && (visible || i == ' ')) ||
+           ((m & punct) && visible && !(upper_case || lower_case || decimal)) ||
+           ((m & space) && (i == ' ' || (i >= '\t' && i <= '\r'))) ||
+           ((m & upper) && upper_case) ||
+           ((m & xdigit) && (decimal || (i >= 'A' && i <= 'F') || (i >= 'a' && i <= 'f')));
+}
+} // namespace classic_ctype
+
 template <class char_type>
 void
 test(const char_type* A,
-     std::ctype_base::mask expected,
+     classic_ctype::mask expected,
      bool icase = false)
 {
     typedef typename libcxx_fixed_regex::regex_traits<char_type>::char_class_type char_class_type;
@@ -33,25 +64,23 @@ test(const char_type* A,
     typedef forward_iterator<const char_type*> F;
     char_class_type result = t.lookup_classname(F(A), F(A + t.length(A)), icase);
     // char_class_type encodings are implementation-defined: compare membership.
-    const auto& facet = std::use_facet<std::ctype<char>>(std::locale::classic());
     for (int i = 0; i < 256; ++i)
-        assert(t.isctype(static_cast<char>(i), result) == facet.is(expected, static_cast<char>(i)));
+        assert(t.isctype(static_cast<char>(i), result) == classic_ctype::is(expected, static_cast<char>(i)));
 }
 
 template <class char_type>
 void
 test_w(const char_type* A,
-       std::ctype_base::mask expected,
+       classic_ctype::mask expected,
         bool icase = false)
 {
     typedef typename libcxx_fixed_regex::regex_traits<char_type>::char_class_type char_class_type;
     libcxx_fixed_regex::regex_traits<char_type> t;
     typedef forward_iterator<const char_type*> F;
     char_class_type result = t.lookup_classname(F(A), F(A + t.length(A)), icase);
-    const auto& facet = std::use_facet<std::ctype<char>>(std::locale::classic());
     for (int i = 0; i < 256; ++i)
         assert(t.isctype(static_cast<char>(i), result) ==
-               (i == '_' || facet.is(expected, static_cast<char>(i))));
+               (i == '_' || classic_ctype::is(expected, static_cast<char>(i))));
 }
 
 int main(int, char**)
@@ -69,182 +98,182 @@ int main(int, char**)
     LIBCPP_ASSERT((std::ctype_base::xdigit & libcxx_fixed_regex::regex_traits<char>::__regex_word) == 0);
     LIBCPP_ASSERT((std::ctype_base::blank  & libcxx_fixed_regex::regex_traits<char>::__regex_word) == 0);
 
-    test("d", std::ctype_base::digit);
-    test("D", std::ctype_base::digit);
-    test("d", std::ctype_base::digit, true);
-    test("D", std::ctype_base::digit, true);
+    test("d", classic_ctype::digit);
+    test("D", classic_ctype::digit);
+    test("d", classic_ctype::digit, true);
+    test("D", classic_ctype::digit, true);
 
-    test_w("w", std::ctype_base::alnum
-              | std::ctype_base::upper | std::ctype_base::lower);
-    test_w("W", std::ctype_base::alnum
-              | std::ctype_base::upper | std::ctype_base::lower);
-    test_w("w", std::ctype_base::alnum
-              | std::ctype_base::upper | std::ctype_base::lower, true);
-    test_w("W", std::ctype_base::alnum
-              | std::ctype_base::upper | std::ctype_base::lower, true);
+    test_w("w", classic_ctype::alnum
+              | classic_ctype::upper | classic_ctype::lower);
+    test_w("W", classic_ctype::alnum
+              | classic_ctype::upper | classic_ctype::lower);
+    test_w("w", classic_ctype::alnum
+              | classic_ctype::upper | classic_ctype::lower, true);
+    test_w("W", classic_ctype::alnum
+              | classic_ctype::upper | classic_ctype::lower, true);
 
-    test("s", std::ctype_base::space);
-    test("S", std::ctype_base::space);
-    test("s", std::ctype_base::space, true);
-    test("S", std::ctype_base::space, true);
+    test("s", classic_ctype::space);
+    test("S", classic_ctype::space);
+    test("s", classic_ctype::space, true);
+    test("S", classic_ctype::space, true);
 
-    test("alnum", std::ctype_base::alnum);
-    test("AlNum", std::ctype_base::alnum);
-    test("alnum", std::ctype_base::alnum, true);
-    test("AlNum", std::ctype_base::alnum, true);
+    test("alnum", classic_ctype::alnum);
+    test("AlNum", classic_ctype::alnum);
+    test("alnum", classic_ctype::alnum, true);
+    test("AlNum", classic_ctype::alnum, true);
 
-    test("alpha", std::ctype_base::alpha);
-    test("Alpha", std::ctype_base::alpha);
-    test("alpha", std::ctype_base::alpha, true);
-    test("Alpha", std::ctype_base::alpha, true);
+    test("alpha", classic_ctype::alpha);
+    test("Alpha", classic_ctype::alpha);
+    test("alpha", classic_ctype::alpha, true);
+    test("Alpha", classic_ctype::alpha, true);
 
-    test("blank", std::ctype_base::blank);
-    test("Blank", std::ctype_base::blank);
-    test("blank", std::ctype_base::blank, true);
-    test("Blank", std::ctype_base::blank, true);
+    test("blank", classic_ctype::blank);
+    test("Blank", classic_ctype::blank);
+    test("blank", classic_ctype::blank, true);
+    test("Blank", classic_ctype::blank, true);
 
-    test("cntrl", std::ctype_base::cntrl);
-    test("Cntrl", std::ctype_base::cntrl);
-    test("cntrl", std::ctype_base::cntrl, true);
-    test("Cntrl", std::ctype_base::cntrl, true);
+    test("cntrl", classic_ctype::cntrl);
+    test("Cntrl", classic_ctype::cntrl);
+    test("cntrl", classic_ctype::cntrl, true);
+    test("Cntrl", classic_ctype::cntrl, true);
 
-    test("digit", std::ctype_base::digit);
-    test("Digit", std::ctype_base::digit);
-    test("digit", std::ctype_base::digit, true);
-    test("Digit", std::ctype_base::digit, true);
+    test("digit", classic_ctype::digit);
+    test("Digit", classic_ctype::digit);
+    test("digit", classic_ctype::digit, true);
+    test("Digit", classic_ctype::digit, true);
 
-    test("digit", std::ctype_base::digit);
-    test("DIGIT", std::ctype_base::digit);
-    test("digit", std::ctype_base::digit, true);
-    test("Digit", std::ctype_base::digit, true);
+    test("digit", classic_ctype::digit);
+    test("DIGIT", classic_ctype::digit);
+    test("digit", classic_ctype::digit, true);
+    test("Digit", classic_ctype::digit, true);
 
-    test("graph", std::ctype_base::graph);
-    test("GRAPH", std::ctype_base::graph);
-    test("graph", std::ctype_base::graph, true);
-    test("Graph", std::ctype_base::graph, true);
+    test("graph", classic_ctype::graph);
+    test("GRAPH", classic_ctype::graph);
+    test("graph", classic_ctype::graph, true);
+    test("Graph", classic_ctype::graph, true);
 
-    test("lower", std::ctype_base::lower);
-    test("LOWER", std::ctype_base::lower);
-    test("lower", std::ctype_base::lower | std::ctype_base::alpha, true);
-    test("Lower", std::ctype_base::lower | std::ctype_base::alpha, true);
+    test("lower", classic_ctype::lower);
+    test("LOWER", classic_ctype::lower);
+    test("lower", classic_ctype::lower | classic_ctype::alpha, true);
+    test("Lower", classic_ctype::lower | classic_ctype::alpha, true);
 
-    test("print", std::ctype_base::print);
-    test("PRINT", std::ctype_base::print);
-    test("print", std::ctype_base::print, true);
-    test("Print", std::ctype_base::print, true);
+    test("print", classic_ctype::print);
+    test("PRINT", classic_ctype::print);
+    test("print", classic_ctype::print, true);
+    test("Print", classic_ctype::print, true);
 
-    test("punct", std::ctype_base::punct);
-    test("PUNCT", std::ctype_base::punct);
-    test("punct", std::ctype_base::punct, true);
-    test("Punct", std::ctype_base::punct, true);
+    test("punct", classic_ctype::punct);
+    test("PUNCT", classic_ctype::punct);
+    test("punct", classic_ctype::punct, true);
+    test("Punct", classic_ctype::punct, true);
 
-    test("space", std::ctype_base::space);
-    test("SPACE", std::ctype_base::space);
-    test("space", std::ctype_base::space, true);
-    test("Space", std::ctype_base::space, true);
+    test("space", classic_ctype::space);
+    test("SPACE", classic_ctype::space);
+    test("space", classic_ctype::space, true);
+    test("Space", classic_ctype::space, true);
 
-    test("upper", std::ctype_base::upper);
-    test("UPPER", std::ctype_base::upper);
-    test("upper", std::ctype_base::upper | std::ctype_base::alpha, true);
-    test("Upper", std::ctype_base::upper | std::ctype_base::alpha, true);
+    test("upper", classic_ctype::upper);
+    test("UPPER", classic_ctype::upper);
+    test("upper", classic_ctype::upper | classic_ctype::alpha, true);
+    test("Upper", classic_ctype::upper | classic_ctype::alpha, true);
 
-    test("xdigit", std::ctype_base::xdigit);
-    test("XDIGIT", std::ctype_base::xdigit);
-    test("xdigit", std::ctype_base::xdigit, true);
-    test("Xdigit", std::ctype_base::xdigit, true);
+    test("xdigit", classic_ctype::xdigit);
+    test("XDIGIT", classic_ctype::xdigit);
+    test("xdigit", classic_ctype::xdigit, true);
+    test("Xdigit", classic_ctype::xdigit, true);
 
-    test("dig", std::ctype_base::mask());
-    test("", std::ctype_base::mask());
-    test("digits", std::ctype_base::mask());
+    test("dig", classic_ctype::mask());
+    test("", classic_ctype::mask());
+    test("digits", classic_ctype::mask());
 
 #ifndef TEST_HAS_NO_WIDE_CHARACTERS
-    test(L"d", std::ctype_base::digit);
-    test(L"D", std::ctype_base::digit);
-    test(L"d", std::ctype_base::digit, true);
-    test(L"D", std::ctype_base::digit, true);
+    test(L"d", classic_ctype::digit);
+    test(L"D", classic_ctype::digit);
+    test(L"d", classic_ctype::digit, true);
+    test(L"D", classic_ctype::digit, true);
 
-    test_w(L"w", std::ctype_base::alnum
-                      | std::ctype_base::upper | std::ctype_base::lower);
-    test_w(L"W", std::ctype_base::alnum
-                      | std::ctype_base::upper | std::ctype_base::lower);
-    test_w(L"w", std::ctype_base::alnum
-                      | std::ctype_base::upper | std::ctype_base::lower, true);
-    test_w(L"W", std::ctype_base::alnum
-                      | std::ctype_base::upper | std::ctype_base::lower, true);
+    test_w(L"w", classic_ctype::alnum
+                      | classic_ctype::upper | classic_ctype::lower);
+    test_w(L"W", classic_ctype::alnum
+                      | classic_ctype::upper | classic_ctype::lower);
+    test_w(L"w", classic_ctype::alnum
+                      | classic_ctype::upper | classic_ctype::lower, true);
+    test_w(L"W", classic_ctype::alnum
+                      | classic_ctype::upper | classic_ctype::lower, true);
 
-    test(L"s", std::ctype_base::space);
-    test(L"S", std::ctype_base::space);
-    test(L"s", std::ctype_base::space, true);
-    test(L"S", std::ctype_base::space, true);
+    test(L"s", classic_ctype::space);
+    test(L"S", classic_ctype::space);
+    test(L"s", classic_ctype::space, true);
+    test(L"S", classic_ctype::space, true);
 
-    test(L"alnum", std::ctype_base::alnum);
-    test(L"AlNum", std::ctype_base::alnum);
-    test(L"alnum", std::ctype_base::alnum, true);
-    test(L"AlNum", std::ctype_base::alnum, true);
+    test(L"alnum", classic_ctype::alnum);
+    test(L"AlNum", classic_ctype::alnum);
+    test(L"alnum", classic_ctype::alnum, true);
+    test(L"AlNum", classic_ctype::alnum, true);
 
-    test(L"alpha", std::ctype_base::alpha);
-    test(L"Alpha", std::ctype_base::alpha);
-    test(L"alpha", std::ctype_base::alpha, true);
-    test(L"Alpha", std::ctype_base::alpha, true);
+    test(L"alpha", classic_ctype::alpha);
+    test(L"Alpha", classic_ctype::alpha);
+    test(L"alpha", classic_ctype::alpha, true);
+    test(L"Alpha", classic_ctype::alpha, true);
 
-    test(L"blank", std::ctype_base::blank);
-    test(L"Blank", std::ctype_base::blank);
-    test(L"blank", std::ctype_base::blank, true);
-    test(L"Blank", std::ctype_base::blank, true);
+    test(L"blank", classic_ctype::blank);
+    test(L"Blank", classic_ctype::blank);
+    test(L"blank", classic_ctype::blank, true);
+    test(L"Blank", classic_ctype::blank, true);
 
-    test(L"cntrl", std::ctype_base::cntrl);
-    test(L"Cntrl", std::ctype_base::cntrl);
-    test(L"cntrl", std::ctype_base::cntrl, true);
-    test(L"Cntrl", std::ctype_base::cntrl, true);
+    test(L"cntrl", classic_ctype::cntrl);
+    test(L"Cntrl", classic_ctype::cntrl);
+    test(L"cntrl", classic_ctype::cntrl, true);
+    test(L"Cntrl", classic_ctype::cntrl, true);
 
-    test(L"digit", std::ctype_base::digit);
-    test(L"Digit", std::ctype_base::digit);
-    test(L"digit", std::ctype_base::digit, true);
-    test(L"Digit", std::ctype_base::digit, true);
+    test(L"digit", classic_ctype::digit);
+    test(L"Digit", classic_ctype::digit);
+    test(L"digit", classic_ctype::digit, true);
+    test(L"Digit", classic_ctype::digit, true);
 
-    test(L"digit", std::ctype_base::digit);
-    test(L"DIGIT", std::ctype_base::digit);
-    test(L"digit", std::ctype_base::digit, true);
-    test(L"Digit", std::ctype_base::digit, true);
+    test(L"digit", classic_ctype::digit);
+    test(L"DIGIT", classic_ctype::digit);
+    test(L"digit", classic_ctype::digit, true);
+    test(L"Digit", classic_ctype::digit, true);
 
-    test(L"graph", std::ctype_base::graph);
-    test(L"GRAPH", std::ctype_base::graph);
-    test(L"graph", std::ctype_base::graph, true);
-    test(L"Graph", std::ctype_base::graph, true);
+    test(L"graph", classic_ctype::graph);
+    test(L"GRAPH", classic_ctype::graph);
+    test(L"graph", classic_ctype::graph, true);
+    test(L"Graph", classic_ctype::graph, true);
 
-    test(L"lower", std::ctype_base::lower);
-    test(L"LOWER", std::ctype_base::lower);
-    test(L"lower", std::ctype_base::lower | std::ctype_base::alpha, true);
-    test(L"Lower", std::ctype_base::lower | std::ctype_base::alpha, true);
+    test(L"lower", classic_ctype::lower);
+    test(L"LOWER", classic_ctype::lower);
+    test(L"lower", classic_ctype::lower | classic_ctype::alpha, true);
+    test(L"Lower", classic_ctype::lower | classic_ctype::alpha, true);
 
-    test(L"print", std::ctype_base::print);
-    test(L"PRINT", std::ctype_base::print);
-    test(L"print", std::ctype_base::print, true);
-    test(L"Print", std::ctype_base::print, true);
+    test(L"print", classic_ctype::print);
+    test(L"PRINT", classic_ctype::print);
+    test(L"print", classic_ctype::print, true);
+    test(L"Print", classic_ctype::print, true);
 
-    test(L"punct", std::ctype_base::punct);
-    test(L"PUNCT", std::ctype_base::punct);
-    test(L"punct", std::ctype_base::punct, true);
-    test(L"Punct", std::ctype_base::punct, true);
+    test(L"punct", classic_ctype::punct);
+    test(L"PUNCT", classic_ctype::punct);
+    test(L"punct", classic_ctype::punct, true);
+    test(L"Punct", classic_ctype::punct, true);
 
-    test(L"space", std::ctype_base::space);
-    test(L"SPACE", std::ctype_base::space);
-    test(L"space", std::ctype_base::space, true);
-    test(L"Space", std::ctype_base::space, true);
+    test(L"space", classic_ctype::space);
+    test(L"SPACE", classic_ctype::space);
+    test(L"space", classic_ctype::space, true);
+    test(L"Space", classic_ctype::space, true);
 
-    test(L"upper", std::ctype_base::upper);
-    test(L"UPPER", std::ctype_base::upper);
-    test(L"upper", std::ctype_base::upper | std::ctype_base::alpha, true);
-    test(L"Upper", std::ctype_base::upper | std::ctype_base::alpha, true);
+    test(L"upper", classic_ctype::upper);
+    test(L"UPPER", classic_ctype::upper);
+    test(L"upper", classic_ctype::upper | classic_ctype::alpha, true);
+    test(L"Upper", classic_ctype::upper | classic_ctype::alpha, true);
 
-    test(L"xdigit", std::ctype_base::xdigit);
-    test(L"XDIGIT", std::ctype_base::xdigit);
-    test(L"xdigit", std::ctype_base::xdigit, true);
-    test(L"Xdigit", std::ctype_base::xdigit, true);
+    test(L"xdigit", classic_ctype::xdigit);
+    test(L"XDIGIT", classic_ctype::xdigit);
+    test(L"xdigit", classic_ctype::xdigit, true);
+    test(L"Xdigit", classic_ctype::xdigit, true);
 
-    test(L"dig", std::ctype_base::mask());
-    test(L"", std::ctype_base::mask());
-    test(L"digits", std::ctype_base::mask());
+    test(L"dig", classic_ctype::mask());
+    test(L"", classic_ctype::mask());
+    test(L"digits", classic_ctype::mask());
 #endif
 
   return 0;
