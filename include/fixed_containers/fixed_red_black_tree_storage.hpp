@@ -75,6 +75,13 @@ public:
 
     [[nodiscard]] constexpr bool full() const noexcept { return storage().full(); }
 
+    constexpr void clear() noexcept
+        requires std::is_same_v<StorageTemplate<NodeType, MAXIMUM_SIZE>,
+                                FixedIndexBasedContiguousStorage<NodeType, MAXIMUM_SIZE>>
+    {
+        storage().clear();
+    }
+
     [[nodiscard]] constexpr RedBlackTreeNodeView<const FixedRedBlackTreeStorage> at(
         const NodeIndex& index) const
     {

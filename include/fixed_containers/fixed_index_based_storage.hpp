@@ -171,6 +171,8 @@ public:
 
     [[nodiscard]] constexpr bool full() const noexcept { return nodes().full(); }
 
+    constexpr void clear() noexcept { nodes().clear(); }
+
     constexpr T& at(const std::size_t index) noexcept { return nodes().at(index); }
     [[nodiscard]] constexpr const T& at(const std::size_t index) const noexcept
     {
