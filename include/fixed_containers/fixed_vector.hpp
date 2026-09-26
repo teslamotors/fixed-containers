@@ -604,7 +604,7 @@ public:
             }
         }
 
-        return std::ranges::equal(*this, other);
+        return algorithm::equal(cbegin(), cend(), other.cbegin(), other.cend());
     }
 
     template <std::size_t MAXIMUM_SIZE_2, customize::SequenceContainerChecking CheckingType2>
