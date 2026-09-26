@@ -2,6 +2,7 @@
 
 #include "mock_testing_types.hpp"
 
+#include "fixed_containers/assert_or_abort.hpp"
 #include "fixed_containers/concepts.hpp"
 #include "fixed_containers/consteval_compare.hpp"
 #include "fixed_containers/fixed_index_based_storage.hpp"
@@ -20,6 +21,7 @@
 #include <queue>
 #include <random>
 #include <tuple>
+#include <utility>
 
 namespace fixed_containers::fixed_red_black_tree_detail
 {
@@ -455,6 +457,130 @@ TEST(FixedRedBlackTreeSet, NoValue)
         ASSERT_TRUE(are_equal(make_node(5, NULL_INDEX, 2, 0, COLOR_BLACK), bst.node_at(1)));
         ASSERT_TRUE(are_equal(make_node(1, 1, NULL_INDEX, NULL_INDEX, COLOR_RED), bst.node_at(2)));
     }
+}
+
+namespace
+{
+// Counts live instances, and takes the counter by reference so that it also works as a local in a
+// constant expression.
+struct ClearTrackedValue
+{
+    int& live_count;
+
+    constexpr explicit ClearTrackedValue(int& count)
+      : live_count(count)
+    {
+        ++live_count;
+    }
+    ClearTrackedValue(const ClearTrackedValue&) = delete;
+    ClearTrackedValue(ClearTrackedValue&&) = delete;
+    ClearTrackedValue& operator=(const ClearTrackedValue&) = delete;
+    ClearTrackedValue& operator=(ClearTrackedValue&&) = delete;
+    constexpr ~ClearTrackedValue() { --live_count; }
+};
+
+template <std::size_t CAPACITY, RedBlackTreeNodeColorCompactness COMPACTNESS>
+constexpr void clear_and_reuse_tree()
+{
+    int live_count = 0;
+    FixedRedBlackTree<int, ClearTrackedValue, CAPACITY, std::less<int>, COMPACTNESS> tree{};
+    for (int round = 0; round < 3; ++round)
+    {
+        for (std::size_t i = 0; i < CAPACITY; ++i)
+        {
+            const auto key = static_cast<int>(i);
+            auto position = tree.index_of_node_with_parent(key);
+            tree.insert_new_at(position, key, live_count);
+        }
+        assert_or_abort(tree.size() == CAPACITY);
+        assert_or_abort(live_count == static_cast<int>(CAPACITY));
+
+        // Leave holes in the free list, so that the walk has to cope with them.
+        for (std::size_t i = 0; i < CAPACITY; i += 2)
+        {
+            tree.delete_node(static_cast<int>(i));
+        }
+
+        tree.clear();
+        assert_or_abort(tree.empty());
+        assert_or_abort(tree.root_index() == NULL_INDEX);
+        assert_or_abort(live_count == 0);
+
+        tree.clear();
+        assert_or_abort(live_count == 0);
+    }
+}
+
+// Satisfies only IsFixedIndexBasedStorage, with none of the members the fast clear paths key off.
+template <class T, std::size_t CAPACITY>
+struct CustomPoolStorage
+{
+    using size_type = std::size_t;
+    using difference_type = std::ptrdiff_t;
+
+    FixedIndexBasedPoolStorage<T, CAPACITY> pool{};
+
+    constexpr T& at(std::size_t index) { return pool.at(index); }
+    constexpr const T& at(std::size_t index) const { return pool.at(index); }
+    constexpr bool full() const { return pool.full(); }
+    template <class... Args>
+    constexpr std::size_t emplace_and_return_index(Args&&... args)
+    {
+        return pool.emplace_and_return_index(std::forward<Args>(args)...);
+    }
+    constexpr std::size_t delete_at_and_return_repositioned_index(std::size_t index)
+    {
+        return pool.delete_at_and_return_repositioned_index(index);
+    }
+};
+static_assert(IsFixedIndexBasedStorage<CustomPoolStorage<int, 4>>);
+}  // namespace
+
+TEST(FixedRedBlackTree, Clear)
+{
+    static constexpr RedBlackTreeNodeColorCompactness EMBEDDED =
+        RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR;
+    static constexpr RedBlackTreeNodeColorCompactness DEDICATED =
+        RedBlackTreeNodeColorCompactness::DEDICATED_COLOR;
+
+    constexpr auto VAL1 = []()
+    {
+        clear_and_reuse_tree<0, EMBEDDED>();
+        clear_and_reuse_tree<1, EMBEDDED>();
+        clear_and_reuse_tree<17, EMBEDDED>();
+        clear_and_reuse_tree<0, DEDICATED>();
+        clear_and_reuse_tree<1, DEDICATED>();
+        clear_and_reuse_tree<17, DEDICATED>();
+        return true;
+    }();
+    static_assert(VAL1);
+
+    clear_and_reuse_tree<64, EMBEDDED>();
+    clear_and_reuse_tree<64, DEDICATED>();
+}
+
+TEST(FixedRedBlackTree, ClearWithCustomStorage)
+{
+    static constexpr RedBlackTreeNodeColorCompactness EMBEDDED =
+        RedBlackTreeNodeColorCompactness::EMBEDDED_COLOR;
+
+    int live_count = 0;
+    FixedRedBlackTree<int, ClearTrackedValue, 17, std::less<int>, EMBEDDED, CustomPoolStorage>
+        tree{};
+
+    for (int i = 0; i < 17; ++i)
+    {
+        auto position = tree.index_of_node_with_parent(i);
+        tree.insert_new_at(position, i, live_count);
+    }
+    tree.clear();
+    ASSERT_TRUE(tree.empty());
+    ASSERT_EQ(0, live_count);
+
+    auto position = tree.index_of_node_with_parent(3);
+    tree.insert_new_at(position, 3, live_count);
+    ASSERT_EQ(1, tree.size());
+    ASSERT_TRUE(tree.contains_node(3));
 }
 
 TEST(FixedRedBlackTree, InsertionExample1)

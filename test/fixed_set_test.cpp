@@ -431,6 +431,27 @@ TEST(FixedSet, Clear)
     }();
 
     static_assert(VAL1.empty());
+
+    constexpr auto VAL2 = []()
+    {
+        FixedSet<int, 10> var{};
+        for (int i = 0; i < 10; i++)
+        {
+            var.insert(i);
+        }
+
+        var.clear();
+        assert_or_abort(var.empty());
+
+        for (int i = 0; i < 10; i++)
+        {
+            var.insert(i * 2);
+        }
+        return var;
+    }();
+
+    static_assert(VAL2.size() == 10);
+    static_assert(VAL2.contains(8));
 }
 
 TEST(FixedSet, Erase)

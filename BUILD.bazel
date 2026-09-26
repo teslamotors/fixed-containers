@@ -1529,6 +1529,7 @@ cc_test(
     name = "fixed_red_black_tree_test",
     srcs = ["test/fixed_red_black_tree_test.cpp"],
     deps = [
+        ":assert_or_abort",
         ":concepts",
         ":consteval_compare",
         ":fixed_index_based_storage",

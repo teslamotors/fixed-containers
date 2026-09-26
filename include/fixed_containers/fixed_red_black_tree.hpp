@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <functional>
+#include <type_traits>
 
 namespace fixed_containers::fixed_red_black_tree_detail
 {
@@ -85,7 +86,56 @@ public:
 
     constexpr void clear() noexcept
     {
-        delete_range_and_return_successor(index_of_min_at(), NULL_INDEX);
+        if constexpr (std::is_same_v<StorageTemplate<NodeType, MAXIMUM_SIZE>,
+                                     FixedIndexBasedPoolStorage<NodeType, MAXIMUM_SIZE>>)
+        {
+            // Remove leaves without rebalancing. Pool storage keeps the remaining indexes stable,
+            // so parent links provide an iterative traversal without an auxiliary stack.
+            NodeIndex index = root_index();
+            while (index != NULL_INDEX)
+            {
+                const NodeIndex left_index = tree_storage().left_index(index);
+                const NodeIndex right_index = tree_storage().right_index(index);
+                if (left_index != NULL_INDEX)
+                {
+                    index = left_index;
+                }
+                else if (right_index != NULL_INDEX)
+                {
+                    index = right_index;
+                }
+                else
+                {
+                    const NodeIndex parent_index = tree_storage().parent_index(index);
+                    if (parent_index != NULL_INDEX)
+                    {
+                        if (tree_storage().left_index(parent_index) == index)
+                        {
+                            tree_storage().set_left_index(parent_index, NULL_INDEX);
+                        }
+                        else
+                        {
+                            tree_storage().set_right_index(parent_index, NULL_INDEX);
+                        }
+                    }
+                    tree_storage().delete_at_and_return_repositioned_index(index);
+                    index = parent_index;
+                }
+            }
+            set_root_index(NULL_INDEX);
+            set_size(0);
+        }
+        else if constexpr (std::is_same_v<StorageTemplate<NodeType, MAXIMUM_SIZE>,
+                                          FixedIndexBasedContiguousStorage<NodeType, MAXIMUM_SIZE>>)
+        {
+            tree_storage().clear();
+            set_root_index(NULL_INDEX);
+            set_size(0);
+        }
+        else
+        {
+            delete_range_and_return_successor(index_of_min_at(), NULL_INDEX);
+        }
     }
 
     constexpr void insert_node(const K& key) noexcept
