@@ -116,7 +116,7 @@ public:
 
     constexpr Self& operator++() noexcept
     {
-        operator+=(1);
+        addition_assignment_op_impl(1);
         return *this;
     }
 
@@ -129,7 +129,7 @@ public:
 
     constexpr Self& operator--() noexcept
     {
-        operator-=(1);
+        subtraction_assignment_op_impl(1);
         return *this;
     }
 
