@@ -357,7 +357,22 @@ public:
         return end_value_index;
     }
 
-    constexpr void clear() { erase_range(begin_index(), end_index()); }
+    constexpr void clear()
+    {
+        // Clear dense tables without hashing or shifting buckets for each element. Retain
+        // per-element erasure for sparse tables to avoid resetting mostly unused buckets.
+        if (size() >= INTERNAL_TABLE_SIZE / 2)
+        {
+            IMPLEMENTATION_DETAIL_DO_NOT_USE_value_storage_.clear();
+            for (Bucket& bucket : IMPLEMENTATION_DETAIL_DO_NOT_USE_bucket_array_)
+            {
+                bucket = Bucket{};
+            }
+            return;
+        }
+
+        erase_range(begin_index(), end_index());
+    }
 
 public:
     constexpr FixedRobinhoodHashtable() = default;

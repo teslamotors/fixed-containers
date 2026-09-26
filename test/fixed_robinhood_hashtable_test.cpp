@@ -1,9 +1,11 @@
 #include "fixed_containers/fixed_robinhood_hashtable.hpp"
 
+#include "fixed_containers/assert_or_abort.hpp"
 #include "fixed_containers/concepts.hpp"
 
 #include <gtest/gtest.h>
 
+#include <cstddef>
 #include <cstdint>
 #include <functional>
 #include <iostream>
@@ -65,6 +67,114 @@ template <typename T>
 }
 
 }  // namespace
+
+namespace
+{
+// Counts live instances, and takes the counter by reference so that it also works as a local in a
+// constant expression.
+struct ClearTrackedValue
+{
+    int& live_count;
+
+    constexpr explicit ClearTrackedValue(int& count)
+      : live_count(count)
+    {
+        ++live_count;
+    }
+    ClearTrackedValue(const ClearTrackedValue&) = delete;
+    ClearTrackedValue(ClearTrackedValue&&) = delete;
+    ClearTrackedValue& operator=(const ClearTrackedValue&) = delete;
+    ClearTrackedValue& operator=(ClearTrackedValue&&) = delete;
+    constexpr ~ClearTrackedValue() { --live_count; }
+};
+
+// Sends every key to the same bucket, so that the whole table is one long probe sequence.
+struct ClearCollidingHash
+{
+    int& calls;
+    std::uint64_t bucket;
+
+    constexpr std::uint64_t operator()(int /*key*/) const
+    {
+        ++calls;
+        return bucket << Bucket::FINGERPRINT_BITS;
+    }
+};
+
+template <std::size_t CAPACITY, std::size_t BUCKET_COUNT>
+constexpr void clear_and_reuse_table()
+{
+    int live_count = 0;
+    int hash_calls = 0;
+    FixedRobinhoodHashtable<int,
+                            ClearTrackedValue,
+                            CAPACITY,
+                            BUCKET_COUNT,
+                            ClearCollidingHash,
+                            std::equal_to<>>
+        table{ClearCollidingHash{hash_calls, BUCKET_COUNT == 0 ? 0 : BUCKET_COUNT - 1}};
+
+    // Every occupancy, so that both the dense and the sparse clear paths get exercised.
+    for (std::size_t count = 0; count <= CAPACITY; ++count)
+    {
+        for (std::size_t i = 0; i < count; ++i)
+        {
+            const auto key = static_cast<int>(i);
+            table.emplace(table.opaque_index_of(key), key, live_count);
+        }
+        assert_or_abort(table.size() == count);
+        assert_or_abort(live_count == static_cast<int>(count));
+
+        table.clear();
+        assert_or_abort(table.size() == 0);
+        assert_or_abort(table.begin_index() == table.end_index());
+        assert_or_abort(live_count == 0);
+
+        table.clear();
+        assert_or_abort(live_count == 0);
+
+        for (std::size_t i = 0; i < count; ++i)
+        {
+            assert_or_abort(!table.exists(table.opaque_index_of(static_cast<int>(i))));
+        }
+    }
+}
+}  // namespace
+
+TEST(FixedRobinhoodHashtable, Clear)
+{
+    constexpr auto VAL1 = []()
+    {
+        clear_and_reuse_table<0, 0>();
+        clear_and_reuse_table<1, 1>();
+        clear_and_reuse_table<5, 6>();
+        clear_and_reuse_table<5, 65>();
+        return true;
+    }();
+    static_assert(VAL1);
+
+    clear_and_reuse_table<17, 22>();
+    clear_and_reuse_table<17, 257>();
+}
+
+TEST(FixedRobinhoodHashtable, ClearDenseTableWithoutHashing)
+{
+    int hash_calls = 0;
+    FixedRobinhoodHashtable<int, int, 17, 22, ClearCollidingHash, std::equal_to<>> table{
+        ClearCollidingHash{hash_calls, 21}};
+    for (int key = 0; key < 17; ++key)
+    {
+        table.emplace(table.opaque_index_of(key), key, key);
+    }
+
+    hash_calls = 0;
+    table.clear();
+
+    EXPECT_EQ(0, hash_calls);
+    EXPECT_EQ(0U, table.size());
+    // The hash function is stateful and must survive clear().
+    EXPECT_EQ(21U << Bucket::FINGERPRINT_BITS, table.hash(0));
+}
 
 TEST(BucketOperations, DistAndFingerprint)
 {

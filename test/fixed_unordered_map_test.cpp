@@ -626,6 +626,27 @@ TEST(FixedUnorderedMap, Clear)
     }();
 
     static_assert(VAL1.empty());
+
+    constexpr auto VAL2 = []()
+    {
+        FixedUnorderedMap<int, int, 17> var{};
+        for (int i = 0; i < 17; i++)
+        {
+            var[i] = i;
+        }
+
+        var.clear();
+        assert_or_abort(var.empty());
+
+        for (int i = 0; i < 17; i++)
+        {
+            var[i] = i * 2;
+        }
+        return var;
+    }();
+
+    static_assert(VAL2.size() == 17);
+    static_assert(VAL2.at(4) == 8);
 }
 
 TEST(FixedUnorderedMap, Erase)
