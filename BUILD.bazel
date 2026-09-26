@@ -1574,6 +1574,7 @@ cc_test(
     name = "fixed_robinhood_hashtable_test",
     srcs = ["test/fixed_robinhood_hashtable_test.cpp"],
     deps = [
+        ":assert_or_abort",
         ":concepts",
         ":fixed_robinhood_hashtable",
         ":instance_counter",
