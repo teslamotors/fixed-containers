@@ -240,13 +240,13 @@ public:
         check_target_size(count, loc);
 
         // Reinitialize the new members if we are enlarging
-        while (size() < count)
+        while (size(loc) < count)
         {
             place_at(end_index(), value);
             increment_size();
         }
         // Destroy extras if we are making it smaller.
-        while (size() > count)
+        while (size(loc) > count)
         {
             destroy_at(back_index());
             decrement_size();
@@ -486,9 +486,9 @@ public:
                            const std_transition::source_location& loc =
                                std_transition::source_location::current()) noexcept
     {
-        if (preconditions::test(index < size()))
+        if (preconditions::test(index < size(loc)))
         {
-            Checking::out_of_range(index, size(), loc);
+            Checking::out_of_range(index, size(loc), loc);
         }
         return unchecked_at(index);
     }
@@ -497,9 +497,9 @@ public:
         const std_transition::source_location& loc =
             std_transition::source_location::current()) const noexcept
     {
-        if (preconditions::test(index < size()))
+        if (preconditions::test(index < size(loc)))
         {
-            Checking::out_of_range(index, size(), loc);
+            Checking::out_of_range(index, size(loc), loc);
         }
         return unchecked_at(index);
     }
@@ -584,8 +584,14 @@ public:
         }
         // Do nothing
     }
-    [[nodiscard]] constexpr std::size_t size() const noexcept
+    [[nodiscard]] constexpr std::size_t size(
+        const std_transition::source_location& loc =
+            std_transition::source_location::current()) const noexcept
     {
+        if (preconditions::test(IMPLEMENTATION_DETAIL_DO_NOT_USE_size_ <= max_size()))
+        {
+            Checking::length_error(IMPLEMENTATION_DETAIL_DO_NOT_USE_size_, loc);
+        }
         return IMPLEMENTATION_DETAIL_DO_NOT_USE_size_;
     }
     [[nodiscard]] constexpr bool empty() const noexcept { return size() == 0; }
@@ -638,7 +644,7 @@ private:
                                        const std_transition::source_location& loc)
     {
         const auto entry_count_to_add = static_cast<std::size_t>(std::distance(first, last));
-        check_target_size(size() + entry_count_to_add, loc);
+        check_target_size(size(loc) + entry_count_to_add, loc);
 
         auto write_it = advance_all_after_iterator_by_n(pos, entry_count_to_add);
         for (auto w_it = write_it; first != last; std::advance(first, 1), std::advance(w_it, 1))
@@ -659,7 +665,7 @@ private:
         auto middle_it = end();
 
         // Place everything at the end
-        for (; first != last && size() < max_size(); ++first)
+        for (; first != last && size(loc) < max_size(); ++first)
         {
             push_back_internal(*first);
         }
@@ -706,7 +712,7 @@ private:
 
     constexpr void check_not_full(const std_transition::source_location& loc) const
     {
-        if (preconditions::test(size() < MAXIMUM_SIZE))
+        if (preconditions::test(size(loc) < MAXIMUM_SIZE))
         {
             Checking::length_error(MAXIMUM_SIZE + 1, loc);
         }
