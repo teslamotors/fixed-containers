@@ -35,6 +35,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <functional>
+#include <limits>
 #include <string>
 #include <type_traits>
 
@@ -584,7 +585,7 @@ public:
                 }
             }
 
-            if (preconditions::test(data_at(0) <= ULONG_MAX))
+            if (preconditions::test(data_at(0) <= (std::numeric_limits<std::uint32_t>::max)()))
             {
                 CheckingType::invalid_argument("FixedBitSet to_ulong overflow error (2)", loc);
             }
