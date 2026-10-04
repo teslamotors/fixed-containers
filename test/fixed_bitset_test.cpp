@@ -12,9 +12,11 @@
 #include <bitset>
 #include <concepts>
 #include <cstddef>
+#include <cstdint>
 #include <cstdlib>
 #include <functional>
 #include <iostream>
+#include <limits>
 #include <string>
 #include <type_traits>
 
@@ -571,6 +573,34 @@ TEST(FixedBitset, ToUlongOverflow)
     FixedBitset<128> val1{42};
     val1.flip();
     EXPECT_DEATH((void)val1.to_ulong(), "");
+}
+
+TEST(FixedBitset, ToUlongFixedWidthBoundary)
+{
+    constexpr std::uint32_t MAX_VALUE = (std::numeric_limits<std::uint32_t>::max)();
+    constexpr FixedBitset<32> VAL32{MAX_VALUE};
+    constexpr FixedBitset<33> VAL33{MAX_VALUE};
+    constexpr FixedBitset<64> VAL64{MAX_VALUE};
+    constexpr FixedBitset<65> VAL65{MAX_VALUE};
+    constexpr FixedBitset<128> VAL128{MAX_VALUE};
+    static_assert(VAL32.to_ulong() == MAX_VALUE);
+    static_assert(VAL33.to_ulong() == MAX_VALUE);
+    static_assert(VAL64.to_ulong() == MAX_VALUE);
+    static_assert(VAL65.to_ulong() == MAX_VALUE);
+    static_assert(VAL128.to_ulong() == MAX_VALUE);
+
+    const FixedBitset<33> overflow33{std::uint64_t{1} << 32};
+    const FixedBitset<64> overflow64{std::uint64_t{1} << 32};
+    const FixedBitset<65> overflow65{std::uint64_t{1} << 32};
+    const FixedBitset<128> overflow128{std::uint64_t{1} << 32};
+    EXPECT_DEATH((void)overflow33.to_ulong(), "");
+    EXPECT_DEATH((void)overflow64.to_ulong(), "");
+    EXPECT_DEATH((void)overflow65.to_ulong(), "");
+    EXPECT_DEATH((void)overflow128.to_ulong(), "");
+    EXPECT_EQ(std::uint64_t{1} << 32, overflow33.to_ullong());
+    EXPECT_EQ(std::uint64_t{1} << 32, overflow64.to_ullong());
+    EXPECT_EQ(std::uint64_t{1} << 32, overflow65.to_ullong());
+    EXPECT_EQ(std::uint64_t{1} << 32, overflow128.to_ullong());
 }
 
 TEST(FixedBitset, ToUllong)
