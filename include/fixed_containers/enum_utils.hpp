@@ -142,6 +142,10 @@ struct BuiltinEnumAdapter<T>
     {
         return magic_enum::enum_cast<Enum>(name);
     }
+    static constexpr std::optional<Enum> value_of(const Strict<char> auto* name)
+    {
+        return value_of(std::string_view{name});
+    }
     static constexpr std::optional<Enum> value_of(std::underlying_type_t<Enum> enum_integer)
     {
         return magic_enum::enum_cast<Enum>(enum_integer);
@@ -188,6 +192,10 @@ struct RichEnumAdapter
     static constexpr std::optional<Enum> value_of(const std::string_view& name)
     {
         return T::value_of(name);
+    }
+    static constexpr std::optional<Enum> value_of(const Strict<char> auto* name)
+    {
+        return value_of(std::string_view{name});
     }
     static constexpr std::optional<Enum> value_of(
         std::underlying_type_t<typename Enum::BackingEnum> enum_integer)
@@ -458,6 +466,11 @@ public:
     static constexpr std::optional<RichEnumType> value_of(const std::string_view& name)
     {
         return rich_enums_detail::value_of<RichEnumType>(name);
+    }
+
+    static constexpr std::optional<RichEnumType> value_of(const Strict<char> auto* name)
+    {
+        return value_of(std::string_view{name});
     }
 
     static constexpr std::optional<RichEnumType> value_of(const BackingEnum& backing_enum)

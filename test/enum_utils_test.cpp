@@ -210,6 +210,38 @@ TEST(RichEnumAdapter, ValueOfUnderlyingInt)
     static_assert(TestRichEnum1::C_FOUR() == EnumAdapter<TestRichEnum1>::value_of(25));
 }
 
+TEST(BuiltinEnumAdapter, ValueOfBoolUnderlyingType)
+{
+    {
+        using BE = detail::TestRichEnumBoolBackingEnum;
+        static_assert(BE::FALSE_VALUE == EnumAdapter<BE>::value_of("FALSE_VALUE"));
+        static_assert(BE::TRUE_VALUE == EnumAdapter<BE>::value_of("TRUE_VALUE"));
+        static_assert(!EnumAdapter<BE>::value_of("INVALID").has_value());
+        static_assert(!EnumAdapter<BE>::value_of("").has_value());
+        static_assert(BE::FALSE_VALUE == EnumAdapter<BE>::value_of(false));
+        static_assert(BE::TRUE_VALUE == EnumAdapter<BE>::value_of(true));
+        // `0` is also a null pointer constant and must stay unambiguous
+        // NOLINTNEXTLINE(modernize-use-bool-literals,readability-implicit-bool-conversion)
+        static_assert(BE::FALSE_VALUE == EnumAdapter<BE>::value_of(0));
+    }
+}
+
+TEST(RichEnumAdapter, ValueOfBoolUnderlyingType)
+{
+    static_assert(TestRichEnumBool::FALSE_VALUE() ==
+                  EnumAdapter<TestRichEnumBool>::value_of("FALSE_VALUE"));
+    static_assert(TestRichEnumBool::TRUE_VALUE() ==
+                  EnumAdapter<TestRichEnumBool>::value_of("TRUE_VALUE"));
+    static_assert(!EnumAdapter<TestRichEnumBool>::value_of("INVALID").has_value());
+    static_assert(!EnumAdapter<TestRichEnumBool>::value_of("").has_value());
+    static_assert(TestRichEnumBool::FALSE_VALUE() ==
+                  EnumAdapter<TestRichEnumBool>::value_of(false));
+    static_assert(TestRichEnumBool::TRUE_VALUE() == EnumAdapter<TestRichEnumBool>::value_of(true));
+    // `0` is also a null pointer constant and must stay unambiguous
+    // NOLINTNEXTLINE(modernize-use-bool-literals,readability-implicit-bool-conversion)
+    static_assert(TestRichEnumBool::FALSE_VALUE() == EnumAdapter<TestRichEnumBool>::value_of(0));
+}
+
 TEST(BuiltinEnumAdapter, Ordinal)
 {
     {
@@ -371,6 +403,36 @@ TEST(RichEnum, ValueOfUnderlyingInt)
     {
         constexpr TestRichEnum1 MY_VALUE = TestRichEnum1::value_of(19).value();
         static_assert(MY_VALUE == TestRichEnum1::C_ONE());
+    }
+}
+
+TEST(RichEnum, ValueOfBoolUnderlyingType)
+{
+    {
+        static_assert(TestRichEnumBool::value_of("FALSE_VALUE") == TestRichEnumBool::FALSE_VALUE());
+        static_assert(TestRichEnumBool::value_of("TRUE_VALUE") == TestRichEnumBool::TRUE_VALUE());
+        static_assert(TestRichEnumBool::value_of("INVALID") == std::nullopt);
+        static_assert(TestRichEnumBool::value_of("") == std::nullopt);
+    }
+
+    {
+        constexpr const char* NAME = "FALSE_VALUE";
+        static_assert(TestRichEnumBool::value_of(NAME) == TestRichEnumBool::FALSE_VALUE());
+    }
+
+    {
+        char name[] = "FALSE_VALUE";
+        char* name_ptr = name;
+        ASSERT_EQ(TestRichEnumBool::value_of(name), TestRichEnumBool::FALSE_VALUE());
+        ASSERT_EQ(TestRichEnumBool::value_of(name_ptr), TestRichEnumBool::FALSE_VALUE());
+    }
+
+    {
+        static_assert(TestRichEnumBool::value_of(false) == TestRichEnumBool::FALSE_VALUE());
+        static_assert(TestRichEnumBool::value_of(true) == TestRichEnumBool::TRUE_VALUE());
+        // `0` is also a null pointer constant and must stay unambiguous
+        // NOLINTNEXTLINE(modernize-use-bool-literals,readability-implicit-bool-conversion)
+        static_assert(TestRichEnumBool::value_of(0) == TestRichEnumBool::FALSE_VALUE());
     }
 }
 
