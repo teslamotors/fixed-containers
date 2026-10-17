@@ -1537,6 +1537,28 @@ TEST(FixedList, Remove)
     static_assert(std::ranges::equal(VAL1, std::array<int, 5>{0, 1, 2, 4, 5}));
 }
 
+TEST(FixedList, RemoveValueReferencingElement)
+{
+    {
+        constexpr auto VAL1 = []()
+        {
+            FixedList<int, 8> var{3, 0, 3, 1, 3};
+            const std::size_t removed_count = var.remove(*std::next(var.begin(), 2));
+            assert_or_abort(3 == removed_count);
+            return var;
+        }();
+
+        static_assert(std::ranges::equal(VAL1, std::array<int, 2>{0, 1}));
+    }
+
+    {
+        FixedList<int, 8> var{3, 0, 3, 1, 3};
+        const std::size_t removed_count = var.remove(*std::next(var.begin(), 2));
+        EXPECT_EQ(3, removed_count);
+        EXPECT_TRUE(std::ranges::equal(var, std::array<int, 2>{0, 1}));
+    }
+}
+
 TEST(FixedList, RemoveInvalidation)
 {
     FixedList<int, 10> var{10, 20, 30, 40, 50};
