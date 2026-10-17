@@ -1338,6 +1338,35 @@ TEST(FixedDeque, Emplace)
     run_test(FixedDequeInitialStateLastIndex{});
 }
 
+TEST(FixedDeque, EmplaceReferencingElement)
+{
+    auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
+    {
+        {
+            constexpr auto VAL1 = []()
+            {
+                auto var = Factory::template create<int, 7>({0, 1, 2, 3});
+                var.emplace(var.begin(), var.back());
+                var.emplace(std::next(var.begin(), 2), var[3]);
+                return var;
+            }();
+
+            static_assert(std::ranges::equal(VAL1, std::array<int, 6>{3, 0, 2, 1, 2, 3}));
+        }
+
+        // NonTriviallyCopyable<T>
+        {
+            auto var2 = Factory::template create<MockNonTrivialInt, 8>({0, 1, 2, 3});
+            var2.emplace(var2.begin(), var2.back());
+            EXPECT_TRUE(
+                std::ranges::equal(var2, std::array<MockNonTrivialInt, 5>{{3, 0, 1, 2, 3}}));
+        }
+    };
+
+    run_test(FixedDequeInitialStateFirstIndex{});
+    run_test(FixedDequeInitialStateLastIndex{});
+}
+
 TEST(FixedDeque, EmplaceExceedsCapacity)
 {
     auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
@@ -1590,6 +1619,35 @@ TEST(FixedDeque, InsertValue)
             var3.insert(var3.end(), var4.begin(), var4.end());
             EXPECT_TRUE(
                 std::ranges::equal(var3, std::array<MockNonTrivialInt, 6>{{2, 1, 4, 5, 0, 3}}));
+        }
+    };
+
+    run_test(FixedDequeInitialStateFirstIndex{});
+    run_test(FixedDequeInitialStateLastIndex{});
+}
+
+TEST(FixedDeque, InsertValueReferencingElement)
+{
+    auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
+    {
+        {
+            constexpr auto VAL1 = []()
+            {
+                auto var = Factory::template create<int, 7>({0, 1, 2, 3});
+                var.insert(var.begin(), var.back());
+                var.insert(std::next(var.begin(), 2), var[3]);
+                return var;
+            }();
+
+            static_assert(std::ranges::equal(VAL1, std::array<int, 6>{3, 0, 2, 1, 2, 3}));
+        }
+
+        // NonTriviallyCopyable<T>
+        {
+            auto var2 = Factory::template create<MockNonTrivialInt, 8>({0, 1, 2, 3});
+            var2.insert(var2.begin(), var2.back());
+            EXPECT_TRUE(
+                std::ranges::equal(var2, std::array<MockNonTrivialInt, 5>{{3, 0, 1, 2, 3}}));
         }
     };
 

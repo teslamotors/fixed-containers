@@ -305,10 +305,9 @@ public:
         const value_type& value,
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
-        check_not_full(loc);
-        auto entry_it = advance_all_after_iterator_by_n(pos, 1);
-        memory::construct_at_address_of(*entry_it, value);
-        return entry_it;
+        // `value` may refer to an element of this container, which is about to be shifted.
+        // Copy it before shifting.
+        return insert(pos, value_type(value), loc);
     }
     constexpr iterator insert(
         const_iterator pos,
@@ -346,10 +345,10 @@ public:
     template <class... Args>
     constexpr iterator emplace(const_iterator pos, Args&&... args)
     {
-        check_not_full(std_transition::source_location::current());
-        auto entry_it = advance_all_after_iterator_by_n(pos, 1);
-        memory::construct_at_address_of(*entry_it, std::forward<Args>(args)...);
-        return entry_it;
+        // `args` may refer to an element of this container, which is about to be shifted.
+        // Construct the value before shifting.
+        value_type value(std::forward<Args>(args)...);
+        return insert(pos, std::move(value), std_transition::source_location::current());
     }
 
     /**
