@@ -1346,6 +1346,28 @@ TEST(FixedVector, Emplace)
     }
 }
 
+TEST(FixedVector, EmplaceReferencingElement)
+{
+    {
+        constexpr auto VAL1 = []()
+        {
+            FixedVector<int, 7> var{0, 1, 2, 3};
+            var.emplace(var.begin(), var.back());
+            var.emplace(std::next(var.begin(), 2), var[3]);
+            return var;
+        }();
+
+        static_assert(std::ranges::equal(VAL1, std::array<int, 6>{3, 0, 2, 1, 2, 3}));
+    }
+
+    // NonTriviallyCopyable<T>
+    {
+        FixedVector<MockNonTrivialInt, 8> var2{0, 1, 2, 3};
+        var2.emplace(var2.begin(), var2.back());
+        EXPECT_TRUE(std::ranges::equal(var2, std::array<MockNonTrivialInt, 5>{{3, 0, 1, 2, 3}}));
+    }
+}
+
 TEST(FixedVector, EmplaceExceedsCapacity)
 {
     FixedVector<int, 2> var{};
@@ -1539,6 +1561,28 @@ TEST(FixedVector, InsertValue)
         var3.clear();
         var3.insert(var3.end(), var4.begin(), var4.end());
         EXPECT_TRUE(std::ranges::equal(var3, std::array<MockNonTrivialInt, 6>{{2, 1, 4, 5, 0, 3}}));
+    }
+}
+
+TEST(FixedVector, InsertValueReferencingElement)
+{
+    {
+        constexpr auto VAL1 = []()
+        {
+            FixedVector<int, 7> var{0, 1, 2, 3};
+            var.insert(var.begin(), var.back());
+            var.insert(std::next(var.begin(), 2), var[3]);
+            return var;
+        }();
+
+        static_assert(std::ranges::equal(VAL1, std::array<int, 6>{3, 0, 2, 1, 2, 3}));
+    }
+
+    // NonTriviallyCopyable<T>
+    {
+        FixedVector<MockNonTrivialInt, 8> var2{0, 1, 2, 3};
+        var2.insert(var2.begin(), var2.back());
+        EXPECT_TRUE(std::ranges::equal(var2, std::array<MockNonTrivialInt, 5>{{3, 0, 1, 2, 3}}));
     }
 }
 
