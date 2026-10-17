@@ -14,6 +14,7 @@
 #include <cstddef>
 #include <initializer_list>
 #include <iterator>
+#include <memory>
 #include <type_traits>
 
 namespace fixed_containers
@@ -371,7 +372,37 @@ public:
     }
     constexpr size_type remove(const T& value)
     {
-        return remove_if([&value](const T& entry) { return entry == value; });
+        // `value` may refer to an element of this list. Delete that element last, so `value` is
+        // not read after it has been destroyed.
+        std::size_t deferred_index = NULL_INDEX;
+        size_type removed_counter = 0;
+
+        for (std::size_t i = front_index(); i != end_index();)
+        {
+            const T& entry = list().at(i);
+            if (!(entry == value))
+            {
+                i = list().next_of(i);
+            }
+            else if (std::addressof(entry) == std::addressof(value))
+            {
+                deferred_index = i;
+                i = list().next_of(i);
+            }
+            else
+            {
+                i = list().delete_at_and_return_next_index(i);
+                ++removed_counter;
+            }
+        }
+
+        if (deferred_index != NULL_INDEX)
+        {
+            list().delete_at_and_return_next_index(deferred_index);
+            ++removed_counter;
+        }
+
+        return removed_counter;
     }
 
     constexpr iterator erase(const_iterator first,
