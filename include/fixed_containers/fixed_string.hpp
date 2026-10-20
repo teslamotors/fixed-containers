@@ -7,10 +7,15 @@
 #include "fixed_containers/sequence_container_checking.hpp"
 #include "fixed_containers/source_location.hpp"
 
+#include <algorithm>
 #include <array>
+#include <concepts>
 #include <cstddef>
 #include <cstdlib>
+#include <functional>
 #include <istream>
+#include <iterator>
+#include <memory>
 #include <string_view>
 #include <type_traits>
 
@@ -272,7 +277,28 @@ public:
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
         const ScopedNullTermination guard{this, loc};
-        return vec().insert(pos, first, last, loc);
+        if (!may_refer_to_this(first, last))
+        {
+            return vec().insert(pos, first, last, loc);
+        }
+
+        // As with std::string, the range may refer to this string, including its null terminator.
+        // Inserting it at `pos` directly would move those characters before they are read, so
+        // append the range after the null terminator instead, which leaves the existing characters
+        // in place. Then rotate it into position and drop the null terminator from the end.
+        const auto index = std::distance(cbegin(), pos);
+        const auto old_length = static_cast<difference_type>(length());
+        vec().push_back(CharT{}, loc);
+        vec().insert(vec().cend(), first, last, loc);
+        // Rotate pointers, not iterators: std::rotate may convert end() to a pointer through
+        // operator->, which dereferences it. When the result fills the string, end() is the end of
+        // the underlying array, and checked iterators (MSVC debug, libc++ hardening) abort on that.
+        CharT* const chars = data();
+        std::rotate(std::next(chars, index),
+                    std::next(chars, old_length + 1),
+                    std::next(chars, static_cast<difference_type>(vec().size())));
+        vec().pop_back(loc);
+        return std::next(begin(), index);
     }
     constexpr iterator insert(
         const_iterator pos,
@@ -287,8 +313,7 @@ public:
         std::string_view view,
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
-        const ScopedNullTermination guard{this, loc};
-        return vec().insert(pos, view.begin(), view.end(), loc);
+        return insert(pos, view.begin(), view.end(), loc);
     }
 
     constexpr iterator erase(
@@ -707,6 +732,40 @@ private:
         null_terminate(length());
     }
     constexpr void null_terminate_at_max_length() { null_terminate(MAXIMUM_LENGTH); }
+
+    template <InputIterator InputIt>
+    [[nodiscard]] constexpr bool may_refer_to_this(const InputIt& first, const InputIt& last) const
+    {
+        if constexpr (!std::forward_iterator<InputIt>)
+        {
+            // FixedVector appends single-pass ranges before it moves any character
+            return false;
+        }
+        else if constexpr (std::contiguous_iterator<InputIt> &&
+                           std::same_as<std::iter_value_t<InputIt>, CharT>)
+        {
+            if (first == last)
+            {
+                return false;
+            }
+            // Pointers into different objects cannot be ordered during constant evaluation
+            if (std::is_constant_evaluated())
+            {
+                return true;
+            }
+            // As with std::string, this includes the null terminator
+            const CharT* const ptr = std::to_address(first);
+            const CharT* const null_terminator =
+                std::next(data(), static_cast<difference_type>(length()));
+            return std::less_equal<const CharT*>{}(data(), ptr) &&
+                   std::less_equal<const CharT*>{}(ptr, null_terminator);
+        }
+        else
+        {
+            // Cannot tell, for example for reverse iterators over this string
+            return true;
+        }
+    }
 
     [[nodiscard]] constexpr std::string_view as_view() const { return *this; }
 

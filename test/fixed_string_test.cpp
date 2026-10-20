@@ -15,6 +15,7 @@
 #include <concepts>
 #include <cstddef>
 #include <iterator>
+#include <list>
 #include <span>
 #include <sstream>
 #include <string>
@@ -857,6 +858,14 @@ TEST(FixedString, InsertIterator)
         EXPECT_EQ(var, "01ae23");
         EXPECT_EQ(iter, std::next(var.begin(), 2));
     }
+    {
+        // Non-contiguous range that exactly fills the string
+        const std::list<char> entry_a{'a'};
+        FixedString<4> var{"012"};
+        auto iter = var.insert(std::next(var.begin(), 1), entry_a.begin(), entry_a.end());
+        EXPECT_EQ(var, "0a12");
+        EXPECT_EQ(iter, std::next(var.begin(), 1));
+    }
 }
 
 TEST(FixedString, InsertIteratorExceedsCapacity)
@@ -864,6 +873,91 @@ TEST(FixedString, InsertIteratorExceedsCapacity)
     FixedString<4> var1{"012"};
     std::array<char, 2> entry_a{'3', '4'};
     EXPECT_DEATH(var1.insert(std::next(var1.begin(), 1), entry_a.begin(), entry_a.end()), "");
+}
+
+TEST(FixedString, InsertIteratorReferencingSelf)
+{
+    // As with std::string, the inserted range may refer to the string itself
+    {
+        // For off-by-one issues, make the capacity just fit
+        constexpr auto VAL1 = []()
+        {
+            FixedString<9> var{"abcdef"};
+            var.insert(
+                std::next(var.begin(), 2), std::next(var.begin(), 1), std::next(var.begin(), 4));
+            return var;
+        }();
+
+        static_assert(VAL1 == "abbcdcdef");
+        static_assert(VAL1.size() == 9);
+        static_assert(VAL1.max_size() == 9);
+    }
+    {
+        constexpr auto VAL2 = []()
+        {
+            FixedString<7> var{"abc"};
+            var.insert(std::next(var.begin(), 1), var.crbegin(), var.crend());
+            return var;
+        }();
+
+        static_assert(VAL2 == "acbabc");
+    }
+
+    {
+        FixedString<9> var{"abcdef"};
+        auto iter = var.insert(
+            std::next(var.begin(), 2), std::next(var.begin(), 1), std::next(var.begin(), 4));
+        EXPECT_EQ(var, "abbcdcdef");
+        EXPECT_EQ(iter, std::next(var.begin(), 2));
+    }
+    {
+        FixedString<7> var{"abc"};
+        auto iter = var.insert(std::next(var.begin(), 1), var.crbegin(), var.crend());
+        EXPECT_EQ(var, "acbabc");
+        EXPECT_EQ(iter, std::next(var.begin(), 1));
+    }
+    {
+        FixedString<7> var{"0123"};
+        const char* const data = var.data();
+        auto iter = var.insert(var.begin(), std::next(data, 1), std::next(data, 3));
+        EXPECT_EQ(var, "120123");
+        EXPECT_EQ(iter, var.begin());
+    }
+
+    // The range may also include the null terminator
+    {
+        constexpr auto VAL3 = []()
+        {
+            FixedString<7> var{"abc"};
+            var.insert(std::next(var.begin(), 1), var.c_str(), std::next(var.c_str(), 4));
+            return var;
+        }();
+
+        static_assert(VAL3 == std::string_view{"aabc\0bc", 7});
+    }
+    {
+        constexpr auto VAL4 = []()
+        {
+            FixedString<4> var{"abc"};
+            var.insert(var.begin(), std::next(var.c_str(), 3), std::next(var.c_str(), 4));
+            return var;
+        }();
+
+        static_assert(VAL4 == std::string_view{"\0abc", 4});
+    }
+
+    {
+        FixedString<7> var{"abc"};
+        auto iter = var.insert(std::next(var.begin(), 1), var.c_str(), std::next(var.c_str(), 4));
+        EXPECT_EQ(var, std::string_view("aabc\0bc", 7));
+        EXPECT_EQ(iter, std::next(var.begin(), 1));
+    }
+    {
+        FixedString<4> var{"abc"};
+        auto iter = var.insert(var.begin(), std::next(var.c_str(), 3), std::next(var.c_str(), 4));
+        EXPECT_EQ(var, std::string_view("\0abc", 4));
+        EXPECT_EQ(iter, var.begin());
+    }
 }
 
 TEST(FixedString, InsertInputIterator)
@@ -940,6 +1034,67 @@ TEST(FixedString, InsertStringView)
         EXPECT_EQ(var, "01ae23");
         EXPECT_EQ(iter, std::next(var.begin(), 2));
     }
+}
+
+TEST(FixedString, InsertStringViewReferencingSelf)
+{
+    // As with std::string, the inserted view may refer to the string itself
+    {
+        // For off-by-one issues, make the capacity just fit
+        constexpr auto VAL1 = []()
+        {
+            FixedString<6> var{"abc"};
+            var.insert(std::next(var.begin(), 1), std::string_view{var});
+            return var;
+        }();
+
+        static_assert(VAL1 == "aabcbc");
+        static_assert(VAL1.size() == 6);
+        static_assert(VAL1.max_size() == 6);
+    }
+    {
+        constexpr auto VAL2 = []()
+        {
+            FixedString<7> var{"0123"};
+            var.insert(var.begin(), var.substr(1, 2));
+            return var;
+        }();
+
+        static_assert(VAL2 == "120123");
+    }
+
+    {
+        FixedString<6> var{"abc"};
+        auto iter = var.insert(std::next(var.begin(), 1), std::string_view{var});
+        EXPECT_EQ(var, "aabcbc");
+        EXPECT_EQ(iter, std::next(var.begin(), 1));
+    }
+    {
+        FixedString<7> var{"0123"};
+        auto iter = var.insert(var.begin(), var.substr(1, 2));
+        EXPECT_EQ(var, "120123");
+        EXPECT_EQ(iter, var.begin());
+    }
+    {
+        FixedString<7> var{"0123"};
+        auto iter = var.insert(std::next(var.begin(), 3), var.substr(0, 2));
+        EXPECT_EQ(var, "012013");
+        EXPECT_EQ(iter, std::next(var.begin(), 3));
+    }
+    {
+        // The view may also include the null terminator
+        FixedString<7> var{"abc"};
+        auto iter =
+            var.insert(std::next(var.begin(), 1), std::string_view{var.c_str(), var.size() + 1});
+        EXPECT_EQ(var, std::string_view("aabc\0bc", 7));
+        EXPECT_EQ(iter, std::next(var.begin(), 1));
+    }
+}
+
+TEST(FixedString, InsertStringViewReferencingSelfExceedsCapacity)
+{
+    FixedString<5> var1{"abc"};
+    EXPECT_DEATH(var1.insert(std::next(var1.begin(), 1), std::string_view{var1}), "");
 }
 
 TEST(FixedString, EraseByIndex)
