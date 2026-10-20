@@ -97,7 +97,21 @@ public:
         const value_type& value,
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
-        pop_front_if_full(loc);
+        if (is_full(deque()))
+        {
+            // `value` may refer to the element that is about to be evicted, so copy it first
+            if constexpr (MoveConstructible<T>)
+            {
+                push_back(value_type(value), loc);
+            }
+            else
+            {
+                const value_type copy(value);
+                deque().pop_front(loc);
+                deque().push_back(copy, loc);
+            }
+            return;
+        }
         deque().push_back(value, loc);
     }
     constexpr void push_back(
@@ -111,6 +125,27 @@ public:
     template <class... Args>
     constexpr reference emplace_back(Args&&... args)
     {
+        if constexpr (MoveConstructible<T>)
+        {
+            if (is_full(deque()))
+            {
+                // `args` may refer to the element that is about to be evicted, so construct the
+                // new element first
+                value_type value(std::forward<Args>(args)...);
+                deque().pop_front(std_transition::source_location::current());
+                return deque().emplace_back(std::move(value));
+            }
+        }
+        else if constexpr (CopyConstructible<T>)
+        {
+            if (is_full(deque()))
+            {
+                // Same as above, but `T` can only be copied
+                const value_type value(std::forward<Args>(args)...);
+                deque().pop_front(std_transition::source_location::current());
+                return deque().emplace_back(value);
+            }
+        }
         pop_front_if_full(std_transition::source_location::current());
         return deque().emplace_back(std::forward<Args>(args)...);
     }
@@ -125,7 +160,21 @@ public:
         const value_type& value,
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
-        pop_back_if_full(loc);
+        if (is_full(deque()))
+        {
+            // `value` may refer to the element that is about to be evicted, so copy it first
+            if constexpr (MoveConstructible<T>)
+            {
+                push_front(value_type(value), loc);
+            }
+            else
+            {
+                const value_type copy(value);
+                deque().pop_back(loc);
+                deque().push_front(copy, loc);
+            }
+            return;
+        }
         deque().push_front(value, loc);
     }
     constexpr void push_front(
@@ -139,6 +188,27 @@ public:
     template <class... Args>
     constexpr reference emplace_front(Args&&... args)
     {
+        if constexpr (MoveConstructible<T>)
+        {
+            if (is_full(deque()))
+            {
+                // `args` may refer to the element that is about to be evicted, so construct the
+                // new element first
+                value_type value(std::forward<Args>(args)...);
+                deque().pop_back(std_transition::source_location::current());
+                return deque().emplace_front(std::move(value));
+            }
+        }
+        else if constexpr (CopyConstructible<T>)
+        {
+            if (is_full(deque()))
+            {
+                // Same as above, but `T` can only be copied
+                const value_type value(std::forward<Args>(args)...);
+                deque().pop_back(std_transition::source_location::current());
+                return deque().emplace_front(value);
+            }
+        }
         pop_back_if_full(std_transition::source_location::current());
         return deque().emplace_front(std::forward<Args>(args)...);
     }
@@ -154,7 +224,11 @@ public:
         const value_type& value,
         const std_transition::source_location& loc = std_transition::source_location::current())
     {
-        pop_front_if_full(loc);
+        if (is_full(deque()))
+        {
+            // `value` may refer to the element that is about to be evicted, so copy it first
+            return insert(pos, value_type(value), loc);
+        }
         return deque().insert(pos, value, loc);
     }
     constexpr iterator insert(
@@ -187,7 +261,13 @@ public:
     template <class... Args>
     constexpr iterator emplace(const_iterator pos, Args&&... args)
     {
-        pop_front_if_full(std_transition::source_location::current());
+        if (is_full(deque()))
+        {
+            // `args` may refer to the element that is about to be evicted, so construct the new
+            // element first
+            value_type value(std::forward<Args>(args)...);
+            return insert(pos, std::move(value), std_transition::source_location::current());
+        }
         return deque().emplace(pos, std::forward<Args>(args)...);
     }
 

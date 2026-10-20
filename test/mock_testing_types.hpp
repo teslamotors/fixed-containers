@@ -155,6 +155,27 @@ static_assert(TriviallyCopyable<MockMoveableButNotCopyable>);
 static_assert(NotCopyAssignable<MockMoveableButNotCopyable>);
 static_assert(NotCopyConstructible<MockMoveableButNotCopyable>);
 
+struct MockCopyableButNotMoveable
+{
+    int value;
+
+    constexpr explicit MockCopyableButNotMoveable(int param_value)
+      : value{param_value}
+    {
+    }
+
+    constexpr MockCopyableButNotMoveable(const MockCopyableButNotMoveable& other) noexcept =
+        default;
+    constexpr MockCopyableButNotMoveable(MockCopyableButNotMoveable&& other) noexcept = delete;
+
+    constexpr MockCopyableButNotMoveable& operator=(
+        const MockCopyableButNotMoveable& other) noexcept = default;
+    constexpr MockCopyableButNotMoveable& operator=(MockCopyableButNotMoveable&& other) noexcept =
+        delete;
+};
+static_assert(CopyConstructible<MockCopyableButNotMoveable>);
+static_assert(NotMoveConstructible<MockCopyableButNotMoveable>);
+
 // std::atomic<int> and std::mutex are examples of this
 struct MockTriviallyCopyableButNotCopyableOrMoveable
 {

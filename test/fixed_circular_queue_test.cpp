@@ -1,5 +1,7 @@
 #include "fixed_containers/fixed_circular_queue.hpp"
 
+#include "mock_testing_types.hpp"
+
 #include "fixed_containers/concepts.hpp"
 #include "fixed_containers/fixed_vector.hpp"
 #include "fixed_containers/max_size.hpp"
@@ -150,6 +152,41 @@ TEST(FixedCircularQueue, PushExceedsCapacity)
     static_assert(VAL1.back() == 77);
 }
 
+TEST(FixedCircularQueue, PushExceedsCapacityReferencingEvictedElement)
+{
+    constexpr auto VAL1 = []()
+    {
+        FixedCircularQueue<int, 3> var{};
+        var.push(100);
+        var.push(101);
+        var.push(102);
+        var.push(var.front());
+        return var;
+    }();
+
+    static_assert(VAL1.size() == 3);
+    static_assert(VAL1.front() == 101);
+    static_assert(VAL1.back() == 100);
+
+    // Copyable, but not move constructible
+    {
+        constexpr auto VAL2 = []()
+        {
+            FixedCircularQueue<MockCopyableButNotMoveable, 3> var{};
+            for (int i = 100; i <= 102; ++i)
+            {
+                const MockCopyableButNotMoveable entry{i};
+                var.push(entry);
+            }
+            var.push(var.front());
+            return std::array{var.front().value, var.back().value};
+        }();
+
+        static_assert(VAL2[0] == 101);
+        static_assert(VAL2[1] == 100);
+    }
+}
+
 TEST(FixedCircularQueue, Emplace)
 {
     constexpr FixedCircularQueue<int, 3> VAL1 = []()
@@ -185,6 +222,39 @@ TEST(FixedCircularQueue, EmplaceExceedsCapacity)
     static_assert(VAL1.max_size() == 4);
     static_assert(VAL1.front() == 103);
     static_assert(VAL1.back() == 99);
+}
+
+TEST(FixedCircularQueue, EmplaceExceedsCapacityReferencingEvictedElement)
+{
+    constexpr auto VAL1 = []()
+    {
+        FixedCircularQueue<int, 3> var{};
+        var.push(100);
+        var.push(101);
+        var.push(102);
+        var.emplace(var.front());
+        return var;
+    }();
+
+    static_assert(VAL1.size() == 3);
+    static_assert(VAL1.front() == 101);
+    static_assert(VAL1.back() == 100);
+
+    // Copyable, but not move constructible
+    {
+        constexpr auto VAL2 = []()
+        {
+            FixedCircularQueue<MockCopyableButNotMoveable, 3> var{};
+            var.emplace(100);
+            var.emplace(101);
+            var.emplace(102);
+            var.emplace(var.front());
+            return std::array{var.front().value, var.back().value};
+        }();
+
+        static_assert(VAL2[0] == 101);
+        static_assert(VAL2[1] == 100);
+    }
 }
 
 TEST(FixedCircularQueue, Pop)

@@ -18,6 +18,7 @@
 #include <initializer_list>
 #include <iterator>
 #include <limits>
+#include <string>
 #include <type_traits>
 
 namespace fixed_containers
@@ -50,6 +51,9 @@ struct ComplexStruct
     std::array<int, 2> b;
     int c;
 };
+
+// Too long for the small string buffer, so the characters live on the heap
+std::string long_string(char character) { return std::string(32, character); }
 
 constexpr std::size_t STARTING_OFFSET_OF_TEST =
     (std::numeric_limits<std::size_t>::max)() / static_cast<std::size_t>(2);
@@ -265,6 +269,52 @@ TEST(FixedCircularDeque, PushBackExceedsCapacity)
     run_test(FixedCircularDequeInitialStateLastIndex{});
 }
 
+TEST(FixedCircularDeque, PushBackExceedsCapacityReferencingEvictedElement)
+{
+    auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
+    {
+        {
+            constexpr auto VAL1 = []()
+            {
+                auto var = Factory::template create<int, 3>({1, 2, 3});
+                var.push_back(var.front());
+                return var;
+            }();
+
+            static_assert(std::ranges::equal(VAL1, std::array{2, 3, 1}));
+        }
+
+        // NonTriviallyCopyable<T>
+        {
+            auto var2 = Factory::template create<std::string, 3>(
+                {long_string('a'), long_string('b'), long_string('c')});
+            var2.push_back(var2.front());
+            EXPECT_TRUE(std::ranges::equal(
+                var2, std::array{long_string('b'), long_string('c'), long_string('a')}));
+        }
+    };
+
+    run_test(FixedCircularDequeInitialStateFirstIndex{});
+    run_test(FixedCircularDequeInitialStateLastIndex{});
+
+    // Copyable, but not move constructible
+    {
+        constexpr auto VAL1 = []()
+        {
+            FixedCircularDeque<MockCopyableButNotMoveable, 3> var{};
+            for (int i = 1; i <= 3; ++i)
+            {
+                const MockCopyableButNotMoveable entry{i};
+                var.push_back(entry);
+            }
+            var.push_back(var.front());
+            return std::array{var[0].value, var[1].value, var[2].value};
+        }();
+
+        static_assert(std::ranges::equal(VAL1, std::array{2, 3, 1}));
+    }
+}
+
 TEST(FixedCircularDeque, EmplaceBack)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
@@ -330,6 +380,60 @@ TEST(FixedCircularDeque, EmplaceBackExceedsCapacity)
 
     run_test(FixedCircularDequeInitialStateFirstIndex{});
     run_test(FixedCircularDequeInitialStateLastIndex{});
+}
+
+TEST(FixedCircularDeque, EmplaceBackExceedsCapacityReferencingEvictedElement)
+{
+    auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
+    {
+        {
+            constexpr auto VAL1 = []()
+            {
+                auto var = Factory::template create<int, 3>({1, 2, 3});
+                var.emplace_back(var.front());
+                return var;
+            }();
+
+            static_assert(std::ranges::equal(VAL1, std::array{2, 3, 1}));
+        }
+
+        // NonTriviallyCopyable<T>
+        {
+            auto var2 = Factory::template create<std::string, 3>(
+                {long_string('a'), long_string('b'), long_string('c')});
+            var2.emplace_back(var2.front());
+            var2.emplace_back(var2.front().cbegin(), var2.front().cend());
+            EXPECT_TRUE(std::ranges::equal(
+                var2, std::array{long_string('c'), long_string('a'), long_string('b')}));
+        }
+    };
+
+    run_test(FixedCircularDequeInitialStateFirstIndex{});
+    run_test(FixedCircularDequeInitialStateLastIndex{});
+
+    // Copyable, but not move constructible
+    {
+        constexpr auto VAL1 = []()
+        {
+            FixedCircularDeque<MockCopyableButNotMoveable, 3> var{};
+            var.emplace_back(1);
+            var.emplace_back(2);
+            var.emplace_back(3);
+            var.emplace_back(var.front());
+            return std::array{var[0].value, var[1].value, var[2].value};
+        }();
+
+        static_assert(std::ranges::equal(VAL1, std::array{2, 3, 1}));
+    }
+
+    // Neither copy nor move constructible, so the new element cannot be built before the
+    // eviction. Should still compile.
+    {
+        FixedCircularDeque<MockTriviallyCopyableButNotCopyableOrMoveable, 2> var{};
+        var.emplace_back();
+        var.emplace_back();
+        var.emplace_back();
+    }
 }
 
 TEST(FixedCircularDeque, MaxSize)
@@ -523,6 +627,52 @@ TEST(FixedCircularDeque, PushFrontExceedsCapacity)
     run_test(FixedCircularDequeInitialStateLastIndex{});
 }
 
+TEST(FixedCircularDeque, PushFrontExceedsCapacityReferencingEvictedElement)
+{
+    auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
+    {
+        {
+            constexpr auto VAL1 = []()
+            {
+                auto var = Factory::template create<int, 3>({1, 2, 3});
+                var.push_front(var.back());
+                return var;
+            }();
+
+            static_assert(std::ranges::equal(VAL1, std::array{3, 1, 2}));
+        }
+
+        // NonTriviallyCopyable<T>
+        {
+            auto var2 = Factory::template create<std::string, 3>(
+                {long_string('a'), long_string('b'), long_string('c')});
+            var2.push_front(var2.back());
+            EXPECT_TRUE(std::ranges::equal(
+                var2, std::array{long_string('c'), long_string('a'), long_string('b')}));
+        }
+    };
+
+    run_test(FixedCircularDequeInitialStateFirstIndex{});
+    run_test(FixedCircularDequeInitialStateLastIndex{});
+
+    // Copyable, but not move constructible
+    {
+        constexpr auto VAL1 = []()
+        {
+            FixedCircularDeque<MockCopyableButNotMoveable, 3> var{};
+            for (int i = 1; i <= 3; ++i)
+            {
+                const MockCopyableButNotMoveable entry{i};
+                var.push_back(entry);
+            }
+            var.push_front(var.back());
+            return std::array{var[0].value, var[1].value, var[2].value};
+        }();
+
+        static_assert(std::ranges::equal(VAL1, std::array{3, 1, 2}));
+    }
+}
+
 TEST(FixedCircularDeque, EmplaceFront)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
@@ -588,6 +738,60 @@ TEST(FixedCircularDeque, EmplaceFrontExceedsCapacity)
 
     run_test(FixedCircularDequeInitialStateFirstIndex{});
     run_test(FixedCircularDequeInitialStateLastIndex{});
+}
+
+TEST(FixedCircularDeque, EmplaceFrontExceedsCapacityReferencingEvictedElement)
+{
+    auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
+    {
+        {
+            constexpr auto VAL1 = []()
+            {
+                auto var = Factory::template create<int, 3>({1, 2, 3});
+                var.emplace_front(var.back());
+                return var;
+            }();
+
+            static_assert(std::ranges::equal(VAL1, std::array{3, 1, 2}));
+        }
+
+        // NonTriviallyCopyable<T>
+        {
+            auto var2 = Factory::template create<std::string, 3>(
+                {long_string('a'), long_string('b'), long_string('c')});
+            var2.emplace_front(var2.back());
+            var2.emplace_front(var2.back().cbegin(), var2.back().cend());
+            EXPECT_TRUE(std::ranges::equal(
+                var2, std::array{long_string('b'), long_string('c'), long_string('a')}));
+        }
+    };
+
+    run_test(FixedCircularDequeInitialStateFirstIndex{});
+    run_test(FixedCircularDequeInitialStateLastIndex{});
+
+    // Copyable, but not move constructible
+    {
+        constexpr auto VAL1 = []()
+        {
+            FixedCircularDeque<MockCopyableButNotMoveable, 3> var{};
+            var.emplace_back(1);
+            var.emplace_back(2);
+            var.emplace_back(3);
+            var.emplace_front(var.back());
+            return std::array{var[0].value, var[1].value, var[2].value};
+        }();
+
+        static_assert(std::ranges::equal(VAL1, std::array{3, 1, 2}));
+    }
+
+    // Neither copy nor move constructible, so the new element cannot be built before the
+    // eviction. Should still compile.
+    {
+        FixedCircularDeque<MockTriviallyCopyableButNotCopyableOrMoveable, 2> var{};
+        var.emplace_front();
+        var.emplace_front();
+        var.emplace_front();
+    }
 }
 
 TEST(FixedCircularDeque, PopFront)
@@ -1404,6 +1608,35 @@ TEST(FixedCircularDeque, EmplaceExceedsCapacity)
     run_test(FixedCircularDequeInitialStateLastIndex{});
 }
 
+TEST(FixedCircularDeque, EmplaceExceedsCapacityReferencingEvictedElement)
+{
+    auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
+    {
+        {
+            constexpr auto VAL1 = []()
+            {
+                auto var = Factory::template create<int, 3>({1, 2, 3});
+                var.emplace(std::next(var.begin(), 2), var.front());
+                return var;
+            }();
+
+            static_assert(std::ranges::equal(VAL1, std::array{2, 1, 3}));
+        }
+
+        // NonTriviallyCopyable<T>
+        {
+            auto var2 = Factory::template create<std::string, 3>(
+                {long_string('a'), long_string('b'), long_string('c')});
+            var2.emplace(std::next(var2.begin(), 2), var2.front());
+            EXPECT_TRUE(std::ranges::equal(
+                var2, std::array{long_string('b'), long_string('a'), long_string('c')}));
+        }
+    };
+
+    run_test(FixedCircularDequeInitialStateFirstIndex{});
+    run_test(FixedCircularDequeInitialStateLastIndex{});
+}
+
 TEST(FixedCircularDeque, AssignValue)
 {
     auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
@@ -1690,6 +1923,43 @@ TEST(FixedCircularDeque, InsertValueExceedsCapacity)
         }();
         static_assert(std::ranges::equal(VAL1, std::array<int, 4>{5, 1, 2, 3}));
         static_assert(VAL1.size() == 4);
+    };
+
+    run_test(FixedCircularDequeInitialStateFirstIndex{});
+    run_test(FixedCircularDequeInitialStateLastIndex{});
+}
+
+TEST(FixedCircularDeque, InsertValueExceedsCapacityReferencingEvictedElement)
+{
+    auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
+    {
+        {
+            constexpr auto VAL1 = []()
+            {
+                auto var = Factory::template create<int, 3>({1, 2, 3});
+                var.insert(var.end(), var.front());
+                var.insert(std::next(var.begin(), 2), var.front());
+                return var;
+            }();
+
+            static_assert(std::ranges::equal(VAL1, std::array{3, 2, 1}));
+        }
+
+        // NonTriviallyCopyable<T>
+        {
+            auto var2 = Factory::template create<std::string, 3>(
+                {long_string('a'), long_string('b'), long_string('c')});
+            var2.insert(std::next(var2.begin(), 2), var2.front());
+            EXPECT_TRUE(std::ranges::equal(
+                var2, std::array{long_string('b'), long_string('a'), long_string('c')}));
+        }
+        {
+            auto var2 = Factory::template create<std::string, 3>(
+                {long_string('a'), long_string('b'), long_string('c')});
+            var2.insert(var2.end(), var2.front());
+            EXPECT_TRUE(std::ranges::equal(
+                var2, std::array{long_string('b'), long_string('c'), long_string('a')}));
+        }
     };
 
     run_test(FixedCircularDequeInitialStateFirstIndex{});
