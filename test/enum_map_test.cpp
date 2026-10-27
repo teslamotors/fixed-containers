@@ -589,6 +589,34 @@ TEST(EnumMap, InsertOrAssign)
     static_assert(VAL1.contains(TestEnum1::FOUR));
 }
 
+TEST(EnumMap, InsertOrAssignNonTriviallyCopyable)
+{
+    EnumMap<TestEnum1, MockNonTrivialInt> var{};
+    {
+        auto [iter, was_inserted] = var.insert_or_assign(TestEnum1::TWO, 20);
+        ASSERT_TRUE(was_inserted);
+        ASSERT_EQ(TestEnum1::TWO, iter->first);
+        ASSERT_EQ(20, iter->second.value);
+    }
+    {
+        auto [iter, was_inserted] = var.insert_or_assign(TestEnum1::TWO, 99999);
+        ASSERT_FALSE(was_inserted);
+        ASSERT_EQ(TestEnum1::TWO, iter->first);
+        ASSERT_EQ(99999, iter->second.value);
+    }
+    {
+        const MockNonTrivialInt value{30};
+        auto [iter, was_inserted] = var.insert_or_assign(TestEnum1::FOUR, value);
+        ASSERT_TRUE(was_inserted);
+        ASSERT_EQ(TestEnum1::FOUR, iter->first);
+        ASSERT_EQ(30, iter->second.value);
+    }
+
+    ASSERT_EQ(2, var.size());
+    ASSERT_EQ(99999, var.at(TestEnum1::TWO).value);
+    ASSERT_EQ(30, var.at(TestEnum1::FOUR).value);
+}
+
 TEST(EnumMap, TryEmplace)
 {
     {

@@ -467,14 +467,17 @@ public:
         requires std::is_assignable_v<mapped_type&, M&&>
     {
         const std::size_t ordinal = EnumAdapterType::ordinal(key);
-        const bool is_insertion = !array_set_unchecked_at(ordinal);
-        if (is_insertion)
+        if (array_set_unchecked_at(ordinal))
         {
-            increment_size();
-            array_set_unchecked_at(ordinal) = true;
+            unchecked_at(ordinal) = std::forward<M>(obj);
+            return {create_iterator(ordinal), false};
         }
-        values_unchecked_at(ordinal) = OptionalV(std::forward<M>(obj));
-        return {create_iterator(ordinal), is_insertion};
+
+        increment_size();
+        array_set_unchecked_at(ordinal) = true;
+        memory::construct_at_address_of(
+            values_unchecked_at(ordinal), std::in_place, std::forward<M>(obj));
+        return {create_iterator(ordinal), true};
     }
     template <class M>
     constexpr iterator insert_or_assign(const_iterator /*hint*/, const K& key, M&& obj) noexcept
