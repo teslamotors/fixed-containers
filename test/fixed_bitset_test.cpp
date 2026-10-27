@@ -51,6 +51,26 @@ TEST(FixedBitset, UnsignedLongLongConstructor)
         static_assert(8 == VAL1.size());
         static_assert(4 == VAL1.count());
     }
+
+    {
+        // Bits at positions >= N are dropped, like std::bitset
+        constexpr FixedBitset<40> VAL1{~0ULL};
+        static_assert(40 == VAL1.count());
+        static_assert(VAL1.all());
+        static_assert(((1ULL << 40U) - 1ULL) == VAL1.to_ullong());
+        static_assert(FixedBitset<40>{1ULL << 40U}.none());
+    }
+
+    {
+        constexpr FixedBitset<63> VAL1{~0ULL};
+        static_assert(63 == VAL1.count());
+        static_assert(((1ULL << 63U) - 1ULL) == VAL1.to_ullong());
+    }
+
+    {
+        constexpr FixedBitset<64> VAL1{~0ULL};
+        static_assert(64 == VAL1.count());
+    }
 }
 
 TEST(FixedBitset, StringConstructor)

@@ -209,7 +209,8 @@ public:
     {
     }  // construct with all false values
 
-    static constexpr bool NEED_MASK = Helper::IS_DOUBLE_WIDTH;
+    // A single word with unused high bits; at 64 bits the shift below would be undefined
+    static constexpr bool NEED_MASK = BIT_COUNT < 64;
     static constexpr std::uint64_t MASK = (1ULL << (NEED_MASK ? BIT_COUNT : 0)) - 1ULL;
 
     constexpr FixedBitset(std::uint64_t val) noexcept
