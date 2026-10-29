@@ -1,0 +1,8 @@
+# Windows coverage for windows.yml: the library's headers under include/.
+version: 1
+source_root: "."
+coverage:
+  default:
+    files:
+      include:
+        - "include/**"

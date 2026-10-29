@@ -17,6 +17,9 @@ env:
 jobs:
   build:
     runs-on: windows-latest
+    permissions:
+      contents: read
+      id-token: write # covdbg identifies this repository by the job's OIDC token
 
     steps:
       - uses: actions/checkout@v4
@@ -51,7 +54,15 @@ jobs:
           clangtidy: false
           cppcheck: true
           gcovr: false
-          opencppcoverage: true
+          opencppcoverage: false
+
+      # GitHub issues no OIDC token to pull requests from forks, so coverage is measured on
+      # pushes and on pull requests from branches of this repository.
+      - name: Set up covdbg
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+        uses: liasoft/setup-covdbg@6116a52a8ce697108056ce4b4cd2429424a231b1 # v1.0.0
+        with:
+          version: 'latest'
 
       - name: Configure CMake
         run: cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=C:\Users\runneradmin\vcpkg\scripts\buildsystems\vcpkg.cmake
@@ -64,8 +75,17 @@ jobs:
         run: |
           ctest --build-config Debug
 
-      # TODO: add test and coverage for windows
-      #- name: Test and coverage
-      #  working-directory: ./build
-      #  run: |
-      #    OpenCppCoverage.exe --export_type cobertura:coverage.xml --cover_children -- ctest --build-config Debug
+      - name: Test and coverage
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+        working-directory: ./build
+        run: |
+          covdbg --config ../.covdbg.yaml --output coverage.covdb --follow-children --propagate-exit-code ctest --build-config Debug
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          covdbg convert --input coverage.covdb --format COBERTURA --output coverage.xml
+
+      - name: Upload coverage report
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-windows
+          path: build/coverage.xml

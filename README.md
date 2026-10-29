@@ -6,6 +6,7 @@
 [![Ubuntu (clang)](https://github.com/teslamotors/fixed-containers/actions/workflows/ubuntu-clang.yml/badge.svg)](https://github.com/teslamotors/fixed-containers/actions/workflows/ubuntu-clang.yml)
 [![Windows](https://github.com/teslamotors/fixed-containers/actions/workflows/windows.yml/badge.svg)](https://github.com/teslamotors/fixed-containers/actions/workflows/windows.yml)
 [![CodeQL](https://github.com/teslamotors/fixed-containers/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/teslamotors/fixed-containers/actions/workflows/codeql-analysis.yml)
+[![covdbg - Windows coverage for C++](https://covdbg.com/badge.svg)](https://covdbg.com/)
 
 Header-only C++20 library that provides containers with the following properties:
 
