@@ -19,6 +19,7 @@
 #include <initializer_list>
 #include <iterator>
 #include <limits>
+#include <string>
 #include <type_traits>
 #include <utility>
 
@@ -1732,6 +1733,42 @@ TEST(FixedDeque, InsertInitializerListExceedsCapacity)
     {
         auto var1 = Factory::template create<int, 4>({0, 1, 2});
         EXPECT_DEATH(var1.insert(std::next(var1.begin(), 3), {3, 4}), "");
+    };
+
+    run_test(FixedDequeInitialStateFirstIndex{});
+    run_test(FixedDequeInitialStateLastIndex{});
+}
+
+TEST(FixedDeque, EmptyRangeOperationsWithNonTrivialElements)
+{
+    auto run_test = []<IsFixedDequeFactory Factory>(Factory&&)
+    {
+        const std::array<std::string, 3> expected{
+            std::string(40, 'a'), std::string(40, 'b'), std::string(40, 'c')};
+        const std::array<std::string, 0> empty{};
+
+        {
+            auto var = Factory::template create<std::string, 4>(
+                {expected[0], expected[1], expected[2]});
+            const auto pos = std::next(var.cbegin());
+            EXPECT_EQ(var.erase(pos, pos), std::next(var.begin()));
+            EXPECT_TRUE(std::ranges::equal(var, expected));
+        }
+        {
+            auto var = Factory::template create<std::string, 4>(
+                {expected[0], expected[1], expected[2]});
+            const auto pos = std::next(var.cbegin());
+            EXPECT_EQ(var.insert(pos, empty.begin(), empty.end()), std::next(var.begin()));
+            EXPECT_TRUE(std::ranges::equal(var, expected));
+        }
+        {
+            auto var = Factory::template create<std::string, 4>(
+                {expected[0], expected[1], expected[2]});
+            const auto pos = std::next(var.cbegin());
+            EXPECT_EQ(var.insert(pos, std::initializer_list<std::string>{}),
+                      std::next(var.begin()));
+            EXPECT_TRUE(std::ranges::equal(var, expected));
+        }
     };
 
     run_test(FixedDequeInitialStateFirstIndex{});

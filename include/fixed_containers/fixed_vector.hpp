@@ -402,6 +402,10 @@ public:
         {
             Checking::invalid_argument("iterators exceed container range", loc);
         }
+        if (first == last)
+        {
+            return const_to_mutable_it(first);
+        }
 
         const auto entry_count_to_move = std::distance(last, cend());
         const auto entry_count_to_remove = std::distance(first, last);
@@ -618,6 +622,11 @@ private:
     constexpr iterator advance_all_after_iterator_by_n(const const_iterator pos,
                                                        const std::size_t n)
     {
+        if (n == 0)
+        {
+            return const_to_mutable_it(pos);
+        }
+
         const std::ptrdiff_t value_count_to_move = std::distance(pos, cend());
         increment_size(n);  // Increment now so iterators are all within valid range
 
