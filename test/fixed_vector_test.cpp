@@ -19,6 +19,7 @@
 #include <memory>
 #include <ranges>
 #include <span>
+#include <string>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -1639,6 +1640,32 @@ TEST(FixedVector, InsertInitializerListExceedsCapacity)
 {
     FixedVector<int, 4> var1{0, 1, 2};
     EXPECT_DEATH(var1.insert(std::next(var1.begin(), 1), {3, 4}), "");
+}
+
+TEST(FixedVector, EmptyRangeOperationsWithNonTrivialElements)
+{
+    const std::array<std::string, 3> expected{
+        std::string(40, 'a'), std::string(40, 'b'), std::string(40, 'c')};
+    const std::array<std::string, 0> empty{};
+
+    {
+        FixedVector<std::string, 4> var{expected.begin(), expected.end()};
+        const auto pos = std::next(var.cbegin());
+        EXPECT_EQ(var.erase(pos, pos), std::next(var.begin()));
+        EXPECT_TRUE(std::ranges::equal(var, expected));
+    }
+    {
+        FixedVector<std::string, 4> var{expected.begin(), expected.end()};
+        const auto pos = std::next(var.cbegin());
+        EXPECT_EQ(var.insert(pos, empty.begin(), empty.end()), std::next(var.begin()));
+        EXPECT_TRUE(std::ranges::equal(var, expected));
+    }
+    {
+        FixedVector<std::string, 4> var{expected.begin(), expected.end()};
+        const auto pos = std::next(var.cbegin());
+        EXPECT_EQ(var.insert(pos, std::initializer_list<std::string>{}), std::next(var.begin()));
+        EXPECT_TRUE(std::ranges::equal(var, expected));
+    }
 }
 
 TEST(FixedVector, EraseRange)

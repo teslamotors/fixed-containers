@@ -18,6 +18,7 @@
 #include <initializer_list>
 #include <iterator>
 #include <limits>
+#include <string>
 #include <type_traits>
 
 namespace fixed_containers
@@ -2042,6 +2043,42 @@ TEST(FixedCircularDeque, InsertInitializerListExceedsCapacity)
         }();
         static_assert(VAL1.size() == 4);
         static_assert(std::ranges::equal(VAL1, std::array<int, 4>{3, 4, 1, 2}));
+    };
+
+    run_test(FixedCircularDequeInitialStateFirstIndex{});
+    run_test(FixedCircularDequeInitialStateLastIndex{});
+}
+
+TEST(FixedCircularDeque, EmptyRangeOperationsWithNonTrivialElements)
+{
+    auto run_test = []<IsFixedCircularDequeFactory Factory>(Factory&&)
+    {
+        const std::array<std::string, 3> expected{
+            std::string(40, 'a'), std::string(40, 'b'), std::string(40, 'c')};
+        const std::array<std::string, 0> empty{};
+
+        {
+            auto var = Factory::template create<std::string, 4>(
+                {expected[0], expected[1], expected[2]});
+            const auto pos = std::next(var.cbegin());
+            EXPECT_EQ(var.erase(pos, pos), std::next(var.begin()));
+            EXPECT_TRUE(std::ranges::equal(var, expected));
+        }
+        {
+            auto var = Factory::template create<std::string, 4>(
+                {expected[0], expected[1], expected[2]});
+            const auto pos = std::next(var.cbegin());
+            EXPECT_EQ(var.insert(pos, empty.begin(), empty.end()), std::next(var.begin()));
+            EXPECT_TRUE(std::ranges::equal(var, expected));
+        }
+        {
+            auto var = Factory::template create<std::string, 4>(
+                {expected[0], expected[1], expected[2]});
+            const auto pos = std::next(var.cbegin());
+            EXPECT_EQ(var.insert(pos, std::initializer_list<std::string>{}),
+                      std::next(var.begin()));
+            EXPECT_TRUE(std::ranges::equal(var, expected));
+        }
     };
 
     run_test(FixedCircularDequeInitialStateFirstIndex{});
