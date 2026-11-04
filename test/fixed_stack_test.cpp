@@ -116,6 +116,14 @@ TEST(FixedStack, Emplace)
 
     static_assert(VAL1.top() == 99);
     static_assert(VAL1.size() == 2);
+
+    {
+        FixedStack<int, 3> var{};
+        int& ref = var.emplace(42);
+        EXPECT_EQ(42, ref);
+        ref = 84;
+        EXPECT_EQ(84, var.top());
+    }
 }
 
 TEST(FixedStack, Pop)

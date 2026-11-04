@@ -76,7 +76,7 @@ public:
     template <class... Args>
     constexpr decltype(auto) emplace(Args&&... args)
     {
-        IMPLEMENTATION_DETAIL_DO_NOT_USE_data_.emplace_back(std::forward<Args>(args)...);
+        return IMPLEMENTATION_DETAIL_DO_NOT_USE_data_.emplace_back(std::forward<Args>(args)...);
     }
 
     constexpr void pop(
