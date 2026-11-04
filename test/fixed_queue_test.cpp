@@ -141,6 +141,14 @@ TEST(FixedQueue, Emplace)
 
     static_assert(VAL1.front() == 77);
     static_assert(VAL1.size() == 2);
+
+    {
+        FixedQueue<int, 3> var{};
+        int& ref = var.emplace(42);
+        EXPECT_EQ(42, ref);
+        ref = 84;
+        EXPECT_EQ(84, var.back());
+    }
 }
 
 TEST(FixedQueue, Pop)
